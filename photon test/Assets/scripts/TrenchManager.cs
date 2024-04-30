@@ -7,7 +7,7 @@ public class TrenchManager : MonoBehaviour
     public static TrenchManager instance;
     public Trench trenchPrefab;
     public bool debugLines = false;
-    public float digPointDist = 2;
+    public float digPointDist = 2, connectDist = 1;
 
     public List<Trench> trenches;
 
@@ -100,6 +100,8 @@ public class TrenchManager : MonoBehaviour
 
     public Trench Dig (Vector2 digPos, Trench trench = null, float startWidth = 1)
     {
+        //if (!trench) trench = FindTrenchEnd(digPos);
+
         if (!trench)
         {
             trench = NewTrench();
@@ -115,6 +117,22 @@ public class TrenchManager : MonoBehaviour
         trench.line.SetPosition(currentPointCount, digPos);
 
         return trench;
+    }
+
+    public Trench FindTrenchEnd (Vector2 pos)
+    {
+        foreach (var trench in trenches)
+        {
+            var endIndex = trench.line.positionCount - 1;
+            var endPos = trench.line.GetPosition(endIndex);
+            var dist = Vector2.Distance(pos, endPos);
+            if (dist <= connectDist)
+            {
+                return trench;
+            }
+        }
+
+        return null;
     }
 
     public Trench NewTrench ()

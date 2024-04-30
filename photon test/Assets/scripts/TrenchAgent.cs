@@ -20,7 +20,7 @@ public class TrenchAgent : MonoBehaviour
         var dist = Vector2.Distance(digPos, lastDigPoint);
         var exceededPointDist = dist > TrenchManager.instance.digPointDist;
 
-        if (dist == 0 && trench)
+        if (trench)
         {
             var width = trench.line.widthMultiplier;
             trench.line.widthMultiplier = Mathf.MoveTowards(width, maxWidth, digSpeed * Time.deltaTime);

@@ -155,8 +155,7 @@ MonoBehaviour:
   trenchPrefab: {fileID: 8666365364839661718, guid: d492f98116d04be41b7db6555be3cad9, type: 3}
   debugLines: 0
   digPointDist: 0.2
-  startWidth: 1
-  maxWidth: 2
+  connectDist: 1
   trenches: []
 --- !u!4 &691302294
 Transform:
@@ -526,6 +525,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   withinTrench: 0
   trench: {fileID: 0}
+  startWidth: 1
+  maxWidth: 2
+  digSpeed: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

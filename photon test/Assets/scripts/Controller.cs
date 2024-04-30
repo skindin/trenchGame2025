@@ -30,7 +30,7 @@ public class Controller : MonoBehaviour
 
         if (Input.GetMouseButton(0))
         {
-            var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             character.Dig(transform.position);
         }
         else
@@ -38,13 +38,13 @@ public class Controller : MonoBehaviour
             character.Dig(Vector2.zero, true);
         }
 
-        if (Input.GetMouseButton(1))
-        {
-            character.FillTrench(transform.position);
-        }
-        else
-        {
-            character.FillTrench(Vector2.zero, true);
-        }
+        //if (Input.GetMouseButton(1))
+        //{
+        //    character.FillTrench(transform.position);
+        //}
+        //else
+        //{
+        //    character.FillTrench(Vector2.zero, true);
+        //}
     }
 }
