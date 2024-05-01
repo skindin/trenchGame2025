@@ -15,6 +15,11 @@ public class TrenchAgent : MonoBehaviour
         return withinTrench;
     }
 
+    public void SetStatus (bool status)
+    {
+        withinTrench = status;
+    }
+
     public void Dig (Vector2 digPos)
     {
         var dist = Vector2.Distance(digPos, lastDigPoint);

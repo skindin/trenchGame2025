@@ -1,21 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class Controller : MonoBehaviour
+public class Controller : MonoBehaviourPunCallbacks
 {
     public Character character;
-    public static Controller active;
-
-    // Start is called before the first frame update
-    void Awake()
-    {
-        active = this; //this definitely needs improvement for multiplayer but idc rn
-    }
+    public static Controller main;
 
     // Update is called once per frame
     void Update()
     {
+        if (!photonView.IsMine)
+        {
+            character.TestTrench(); //this line is temporary until I network trench status
+            return;
+        }
+
+        CameraFollow.main.SetTarget(transform);
+
         Vector2 direction;
 
         direction.x = Input.GetAxisRaw("Horizontal");
@@ -33,10 +36,12 @@ public class Controller : MonoBehaviour
             //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             character.Dig(transform.position);
         }
-        else
+        else if (Input.GetMouseButtonUp(0))
         {
             character.Dig(Vector2.zero, true);
         }
+
+        
 
         //if (Input.GetMouseButton(1))
         //{

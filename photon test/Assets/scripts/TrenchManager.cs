@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class TrenchManager : MonoBehaviour
+public class TrenchManager : MonoBehaviourPunCallbacks
 {
     public static TrenchManager instance;
     public Trench trenchPrefab;
@@ -137,10 +138,19 @@ public class TrenchManager : MonoBehaviour
 
     public Trench NewTrench ()
     {
-        var trench = Instantiate(trenchPrefab, transform).GetComponent<Trench>();
-        trenches.Add(trench);
+        var trench = PhotonNetwork.Instantiate(trenchPrefab.name, Vector3.forward, Quaternion.identity).GetComponent<Trench>();
+        //trenches.Add(trench);
+        //var trenchId = trench.photonView.ViewID;
+        //trench.photonView.RPC("SyncNewTrench", RpcTarget.Others, trench.photonView, trenchId);
         return trench;
     }
+
+    //[PunRPC]
+    //public void SyncNewTrench (PhotonView view)
+    //{
+    //    Trench trench = view.GetComponent<Trench>();
+    //    trenches.Add(trench);
+    //}
 
     public void RemoveTrench (Trench trench)
     {

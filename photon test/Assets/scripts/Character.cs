@@ -10,6 +10,8 @@ public class Character : MonoBehaviour
     public float moveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5;
     public TrenchAgent agent;
     public bool digging = false, filling = false;
+    public static bool updatingTrench = false;
+    //I added this property without utilizing it. It is for telling other characters to find trenches
 
     // Start is called before the first frame update
     void Awake()
@@ -19,7 +21,7 @@ public class Character : MonoBehaviour
 
     private void Start()
     {
-        UpdateTrench();
+        TestTrench();
     }
 
     // Update is called once per frame
@@ -35,12 +37,18 @@ public class Character : MonoBehaviour
         if (digging || filling) speed = digMoveSpeed;
         transform.position += dir * speed * Time.deltaTime;
 
-        UpdateTrench();
+        if (!digging)
+            TestTrench();
     }
 
-    public void UpdateTrench()
+    public void TestTrench ()
     {
-        if (agent.UpdateStatus())
+        UpdateSprite(agent.UpdateStatus());
+    }
+
+    public void UpdateSprite(bool status)
+    {
+        if (status)
         {
             sprite.color = startColor;
         }
@@ -63,7 +71,8 @@ public class Character : MonoBehaviour
 
         digging = !stop;
 
-        UpdateTrench();
+        agent.SetStatus(true);
+        UpdateSprite(true);
     }
 
     public void FillTrench (Vector2 fillPoint, bool stop = false)
