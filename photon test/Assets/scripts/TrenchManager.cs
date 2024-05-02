@@ -27,55 +27,53 @@ public class TrenchManager : MonoBehaviour
 
         foreach (var trench in trenches)
         {
-            if (trench.line.positionCount == 0)
+            if (trench.TestBox(pos) && trench.line.positionCount > 0)
             {
-                break;
-            }
-
-            if (trench.line.positionCount == 1)
-            {
-                var pointA = trench.line.GetPosition(0)+trench.transform.position;
-                var dist = Vector2.Distance(pointA, pos);
-                if (dist <= trench.line.widthMultiplier/2)
+                if (trench.line.positionCount == 1)
                 {
-                    return true;
-                }
-            }
-
-            if (trench.line.positionCount > 1)
-            {
-                var closestDist = Mathf.Infinity;
-                Vector2 closestPoint = Vector2.zero;
-
-                Vector2 pointA;
-                Vector2 pointB = trench.line.GetPosition(1)+trench.transform.position;
-
-                for (var i = 0; i < trench.line.positionCount-1; i++)
-                {
-                    pointA = pointB;
-                    pointB = trench.line.GetPosition(i+1)+trench.transform.position;
-
-                    if (debugLines) Debug.DrawLine(pointA, pointB);
-
-                    var pointOnSegment = ClosestPointToLineSegment(pos, pointA, pointB);
-
-                    var dist = Vector2.Distance(pos, pointOnSegment);
-
-                    if (dist < closestDist)
+                    var pointA = trench.line.GetPosition(0) + trench.transform.position;
+                    var dist = Vector2.Distance(pointA, pos);
+                    if (dist <= trench.line.widthMultiplier / 2)
                     {
-                        closestDist = dist;
-                        closestPoint = pointOnSegment;
+                        return true;
                     }
                 }
 
-                var color = Color.green;
-                var withinTrench = closestDist <= trench.line.widthMultiplier / 2;
+                if (trench.line.positionCount > 1)
+                {
+                    var closestDist = Mathf.Infinity;
+                    Vector2 closestPoint = Vector2.zero;
 
-                if (!withinTrench) color = Color.red;
+                    Vector2 pointA;
+                    Vector2 pointB = trench.line.GetPosition(1) + trench.transform.position;
 
-                if (debugLines) Debug.DrawLine(pos, closestPoint, color);
+                    for (var i = 0; i < trench.line.positionCount - 1; i++)
+                    {
+                        pointA = pointB;
+                        pointB = trench.line.GetPosition(i + 1) + trench.transform.position;
 
-                if (withinTrench) return true;
+                        if (debugLines) Debug.DrawLine(pointA, pointB);
+
+                        var pointOnSegment = ClosestPointToLineSegment(pos, pointA, pointB);
+
+                        var dist = Vector2.Distance(pos, pointOnSegment);
+
+                        if (dist < closestDist)
+                        {
+                            closestDist = dist;
+                            closestPoint = pointOnSegment;
+                        }
+                    }
+
+                    var color = Color.green;
+                    var withinTrench = closestDist <= trench.line.widthMultiplier / 2;
+
+                    if (!withinTrench) color = Color.red;
+
+                    if (debugLines) Debug.DrawLine(pos, closestPoint, color);
+
+                    if (withinTrench) return true;
+                }
             }
         }
 
@@ -105,16 +103,10 @@ public class TrenchManager : MonoBehaviour
         if (!trench)
         {
             trench = NewTrench();
-            trench.line.widthMultiplier = startWidth;
+            trench.SetWidth(startWidth);
         }
 
-        int currentPointCount = trench.line.positionCount;
-
-        // Increase the position count by one
-        trench.line.positionCount = currentPointCount + 1;
-
-        // Set the position of the new point
-        trench.line.SetPosition(currentPointCount, digPos);
+        trench.AddPoint(digPos);
 
         return trench;
     }

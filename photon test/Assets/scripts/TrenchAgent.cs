@@ -22,8 +22,9 @@ public class TrenchAgent : MonoBehaviour
 
         if (trench)
         {
-            var width = trench.line.widthMultiplier;
-            trench.line.widthMultiplier = Mathf.MoveTowards(width, maxWidth, digSpeed * Time.deltaTime);
+            var width = trench.width;
+            var newWidth = Mathf.MoveTowards(width, maxWidth, digSpeed * Time.deltaTime);
+            trench.SetWidth(newWidth);
         }
 
         if ((trench && exceededPointDist) || !trench)

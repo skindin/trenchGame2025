@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trenchPrefab: {fileID: 8666365364839661718, guid: d492f98116d04be41b7db6555be3cad9, type: 3}
-  debugLines: 0
+  debugLines: 1
   digPointDist: 0.2
   connectDist: 1
   trenches: []
