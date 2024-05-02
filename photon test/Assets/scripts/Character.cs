@@ -9,7 +9,7 @@ public class Character : MonoBehaviour
     Color startColor;
     public float moveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5;
     public TrenchAgent agent;
-    public bool digging = false, filling = false;
+    public bool digging = false, filling = false, constantDig = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -35,12 +35,18 @@ public class Character : MonoBehaviour
         if (digging || filling) speed = digMoveSpeed;
         transform.position += dir * speed * Time.deltaTime;
 
-        UpdateTrench();
+        if (!digging)
+            UpdateTrench();
     }
 
     public void UpdateTrench()
     {
-        if (agent.UpdateStatus())
+        UpdateSprite(agent.UpdateStatus());
+    }
+
+    public void UpdateSprite (bool trenchStatus)
+    {
+        if (trenchStatus)
         {
             sprite.color = startColor;
         }
@@ -56,21 +62,14 @@ public class Character : MonoBehaviour
         {
             agent.Dig(digPoint);
         }
-        else
+        else if (!constantDig)
         {
             agent.StopDig();
         }
 
         digging = !stop;
 
-        UpdateTrench();
-    }
-
-    public void FillTrench (Vector2 fillPoint, bool stop = false)
-    {
-        if (!stop)
-            agent.FillTrench(fillPoint);
-
-        filling = !stop;
+        UpdateSprite(true);
+        agent.SetStatus(true);
     }
 }

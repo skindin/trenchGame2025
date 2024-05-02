@@ -21,12 +21,15 @@ public class TrenchManager : MonoBehaviour
         if (!instance) instance = this;
     }
 
+    //I was gonna move this to trench script but I'd rather the debugLines property stay here so nvm
     public bool CheckWithinTrench (Vector2 pos)
     {
         if (!instance) instance = this;
 
         foreach (var trench in trenches)
         {
+            if (debugLines) trench.DrawBox();
+
             if (trench.TestBox(pos) && trench.line.positionCount > 0)
             {
                 if (trench.line.positionCount == 1)
@@ -41,16 +44,16 @@ public class TrenchManager : MonoBehaviour
 
                 if (trench.line.positionCount > 1)
                 {
-                    var closestDist = Mathf.Infinity;
                     Vector2 closestPoint = Vector2.zero;
 
-                    Vector2 pointA;
-                    Vector2 pointB = trench.line.GetPosition(1) + trench.transform.position;
+                    Vector2 pointA = trench.line.GetPosition(0) + trench.transform.position;
+                    Vector2 pointB;
 
-                    for (var i = 0; i < trench.line.positionCount - 1; i++)
+                    bool withinTrench = false;
+
+                    for (var i = 1; i < trench.line.positionCount; i++)
                     {
-                        pointA = pointB;
-                        pointB = trench.line.GetPosition(i + 1) + trench.transform.position;
+                        pointB = trench.line.GetPosition(i) + trench.transform.position;
 
                         if (debugLines) Debug.DrawLine(pointA, pointB);
 
@@ -58,15 +61,24 @@ public class TrenchManager : MonoBehaviour
 
                         var dist = Vector2.Distance(pos, pointOnSegment);
 
-                        if (dist < closestDist)
+                        if (dist <= trench.line.widthMultiplier/2)
                         {
-                            closestDist = dist;
                             closestPoint = pointOnSegment;
+                            withinTrench = true;
+                            break;
+                        }
+
+                        if (i < trench.line.positionCount - 1)
+                        {
+                            pointA = pointB;
+                        }
+                        else
+                        {
+                            closestPoint = pointB;
                         }
                     }
 
                     var color = Color.green;
-                    var withinTrench = closestDist <= trench.line.widthMultiplier / 2;
 
                     if (!withinTrench) color = Color.red;
 
@@ -111,22 +123,6 @@ public class TrenchManager : MonoBehaviour
         return trench;
     }
 
-    public Trench FindTrenchEnd (Vector2 pos)
-    {
-        foreach (var trench in trenches)
-        {
-            var endIndex = trench.line.positionCount - 1;
-            var endPos = trench.line.GetPosition(endIndex);
-            var dist = Vector2.Distance(pos, endPos);
-            if (dist <= connectDist)
-            {
-                return trench;
-            }
-        }
-
-        return null;
-    }
-
     public Trench NewTrench ()
     {
         var trench = Instantiate(trenchPrefab, transform).GetComponent<Trench>();
@@ -138,71 +134,5 @@ public class TrenchManager : MonoBehaviour
     {
         trenches.Remove(trench);
         Destroy(trench.gameObject, .01f);
-    }
-
-    public void Fill (Vector2 fillPoint)
-    {
-        for (var l = 0; l < trenches.Count; l++)
-        {
-            var trench = trenches[l];
-
-            for (var i = 0; i < trench.line.positionCount; i++)
-            {
-                var trenchPoint = trench.line.GetPosition(i);
-                var dist = Vector2.Distance(trenchPoint, fillPoint);
-                if (dist <= trench.line.widthMultiplier/2)
-                {
-                    if (i == 0)
-                    {
-                        RemoveFirstPoints(trench, 1);
-                        i--;
-                    }
-                    else if (i == trench.line.positionCount - 1)
-                    {
-                        trench.line.positionCount--;
-                    }
-                    else
-                    {
-                        SplitTrench(trench, i);
-                    }
-                }
-            }
-
-            if (trench.line.positionCount == 0)
-            {
-                RemoveTrench(trench);
-                l--;
-            }
-        }
-    }
-
-    public void RemoveFirstPoints(Trench trench, int count)
-    {
-        for (var i = 0; i < trench.line.positionCount-count; i++)
-        {
-            var pos = trench.line.GetPosition(i + count);
-            trench.line.SetPosition(i, pos);
-        }
-
-        trench.line.positionCount -= count;
-    }
-
-    public void SplitTrench(Trench trench, int midIndex)
-    {
-        var secondHalf = NewTrench();
-
-        var posCount = trench.line.positionCount;
-
-        var secondHalfPosCount = posCount - midIndex - 1;
-
-        secondHalf.line.positionCount = secondHalfPosCount;
-
-        for (var i = 0; i < secondHalfPosCount; i++)
-        {
-            var pos = trench.line.GetPosition(i + midIndex);
-            secondHalf.line.SetPosition(i, pos);
-        }
-
-        trench.line.positionCount = midIndex;
     }
 }

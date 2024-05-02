@@ -15,38 +15,51 @@ public class TrenchAgent : MonoBehaviour
         return withinTrench;
     }
 
+    public void SetStatus (bool status)
+    {
+        withinTrench = status;
+    }
+
     public void Dig (Vector2 digPos)
     {
         var dist = Vector2.Distance(digPos, lastDigPoint);
         var exceededPointDist = dist > TrenchManager.instance.digPointDist;
 
+        var addPoint = exceededPointDist && trench;
+
         if (trench)
         {
+            //var endPoint = trench.line.GetPosition(trench.line.positionCount - 1);
+            //var endDir = (Vector2)(lastDigPoint - endPoint).normalized;
+            //var digDir = ((Vector2)endPoint - digPos).normalized;
+            //var sameDirection = endDir == digDir;
+            //if (sameDirection) addPoint = false;
+            
+            //it saves memory but makes the trenches look weird... shrugging emoji
+
             var width = trench.width;
             var newWidth = Mathf.MoveTowards(width, maxWidth, digSpeed * Time.deltaTime);
             trench.SetWidth(newWidth);
         }
 
-        if ((trench && exceededPointDist) || !trench)
+        if (addPoint || !trench)
         {
             trench = TrenchManager.instance.Dig(digPos, trench, startWidth);
-            if (trench.line.positionCount < 2) TrenchManager.instance.Dig(digPos, trench);
+            if (trench.line.positionCount < 2) TrenchManager.instance.Dig(digPos, trench); 
+            //line renderer needs atleast 2 points to render
             lastDigPoint = digPos;
+
+            if (!trench.agent) trench.agent = this; //this could be run once ever but shrugging emoji
         }
         else
         {
-            var lastIndex = trench.line.positionCount - 1;
-            trench.line.SetPosition(lastIndex, digPos);
+            trench.MoveEnd(digPos);
+            trench.ExtendBox(digPos);
         }
     }
 
     public void StopDig ()
     {
         trench = null;
-    }
-
-    public void FillTrench (Vector2 point)
-    {
-        TrenchManager.instance.Fill(point);
     }
 }

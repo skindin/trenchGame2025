@@ -5,9 +5,10 @@ using UnityEngine;
 public class Trench : MonoBehaviour
 {
     public LineRenderer line;
-    public float width;
+    public float width, totalLength = 0; //length discludes width
     public Vector2 boxTopLeft, boxBottomRight;
     public TrenchAgent agent;
+    public bool calculateLength;
 
     private void Awake()
     {
@@ -15,7 +16,7 @@ public class Trench : MonoBehaviour
 
     private void Update()
     {
-        DrawBox();
+        if (calculateLength) CalculateLength();
     }
 
     public void DrawBox ()
@@ -37,15 +38,51 @@ public class Trench : MonoBehaviour
             boxBottomRight = new Vector2(1, -1) * width / 2 + point;
         }
 
+        if (line.positionCount > 1)
+        {
+            if (!calculateLength)
+            {
+                Vector2 lastPoint = line.GetPosition(line.positionCount - 1);
+                var segLength = Vector2.Distance(lastPoint, point);
+                totalLength += segLength;
+            }
+            else
+            {
+                CalculateLength();
+            }
+        }
+
         int currentPointCount = line.positionCount;
-
-        // Increase the position count by one
         line.positionCount = currentPointCount + 1;
-
-        // Set the position of the new point
         line.SetPosition(currentPointCount, point);
 
         ExtendBox(point);
+    }
+
+    public void MoveEnd (Vector2 point)
+    {
+
+        if (line.positionCount < 2) return;
+
+        if (!calculateLength)
+        {
+
+            var secLastPoint = line.GetPosition(line.positionCount - 2);
+            var lastPoint = line.GetPosition(line.positionCount - 1);
+
+            var prevLength = Vector2.Distance(secLastPoint, lastPoint);
+            var newLength = Vector2.Distance(secLastPoint, point);
+
+            var distDiff = newLength - prevLength;
+
+            totalLength += distDiff;
+        }
+        else
+        {
+            CalculateLength();
+        }
+
+        line.SetPosition(line.positionCount - 1, point);
     }
 
     public void IncreaseWidth (float increase)
@@ -72,19 +109,6 @@ public class Trench : MonoBehaviour
         if (point.y - radius < boxBottomRight.y) boxBottomRight.y = point.y - radius;
     }
 
-    //public Vector2 GetBoxDelta(Vector2 point)
-    //{
-    //    Vector2 delta = Vector2.zero;
-
-    //    if (point.x < boxTopLeft.x) delta.x = boxTopLeft.x - point.x;
-    //    if (point.y > boxTopLeft.y) delta.y = point.y - boxTopLeft.y;
-
-    //    if (point.x > boxBottomRight.x) delta.x = point.x - boxBottomRight.x;
-    //    if (point.y < boxBottomRight.y) delta.y = boxBottomRight.y - point.y;
-
-    //    return delta;
-    //}
-
     public bool TestBox(Vector2 point)
     {
         if (point.x < boxTopLeft.x || 
@@ -96,5 +120,27 @@ public class Trench : MonoBehaviour
         }
 
         return true;
+    }
+
+    public void CalculateLength ()
+    {
+        float totalLength = 0;
+
+        Vector2 pointA = line.GetPosition(0);
+        Vector2 pointB;
+
+
+        for (var i = 1; i < line.positionCount; i++)
+        {
+            pointB = line.GetPosition(i);
+
+            var length = Vector2.Distance(pointA, pointB);
+
+            totalLength += length;
+
+            pointA = pointB;
+        }
+
+        this.totalLength = totalLength;
     }
 }

@@ -33,7 +33,7 @@ public class Controller : MonoBehaviour
             //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             character.Dig(transform.position);
         }
-        else
+        else if (Input.GetMouseButtonUp(0))
         {
             character.Dig(Vector2.zero, true);
         }
