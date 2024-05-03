@@ -44,7 +44,7 @@ public class TrenchAgent : MonoBehaviour
 
         if (addPoint || !trench)
         {
-            trench = TrenchManager.instance.Dig(digPos, trench, startWidth);
+            trench = TrenchManager.instance.DigTrench(digPos, trench, startWidth);
             lastDigPoint = digPos;
 
             if (!trench.agent) trench.agent = this; //this could be run once ever but shrugging emoji

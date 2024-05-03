@@ -10,8 +10,6 @@ public class TrenchManager : MonoBehaviour
     public float digPointDist = 2, connectDist = 1, maxTrenchArea = 50;
 
     public List<Trench> allTrenches = new();
-    public List<TrenchChunk> chunks = new();
-    public float chunkSize = 50;
 
     private void Awake()
     {
@@ -28,11 +26,11 @@ public class TrenchManager : MonoBehaviour
     {
         if (!instance) instance = this;
 
-        var chunk = ChunkFromPos(pos, false);
+        var chunk = Chunk.manager.ChunkFromPos(pos, false);
 
         if (chunk == null) return false;
 
-        if (debugLines) DrawChunk(chunk, Color.green);
+        if (debugLines) Chunk.manager.DrawChunk(chunk, Color.green);
 
         foreach (var trench in chunk.trenches)
         {
@@ -116,7 +114,8 @@ public class TrenchManager : MonoBehaviour
         return closestPoint;
     }
 
-    public Trench Dig (Vector2 digPos, Trench trench = null, float startWidth = 1)
+
+    public Trench DigTrench (Vector2 digPos, Trench trench = null, float startWidth = 1)
     {
         //if (!trench) trench = FindTrenchEnd(digPos);
 
@@ -127,7 +126,9 @@ public class TrenchManager : MonoBehaviour
         }
 
         trench.AddPoint(digPos);
-        AssignChunks(trench); //not ideal for performance but mehh
+        //AssignChunks(trench); 
+        //FRIK IDK WHAT DO DO WITH THIS
+        //this is only going to update the chunks when it is adding points...
 
         if (trench.area > maxTrenchArea)
         {
@@ -175,7 +176,7 @@ public class TrenchManager : MonoBehaviour
                 firstTrench.AddPoint(point);
             }
         }
-        AssignChunks(firstTrench); //probably is ideal for instantiation code like this
+        Chunk.manager.AutoAssignChunks(firstTrench); //probably is ideal for instantiation code like this
 
         var activeTrenchStart = index;
 
@@ -192,105 +193,9 @@ public class TrenchManager : MonoBehaviour
         activeTrench.line.positionCount = activeTrenchCount;
 
         activeTrench.CalculateBox();
-        UnassignChunks(activeTrench);//also probably ideal
-        AssignChunks(activeTrench);
+        Chunk.manager.UnassignChunks(activeTrench);//also probably ideal
+        Chunk.manager.AutoAssignChunks(activeTrench);
 
         return firstTrench;
-    }
-
-    public TrenchChunk ChunkFromPos(Vector2 pos, bool newIfNone = true)
-    {
-        var coords = Vector2Int.RoundToInt(pos / chunkSize);
-        return ChunkFromCoords(coords, newIfNone);
-    }
-
-    public TrenchChunk ChunkFromCoords(Vector2Int coords, bool newIfNone = true)
-    {
-        foreach (var chunk in chunks)
-        {
-            if (debugLines) DrawChunk(chunk, Color.red);
-
-            if (chunk.coords == coords)
-            {
-                return chunk;
-            }
-        }
-
-        if (newIfNone)
-        {
-            var newChunk = new TrenchChunk(coords);
-            chunks.Add(newChunk);
-            return newChunk;
-        }
-
-        return null;
-    }
-
-    public List<TrenchChunk> ChunksFromBox (Vector2 min, Vector2 max, List<TrenchChunk> chunks, bool newIfNone = true)
-    {
-        var intMin = Vector2Int.RoundToInt(min / chunkSize);
-        var intMax = Vector2Int.RoundToInt(max / chunkSize);
-        
-        for (var y = intMin.y; y < intMax.y+1; y++)
-        {
-            for (var x = intMin.x; x < intMax.x + 1; x++)
-            {
-                var coords = new Vector2Int(x, y);
-                var chunk = ChunkFromCoords(coords,newIfNone);
-                if (chunk != null && !chunks.Contains(chunk)) chunks.Add(chunk);
-            }
-        }
-
-        return chunks;
-    }
-
-    /// <summary>
-    /// Calculates chunks.
-    /// Should only be used after a trench has gone through significant change without acknowledging chunks
-    /// </summary>
-    /// <param name="trench"></param>
-    public void AssignChunks (Trench trench)
-    {
-        var chunks = trench.chunks = ChunksFromBox(trench.boxMin, trench.boxMax, trench.chunks);
-
-        foreach (var chunk in chunks)
-        {
-            chunk.trenches.Add(trench);
-        }
-    }
-
-    public void UnassignChunks(Trench trench, bool removeEmptyChunks = false)
-    {
-        for (var i = 0; i < trench.chunks.Count; i++)
-        {
-            var chunk = trench.chunks[i];
-            chunk.trenches.Remove(trench);
-
-            if (chunk.trenches.Count == 0 && removeEmptyChunks)
-            {
-                chunks.Remove(chunk);
-            }
-        }
-
-        trench.chunks.Clear();
-    }
-
-    public void DrawChunk(TrenchChunk chunk, Color color = default)
-    {
-        if (color == default) color = Color.white;
-
-        var center = (Vector2)chunk.coords * chunkSize;
-        var halfChunk = chunkSize / 2;
-        var maxDelta = Vector2.one * halfChunk;
-
-        var topRight = center + maxDelta;
-        var bottomLeft = center - maxDelta;
-        var bottomRight = new Vector2(topRight.x, bottomLeft.y);
-        var topLeft = new Vector2(bottomLeft.x, topRight.y);
-
-        Debug.DrawLine(topRight, bottomRight, color);
-        Debug.DrawLine(bottomRight, bottomLeft, color);
-        Debug.DrawLine(bottomLeft, topLeft, color);
-        Debug.DrawLine(topLeft, topRight, color);
     }
 }

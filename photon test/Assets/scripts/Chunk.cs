@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrenchChunk
+public class Chunk
 {
+    public static ChunkManager manager;
     public Vector2Int coords;
     public List<Trench> trenches = new();
 
-    public TrenchChunk(Vector2Int newCoords)
+    public Chunk(Vector2Int newCoords)
     {
         coords = newCoords;
     }

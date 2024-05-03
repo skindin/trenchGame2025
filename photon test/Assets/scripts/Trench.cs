@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ public class Trench : MonoBehaviour
     public Vector2 boxMin, boxMax;
     public TrenchAgent agent;
     public bool calculateLength;
-    public List<TrenchChunk> chunks = new();
+    public List<Chunk> chunks = new();
 
     private void Awake()
     {
@@ -39,6 +38,7 @@ public class Trench : MonoBehaviour
             boxMin = -Vector2.one * width / 2 + point;
             boxMax = Vector2.one * width / 2 + point;
             hadOne = true;
+            Chunk.manager.AutoAssignChunks(this);
         }
 
         if (line.positionCount > 1)
@@ -117,13 +117,32 @@ public class Trench : MonoBehaviour
     {
         var radius = this.width / 2;
 
+        var prevMin = boxMin;
+        var prevMax = boxMax;
+
         if (point.x - radius < boxMin.x) boxMin.x = point.x - radius;
         if (point.y - radius < boxMin.y) boxMin.y = point.y - radius;
 
         if (point.x + radius > boxMax.x) boxMax.x = point.x + radius;
         if (point.y + radius > boxMax.y) boxMax.y = point.y + radius;
 
+        var newMaxChunk = Chunk.manager.TestDifferentChunks(prevMax, boxMax);
+        var newMinChunk = Chunk.manager.TestDifferentChunks(prevMin, boxMin);
+
+        if (newMaxChunk || newMinChunk)
+        {
+            Chunk.manager.AutoAssignChunks(this); //kind of crude but it'll be infrequent, depending on chunk size
+        }
+
         CalculateArea();
+    }
+
+    public void AssignChunks (List<Chunk> chunks)
+    {
+        foreach (var chunk in chunks)
+        {
+            Chunk.manager.AssignTrenchToChunk(this, chunk);
+        }
     }
 
     public bool TestBox(Vector2 point)

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class ChunkGroup
 {
-    public List<List<TrenchChunk>> posPos = new(); 
-    public List<List<TrenchChunk>> posNeg = new();
-    public List<List<TrenchChunk>> negNeg = new();
-    public List<List<TrenchChunk>> negPos = new();
+    public List<List<Chunk>> posPos = new(); 
+    public List<List<Chunk>> posNeg = new();
+    public List<List<Chunk>> negNeg = new();
+    public List<List<Chunk>> negPos = new();
 
     public void AddChunk (Vector2Int pos)
     {
