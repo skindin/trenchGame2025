@@ -52,7 +52,6 @@ public class TrenchAgent : MonoBehaviour
         else
         {
             trench.MoveEnd(digPos);
-            trench.ExtendBox(digPos);
         }
     }
 

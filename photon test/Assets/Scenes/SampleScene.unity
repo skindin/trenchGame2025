@@ -156,7 +156,9 @@ MonoBehaviour:
   debugLines: 1
   digPointDist: 0.2
   connectDist: 1
-  trenches: []
+  maxTrenchArea: 100
+  allTrenches: []
+  chunkSize: 25
 --- !u!4 &691302294
 Transform:
   m_ObjectHideFlags: 0
@@ -481,6 +483,7 @@ MonoBehaviour:
   agent: {fileID: 2062759858}
   digging: 0
   filling: 0
+  constantDig: 0
 --- !u!4 &2062759856
 Transform:
   m_ObjectHideFlags: 0

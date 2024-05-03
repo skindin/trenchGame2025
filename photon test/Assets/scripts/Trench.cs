@@ -9,6 +9,7 @@ public class Trench : MonoBehaviour
     public Vector2 boxMin, boxMax;
     public TrenchAgent agent;
     public bool calculateLength;
+    public List<TrenchChunk> chunks = new();
 
     private void Awake()
     {
@@ -93,6 +94,8 @@ public class Trench : MonoBehaviour
 
         if (TrenchManager.instance.debugLines)
             DrawBox();
+
+        ExtendBox(point);
     }
 
     public void IncreaseWidth (float increase)
