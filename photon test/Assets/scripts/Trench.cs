@@ -5,8 +5,8 @@ using UnityEngine;
 public class Trench : MonoBehaviour
 {
     public LineRenderer line;
-    public float width, totalLength = 0; //length discludes width
-    public Vector2 boxTopLeft, boxBottomRight;
+    public float width, totalLength = 0, area = 0; //length discludes width
+    public Vector2 boxMin, boxMax;
     public TrenchAgent agent;
     public bool calculateLength;
 
@@ -22,20 +22,22 @@ public class Trench : MonoBehaviour
     public void DrawBox ()
     {
         var color = Color.blue;
-        var topRight = new Vector2(boxBottomRight.x, boxTopLeft.y);
-        var bottomLeft = new Vector2(boxTopLeft.x, boxBottomRight.y);
-        Debug.DrawLine(boxTopLeft, topRight, color);
-        Debug.DrawLine(topRight, boxBottomRight, color);
-        Debug.DrawLine(boxBottomRight, bottomLeft, color);
-        Debug.DrawLine(bottomLeft, boxTopLeft, color);
+        var topLeft = new Vector2(boxMin.x, boxMax.y);
+        var bottomRight = new Vector2(boxMax.x, boxMin.y);
+        Debug.DrawLine(boxMin, topLeft, color);
+        Debug.DrawLine(topLeft, boxMax, color);
+        Debug.DrawLine(boxMax, bottomRight, color);
+        Debug.DrawLine(bottomRight, boxMin, color);
     }
 
     public void AddPoint(Vector2 point)
     {
+        bool hadOne = false;
         if (line.positionCount == 0)
         {
-            boxTopLeft = new Vector2(-1, 1) * width / 2 + point;
-            boxBottomRight = new Vector2(1, -1) * width / 2 + point;
+            boxMin = -Vector2.one * width / 2 + point;
+            boxMax = Vector2.one * width / 2 + point;
+            hadOne = true;
         }
 
         if (line.positionCount > 1)
@@ -57,6 +59,11 @@ public class Trench : MonoBehaviour
         line.SetPosition(currentPointCount, point);
 
         ExtendBox(point);
+
+        if (hadOne)
+        {
+            AddPoint(point); //line renderer needs atleast 2 points to render
+        }
     }
 
     public void MoveEnd (Vector2 point)
@@ -83,14 +90,19 @@ public class Trench : MonoBehaviour
         }
 
         line.SetPosition(line.positionCount - 1, point);
+
+        if (TrenchManager.instance.debugLines)
+            DrawBox();
     }
 
     public void IncreaseWidth (float increase)
     {
         line.widthMultiplier = width += increase;
 
-        boxTopLeft += new Vector2(-1, 1) / 2 * increase;
-        boxBottomRight += new Vector2(1, -1) / 2 * increase;
+        boxMin += -Vector2.one / 2 * increase;
+        boxMax += Vector2.one / 2 * increase;
+
+        CalculateArea();
     }
 
     public void SetWidth (float newWidth)
@@ -102,24 +114,32 @@ public class Trench : MonoBehaviour
     {
         var radius = this.width / 2;
 
-        if (point.x - radius < boxTopLeft.x) boxTopLeft.x = point.x - radius;
-        if (point.y + radius > boxTopLeft.y) boxTopLeft.y = point.y + radius;
+        if (point.x - radius < boxMin.x) boxMin.x = point.x - radius;
+        if (point.y - radius < boxMin.y) boxMin.y = point.y - radius;
 
-        if (point.x + radius > boxBottomRight.x) boxBottomRight.x = point.x + radius;
-        if (point.y - radius < boxBottomRight.y) boxBottomRight.y = point.y - radius;
+        if (point.x + radius > boxMax.x) boxMax.x = point.x + radius;
+        if (point.y + radius > boxMax.y) boxMax.y = point.y + radius;
+
+        CalculateArea();
     }
 
     public bool TestBox(Vector2 point)
     {
-        if (point.x < boxTopLeft.x || 
-            point.y > boxTopLeft.y || 
-            point.x > boxBottomRight.x || 
-            point.y < boxBottomRight.y)
+        if (point.x < boxMin.x || 
+            point.y < boxMin.y || 
+            point.x > boxMax.x || 
+            point.y > boxMax.y)
         {
             return false;
         }
 
         return true;
+    }
+
+    public void CalculateArea ()
+    {
+        var dimensions = boxMax - boxMin;
+        area = dimensions.x * dimensions.y;
     }
 
     public void CalculateLength ()
@@ -142,5 +162,33 @@ public class Trench : MonoBehaviour
         }
 
         this.totalLength = totalLength;
+    }
+
+    public void CalculateBox ()
+    {
+        float minX = Mathf.Infinity;
+        float minY = Mathf.Infinity;
+        float maxX = -Mathf.Infinity;
+        float maxY = -Mathf.Infinity;
+
+        for (var i = 0; i < line.positionCount; i++)
+        {
+            var point = line.GetPosition(i);
+
+            if (point.x < minX) minX = point.x;
+            if (point.y < minY) minY = point.y;
+
+            if (point.x > maxX) maxX = point.x;
+            if (point.y > maxY) maxY = point.y;
+        }
+
+        var radiusVector = Vector2.one * width / 2;
+
+        boxMin = new(minX, minY);
+        boxMin -= radiusVector;
+        boxMax = new(maxX, maxY);
+        boxMax += radiusVector;
+
+        CalculateArea();
     }
 }

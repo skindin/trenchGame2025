@@ -45,8 +45,6 @@ public class TrenchAgent : MonoBehaviour
         if (addPoint || !trench)
         {
             trench = TrenchManager.instance.Dig(digPos, trench, startWidth);
-            if (trench.line.positionCount < 2) TrenchManager.instance.Dig(digPos, trench); 
-            //line renderer needs atleast 2 points to render
             lastDigPoint = digPos;
 
             if (!trench.agent) trench.agent = this; //this could be run once ever but shrugging emoji

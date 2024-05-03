@@ -7,7 +7,7 @@ public class TrenchManager : MonoBehaviour
     public static TrenchManager instance;
     public Trench trenchPrefab;
     public bool debugLines = false;
-    public float digPointDist = 2, connectDist = 1;
+    public float digPointDist = 2, connectDist = 1, maxTrenchArea = 50;
 
     public List<Trench> trenches;
 
@@ -120,6 +120,15 @@ public class TrenchManager : MonoBehaviour
 
         trench.AddPoint(digPos);
 
+        if (trench.area > maxTrenchArea)
+        {
+            var splitIndex = trench.line.positionCount / 2;
+
+            SplitTrench(trench, splitIndex);
+        }
+
+        //if (debugLines) trench.DrawBox(); //this flickers, probably because it's only run every .2 units
+
         return trench;
     }
 
@@ -134,5 +143,46 @@ public class TrenchManager : MonoBehaviour
     {
         trenches.Remove(trench);
         Destroy(trench.gameObject, .01f);
+    }
+
+    public Trench SplitTrench(Trench activeTrench, int index, bool removePoint = false)
+    {
+        if (index < 0) return null;
+
+        Trench firstTrench = null;
+
+        if (index != 0)
+        {
+            firstTrench = NewTrench();
+            firstTrench.SetWidth(activeTrench.width);
+            //needs to return a different trench because the current trench may be being edited
+
+            var firstTrenchCount = index + 1;
+            if (removePoint) firstTrenchCount -= 1;
+
+            for (var i = 0; i < firstTrenchCount; i++)
+            {
+                var point = activeTrench.line.GetPosition(i);
+                firstTrench.AddPoint(point);
+            }
+        }
+
+        var activeTrenchStart = index;
+
+        if (removePoint) activeTrenchStart++;
+
+        var activeTrenchCount = activeTrench.line.positionCount - activeTrenchStart;
+
+        for (var i = 0; i < activeTrenchCount; i++)
+        {
+            var point = activeTrench.line.GetPosition(i + activeTrenchStart);
+            activeTrench.line.SetPosition(i, point);
+        }
+
+        activeTrench.line.positionCount = activeTrenchCount;
+
+        activeTrench.CalculateBox();
+
+        return firstTrench;
     }
 }
