@@ -121,8 +121,14 @@ public class TrenchManager : MonoBehaviour
 
         if (!trench)
         {
-            trench = NewTrench();
-            trench.SetWidth(startWidth);
+            trench = FindTrenchEnd(digPos, out var end);
+
+            //if (end == digPos) return trench;
+            if (trench == null)
+            {
+                trench = NewTrench();
+                trench.SetWidth(startWidth);
+            }
         }
 
         trench.AddPoint(digPos);
@@ -197,5 +203,57 @@ public class TrenchManager : MonoBehaviour
         Chunk.manager.AutoAssignChunks(activeTrench);
 
         return firstTrench;
+    }
+
+    public Trench FindTrenchEnd (Vector2 point, out Vector2 end)
+    {
+        var chunk = Chunk.manager.ChunkFromPos(point, false);
+        //this means that the connectDist must be less than the trench radius in order to work as intended
+
+        if (chunk != null)
+        {
+            foreach (var trench in chunk.trenches)
+            {
+                end = trench.line.GetPosition(trench.line.positionCount - 1);
+                var dist = Vector2.Distance(end, point);
+                if (dist < connectDist) return trench;
+            }
+        }
+
+        end = Vector2.positiveInfinity;
+
+        return null;
+    }
+
+    /// <summary>
+    /// Adds trenchA to beginning of trenchB, returns trenchB. DOESN'T CHANGE BOX OR LENGTH
+    /// </summary>
+    /// <param name="trenchA"></param>
+    /// <param name="trenchB"></param>
+    /// <returns></returns>
+    public Trench CombineTrenches (Trench trenchA, Trench trenchB)
+    {
+        var totalPoints = trenchA.line.positionCount + trenchB.line.positionCount;
+
+        //var bStartCount = trenchB.line.positionCount;
+
+        trenchB.line.positionCount = totalPoints;
+
+        for (var i = totalPoints-1; i >= 0; i++)
+        {
+            Vector2 pos;
+            if (i < trenchA.line.positionCount)
+            {
+                pos = trenchA.line.GetPosition(i);
+            }
+            else
+            {
+                pos = trenchB.line.GetPosition(totalPoints - trenchB.line.positionCount);
+            }
+
+            trenchB.line.SetPosition(i, pos);
+        }
+
+        return trenchB;
     }
 }
