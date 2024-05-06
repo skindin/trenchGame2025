@@ -14,95 +14,111 @@ public class TrenchLine
     List<int> tris = new();
     public Mesh mesh;
 
+    public void PurgePoints ()
+    {
+        Vector2 lastPoint = Vector2.zero;
+
+        for (var i = 0; i < points.Count; i++)
+        {
+            var point = points[i];
+
+            if (i > 0 && point == lastPoint)
+            {
+                points.RemoveAt(i);
+                i--;
+            }
+
+            lastPoint = point;
+        }
+    }
+
+    public Vector2 FindNextUnique (int index, out int nextIndex)
+    {
+        var point = points[index];
+
+        for (var i = index; i < points.Count; i++)
+        {
+            var nextPoint = points[i];
+            if (nextPoint != point)
+            {
+                nextIndex = i;
+                return nextPoint;
+            }
+        }
+
+        nextIndex = index;
+        return point;
+    }
+
+    public Vector2 FindPrevUnique(int index)
+    {
+        var point = points[index];
+
+        for (var i = index-1; i >= 0; i--)
+        {
+            var prevPoint = points[i];
+            if (prevPoint != point)
+            {
+                return prevPoint;
+            }
+        }
+
+        return point;
+    }
+
     public void NewMesh(int endRes, int cornerRes)
     {
-        if (!mesh) mesh = new();
-
         verts.Clear();
         tris.Clear();
 
-        if (points.Count > 1)
+        if (points.Count == 0) return;
+
+        if (!mesh) mesh = new();
+
+        //PurgePoints();
+
+        for (var i = 0; i < points.Count; i++)
         {
-            Vector2 lastPoint;
-            if (loop) lastPoint = points[^1];
-            else lastPoint = Vector2.zero;
+            var point = points[i];
 
-            for (var i = 0; i < points.Count; i++)
+            var a = FindPrevUnique(i);
+            var c = FindNextUnique(i, out var newIndex);
+
+            if (a == point && c == point)
             {
-                var point = points[i];
+                DrawEnd(point, point + Vector2.up, endRes, false);
+                DrawEnd(point, point - Vector2.up, endRes, false);
+            }
 
-                if (i == 0 && !loop)
+            if (newIndex > i + 1) i = newIndex - 1;
+
+            if (a == point)
+            {
+                if (loop)
                 {
-                    point = points[i];
-                    Vector2 nextPoint = point;
-
-                    for (var l = 0; l < points.Count; l++)
-                    {
-                        var thisPoint = points[l];
-                        if (thisPoint != point)
-                        {
-                            nextPoint = thisPoint;
-                            i = l - 1;
-                            break;
-                        }
-                    }
-
-                    if (point == nextPoint)
-                    {
-                        DrawEnd(point, Vector2.up, endRes);
-                        DrawEnd(point, Vector2.down, endRes);
-                    }
-                    else
-                    {
-                        DrawEnd(point, nextPoint, endRes);
-                    }
+                    a = points[^1];
                 }
                 else
                 {
-                    while (i + 1 < points.Count && points[i + 1] == point)
-                    {
-                        point = points[i + 1];
-                        i++;
-                    }
-
-                    if (i == points.Count - 1 && !loop)
-                    {
-                        DrawEnd(point, lastPoint, endRes);
-                    }
-
-
-                    //if (point == lastPoint)
-                    //{
-                    //    points.RemoveAt(i);
-                    //    i--;
-                    //}
-
-                    if (i != 0 && debugLines)
-                    {
-                        Debug.DrawLine(point, lastPoint, Color.cyan);
-                    }
-
-                    if (i < points.Count - 1 && i > 0)
-                    {
-                        var nextPoint = points[i + 1];
-
-                        if (i > 0)
-                        {
-                            DrawCorner(lastPoint, point, nextPoint, cornerRes);
-                        }
-                    }
-                    else if (loop)
-                    {
-                        var a = points[(int)Mathf.Repeat(i - 1, points.Count)];
-                        var c = points[(int)Mathf.Repeat(i + 1, points.Count)];
-                        DrawCorner(a, point, c, cornerRes);
-
-                        //Debug.DrawLine(a, point, Color.cyan);
-                    }
+                    DrawEnd(point, c, endRes);
+                    continue;
                 }
-
-                lastPoint = point;
             }
+
+            if (point == c)
+            {
+                if (loop)
+                {
+                    c = points[0];
+                }
+                else
+                {
+                    DrawEnd(point, a, endRes);
+                    break;
+                }
+            }
+
+            DrawCorner(a, point, c, cornerRes);
         }
 
         mesh.triangles = new int[] { };
@@ -110,7 +126,7 @@ public class TrenchLine
         mesh.triangles = tris.ToArray();
     }
 
-    void DrawEnd(Vector2 end, Vector2 other, int res)
+    void DrawEnd(Vector2 end, Vector2 other, int res, bool midBlock = true)
     {
         Vector3 centerVert = end;
 
@@ -136,11 +152,14 @@ public class TrenchLine
             lastPoint = newPoint;
         }
 
-        GetMidPoints(end, other, out var aBEdgeA, out var aBEdgeB);
-        var edgeDelta = Vector2.Perpendicular(dir).normalized * width / 2;
-        AddTri(centerVert, end + edgeDelta, aBEdgeA);
-        AddTri(centerVert, end - edgeDelta, aBEdgeB);
-        AddTri(centerVert, aBEdgeA, aBEdgeB);
+        if (midBlock)
+        {
+            GetMidPoints(end, other, out var aBEdgeA, out var aBEdgeB);
+            var edgeDelta = Vector2.Perpendicular(dir).normalized * width / 2;
+            AddTri(centerVert, end + edgeDelta, aBEdgeA);
+            AddTri(centerVert, end - edgeDelta, aBEdgeB);
+            AddTri(centerVert, aBEdgeA, aBEdgeB);
+        }
     }
 
     void DrawCorner(Vector2 a, Vector2 b, Vector2 c, int res, bool lines = false)
