@@ -8,6 +8,7 @@ public class TrenchLine
 {
     public List<Vector2> points = new();
     public float width;
+    public bool loop = false, debugLines = false;
 
     List<Vector3> verts = new();
     List<int> tris = new();
@@ -22,34 +23,53 @@ public class TrenchLine
 
         if (points.Count > 1)
         {
-            var lastPoint = Vector2.zero;
+            Vector2 lastPoint;
+            if (loop) lastPoint = points[^1];
+            else lastPoint = Vector2.zero;
 
             for (var i = 0; i < points.Count; i++)
             {
                 var point = points[i];
 
-                if (i == 0)
+                if (i == 0 && !loop)
                 {
                     point = points[i];
-                    DrawEnd(point, points[i+1], endRes);
+                    Vector2 nextPoint = point;
+
+                    for (var l = 0; l < points.Count; l++)
+                    {
+                        var thisPoint = points[l];
+                        if (thisPoint != point)
+                        {
+                            nextPoint = thisPoint;
+                            i = l - 1;
+                            break;
+                        }
+                    }
+
+                    if (point == nextPoint)
+                    {
+                        DrawEnd(point, Vector2.up, endRes);
+                        DrawEnd(point, Vector2.down, endRes);
+                    }
+                    else
+                    {
+                        DrawEnd(point, nextPoint, endRes);
+                    }
                 }
                 else
                 {
-                    if (points[i-1] != point || (i < points.Count-1 && points[i+1] != point))
-                        lastPoint = points[i - 1];
-
-                    while (i < points.Count - 1 && points[i - 1] == point)
+                    while (i + 1 < points.Count && points[i + 1] == point)
                     {
                         point = points[i + 1];
                         i++;
                     }
 
-                    if (i == points.Count - 1)
+                    if (i == points.Count - 1 && !loop)
                     {
                         DrawEnd(point, lastPoint, endRes);
                     }
 
-                    Debug.DrawLine(point, lastPoint, Color.cyan);
 
                     //if (point == lastPoint)
                     //{
@@ -57,7 +77,12 @@ public class TrenchLine
                     //    i--;
                     //}
 
-                    if (i < points.Count - 1)
+                    if (i != 0 && debugLines)
+                    {
+                        Debug.DrawLine(point, lastPoint, Color.cyan);
+                    }
+
+                    if (i < points.Count - 1 && i > 0)
                     {
                         var nextPoint = points[i + 1];
 
@@ -66,7 +91,17 @@ public class TrenchLine
                             DrawCorner(lastPoint, point, nextPoint, cornerRes);
                         }
                     }
+                    else if (loop)
+                    {
+                        var a = points[(int)Mathf.Repeat(i - 1, points.Count)];
+                        var c = points[(int)Mathf.Repeat(i + 1, points.Count)];
+                        DrawCorner(a, point, c, cornerRes);
+
+                        //Debug.DrawLine(a, point, Color.cyan);
+                    }
                 }
+
+                lastPoint = point;
             }
         }
 
@@ -108,7 +143,7 @@ public class TrenchLine
         AddTri(centerVert, aBEdgeA, aBEdgeB);
     }
 
-    void DrawCorner(Vector2 a, Vector2 b, Vector2 c, int res)
+    void DrawCorner(Vector2 a, Vector2 b, Vector2 c, int res, bool lines = false)
     {
         var toA = (a - b).normalized;
         var toC = (c - b).normalized;
@@ -117,44 +152,34 @@ public class TrenchLine
         {
             GetMidPoints(a, b, out var w, out var x);
             GetMidPoints(b, c, out var y, out var z);
-            DrawBox(w, x, y, z);
+            DrawBox(w, x, y, z, lines);
             return;
+        }
+
+        var aBDelta = b - a;
+        var bCDelta = b - c;
+
+        Vector2 furthestEnd;
+
+        if (aBDelta.magnitude > bCDelta.magnitude)
+        {
+            furthestEnd = a;
+        }
+        else
+        {
+            furthestEnd = c;
         }
 
         if (toA == toC)
         {
-            var furthestEnd = a;
-            if (Vector2.Distance(a, b) < Vector2.Distance(b, c)) furthestEnd  = b;
-
             DrawEnd(b, furthestEnd, res);
-            GetMidPoints(a, b, out var w, out var x);
+            //GetMidPoints(a, b, out var w, out var x);
             return; // Exit early if toA is equal to toC
         }
 
         // Calculate the angle between vectors ba and bc in radians
         var angleRad = Mathf.Acos(Vector2.Dot(toA, toC));
 
-        // Calculate the bisector direction of the angle between ba and bc
-        var bisectorDir = (toA + toC).normalized;
-
-        var innerCornerDist = width / (2 * Mathf.Sin(angleRad / 2));
-        
-        Vector2 innerCorner = b + bisectorDir * innerCornerDist;
-
-        // Calculate the distance from b to the inner corner
-        //if (Vector2.Distance(b, a) > Vector2.Distance(b, c))
-        //{
-        //    var target = b + toA * 10;
-        //    var idk = CircleLineIntersect(-Vector2.Perpendicular(toA) + b, target, c, width);
-        //    if (idk != target) innerCorner = idk;
-        //}
-        //else
-        //{
-        //    innerCorner = CircleLineIntersect(b, innerCorner, a, width);
-        //}
-
-
-        // Calculate the tangent points on the outside of the corner
         Vector2 tangentPointA, tangentPointC;
 
         bool flip = true;
@@ -173,12 +198,15 @@ public class TrenchLine
         }
 
         // Debug draw the inner corner and tangent points
-        Debug.DrawLine(b, innerCorner, Color.red);
-        Debug.DrawLine(b, tangentPointA, Color.green);
-        Debug.DrawLine(b, tangentPointC, Color.green);
+        //Debug.DrawLine(b, innerCorner, Color.red);
+        if (debugLines || lines)
+        {
+            Debug.DrawLine(b, tangentPointA, Color.green);
+            Debug.DrawLine(b, tangentPointC, Color.green);
+        }
 
-        AddTri(tangentPointA, innerCorner, b);
-        AddTri(tangentPointC, innerCorner, b);
+        //AddTri(tangentPointA, innerCorner, b);
+        //AddTri(tangentPointC, innerCorner, b);
 
         GetMidPoints(a, b, out var aBEdgeA, out var aBEdgeB);
         if (flip)
@@ -187,7 +215,8 @@ public class TrenchLine
             aBEdgeA = aBEdgeB;
             aBEdgeB = temp;
         }
-        DrawBox(tangentPointA, aBEdgeA, innerCorner, aBEdgeB);
+        var innerTangentA = (b - tangentPointA)+b;
+        DrawBox(tangentPointA, aBEdgeA, innerTangentA, aBEdgeB, lines);
 
         GetMidPoints(b, c, out var bCEdgeA, out var bCEdgeB);
         if (flip)
@@ -196,7 +225,8 @@ public class TrenchLine
             bCEdgeA = bCEdgeB;
             bCEdgeB = temp;
         }
-        DrawBox(tangentPointC, bCEdgeA, innerCorner, bCEdgeB);
+        var innerTangentC = (b - tangentPointC) + b;
+        DrawBox(tangentPointC, bCEdgeA, innerTangentC, bCEdgeB, lines);
 
         var degs = angleRad * Mathf.Rad2Deg;
         degs = 180 - degs;
@@ -217,7 +247,7 @@ public class TrenchLine
             Vector2 newVert = Quaternion.AngleAxis(cornerVertAngle * i, axis) * tangentDelta;
             newVert += b;
 
-            AddTri(lastOne, b, newVert);
+            AddTri(lastOne, b, newVert, lines);
             lastOne = newVert;
         }
     }
@@ -267,10 +297,10 @@ public class TrenchLine
         edgeB = middle - edgeDelta;
     }
 
-    void DrawBox (Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+    void DrawBox (Vector2 a, Vector2 b, Vector2 c, Vector2 d, bool draw = false)
     {
-        AddTri(a, b, c);
-        AddTri(b, c, d);
+        AddTri(a, b, c, draw);
+        AddTri(b, c, d, draw);
     }
 
     void AddTri (Vector3 a, Vector3 b, Vector3 c, bool draw = false)
@@ -279,11 +309,11 @@ public class TrenchLine
         tris.Add(GetVertIndex(b));
         tris.Add(GetVertIndex(c));
 
-        if (draw)
+        if (draw || debugLines)
         {
-            Debug.DrawLine(a, b);
-            Debug.DrawLine(b, c);
-            Debug.DrawLine(c, a);
+            Debug.DrawLine(a, b, Color.yellow);
+            Debug.DrawLine(b, c, Color.yellow);
+            Debug.DrawLine(c, a, Color.yellow);
         }
     }
 
