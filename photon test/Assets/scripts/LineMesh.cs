@@ -4,17 +4,43 @@ using UnityEngine;
 using System.Linq;
 
 [System.Serializable]
-public class TrenchLine
+public class LineMesh
 {
     public List<Vector2> points = new();
     public float width;
     public bool loop = false, debugLines = false;
 
-    List<Vector3> verts = new();
-    List<int> tris = new();
+    readonly List<Vector3> verts = new();
+    readonly List<int> tris = new();
     public Mesh mesh;
 
-    public void PurgePoints ()
+    public Vector2 boxMin, boxMax;
+    public float area;
+
+    public void AddPoint (Vector2 point, int index)
+    {
+        if (index == points.Count || points.Count == 0)
+        {
+            points.Add(point);
+        }
+        else
+        {
+            points.Insert(points.Count - 1, point);
+        }
+
+        if (points.Count == 1)
+        {
+            var widthDelta = Vector2.one * width/2;
+            boxMin = point - widthDelta;
+            boxMax = point + widthDelta;
+        }
+        else
+        {
+            ExtendBox(point);
+        }
+    }
+
+    public void PurgePoints()
     {
         Vector2 lastPoint = Vector2.zero;
 
@@ -32,7 +58,7 @@ public class TrenchLine
         }
     }
 
-    public Vector2 FindNextUnique (int index, out int nextIndex)
+    Vector2 FindNextUnique(int index, out int nextIndex)
     {
         var point = points[index];
 
@@ -50,11 +76,11 @@ public class TrenchLine
         return point;
     }
 
-    public Vector2 FindPrevUnique(int index)
+    Vector2 FindPrevUnique(int index)
     {
         var point = points[index];
 
-        for (var i = index-1; i >= 0; i--)
+        for (var i = index - 1; i >= 0; i--)
         {
             var prevPoint = points[i];
             if (prevPoint != point)
@@ -64,6 +90,16 @@ public class TrenchLine
         }
 
         return point;
+    }
+
+    public void SetWidth (float newWidth)
+    {
+        var widthDiff = newWidth - width;
+
+        var boxDelta = Vector2.one * widthDiff / 2;
+        boxMin -= boxDelta;
+        boxMax += boxDelta;
+        width = newWidth;
     }
 
     public void NewMesh(int endRes, int cornerRes)
@@ -86,8 +122,8 @@ public class TrenchLine
 
             if (a == point && c == point)
             {
-                DrawEnd(point, point + Vector2.up, endRes, false);
-                DrawEnd(point, point - Vector2.up, endRes, false);
+                EndGeometry(point, point + Vector2.up, endRes, false);
+                EndGeometry(point, point - Vector2.up, endRes, false);
             }
 
             if (newIndex > i + 1) i = newIndex - 1;
@@ -100,7 +136,7 @@ public class TrenchLine
                 }
                 else
                 {
-                    DrawEnd(point, c, endRes);
+                    EndGeometry(point, c, endRes);
                     continue;
                 }
             }
@@ -113,12 +149,12 @@ public class TrenchLine
                 }
                 else
                 {
-                    DrawEnd(point, a, endRes);
+                    EndGeometry(point, a, endRes);
                     break;
                 }
             }
 
-            DrawCorner(a, point, c, cornerRes);
+            CornerGeometry(a, point, c, cornerRes);
         }
 
         mesh.triangles = new int[] { };
@@ -126,13 +162,13 @@ public class TrenchLine
         mesh.triangles = tris.ToArray();
     }
 
-    void DrawEnd(Vector2 end, Vector2 other, int res, bool midBlock = true)
+    void EndGeometry(Vector2 end, Vector2 other, int res, bool midBlock = true)
     {
         Vector3 centerVert = end;
 
         Vector3 dir = (end - other).normalized;
 
-        var startDelta = Vector2.Perpendicular(dir) * width/2;
+        var startDelta = Vector2.Perpendicular(dir) * width / 2;
 
         var extVertCount = res * 2;
 
@@ -162,7 +198,7 @@ public class TrenchLine
         }
     }
 
-    void DrawCorner(Vector2 a, Vector2 b, Vector2 c, int res, bool lines = false)
+    void CornerGeometry(Vector2 a, Vector2 b, Vector2 c, int res, bool lines = false)
     {
         var toA = (a - b).normalized;
         var toC = (c - b).normalized;
@@ -171,7 +207,7 @@ public class TrenchLine
         {
             GetMidPoints(a, b, out var w, out var x);
             GetMidPoints(b, c, out var y, out var z);
-            DrawBox(w, x, y, z, lines);
+            QuadGeometry(w, x, y, z, lines);
             return;
         }
 
@@ -191,7 +227,7 @@ public class TrenchLine
 
         if (toA == toC)
         {
-            DrawEnd(b, furthestEnd, res);
+            EndGeometry(b, furthestEnd, res);
             //GetMidPoints(a, b, out var w, out var x);
             return; // Exit early if toA is equal to toC
         }
@@ -234,8 +270,8 @@ public class TrenchLine
             aBEdgeA = aBEdgeB;
             aBEdgeB = temp;
         }
-        var innerTangentA = (b - tangentPointA)+b;
-        DrawBox(tangentPointA, aBEdgeA, innerTangentA, aBEdgeB, lines);
+        var innerTangentA = (b - tangentPointA) + b;
+        QuadGeometry(tangentPointA, aBEdgeA, innerTangentA, aBEdgeB, lines);
 
         GetMidPoints(b, c, out var bCEdgeA, out var bCEdgeB);
         if (flip)
@@ -245,7 +281,7 @@ public class TrenchLine
             bCEdgeB = temp;
         }
         var innerTangentC = (b - tangentPointC) + b;
-        DrawBox(tangentPointC, bCEdgeA, innerTangentC, bCEdgeB, lines);
+        QuadGeometry(tangentPointC, bCEdgeA, innerTangentC, bCEdgeB, lines);
 
         var degs = angleRad * Mathf.Rad2Deg;
         degs = 180 - degs;
@@ -271,58 +307,22 @@ public class TrenchLine
         }
     }
 
-    public static Vector2 CircleLineIntersect(Vector2 lineOrigin, Vector2 targetPos, Vector2 circlePos, float circleDiameter)
-    {
-        // Calculate the direction of the line
-        Vector2 lineDirection = (targetPos - lineOrigin).normalized;
-
-        // Calculate the vector from the line origin to the circle center
-        Vector2 circleToLine = lineOrigin - circlePos;
-
-        // Calculate the dot product of the line direction and the circle to line vector
-        float dotProduct = Vector2.Dot(lineDirection, circleToLine);
-
-        // Calculate the discriminant of the quadratic equation
-        float discriminant = dotProduct * dotProduct - circleToLine.sqrMagnitude + (circleDiameter * circleDiameter) / 4;
-
-        // If the discriminant is negative, the line does not intersect with the circle
-        if (discriminant < 0)
-        {
-            return targetPos;
-        }
-
-        // Calculate the two possible intersection distances along the line
-        float t1 = -dotProduct + Mathf.Sqrt(discriminant);
-        float t2 = -dotProduct - Mathf.Sqrt(discriminant);
-
-        // Get the furthest intersection point from the line origin
-        float t = Mathf.Max(t1, t2);
-
-        // Calculate the intersection point
-        Vector2 intersectionPoint = lineOrigin + lineDirection * t;
-
-        // Modify the target position if the line intersects with the circle
-        targetPos = intersectionPoint;
-
-        return targetPos;
-    }
-
-    void GetMidPoints (Vector2 pointA, Vector2 pointB,  out Vector2 edgeA, out Vector2 edgeB)
+    void GetMidPoints(Vector2 pointA, Vector2 pointB, out Vector2 edgeA, out Vector2 edgeB)
     {
         var dir = pointA - pointB;
         var middle = (pointA + pointB) / 2;
-        var edgeDelta = Vector2.Perpendicular(dir).normalized * width / 2 ;
+        var edgeDelta = Vector2.Perpendicular(dir).normalized * width / 2;
         edgeA = middle + edgeDelta;
         edgeB = middle - edgeDelta;
     }
 
-    void DrawBox (Vector2 a, Vector2 b, Vector2 c, Vector2 d, bool draw = false)
+    void QuadGeometry(Vector2 a, Vector2 b, Vector2 c, Vector2 d, bool draw = false)
     {
         AddTri(a, b, c, draw);
         AddTri(b, c, d, draw);
     }
 
-    void AddTri (Vector3 a, Vector3 b, Vector3 c, bool draw = false)
+    void AddTri(Vector3 a, Vector3 b, Vector3 c, bool draw = false)
     {
         tris.Add(GetVertIndex(a));
         tris.Add(GetVertIndex(b));
@@ -336,7 +336,7 @@ public class TrenchLine
         }
     }
 
-    int GetVertIndex (Vector3 vert)
+    int GetVertIndex(Vector3 vert)
     {
         var index = verts.IndexOf(vert);
         if (index < 0)
@@ -346,5 +346,83 @@ public class TrenchLine
         }
 
         return index;
+    }
+
+    public void ExtendBox(Vector2 point, bool debugLines = false)
+    {
+        var radius = this.width / 2;
+
+        if (point.x - radius < boxMin.x) boxMin.x = point.x - radius;
+        if (point.y - radius < boxMin.y) boxMin.y = point.y - radius;
+
+        if (point.x + radius > boxMax.x) boxMax.x = point.x + radius;
+        if (point.y + radius > boxMax.y) boxMax.y = point.y + radius;
+
+        CalculateArea();
+
+        DrawBox();
+    }
+
+    /// <summary>
+    /// Only to be used when unsure of past points
+    /// </summary>
+    public void CalculateBox()
+    {
+        float minX = Mathf.Infinity;
+        float minY = Mathf.Infinity;
+        float maxX = -Mathf.Infinity;
+        float maxY = -Mathf.Infinity;
+
+        for (var i = 0; i < points.Count; i++)
+        {
+            var point = points[i];
+
+            if (point.x < minX) minX = point.x;
+            if (point.y < minY) minY = point.y;
+
+            if (point.x > maxX) maxX = point.x;
+            if (point.y > maxY) maxY = point.y;
+        }
+
+        var radiusVector = Vector2.one * width / 2;
+
+        boxMin = new(minX, minY);
+        boxMin -= radiusVector;
+        boxMax = new(maxX, maxY);
+        boxMax += radiusVector;
+
+        CalculateArea();
+    }
+
+    public bool TestBox(Vector2 point, bool debugLines = false)
+    {
+        if (debugLines) DrawBox();
+
+        if (point.x < boxMin.x ||
+            point.y < boxMin.y ||
+            point.x > boxMax.x ||
+            point.y > boxMax.y)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    void CalculateArea()
+    {
+        var dimensions = boxMax - boxMin;
+        area = dimensions.x * dimensions.y;
+    }
+
+    public void DrawBox()
+    {
+        var color = Color.blue;
+        var topLeft = new Vector2(boxMin.x, boxMax.y);
+        var bottomRight = new Vector2(boxMax.x, boxMin.y);
+        Debug.DrawLine(boxMin, topLeft, color);
+        Debug.DrawLine(topLeft, boxMax, color);
+        Debug.DrawLine(boxMax, bottomRight, color);
+        Debug.DrawLine(bottomRight, boxMin, color);
     }
 }

@@ -12,6 +12,11 @@ public class ChunkManager : MonoBehaviour
         Chunk.manager = this;
     }
 
+    private void Update()
+    {
+        Chunk.manager = this;
+    }
+
     public Chunk ChunkFromPos(Vector2 pos, bool newIfNone = true)
     {
         var coords = PosToCoords(pos);
@@ -22,7 +27,7 @@ public class ChunkManager : MonoBehaviour
     {
         foreach (var chunk in chunks)
         {
-            if (TrenchManager.instance.debugLines) DrawChunk(chunk, Color.red);
+            if (Trench.manager.debugLines) DrawChunk(chunk, Color.red);
 
             if (chunk.coords == coords)
             {
@@ -66,11 +71,12 @@ public class ChunkManager : MonoBehaviour
     /// <param name="trench"></param>
     public void AutoAssignChunks(Trench trench)
     {
-        var chunks = trench.chunks = ChunksFromBox(trench.boxMin, trench.boxMax, trench.chunks);
+        var chunks = trench.chunks = ChunksFromBox(trench.lineMesh.boxMin, trench.lineMesh.boxMax, trench.chunks);
 
         foreach (var chunk in chunks)
         {
-            chunk.trenches.Add(trench);
+            if (!chunk.trenches.Contains(trench))
+                chunk.trenches.Add(trench);
         }
     }
 
@@ -138,5 +144,15 @@ public class ChunkManager : MonoBehaviour
             trench.chunks.Add(chunk);
             chunk.trenches.Add(trench);
         }
+    }
+
+    public List<Chunk> GetAdjacenChunks (Vector2 pos, List<Chunk> chunks)
+    {
+        var boxDelta = Vector2.one * chunkSize;
+
+        var boxMin = pos - boxDelta;
+        var boxMax = pos + boxDelta;
+
+        return ChunksFromBox(boxMin, boxMax, chunks, false);
     }
 }

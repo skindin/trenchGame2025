@@ -123,61 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &158578694
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 158578696}
-  - component: {fileID: 158578695}
-  m_Layer: 0
-  m_Name: lineTester
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &158578695
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 158578694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8a0ea8f0310081459e01a4ce91bf211, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lineMaterial: {fileID: 2100000, guid: 093fbb90798949a48b436441cdc8667f, type: 2}
-  trenchLines:
-  - points:
-    - pos: {x: 0, y: 0}
-      width: 0
-    - pos: {x: 0, y: 5}
-      width: 0
-    width: 1
-    mesh: {fileID: 0}
-  endRes: 2
-  cornerRes: 0
---- !u!4 &158578696
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 158578694}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &691302292
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,7 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 691302294}
-  - component: {fileID: 691302293}
+  - component: {fileID: 691302295}
   m_Layer: 0
   m_Name: trenchManager
   m_TagString: Untagged
@@ -195,24 +140,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &691302293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 691302292}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e16f8a5312a241547b04207698b640d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  trenchPrefab: {fileID: 8666365364839661718, guid: d492f98116d04be41b7db6555be3cad9, type: 3}
-  debugLines: 1
-  digPointDist: 0.2
-  connectDist: 0
-  maxTrenchArea: 100
-  allTrenches: []
 --- !u!4 &691302294
 Transform:
   m_ObjectHideFlags: 0
@@ -228,6 +155,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 882223848}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &691302295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 691302292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8daffc371cd7b94fa3ad9b48f9050b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trenches: []
+  endRes: 4
+  cornerRes: 4
+  maxPooled: 100
+  maxTrenchArea: 100
+  debugLines: 1
 --- !u!1 &882223847
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,6 +218,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -323,7 +269,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -368,6 +314,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 2062759856}
   delta: {x: 0, y: 0, z: 0}
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a50ef03b626728c42b18e1f37fe071b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineMaterial: {fileID: 2100000, guid: 093fbb90798949a48b436441cdc8667f, type: 2}
 --- !u!1 &1351669114
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,6 +467,7 @@ GameObject:
   - component: {fileID: 2062759856}
   - component: {fileID: 2062759855}
   - component: {fileID: 2062759857}
+  - component: {fileID: 2062759859}
   - component: {fileID: 2062759858}
   m_Layer: 0
   m_Name: character
@@ -533,7 +493,8 @@ MonoBehaviour:
   moveSpeed: 5
   digMoveSpeed: 2
   initialDigSpeed: 2
-  agent: {fileID: 2062759858}
+  detector: {fileID: 2062759859}
+  digger: {fileID: 2062759858}
   digging: 0
   filling: 0
   constantDig: 0
@@ -575,14 +536,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 2062759853}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a98a65499fd8b4248b7649e204222208, type: 3}
+  m_Script: {fileID: 11500000, guid: 919ece2cd0c53874eb1ae6d27dadcb23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trench:
+    digger: {fileID: 0}
+    lineMesh:
+      points: []
+      width: 0
+      loop: 0
+      debugLines: 0
+      mesh: {fileID: 0}
+      boxMin: {x: 0, y: 0}
+      boxMax: {x: 0, y: 0}
+      area: 0
+  startWidth: 1
+  maxWidth: 2
+  digSpeed: 10
+  pointFreq: 5
+--- !u!114 &2062759859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062759853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286736ad0497bb546b723e8d39944887, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   withinTrench: 0
-  trench: {fileID: 0}
-  startWidth: 1
-  maxWidth: 2
-  digSpeed: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -590,4 +574,3 @@ SceneRoots:
   - {fileID: 882223848}
   - {fileID: 963194228}
   - {fileID: 2062759856}
-  - {fileID: 158578696}

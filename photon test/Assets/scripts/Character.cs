@@ -8,7 +8,8 @@ public class Character : MonoBehaviour
     public Color dangerColor = Color.white;
     Color startColor;
     public float moveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5;
-    public TrenchAgent agent;
+    public TrenchDetector detector;
+    public TrenchDigger digger; //eventually this will be attached to the shovel...?
     public bool digging = false, filling = false, constantDig = false;
 
     // Start is called before the first frame update
@@ -41,7 +42,7 @@ public class Character : MonoBehaviour
 
     public void UpdateTrench()
     {
-        UpdateSprite(agent.UpdateStatus());
+        UpdateSprite(detector.DetectTrench());
     }
 
     public void UpdateSprite (bool trenchStatus)
@@ -60,16 +61,16 @@ public class Character : MonoBehaviour
     {
         if (!stop)
         {
-            agent.Dig(digPoint);
+            digger.DigTrench(digPoint, Time.deltaTime);
         }
         else if (!constantDig)
         {
-            agent.StopDig();
+            digger.StopDigging();
         }
 
         digging = !stop;
 
         UpdateSprite(true);
-        agent.SetStatus(true);
+        detector.SetStatus(true);
     }
 }
