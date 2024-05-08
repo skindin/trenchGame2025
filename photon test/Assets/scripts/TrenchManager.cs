@@ -76,21 +76,26 @@ public class TrenchManager : MonoBehaviour
         return trench;
     }
 
-    public bool TestWithinTrench (Vector2 pos)
+    public Trench TestAllTrenches (Vector2 pos)
     {
         var chunk = Chunk.manager.ChunkFromPos(pos,false);
 
-        if (chunk == null) return false;
+        if (chunk == null) return null;
 
         foreach (var trench in chunk.trenches)
         {
-            if (trench.lineMesh.TestBox(pos,debugLines) && trench.TestWithin(pos,debugLines))
+            if (TestTrench(pos, trench))
             {
-                return true;
+                return trench;
             }
         }
 
-        return false;
+        return null;
+    }
+
+    public bool TestTrench (Vector2 pos, Trench trench)
+    {
+        return trench.lineMesh.TestBox(pos, debugLines) && trench.TestWithin(pos, debugLines);
     }
 
     public void RegenerateMesh (Trench trench)

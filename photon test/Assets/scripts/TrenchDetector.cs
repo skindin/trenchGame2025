@@ -5,6 +5,7 @@ using UnityEngine;
 public class TrenchDetector : MonoBehaviour
 {
     public bool withinTrench = false;
+    public Trench currentTrench;
 
     public void SetStatus (bool status)
     {
@@ -17,7 +18,13 @@ public class TrenchDetector : MonoBehaviour
     /// <returns></returns>
     public bool DetectTrench ()
     {
-        withinTrench = Trench.manager.TestWithinTrench(transform.position);
+        if (currentTrench != null && Trench.manager.TestTrench(transform.position, currentTrench))
+        {
+            return true;
+        }
+
+        currentTrench = Trench.manager.TestAllTrenches(transform.position);
+        withinTrench = currentTrench != null;
         return withinTrench;
     }
 }

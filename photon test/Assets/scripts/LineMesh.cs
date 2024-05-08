@@ -160,6 +160,17 @@ public class LineMesh
         mesh.triangles = new int[] { };
         mesh.vertices = verts.ToArray();
         mesh.triangles = tris.ToArray();
+
+        //if (mesh) //apparently my method of calculating geometry bounds is more accurate than unity's?
+        //{
+        //    var color = Color.magenta;
+        //    var topLeft = new Vector2(mesh.bounds.min.x, mesh.bounds.max.y);
+        //    var bottomRight = new Vector2(mesh.bounds.max.x, mesh.bounds.min.y);
+        //    Debug.DrawLine(mesh.bounds.min, topLeft, color);
+        //    Debug.DrawLine(topLeft, mesh.bounds.max, color);
+        //    Debug.DrawLine(mesh.bounds.max, bottomRight, color);
+        //    Debug.DrawLine(bottomRight, mesh.bounds.min, color);
+        //}
     }
 
     void EndGeometry(Vector2 end, Vector2 other, int res, bool midBlock = true, bool debugLines = false)
