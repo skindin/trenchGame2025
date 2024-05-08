@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+//[System.Serializable]
 public class Trench
 {
     public static TrenchManager manager;
@@ -91,6 +91,18 @@ public class Trench
                 {
                     closestDist = dist;
                     closestPoint = closestSegPoint;
+                }
+
+
+            }
+            else if (lineMesh.points.Count == 1)
+            {
+                closestPoint = lineMesh.points[0];
+                closestDist = Vector2.Distance(pos, closestPoint);
+                if (closestDist <= lineMesh.width / 2)
+                {
+                    if (debugLines) Debug.DrawLine(pos, closestPoint, Color.green);
+                    return true;
                 }
             }
 

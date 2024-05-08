@@ -167,7 +167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8daffc371cd7b94fa3ad9b48f9050b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trenches: []
   endRes: 4
   cornerRes: 4
   maxPooled: 100
@@ -244,7 +243,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.6698113, g: 0.6698113, b: 0.6698113, a: 0}
+  m_BackGroundColor: {r: 0.5387487, g: 0.617, b: 0.509316, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

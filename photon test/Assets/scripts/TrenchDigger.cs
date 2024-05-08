@@ -5,7 +5,7 @@ using UnityEngine;
 public class TrenchDigger : MonoBehaviour
 {
     Vector3 lastDigPoint;
-    Trench trench;
+    public Trench trench;
     public float startWidth = 1, maxWidth = 2, digSpeed = 2, maxPointDist = .2f;
 
     private void Awake()
