@@ -539,21 +539,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 919ece2cd0c53874eb1ae6d27dadcb23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trench:
-    digger: {fileID: 0}
-    lineMesh:
-      points: []
-      width: 0
-      loop: 0
-      debugLines: 0
-      mesh: {fileID: 0}
-      boxMin: {x: 0, y: 0}
-      boxMax: {x: 0, y: 0}
-      area: 0
   startWidth: 1
   maxWidth: 2
   digSpeed: 10
-  pointFreq: 5
+  maxPointDist: 0.2
 --- !u!114 &2062759859
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TrenchManager : MonoBehaviour
-{
-    List<Trench> pool = new();
+{//what the fuck is happening
+    readonly List<Trench> pool = new();
     public List<Trench> trenches = new();
     public int endRes = 4, cornerRes = 4, maxPooled = 100;
     public float maxTrenchArea = 100;
@@ -95,6 +95,6 @@ public class TrenchManager : MonoBehaviour
 
     public void RegenerateMesh (Trench trench)
     {
-        trench.lineMesh.NewMesh(endRes, cornerRes);
+        trench.lineMesh.NewMesh(endRes, cornerRes, debugLines);
     }
 }

@@ -8,7 +8,7 @@ public class LineMesh
 {
     public List<Vector2> points = new();
     public float width;
-    public bool loop = false, debugLines = false;
+    public bool loop = false;
 
     readonly List<Vector3> verts = new();
     readonly List<int> tris = new();
@@ -102,7 +102,7 @@ public class LineMesh
         width = newWidth;
     }
 
-    public void NewMesh(int endRes, int cornerRes)
+    public void NewMesh(int endRes, int cornerRes, bool debugLines = false)
     {
         verts.Clear();
         tris.Clear();
@@ -122,8 +122,8 @@ public class LineMesh
 
             if (a == point && c == point)
             {
-                EndGeometry(point, point + Vector2.up, endRes, false);
-                EndGeometry(point, point - Vector2.up, endRes, false);
+                EndGeometry(point, point + Vector2.up, endRes, false, debugLines);
+                EndGeometry(point, point - Vector2.up, endRes, false, debugLines);
             }
 
             if (newIndex > i + 1) i = newIndex - 1;
@@ -136,7 +136,7 @@ public class LineMesh
                 }
                 else
                 {
-                    EndGeometry(point, c, endRes);
+                    EndGeometry(point, c, endRes, true, debugLines);
                     continue;
                 }
             }
@@ -149,12 +149,12 @@ public class LineMesh
                 }
                 else
                 {
-                    EndGeometry(point, a, endRes);
+                    EndGeometry(point, a, endRes, true, debugLines);
                     break;
                 }
             }
 
-            CornerGeometry(a, point, c, cornerRes);
+            CornerGeometry(a, point, c, cornerRes, debugLines);
         }
 
         mesh.triangles = new int[] { };
@@ -162,7 +162,7 @@ public class LineMesh
         mesh.triangles = tris.ToArray();
     }
 
-    void EndGeometry(Vector2 end, Vector2 other, int res, bool midBlock = true)
+    void EndGeometry(Vector2 end, Vector2 other, int res, bool midBlock = true, bool debugLines = false)
     {
         Vector3 centerVert = end;
 
@@ -182,7 +182,7 @@ public class LineMesh
 
             if (l > 0)
             {
-                AddTri(lastPoint, newPoint, centerVert);
+                AddTri(lastPoint, newPoint, centerVert, debugLines);
             }
 
             lastPoint = newPoint;
@@ -192,9 +192,9 @@ public class LineMesh
         {
             GetMidPoints(end, other, out var aBEdgeA, out var aBEdgeB);
             var edgeDelta = Vector2.Perpendicular(dir).normalized * width / 2;
-            AddTri(centerVert, end + edgeDelta, aBEdgeA);
-            AddTri(centerVert, end - edgeDelta, aBEdgeB);
-            AddTri(centerVert, aBEdgeA, aBEdgeB);
+            AddTri(centerVert, end + edgeDelta, aBEdgeA, debugLines);
+            AddTri(centerVert, end - edgeDelta, aBEdgeB, debugLines);
+            AddTri(centerVert, aBEdgeA, aBEdgeB, debugLines);
         }
     }
 
@@ -227,7 +227,7 @@ public class LineMesh
 
         if (toA == toC)
         {
-            EndGeometry(b, furthestEnd, res);
+            EndGeometry(b, furthestEnd, res, true, lines);
             //GetMidPoints(a, b, out var w, out var x);
             return; // Exit early if toA is equal to toC
         }
@@ -254,7 +254,7 @@ public class LineMesh
 
         // Debug draw the inner corner and tangent points
         //Debug.DrawLine(b, innerCorner, Color.red);
-        if (debugLines || lines)
+        if (lines)
         {
             Debug.DrawLine(b, tangentPointA, Color.green);
             Debug.DrawLine(b, tangentPointC, Color.green);
@@ -328,7 +328,7 @@ public class LineMesh
         tris.Add(GetVertIndex(b));
         tris.Add(GetVertIndex(c));
 
-        if (draw || debugLines)
+        if (draw)
         {
             Debug.DrawLine(a, b, Color.yellow);
             Debug.DrawLine(b, c, Color.yellow);

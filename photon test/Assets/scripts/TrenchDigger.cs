@@ -5,18 +5,17 @@ using UnityEngine;
 public class TrenchDigger : MonoBehaviour
 {
     Vector3 lastDigPoint;
-    public Trench trench;
-    public float startWidth = 1, maxWidth = 2, digSpeed = 2, pointFreq = 2;
-    float maxPointDist;
+    Trench trench;
+    public float startWidth = 1, maxWidth = 2, digSpeed = 2, maxPointDist = .2f;
 
     private void Awake()
     {
         trench = null;
-        maxPointDist = 1 / pointFreq;
     }
 
     public void DigTrench (Vector2 point, float widthIncrement)
     {
+        float prevWidth = 0;
         float width;
 
         if (trench == null)
@@ -26,9 +25,15 @@ public class TrenchDigger : MonoBehaviour
         else
         {
             width = Mathf.Min(trench.lineMesh.width + widthIncrement * digSpeed, maxWidth);
+            prevWidth = trench.lineMesh.width;
         }
 
         var distFromLast = Vector2.Distance(point, lastDigPoint);
+        float moveDist = 1;
+        if (trench != null && trench.lineMesh.points.Count > 0)
+        {
+            moveDist = Vector2.Distance(trench.lineMesh.points[^1], point);
+        }
 
         Vector2 prevBoxMin = Vector2.zero;
         Vector2 prevBoxMax = Vector2.zero;
@@ -68,12 +73,13 @@ public class TrenchDigger : MonoBehaviour
         }
 
 
-        //if (distFromLast > 0) //it wouldn't redraw when they were just staying there lol
+        if (moveDist > 0 || width != prevWidth) //it wouldn't redraw when they were just staying there lol
             Trench.manager.RegenerateMesh(trench);
     }
 
     public void StopDigging ()
     {
+        trench.lineMesh.PurgePoints();
         trench = null;
     }
 }
