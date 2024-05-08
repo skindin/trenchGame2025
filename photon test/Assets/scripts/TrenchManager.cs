@@ -66,7 +66,8 @@ public class TrenchManager : MonoBehaviour
             trench = NewTrench();
         }
 
-        trench.lineMesh.SetWidth(width);
+        //trench.lineMesh.SetWidth(width);
+        trench.lineMesh.width = width;
         trench.AddPoint(point);
 
         if (digger != null)

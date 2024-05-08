@@ -27,12 +27,13 @@ public class ChunkManager : MonoBehaviour
     {
         foreach (var chunk in chunks)
         {
-            if (Trench.manager.debugLines) DrawChunk(chunk, Color.red);
-
             if (chunk.coords == coords)
             {
+                if (Trench.manager.debugLines) DrawChunk(chunk, Color.green);
                 return chunk;
             }
+
+            if (Trench.manager.debugLines) DrawChunk(chunk, Color.red);
         }
 
         if (newIfNone)
