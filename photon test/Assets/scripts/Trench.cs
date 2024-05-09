@@ -46,7 +46,7 @@ public class Trench
         newTrench.lineMesh.width = lineMesh.width;
 
         var newPointCount = index;
-        if (includeIndex) newPointCount++;
+        if (!includeIndex) newPointCount--;
 
         for (var i = 0; i < newPointCount; i++)
         {
@@ -55,12 +55,17 @@ public class Trench
         }
 
         var oldPointCount = lineMesh.points.Count - index;
-        if (includeIndex) oldPointCount++;
+        if (!includeIndex) oldPointCount--;
 
         while (lineMesh.points.Count>oldPointCount)
         {
             lineMesh.points.RemoveAt(0);
         }
+
+        //if (newTrench.lineMesh.points.Count == 0)
+        //{
+        //    Debug.Log("New mesh had zero points");
+        //}
 
         return newTrench;
     }
@@ -127,5 +132,11 @@ public class Trench
         Vector2 closestPoint = lineStart + t * (lineEnd - lineStart);
 
         return closestPoint;
+    }
+
+    public void OnRemove()
+    {
+        lineMesh.Reset();
+        Chunk.manager.UnassignChunks(this,true);
     }
 }

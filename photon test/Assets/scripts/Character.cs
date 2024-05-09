@@ -36,7 +36,7 @@ public class Character : MonoBehaviour
         if (digging || filling) speed = digMoveSpeed;
         transform.position += dir * speed * Time.deltaTime;
 
-        if (!digging)
+        if (!digging && !filling)
             UpdateTrench();
     }
 
@@ -72,5 +72,21 @@ public class Character : MonoBehaviour
 
         UpdateSprite(true);
         detector.SetStatus(true);
+    }
+
+    public void Fill (Vector2 fillPoint, bool stop = false)
+    {
+        if (stop)
+        {
+            digger.StopFilling();
+            filling = false;
+            return;
+        }
+
+        UpdateSprite(false);
+        detector.SetStatus(false);
+
+        digger.FillTrenches(fillPoint, Time.deltaTime);
+        filling = true;
     }
 }

@@ -35,7 +35,16 @@ public class Controller : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            character.Dig(Vector2.zero, true);
+            character.Dig(default, true);
+        }
+        else if (Input.GetMouseButton(1))
+        {
+            character.Fill(transform.position);
+        }
+
+        if (Input.GetMouseButtonUp(1))
+        {
+            character.Fill(default, true);
         }
 
         //if (Input.GetMouseButton(1))

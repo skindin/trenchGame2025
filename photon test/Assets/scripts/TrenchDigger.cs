@@ -7,10 +7,12 @@ public class TrenchDigger : MonoBehaviour
     Vector3 lastDigPoint;
     public Trench trench;
     public float startWidth = 1, maxWidth = 2, digSpeed = 2, maxPointDist = .2f;
+    float fillRadius;
 
     private void Awake()
     {
         trench = null;
+        fillRadius = startWidth;
     }
 
     public void DigTrench (Vector2 point, float widthIncrement)
@@ -77,9 +79,21 @@ public class TrenchDigger : MonoBehaviour
             Trench.manager.RegenerateMesh(trench);
     }
 
+    public void FillTrenches (Vector2 point, float widthIncrement)
+    {
+        Trench.manager.FillTrenches(point, fillRadius);
+
+        fillRadius = Mathf.Min(widthIncrement * digSpeed + fillRadius, maxWidth);
+    }
+
     public void StopDigging ()
     {
         trench.lineMesh.PurgePoints();
         trench = null;
+    }
+
+    public void StopFilling ()
+    {
+        fillRadius = startWidth;
     }
 }

@@ -405,19 +405,49 @@ public class LineMesh
         CalculateArea();
     }
 
-    public bool TestBox(Vector2 point, bool debugLines = false)
+    public bool TestBoxWithPoint(Vector2 point, bool debugLines = false)
     {
         if (debugLines) DrawBox();
 
-        if (point.x < boxMin.x ||
-            point.y < boxMin.y ||
-            point.x > boxMax.x ||
-            point.y > boxMax.y)
+        return TestBox(boxMin, boxMax, point);
+    }
+
+    static bool TestBox(Vector2 min, Vector2 max, Vector2 point)
+    {
+        if (point.x < min.x ||
+        point.y < min.y ||
+        point.x > max.x ||
+        point.y > max.y)
         {
             return false;
         }
 
         return true;
+    }
+
+    public bool TestBoxOverlap (Vector2 min, Vector2 max, bool debugLines = false)
+    {
+        if (debugLines) DrawBox();
+
+        GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
+        if (TestBox(boxMin, boxMax, min)) return true;
+        if (TestBox(boxMin, boxMax, max)) return true;
+        if (TestBox(boxMin, boxMax, topLeft)) return true;
+        if (TestBox(boxMin, boxMax, bottomRight)) return true;
+
+        GetTopLeftAndBottomRight(boxMin, boxMax, out topLeft, out bottomRight);
+        if (TestBox(min, max, boxMin)) return true;
+        if (TestBox(min, max, boxMax)) return true;
+        if (TestBox(min, max, topLeft)) return true;
+        if (TestBox(min, max, bottomRight)) return true;
+
+        return false;
+    }
+
+    public void GetTopLeftAndBottomRight (Vector2 min, Vector2 max, out Vector2 topLeft, out Vector2 bottomRight)
+    {
+        topLeft = new(min.x, max.y);
+        bottomRight = new(max.x, min.y);
     }
 
     void CalculateArea()
@@ -429,11 +459,17 @@ public class LineMesh
     public void DrawBox()
     {
         var color = Color.blue;
-        var topLeft = new Vector2(boxMin.x, boxMax.y);
-        var bottomRight = new Vector2(boxMax.x, boxMin.y);
+
+        GetTopLeftAndBottomRight(boxMin, boxMax, out var topLeft, out var bottomRight);
         Debug.DrawLine(boxMin, topLeft, color);
         Debug.DrawLine(topLeft, boxMax, color);
         Debug.DrawLine(boxMax, bottomRight, color);
         Debug.DrawLine(bottomRight, boxMin, color);
+    }
+
+    public void Reset()
+    {
+        points.Clear();
+        NewMesh(0,0);
     }
 }
