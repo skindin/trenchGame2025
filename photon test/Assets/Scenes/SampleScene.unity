@@ -172,6 +172,9 @@ MonoBehaviour:
   maxPooled: 100
   maxTrenchArea: 100
   debugLines: 1
+  pooledCount: 0
+  activeCount: 0
+  totalCount: 0
 --- !u!1 &882223847
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,8 +204,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 691302294}
   - {fileID: 1351669115}
+  - {fileID: 691302294}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
@@ -281,7 +284,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!4 &963194228
@@ -541,7 +544,7 @@ MonoBehaviour:
   startWidth: 1
   maxWidth: 2
   digSpeed: 10
-  maxPointDist: 0.2
+  minPointDist: 0.2
 --- !u!114 &2062759859
 MonoBehaviour:
   m_ObjectHideFlags: 0

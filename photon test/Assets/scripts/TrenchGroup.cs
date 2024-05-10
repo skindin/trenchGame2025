@@ -40,4 +40,6 @@ public class TrenchGroup
     }
 
     //this class hasn't been utilized yet, but i'll come back to it if I need to or feel like it
+
+    //when trenches are split, they should stay in the same trench group
 }

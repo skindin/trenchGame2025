@@ -14,19 +14,21 @@ public class ChunkRenderer : MonoBehaviour
 
     public void RenderTrenches ()
     {
-        //chunks = Chunk.manager.GetAdjacenChunks(transform.position,this.chunks);
+        chunks.Clear();
+        chunks = Chunk.manager.GetAdjacenChunks(transform.position, this.chunks);
 
-        //foreach (var chunk in chunks)
-        //{
-        //    foreach (var trench in chunk.trenches)
-        //    {
-        //        Graphics.DrawMesh(trench.lineMesh.mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
-        //    }
-        //}
-
-        foreach (var trench in Trench.manager.trenches)
+        foreach (var chunk in chunks)
         {
-            Graphics.DrawMesh(trench.lineMesh.mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
+            foreach (var trench in chunk.trenches)
+            {
+                Graphics.DrawMesh(trench.lineMesh.mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
+            }
         }
+        
+
+        //foreach (var trench in Trench.manager.trenches)
+        //{
+        //    Graphics.DrawMesh(trench.lineMesh.mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
+        //}
     }
 }

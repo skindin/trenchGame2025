@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class TrenchDigger : MonoBehaviour
 {
-    Vector3 lastDigPoint;
+    Vector2 lastDigPoint, lastDigDir;
     public Trench trench;
-    public float startWidth = 1, maxWidth = 2, digSpeed = 2, maxPointDist = .2f;
+    public float startWidth = 1, maxWidth = 2, digSpeed = 2, minPointDist = .2f;
     float fillRadius;
 
     private void Awake()
@@ -32,9 +32,11 @@ public class TrenchDigger : MonoBehaviour
 
         var distFromLast = Vector2.Distance(point, lastDigPoint);
         float moveDist = 1;
+        var dir = Vector2.zero;
         if (trench != null && trench.lineMesh.points.Count > 0)
         {
             moveDist = Vector2.Distance(trench.lineMesh.points[^1], point);
+            dir = (point - trench.lineMesh.points[^1]).normalized;
         }
 
         Vector2 prevBoxMin = Vector2.zero;
@@ -46,12 +48,22 @@ public class TrenchDigger : MonoBehaviour
             prevBoxMax = trench.lineMesh.boxMax;
         }
 
-        if (trench == null || distFromLast >= maxPointDist)
+        //string equalSign;
+        //if (dir == lastDigDir) equalSign = "=";
+        //else equalSign = "!=";
+        //Debug.Log($"{dir} {equalSign} {lastDigDir}");
+
+        if (trench == null ||
+            Trench.manager.TrenchExceedsMaxArea(trench) ||
+            dir != lastDigDir &&
+            distFromLast >= minPointDist)
         {
             trench = Trench.manager.DigTrench(point, width, trench, this);
             if (trench.lineMesh.points.Count == 1)
                 trench = Trench.manager.DigTrench(point, width, trench, this);
+            //Debug.Log(dir);
             lastDigPoint = point;
+            lastDigDir = dir;
         }
         else
         {

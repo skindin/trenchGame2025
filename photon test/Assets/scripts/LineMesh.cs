@@ -92,6 +92,20 @@ public class LineMesh
         return point;
     }
 
+    //Vector2 FindNextCorner(int index, out int nextIndex)
+    //{
+    //    Vector2 lastPoint = points[0];
+
+    //    for (int i = 1; i < points.Count; i++)
+    //    {
+    //        var point = FindNextUnique(i, out i);
+
+
+
+    //        lastPoint = point;
+    //    }
+    //}
+
     public void SetWidth (float newWidth)
     {
         var widthDiff = newWidth - width;
@@ -107,7 +121,7 @@ public class LineMesh
         verts.Clear();
         tris.Clear();
 
-        if (points.Count == 0) return;
+        //if (points.Count == 0) return; //has this been the source of all my problems?
 
         if (!mesh) mesh = new();
 
@@ -371,7 +385,7 @@ public class LineMesh
 
         CalculateArea();
 
-        DrawBox();
+        DrawMeshBox();
     }
 
     /// <summary>
@@ -407,7 +421,7 @@ public class LineMesh
 
     public bool TestBoxWithPoint(Vector2 point, bool debugLines = false)
     {
-        if (debugLines) DrawBox();
+        if (debugLines) DrawMeshBox();
 
         return TestBox(boxMin, boxMax, point);
     }
@@ -427,7 +441,7 @@ public class LineMesh
 
     public bool TestBoxOverlap (Vector2 min, Vector2 max, bool debugLines = false)
     {
-        if (debugLines) DrawBox();
+        if (debugLines) DrawMeshBox();
 
         GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
         if (TestBox(boxMin, boxMax, min)) return true;
@@ -444,7 +458,7 @@ public class LineMesh
         return false;
     }
 
-    public void GetTopLeftAndBottomRight (Vector2 min, Vector2 max, out Vector2 topLeft, out Vector2 bottomRight)
+    public static void GetTopLeftAndBottomRight (Vector2 min, Vector2 max, out Vector2 topLeft, out Vector2 bottomRight)
     {
         topLeft = new(min.x, max.y);
         bottomRight = new(max.x, min.y);
@@ -456,15 +470,20 @@ public class LineMesh
         area = dimensions.x * dimensions.y;
     }
 
-    public void DrawBox()
+    public void DrawMeshBox()
     {
         var color = Color.blue;
 
-        GetTopLeftAndBottomRight(boxMin, boxMax, out var topLeft, out var bottomRight);
-        Debug.DrawLine(boxMin, topLeft, color);
-        Debug.DrawLine(topLeft, boxMax, color);
-        Debug.DrawLine(boxMax, bottomRight, color);
-        Debug.DrawLine(bottomRight, boxMin, color);
+        DrawBox(boxMin, boxMax, color);
+    }
+
+    public static void DrawBox (Vector2 min, Vector2 max, Color color)
+    {
+        GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
+        Debug.DrawLine(min, topLeft, color);
+        Debug.DrawLine(topLeft, max, color);
+        Debug.DrawLine(max, bottomRight, color);
+        Debug.DrawLine(bottomRight, min, color);
     }
 
     public void Reset()

@@ -36,7 +36,7 @@ public class Trench
     /// <param name="newTrench"></param>
     /// <param name="includeIndex"></param>
     /// <returns></returns>
-    public Trench Split (int index, Trench newTrench = null, bool includeIndex = true)
+    public Trench SplitAtPoint (int index, Trench newTrench = null, bool includeIndex = true)
     {
         if (newTrench == null)
         {
@@ -56,6 +56,7 @@ public class Trench
 
         var oldPointCount = lineMesh.points.Count - index;
         if (!includeIndex) oldPointCount--;
+        oldPointCount = Mathf.Max(oldPointCount, 0);
 
         while (lineMesh.points.Count>oldPointCount)
         {
@@ -66,6 +67,57 @@ public class Trench
         //{
         //    Debug.Log("New mesh had zero points");
         //}
+
+        return newTrench;
+    }
+
+    /// <summary>
+    /// Requires newTrench to not be null to keep first half
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="count"></param>
+    /// <param name="newTrench"></param>
+    /// <returns></returns>
+    public Trench SplitAtPoints (int index, int count, Trench newTrench)
+    {
+        var maxIndex = lineMesh.points.Count - 1;
+
+        if (index > lineMesh.points.Count - 1)
+        {
+            Debug.Log($"Index {index} is higher than max index {maxIndex}");
+            return newTrench;
+        }
+
+        var maxCount = lineMesh.points.Count - index;
+
+        if (count > maxCount)
+        {
+            Debug.Log($"Count {count} is higher than max count {maxCount}");
+            return newTrench;
+        }
+
+        //if (newTrench == null) newTrench = new();
+        if (newTrench != null)
+        {
+            var newPointCount = index;
+
+            for (var i = 0; i < newPointCount; i++)
+            {
+                var point = lineMesh.points[i];
+                newTrench.lineMesh.AddPoint(point, i);
+            }
+
+            newTrench.lineMesh.width = lineMesh.width;
+        }
+
+        var oldPointCount = lineMesh.points.Count - (count + index);
+
+        oldPointCount = Mathf.Max(oldPointCount, 0);
+
+        while (lineMesh.points.Count > oldPointCount)
+        {
+            lineMesh.points.RemoveAt(0);
+        }
 
         return newTrench;
     }
@@ -82,7 +134,7 @@ public class Trench
 
             if (i > 0)
             {
-                if (debugLines) Debug.DrawLine(point, lastPoint, Color.yellow);
+                if (debugLines) Debug.DrawLine(point, lastPoint, Color.black);
 
                 var closestSegPoint = ClosestPointToLineSegment(pos, lastPoint, point);
 
@@ -118,7 +170,7 @@ public class Trench
         return false;
     }
 
-    Vector2 ClosestPointToLineSegment(Vector2 objectPos, Vector2 lineStart, Vector2 lineEnd)
+    static Vector2 ClosestPointToLineSegment(Vector2 objectPos, Vector2 lineStart, Vector2 lineEnd)
     {
 
         if (lineStart == lineEnd) return lineStart;

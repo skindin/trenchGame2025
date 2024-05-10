@@ -17,23 +17,23 @@ public class ChunkManager : MonoBehaviour
         Chunk.manager = this;
     }
 
-    public Chunk ChunkFromPos(Vector2 pos, bool newIfNone = true)
+    public Chunk ChunkFromPos(Vector2 pos, bool newIfNone = true, bool debugLines = false)
     {
         var coords = PosToCoords(pos);
-        return ChunkFromCoords(coords, newIfNone);
+        return ChunkFromCoords(coords, newIfNone, debugLines);
     }
 
-    public Chunk ChunkFromCoords(Vector2Int coords, bool newIfNone = true)
+    public Chunk ChunkFromCoords(Vector2Int coords, bool newIfNone = true, bool debugLines = false)
     {
         foreach (var chunk in chunks)
         {
             if (chunk.coords == coords)
             {
-                if (Trench.manager.debugLines) DrawChunk(chunk, Color.green);
+                if (debugLines) DrawChunk(chunk, Color.green);
                 return chunk;
             }
 
-            if (Trench.manager.debugLines) DrawChunk(chunk, Color.red);
+            if (debugLines) DrawChunk(chunk, Color.red);
         }
 
         if (newIfNone)
@@ -47,7 +47,7 @@ public class ChunkManager : MonoBehaviour
         return null;
     }
 
-    public List<Chunk> ChunksFromBox(Vector2 min, Vector2 max, List<Chunk> chunks, bool newIfNone = true)
+    public List<Chunk> ChunksFromBox(Vector2 min, Vector2 max, List<Chunk> chunks, bool newIfNone = true, bool debugLines = false)
     {
         var intMin = PosToCoords(min);
         var intMax = PosToCoords(max);
@@ -59,6 +59,26 @@ public class ChunkManager : MonoBehaviour
                 var coords = new Vector2Int(x, y);
                 var chunk = ChunkFromCoords(coords, newIfNone);
                 if (chunk != null && !chunks.Contains(chunk)) chunks.Add(chunk);
+            }
+        }
+
+        if (debugLines)
+        {
+            int accounted = 0;
+
+            foreach (var chunk in this.chunks)
+            {
+                if (chunks.Contains(chunk))
+                {
+                    DrawChunk(chunk, Color.green);
+                    accounted++;
+                }
+                else
+                {
+                    DrawChunk(chunk, Color.red);
+                }
+
+                if (accounted >= chunks.Count) break;
             }
         }
 
@@ -147,13 +167,13 @@ public class ChunkManager : MonoBehaviour
         }
     }
 
-    public List<Chunk> GetAdjacenChunks (Vector2 pos, List<Chunk> chunks)
+    public List<Chunk> GetAdjacenChunks (Vector2 pos, List<Chunk> chunks, bool debugLines = false)
     {
         var boxDelta = Vector2.one * chunkSize;
 
         var boxMin = pos - boxDelta;
         var boxMax = pos + boxDelta;
 
-        return ChunksFromBox(boxMin, boxMax, chunks, false);
+        return ChunksFromBox(boxMin, boxMax, chunks, false, debugLines);
     }
 }
