@@ -104,7 +104,7 @@ public class Trench
             for (var i = 0; i < newPointCount; i++)
             {
                 var point = lineMesh.points[i];
-                newTrench.lineMesh.AddPoint(point, i);
+                newTrench.lineMesh.points.Add(point);
             }
 
             newTrench.lineMesh.width = lineMesh.width;

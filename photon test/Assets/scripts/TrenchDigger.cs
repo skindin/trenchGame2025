@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class TrenchDigger : MonoBehaviour
 {
-    Vector2 lastDigPoint, lastDigDir;
+    Vector2 lastDigPoint;
+    public float lastAngle;
     public Trench trench;
     public float startWidth = 1, maxWidth = 2, digSpeed = 2, minPointDist = .2f;
     float fillRadius;
@@ -13,6 +14,14 @@ public class TrenchDigger : MonoBehaviour
     {
         trench = null;
         fillRadius = startWidth;
+    }
+
+    private void Start()
+    {
+        //DigTrench(transform.position, 10);
+        //transform.position += Vector3.right * 10;
+        //DigTrench(transform.position, 10);
+        //FillTrenches(transform.position, 10);
     }
 
     public void DigTrench (Vector2 point, float widthIncrement)
@@ -32,11 +41,13 @@ public class TrenchDigger : MonoBehaviour
 
         var distFromLast = Vector2.Distance(point, lastDigPoint);
         float moveDist = 1;
-        var dir = Vector2.zero;
+        float angle = 0;
         if (trench != null && trench.lineMesh.points.Count > 0)
         {
             moveDist = Vector2.Distance(trench.lineMesh.points[^1], point);
-            dir = (point - trench.lineMesh.points[^1]).normalized;
+            var dir = (point - trench.lineMesh.points[^1]).normalized;
+            angle = Vector3.SignedAngle(Vector2.up, dir, Vector3.forward);
+            angle = Mathf.Floor(angle);
         }
 
         Vector2 prevBoxMin = Vector2.zero;
@@ -55,7 +66,7 @@ public class TrenchDigger : MonoBehaviour
 
         if (trench == null ||
             Trench.manager.TrenchExceedsMaxArea(trench) ||
-            dir != lastDigDir &&
+            angle != lastAngle &&
             distFromLast >= minPointDist)
         {
             trench = Trench.manager.DigTrench(point, width, trench, this);
@@ -63,7 +74,8 @@ public class TrenchDigger : MonoBehaviour
                 trench = Trench.manager.DigTrench(point, width, trench, this);
             //Debug.Log(dir);
             lastDigPoint = point;
-            lastDigDir = dir;
+            lastAngle = angle;
+            //Debug.Log(angle);
         }
         else
         {
@@ -95,7 +107,7 @@ public class TrenchDigger : MonoBehaviour
     {
         Trench.manager.FillTrenches(point, fillRadius);
 
-        fillRadius = Mathf.Min(widthIncrement * digSpeed + fillRadius, maxWidth);
+        fillRadius = Mathf.Min(widthIncrement * digSpeed + fillRadius, maxWidth*2);
     }
 
     public void StopDigging ()
@@ -107,5 +119,7 @@ public class TrenchDigger : MonoBehaviour
     public void StopFilling ()
     {
         fillRadius = startWidth;
+
+
     }
 }

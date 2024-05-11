@@ -187,7 +187,22 @@ public class TrenchManager : MonoBehaviour
 
                     trench.SplitAtPoints(index, count, newTrench);
 
-                    if (newTrench != null) RecalculateTrench(newTrench);
+                    if (newTrench != null)
+                    {
+                        RecalculateTrench(newTrench);
+                        //if (trench.lineMesh.mesh.triangles.Length == 0)
+                        //{
+                        //    var bruh = false;
+                        //}
+
+                        //Debug.Log(newTrench.lineMesh.points.Count);
+
+                        if (newTrench.lineMesh.mesh.vertices.Length == 0) Debug.Log("bruh no vertices");
+                        if (newTrench.lineMesh.mesh.triangles.Length == 0) Debug.Log("bruh no triangles");
+                        if (newTrench.chunks.Count == 0) Debug.Log("bruh trench has no chunks");
+                        if (newTrench.chunks.Find(x => x.trenches.Contains(newTrench)) == null)
+                            Debug.Log("bruh trench's chunk doesn't contain trench");
+                    }
 
                     if (trench.lineMesh.points.Count == 0)
                     {
@@ -195,17 +210,14 @@ public class TrenchManager : MonoBehaviour
                         var currentChunkI = Chunk.manager.chunks.IndexOf(chunk);
 
                         chunkI = Mathf.Min(chunkI, currentChunkI);
-
-                        //if (trench.lineMesh.points.Count == 0 && trench.lineMesh.mesh.triangles.Length > 0)
-                        //{
-                        //    var bruh = false;
-                        //}
-
-                        //this'll have to be changed once multiple diggers are digging and filling
                     }
                     else
                     {
                         RecalculateTrench(trench);
+                        //if (trench.lineMesh.mesh.triangles.Length == 0)
+                        //{
+                        //    var bruh = false;
+                        //}
                     }
 
                     indexDelta += index + count;

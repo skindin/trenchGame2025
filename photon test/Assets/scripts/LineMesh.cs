@@ -475,6 +475,8 @@ public class LineMesh
         var color = Color.blue;
 
         DrawBox(boxMin, boxMax, color);
+
+        //Debug.Log("drew a box");
     }
 
     public static void DrawBox (Vector2 min, Vector2 max, Color color)

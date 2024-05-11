@@ -7,7 +7,7 @@ public class ChunkRenderer : MonoBehaviour
     public Material lineMaterial;
     List<Chunk> chunks = new();
 
-    public void Update()
+    public void LateUpdate()
     {
         RenderTrenches();
     }

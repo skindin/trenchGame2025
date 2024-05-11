@@ -13,8 +13,43 @@ public class Controller : MonoBehaviour
         active = this; //this definitely needs improvement for multiplayer but idc rn
     }
 
+    bool step = false;
+
     // Update is called once per frame
     void Update()
+    {
+        if (Time.timeScale > 0)
+            Controls();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (Time.timeScale == 0) Time.timeScale = 1;
+            else Time.timeScale = 0;
+        }
+
+        if (step)
+        {
+            Time.timeScale = 0;
+            step = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            Time.timeScale = 10;
+            step = true;
+        }
+
+        //if (Input.GetMouseButton(1))
+        //{
+        //    character.FillTrench(transform.position);
+        //}
+        //else
+        //{
+        //    character.FillTrench(Vector2.zero, true);
+        //}
+    }
+
+    public void Controls ()
     {
         Vector2 direction;
 
@@ -45,15 +80,7 @@ public class Controller : MonoBehaviour
         if (Input.GetMouseButtonUp(1))
         {
             character.Fill(default, true);
+            Time.timeScale = 1;
         }
-
-        //if (Input.GetMouseButton(1))
-        //{
-        //    character.FillTrench(transform.position);
-        //}
-        //else
-        //{
-        //    character.FillTrench(Vector2.zero, true);
-        //}
     }
 }
