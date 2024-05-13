@@ -51,6 +51,7 @@ public class TrenchManager : MonoBehaviour
         else
         {
             newTrench = new();
+            newTrench.lineMesh.NewMesh(0, 0);
         }
 
         activeCount++;
@@ -462,9 +463,14 @@ public class TrenchManager : MonoBehaviour
     public void RecalculateTrench (Trench trench)
     {
         RegenerateMesh(trench);
-        trench.lineMesh.CalculateBox();
+        //trench.lineMesh.CalculateBox();
         Chunk.manager.AutoAssignChunks(trench);
     }
+
+    //public Vector2 TrenchWallIntersection (Vector2 a, Vector2 b)
+    //{
+
+    //}
 
     /// <summary>
     /// Returns true if trench area more than max area

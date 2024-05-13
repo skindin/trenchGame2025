@@ -177,7 +177,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &39663381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -321,7 +321,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &237091485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,7 +549,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &355341157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -777,7 +777,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &426581086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -921,7 +921,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &445127333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1401,7 +1401,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &640813678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2268,7 +2268,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &1182667444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2496,7 +2496,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &1277461311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2808,7 +2808,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &1322266806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3081,7 +3081,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &1410604119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3225,7 +3225,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &1414652418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3420,7 +3420,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &1884758340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3564,7 +3564,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &1934174650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3792,7 +3792,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &2046050130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3976,10 +3976,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2062759856}
   - component: {fileID: 2062759855}
+  - component: {fileID: 2062759861}
   - component: {fileID: 2062759857}
   - component: {fileID: 2062759859}
   - component: {fileID: 2062759858}
-  - component: {fileID: 2062759861}
   - component: {fileID: 2062759860}
   m_Layer: 0
   m_Name: character
@@ -4093,7 +4093,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &2062759861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4109,7 +4109,7 @@ MonoBehaviour:
   wielder: {fileID: 2062759855}
   bulletSpeed: 100
   range: 5
-  firingRate: 2
+  firingRate: 10
 --- !u!1 &2064727304
 GameObject:
   m_ObjectHideFlags: 0
@@ -4148,7 +4148,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &2064727306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4308,7 +4308,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   size: 0.7
-  enabled: 1
+  vulnerable: 1
 --- !u!114 &2133105272
 MonoBehaviour:
   m_ObjectHideFlags: 0

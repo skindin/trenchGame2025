@@ -55,8 +55,8 @@ public class TrenchDigger : MonoBehaviour
 
         if (trench != null)
         {
-            prevBoxMin = trench.lineMesh.boxMin;
-            prevBoxMax = trench.lineMesh.boxMax;
+            prevBoxMin = trench.lineMesh.mesh.bounds.min;
+            prevBoxMax = trench.lineMesh.mesh.bounds.max;
         }
 
         //string equalSign;
@@ -82,17 +82,21 @@ public class TrenchDigger : MonoBehaviour
             trench.lineMesh.points[^1] = point;
             trench.lineMesh.SetWidth(width);
             //if (distFromLast > 0) //commented this out just to make box show up
-                trench.lineMesh.ExtendBox(point, Trench.manager.debugLines);
+                //trench.lineMesh.ExtendBox(point, Trench.manager.debugLines);
             //in multiplayer, this'll have to be set to the digger's position on local computer
         }
 
+
+        if (moveDist > 0 || width != prevWidth)
+            Trench.manager.RegenerateMesh(trench);
+
         if (trench.lineMesh.points.Count > 1)
         {
-            if (Chunk.manager.TestDifferentChunks(prevBoxMin, trench.lineMesh.boxMin))
+            if (Chunk.manager.TestDifferentChunks(prevBoxMin, trench.lineMesh.mesh.bounds.min))
             {
                 Chunk.manager.AutoAssignChunks(trench);
             }
-            else if (Chunk.manager.TestDifferentChunks(prevBoxMax, trench.lineMesh.boxMax))
+            else if (Chunk.manager.TestDifferentChunks(prevBoxMax, trench.lineMesh.mesh.bounds.max))
             {
                 Chunk.manager.AutoAssignChunks(trench);
             }
@@ -112,10 +116,6 @@ public class TrenchDigger : MonoBehaviour
                 }
             }
         }
-
-
-        if (moveDist > 0 || width != prevWidth) //it wouldn't redraw when they were just staying there lol
-            Trench.manager.RegenerateMesh(trench);
     }
 
     public void FillTrenches (Vector2 point, float widthIncrement)

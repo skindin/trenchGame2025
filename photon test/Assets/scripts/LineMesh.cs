@@ -14,7 +14,6 @@ public class LineMesh
     readonly List<int> tris = new();
     public Mesh mesh;
 
-    public Vector2 boxMin, boxMax;
     public float area;
 
     public void AddPoint (Vector2 point, int index)
@@ -28,16 +27,16 @@ public class LineMesh
             points.Insert(points.Count - 1, point);
         }
 
-        if (points.Count == 1)
-        {
-            var widthDelta = Vector2.one * width/2;
-            boxMin = point - widthDelta;
-            boxMax = point + widthDelta;
-        }
-        else
-        {
-            ExtendBox(point);
-        }
+        //if (points.Count == 1)
+        //{
+        //    var widthDelta = Vector2.one * width/2;
+        //    boxMin = point - widthDelta;
+        //    boxMax = point + widthDelta;
+        //}
+        //else
+        //{
+        //    ExtendBox(point);
+        //}
     }
 
     public void PurgePoints()
@@ -108,11 +107,11 @@ public class LineMesh
 
     public void SetWidth (float newWidth)
     {
-        var widthDiff = newWidth - width;
+        //var widthDiff = newWidth - width;
 
-        var boxDelta = Vector2.one * widthDiff / 2;
-        boxMin -= boxDelta;
-        boxMax += boxDelta;
+        //var boxDelta = Vector2.one * widthDiff / 2;
+        //boxMin -= boxDelta;
+        //boxMax += boxDelta;
         width = newWidth;
     }
 
@@ -174,6 +173,10 @@ public class LineMesh
         mesh.triangles = new int[] { };
         mesh.vertices = verts.ToArray();
         mesh.triangles = tris.ToArray();
+
+        mesh.RecalculateBounds();
+        DrawMeshBox();
+        CalculateArea();
 
         //if (mesh) //apparently my method of calculating geometry bounds is more accurate than unity's?
         //{
@@ -373,57 +376,57 @@ public class LineMesh
         return index;
     }
 
-    public void ExtendBox(Vector2 point, bool debugLines = false)
-    {
-        var radius = this.width / 2;
+    //public void ExtendBox(Vector2 point, bool debugLines = false)
+    //{
+    //    var radius = this.width / 2;
 
-        if (point.x - radius < boxMin.x) boxMin.x = point.x - radius;
-        if (point.y - radius < boxMin.y) boxMin.y = point.y - radius;
+    //    if (point.x - radius < boxMin.x) boxMin.x = point.x - radius;
+    //    if (point.y - radius < boxMin.y) boxMin.y = point.y - radius;
 
-        if (point.x + radius > boxMax.x) boxMax.x = point.x + radius;
-        if (point.y + radius > boxMax.y) boxMax.y = point.y + radius;
+    //    if (point.x + radius > boxMax.x) boxMax.x = point.x + radius;
+    //    if (point.y + radius > boxMax.y) boxMax.y = point.y + radius;
 
-        CalculateArea();
+    //    CalculateArea();
 
-        if (debugLines) DrawMeshBox();
-    }
+    //    if (debugLines) DrawMeshBox();
+    //}
 
     /// <summary>
     /// Only to be used when unsure of past points
     /// </summary>
-    public void CalculateBox()
-    {
-        float minX = Mathf.Infinity;
-        float minY = Mathf.Infinity;
-        float maxX = -Mathf.Infinity;
-        float maxY = -Mathf.Infinity;
+    //public void CalculateBox()
+    //{
+    //    float minX = Mathf.Infinity;
+    //    float minY = Mathf.Infinity;
+    //    float maxX = -Mathf.Infinity;
+    //    float maxY = -Mathf.Infinity;
 
-        for (var i = 0; i < points.Count; i++)
-        {
-            var point = points[i];
+    //    for (var i = 0; i < points.Count; i++)
+    //    {
+    //        var point = points[i];
 
-            if (point.x < minX) minX = point.x;
-            if (point.y < minY) minY = point.y;
+    //        if (point.x < minX) minX = point.x;
+    //        if (point.y < minY) minY = point.y;
 
-            if (point.x > maxX) maxX = point.x;
-            if (point.y > maxY) maxY = point.y;
-        }
+    //        if (point.x > maxX) maxX = point.x;
+    //        if (point.y > maxY) maxY = point.y;
+    //    }
 
-        var radiusVector = Vector2.one * width / 2;
+    //    var radiusVector = Vector2.one * width / 2;
 
-        boxMin = new(minX, minY);
-        boxMin -= radiusVector;
-        boxMax = new(maxX, maxY);
-        boxMax += radiusVector;
+    //    boxMin = new(minX, minY);
+    //    boxMin -= radiusVector;
+    //    boxMax = new(maxX, maxY);
+    //    boxMax += radiusVector;
 
-        CalculateArea();
-    }
+    //    CalculateArea();
+    //}
 
     public bool TestBoxWithPoint(Vector2 point, bool debugLines = false)
     {
         if (debugLines) DrawMeshBox();
 
-        return TestBox(boxMin, boxMax, point);
+        return TestBox(mesh.bounds.min, mesh.bounds.max, point);
     }
 
     static bool TestBox(Vector2 min, Vector2 max, Vector2 point)
@@ -444,14 +447,14 @@ public class LineMesh
         if (debugLines) DrawMeshBox();
 
         GeoFuncs.GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
-        if (TestBox(boxMin, boxMax, min)) return true;
-        if (TestBox(boxMin, boxMax, max)) return true;
-        if (TestBox(boxMin, boxMax, topLeft)) return true;
-        if (TestBox(boxMin, boxMax, bottomRight)) return true;
+        if (TestBox(mesh.bounds.min, mesh.bounds.max, min)) return true;
+        if (TestBox(mesh.bounds.min, mesh.bounds.max, max)) return true;
+        if (TestBox(mesh.bounds.min, mesh.bounds.max, topLeft)) return true;
+        if (TestBox(mesh.bounds.min, mesh.bounds.max, bottomRight)) return true;
 
-        GeoFuncs.GetTopLeftAndBottomRight(boxMin, boxMax, out topLeft, out bottomRight);
-        if (TestBox(min, max, boxMin)) return true;
-        if (TestBox(min, max, boxMax)) return true;
+        GeoFuncs.GetTopLeftAndBottomRight(mesh.bounds.min, mesh.bounds.max, out topLeft, out bottomRight);
+        if (TestBox(min, max, mesh.bounds.min)) return true;
+        if (TestBox(min, max, mesh.bounds.max)) return true;
         if (TestBox(min, max, topLeft)) return true;
         if (TestBox(min, max, bottomRight)) return true;
 
@@ -462,14 +465,14 @@ public class LineMesh
     {
         var color = Color.blue;
 
-        GeoFuncs.DrawBox(boxMin, boxMax, color);
+        GeoFuncs.DrawBox(mesh.bounds.min, mesh.bounds.max, color);
 
         //Debug.Log("drew a box");
     }
 
     void CalculateArea()
     {
-        var dimensions = boxMax - boxMin;
+        var dimensions = mesh.bounds.max - mesh.bounds.min;
         area = dimensions.x * dimensions.y;
     }
 

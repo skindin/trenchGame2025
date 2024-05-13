@@ -65,6 +65,14 @@ public class ChunkManager : MonoBehaviour
         return chunks;
     }
 
+    //public List<Chunk> ChunksFromLine(Vector2 a, Vector2 b, List<Chunk> chunks, bool newIfNone = true, bool debugLines = false)
+    //{
+    //    var aCoords = PosToCoords(a);
+    //    var bCoords = PosToCoords(b);
+
+
+    //}
+
     /// <summary>
     /// Calculates chunks.
     /// Should only be used after a trench has gone through significant change without acknowledging chunks
@@ -72,7 +80,8 @@ public class ChunkManager : MonoBehaviour
     /// <param name="trench"></param>
     public void AutoAssignChunks(Trench trench)
     {
-        var chunks = trench.chunks = ChunksFromBox(trench.lineMesh.boxMin, trench.lineMesh.boxMax, trench.chunks);
+        var bounds = trench.lineMesh.mesh.bounds;
+        var chunks = trench.chunks = ChunksFromBox(bounds.min, bounds.max, trench.chunks);
 
         foreach (var chunk in chunks)
         {

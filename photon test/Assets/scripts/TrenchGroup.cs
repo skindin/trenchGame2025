@@ -18,11 +18,12 @@ public class TrenchGroup
     {
         boxMin = this.boxMin;
         boxMax = this.boxMax;
+        var bounds = newTrench.lineMesh.mesh.bounds;
 
-        if (newTrench.lineMesh.boxMin.x < this.boxMin.x) boxMin.x = newTrench.lineMesh.boxMin.x;
-        if (newTrench.lineMesh.boxMin.y < this.boxMin.y) boxMin.y = newTrench.lineMesh.boxMin.y;
-        if (newTrench.lineMesh.boxMax.x > this.boxMax.x) boxMax.x = newTrench.lineMesh.boxMax.x;
-        if (newTrench.lineMesh.boxMax.y > this.boxMax.y) boxMax.y = newTrench.lineMesh.boxMax.y;
+        if (bounds.min.x < this.boxMin.x) boxMin.x = bounds.min.x;
+        if (bounds.min.y < this.boxMin.y) boxMin.y = bounds.min.y;
+        if (bounds.max.x > this.boxMax.x) boxMax.x = bounds.max.x;
+        if (bounds.max.y > this.boxMax.y) boxMax.y = bounds.max.y;
 
         var dimensions = boxMax - boxMin;
         area = dimensions.x * dimensions.y;
