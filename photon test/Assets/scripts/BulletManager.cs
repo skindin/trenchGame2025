@@ -7,6 +7,8 @@ public class BulletManager : MonoBehaviour
     public readonly List<Bullet> activeBullets = new(), pooledBullets = new();
     public int maxPooled = 100, activeCount, pooledCount, total;
     public bool debugLines = false;
+    public Mesh bulletMesh;
+    public float meshScale = .1f;
 
     private void Awake()
     {
@@ -74,9 +76,10 @@ public class BulletManager : MonoBehaviour
 
             foreach (var collider in Collider.all)
             {
-                if (bullet.source.wielder.collider == collider) continue;
+                if (!collider.vulnerable || bullet.source.wielder.collider == collider) continue;
 
-                var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, collider.size / 2, bullet.pos, nextPos);
+                var radius = collider.size * collider.transform.lossyScale.x / 2;
+                var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
                 if (point == Vector2.positiveInfinity) continue;
                 var pointDist = (point - bullet.pos).magnitude;
                 var nextDist = (nextPos - bullet.pos).magnitude;
@@ -97,7 +100,7 @@ public class BulletManager : MonoBehaviour
 
             if (closestCollider != null)
             {
-                closestCollider.OnBulletHit(bullet);
+                closestCollider.BulletHit(bullet);
                 destroy = true;
                 //Debug.Log($"Hit {closestCollider.gameObject.name}");
             }

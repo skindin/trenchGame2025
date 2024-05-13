@@ -98,6 +98,21 @@ public class TrenchDigger : MonoBehaviour
             }
         }
 
+        foreach (var chunk in trench.chunks)
+        {
+
+            for (int i = 0; i < chunk.detectors.Count; i++)
+            {
+                var detector = chunk.detectors[i];
+                if (trench.lineMesh.TestBoxWithPoint(detector.transform.position))
+                {
+                    detector.DetectTrench(0);//if I ever find how to make radii work, i gotta fix this part
+                    var newIndex = chunk.detectors.IndexOf(detector);
+                    if (newIndex < i) i--;
+                }
+            }
+        }
+
 
         if (moveDist > 0 || width != prevWidth) //it wouldn't redraw when they were just staying there lol
             Trench.manager.RegenerateMesh(trench);

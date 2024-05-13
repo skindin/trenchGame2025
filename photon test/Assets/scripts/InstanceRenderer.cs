@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChunkRenderer : MonoBehaviour
+public class InstanceRenderer : MonoBehaviour
 {
-    public Material lineMaterial;
+    public Material lineMaterial, bulletMaterial;
     public Vector2 renderBox = Vector2.one * 10;
     public bool debugLines = false;
     List<Chunk> chunks = new();
@@ -12,6 +12,17 @@ public class ChunkRenderer : MonoBehaviour
     public void LateUpdate()
     {
         RenderTrenches();
+        RenderBullets();
+    }
+
+    public void RenderBullets ()
+    {
+        foreach (var bullet in Bullet.manager.activeBullets)
+        {
+            var rot = Quaternion.LookRotation(Vector3.forward, bullet.velocity);
+            Matrix4x4 matrix = Matrix4x4.TRS(bullet.pos, rot, Vector3.one * Bullet.manager.meshScale);
+            Graphics.DrawMesh(Bullet.manager.bulletMesh, matrix, bulletMaterial, 0);
+        }
     }
 
     public void RenderTrenches ()
@@ -29,6 +40,8 @@ public class ChunkRenderer : MonoBehaviour
         {
             foreach (var trench in chunk.trenches)
             {
+                trench.lineMesh.mesh.RecalculateBounds();
+                //should probably utilize this function other ways too lol
                 Graphics.DrawMesh(trench.lineMesh.mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
             }
         }

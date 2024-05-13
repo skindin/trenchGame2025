@@ -20,11 +20,19 @@ public class Character : MonoBehaviour
     {
         all.Add(this);
         startColor = sprite.color;
+        detector.onDetect.AddListener(UpdateVulnerable);
+        detector.onDetect.AddListener(collider.ToggleSafe);
     }
 
     private void Start()
     {
-        UpdateTrench();
+        detector.DetectTrench(0);
+        collider.onBulletHit.AddListener(
+        delegate
+        {
+            SpawnManager.manager.Relocate(transform);
+            detector.DetectTrench(0);
+        });
     }
 
     private void OnDestroy()
@@ -35,7 +43,7 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (constantDetect) UpdateTrench();
+        if (constantDetect) detector.DetectTrench(0);
     }
 
     public void Move(Vector2 direction)
@@ -46,15 +54,10 @@ public class Character : MonoBehaviour
         transform.position += dir * speed * Time.deltaTime;
 
         if (!digging && !filling)
-            UpdateTrench();
+            detector.DetectTrench(0);
     }
 
-    public void UpdateTrench()
-    {
-        UpdateSprite(detector.DetectTrench(0));
-    }
-
-    public void UpdateSprite (bool trenchStatus)
+    public void UpdateVulnerable (bool trenchStatus)
     {
         if (trenchStatus)
         {
@@ -79,7 +82,7 @@ public class Character : MonoBehaviour
 
         digging = !stop;
 
-        UpdateSprite(true);
+        UpdateVulnerable(true);
         detector.SetStatus(true);
     }
 
@@ -97,7 +100,7 @@ public class Character : MonoBehaviour
             return;
         }
 
-        UpdateSprite(false);
+        UpdateVulnerable(false);
         detector.SetStatus(false);
 
         digger.FillTrenches(fillPoint, Time.deltaTime);

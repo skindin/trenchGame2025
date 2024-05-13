@@ -7,6 +7,7 @@ public class Chunk
     public static ChunkManager manager;
     public Vector2Int coords;
     public List<Trench> trenches = new();
+    public List<TrenchDetector> detectors = new();
 
     public Chunk(Vector2Int newCoords)
     {

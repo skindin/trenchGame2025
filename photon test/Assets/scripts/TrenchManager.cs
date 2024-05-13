@@ -410,7 +410,7 @@ public class TrenchManager : MonoBehaviour
                         RemoveTrench(trench);
                         var currentChunkI = Chunk.manager.chunks.IndexOf(chunk);
 
-                        chunkI = Mathf.Min(chunkI, currentChunkI);
+                        chunkI = Mathf.Min(chunkI, currentChunkI); //BRUH THIS CAN'T BE GOOD
                     }
                     else
                     {
@@ -425,19 +425,26 @@ public class TrenchManager : MonoBehaviour
         }
     }
 
+    public Trench TestChunkTrenches (Vector2 pos, float radius, Chunk chunk)
+    {
+        foreach (var trench in chunk.trenches)
+        {
+            if (TestTrench(pos, radius, trench))
+            {
+                return trench;
+            }
+        }
+
+        return null;
+    }
+
     public Trench TestAllTrenches (Vector2 pos, float radius)
     {
         var chunk = Chunk.manager.ChunkFromPos(pos,false,debugLines);
 
         if (chunk == null) return null;
 
-        foreach (var trench in chunk.trenches)
-        {
-            if (TestTrench(pos, radius , trench))
-            {
-                return trench;
-            }
-        }
+        TestChunkTrenches(pos, radius, chunk);
 
         return null;
     }
