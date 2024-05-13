@@ -4,17 +4,21 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
+    public static List<Character> all = new();
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
     Color startColor;
     public float moveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5;
+    public Collider collider;
     public TrenchDetector detector;
     public TrenchDigger digger; //eventually this will be attached to the shovel...?
-    public bool digging = false, filling = false, constantDig = false;
+    public Gun gun;
+    public bool digging = false, filling = false, constantDig = false, constantDetect = false, shooting = false;
 
     // Start is called before the first frame update
     void Awake()
     {
+        all.Add(this);
         startColor = sprite.color;
     }
 
@@ -23,10 +27,15 @@ public class Character : MonoBehaviour
         UpdateTrench();
     }
 
+    private void OnDestroy()
+    {
+        all.Remove(this);
+    }
+
     // Update is called once per frame
     void Update()
     {
-
+        if (constantDetect) UpdateTrench();
     }
 
     public void Move(Vector2 direction)
@@ -42,7 +51,7 @@ public class Character : MonoBehaviour
 
     public void UpdateTrench()
     {
-        UpdateSprite(detector.DetectTrench());
+        UpdateSprite(detector.DetectTrench(0));
     }
 
     public void UpdateSprite (bool trenchStatus)
@@ -72,6 +81,11 @@ public class Character : MonoBehaviour
 
         UpdateSprite(true);
         detector.SetStatus(true);
+    }
+
+    public void Shoot (Vector2 direction)
+    {
+        gun.Trigger(direction);
     }
 
     public void Fill (Vector2 fillPoint, bool stop = false)

@@ -385,7 +385,7 @@ public class LineMesh
 
         CalculateArea();
 
-        DrawMeshBox();
+        if (debugLines) DrawMeshBox();
     }
 
     /// <summary>
@@ -443,13 +443,13 @@ public class LineMesh
     {
         if (debugLines) DrawMeshBox();
 
-        GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
+        GeoFuncs.GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
         if (TestBox(boxMin, boxMax, min)) return true;
         if (TestBox(boxMin, boxMax, max)) return true;
         if (TestBox(boxMin, boxMax, topLeft)) return true;
         if (TestBox(boxMin, boxMax, bottomRight)) return true;
 
-        GetTopLeftAndBottomRight(boxMin, boxMax, out topLeft, out bottomRight);
+        GeoFuncs.GetTopLeftAndBottomRight(boxMin, boxMax, out topLeft, out bottomRight);
         if (TestBox(min, max, boxMin)) return true;
         if (TestBox(min, max, boxMax)) return true;
         if (TestBox(min, max, topLeft)) return true;
@@ -457,35 +457,20 @@ public class LineMesh
 
         return false;
     }
-
-    public static void GetTopLeftAndBottomRight (Vector2 min, Vector2 max, out Vector2 topLeft, out Vector2 bottomRight)
+    
+    public void DrawMeshBox()
     {
-        topLeft = new(min.x, max.y);
-        bottomRight = new(max.x, min.y);
+        var color = Color.blue;
+
+        GeoFuncs.DrawBox(boxMin, boxMax, color);
+
+        //Debug.Log("drew a box");
     }
 
     void CalculateArea()
     {
         var dimensions = boxMax - boxMin;
         area = dimensions.x * dimensions.y;
-    }
-
-    public void DrawMeshBox()
-    {
-        var color = Color.blue;
-
-        DrawBox(boxMin, boxMax, color);
-
-        //Debug.Log("drew a box");
-    }
-
-    public static void DrawBox (Vector2 min, Vector2 max, Color color)
-    {
-        GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
-        Debug.DrawLine(min, topLeft, color);
-        Debug.DrawLine(topLeft, max, color);
-        Debug.DrawLine(max, bottomRight, color);
-        Debug.DrawLine(bottomRight, min, color);
     }
 
     public void Reset()

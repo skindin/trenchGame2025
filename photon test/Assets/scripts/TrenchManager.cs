@@ -9,8 +9,8 @@ public class TrenchManager : MonoBehaviour
     public float maxTrenchArea = 100;
     public bool debugLines = false;
     List<Chunk> chunkFillList = new();
-    List<(int, int)> intTuples = new();
     public int pooledCount, activeCount, totalCount;
+    List<(int, int)> intTuples = new();
 
     private void Awake()
     {
@@ -105,7 +105,178 @@ public class TrenchManager : MonoBehaviour
         return trench;
     }
 
-    public void FillTrenches (Vector2 pos, float width)
+    //public void FillTrenches (Vector2 pos, float width)
+    //{
+    //    var boxDelta = Vector2.one * width / 2;
+    //    var boxMin = pos - boxDelta;
+    //    var boxMax = pos + boxDelta;
+
+    //    chunkFillList.Clear();
+
+    //    Chunk.manager.ChunksFromBox(boxMin,boxMax,chunkFillList,false,true);
+
+    //    if (debugLines) LineMesh.DrawBox(boxMin, boxMax, Color.magenta);
+
+    //    for (int chunkI = 0; chunkI < chunkFillList.Count; chunkI++)
+    //    {
+    //        var chunk = chunkFillList[chunkI];
+
+    //        //if (debugLines) Chunk.manager.DrawChunk(chunk, Color.green); //orange heheh
+
+    //        for (int trenchI = 0; trenchI < chunk.trenches.Count; trenchI++)
+    //        {
+    //            var trench = chunk.trenches[trenchI];
+
+    //            if (debugLines) trench.lineMesh.DrawMeshBox();
+
+    //            if (!trench.lineMesh.TestBoxOverlap(boxMin, boxMax))
+    //            {
+    //                continue;
+    //            }
+
+    //            if(debugLines) DrawCircle(pos, width/2, Color.cyan);
+
+    //            Vector2 lastPoint = Vector2.zero;
+    //            bool lastWasWthin = false;
+    //            bool wasInnerPoint = false;
+    //            //inner meaning right after or right before the first or last within the circle
+
+    //            intTuples.Clear();
+
+    //            for (int pointI = 0; pointI < trench.lineMesh.points.Count; pointI++)
+    //            {
+    //                var point = trench.lineMesh.points[pointI];
+
+    //                if (pointI > 0 && debugLines) Debug.DrawLine(point, lastPoint, Color.black);
+
+    //                var dist = Vector2.Distance(pos, point);
+    //                var withinDist = dist < width / 2;
+
+    //                if (withinDist && !lastWasWthin)
+    //                {
+    //                    if (pointI > 0)
+    //                    {
+    //                        var intersectPoint = GetCircleLineIntersection(pos, width/2, point, lastPoint);
+    //                        trench.lineMesh.points[pointI] = intersectPoint;
+    //                        RecalculateTrench(trench);
+    //                    }
+    //                    else if (trench.lineMesh.points.Count == 1)
+    //                    {
+    //                        intTuples.Add((0, 1));
+    //                    }
+    //                }
+    //                else if (withinDist && (lastWasWthin || pointI == 0))
+    //                {
+    //                    if (!wasInnerPoint)
+    //                    {
+    //                        intTuples.Add((pointI, 1));
+    //                        wasInnerPoint = true;
+    //                    }
+    //                    else
+    //                    {
+    //                        var tuple = intTuples[^1];
+    //                        intTuples[^1] = new(tuple.Item1, tuple.Item2 + 1);
+    //                    }
+    //                }
+    //                else if (!withinDist && lastWasWthin)
+    //                {
+    //                    var intersectPoint = GetCircleLineIntersection(pos, width/2, point, lastPoint);
+
+    //                    if (pointI == 1)
+    //                    {
+    //                        trench.lineMesh.points[0] = intersectPoint;
+    //                    }
+    //                    else if (wasInnerPoint)
+    //                    {
+    //                        var tuple = intTuples[^1];
+    //                        intTuples[^1] = new(tuple.Item1, tuple.Item2 - 1);
+    //                        trench.lineMesh.points[pointI-1] = intersectPoint;
+    //                    }
+    //                    else //one point dipped inside
+    //                    {
+    //                        var newTrench = trench.SplitAtPoint(pointI, NewTrench());
+    //                        newTrench.lineMesh.points[^1] = intersectPoint;
+    //                        //zero because it's first of new trench
+    //                        //RecalculateTrench(newTrench);
+    //                        RecalculateTrench(newTrench);
+    //                        pointI = 1;
+
+    //                    }
+
+    //                    wasInnerPoint = false;
+
+    //                    RecalculateTrench(trench);
+    //                }
+
+    //                if (pointI == trench.lineMesh.points.Count-1)
+    //                {
+    //                    DrawX(point, .5f, Color.red);
+    //                    break;
+    //                }
+
+    //                lastWasWthin = withinDist;
+    //                lastPoint = point;//must be after anything accessing lastPoint
+    //            }
+
+    //            var indexDelta = 0;
+
+    //            foreach (var tuple in intTuples)
+    //            {
+    //                if (tuple.Item2 == 0) continue;
+
+    //                Trench newTrench = null;
+
+    //                var index = tuple.Item1 - (indexDelta);
+
+    //                var count = tuple.Item2;
+
+    //                if (index > 0)
+    //                {
+    //                    newTrench = NewTrench();
+    //                }
+
+    //                trench.SplitAtPoints(index, count, newTrench);
+
+    //                if (newTrench != null)
+    //                {
+    //                    RecalculateTrench(newTrench);
+    //                    //if (trench.lineMesh.mesh.triangles.Length == 0)
+    //                    //{
+    //                    //    var bruh = false;
+    //                    //}
+
+    //                    //Debug.Log(newTrench.lineMesh.points.Count);
+
+    //                    if (newTrench.lineMesh.mesh.vertices.Length == 0) Debug.Log("bruh no vertices");
+    //                    if (newTrench.lineMesh.mesh.triangles.Length == 0) Debug.Log("bruh no triangles");
+    //                    if (newTrench.chunks.Count == 0) Debug.Log("bruh trench has no chunks");
+    //                    if (newTrench.chunks.Find(x => x.trenches.Contains(newTrench)) == null)
+    //                        Debug.Log("bruh trench's chunk doesn't contain trench");
+    //                }
+
+    //                if (trench.lineMesh.points.Count == 0)
+    //                {
+    //                    RemoveTrench(trench);
+    //                    var currentChunkI = Chunk.manager.chunks.IndexOf(chunk);
+
+    //                    chunkI = Mathf.Min(chunkI, currentChunkI);
+    //                }
+    //                else
+    //                {
+    //                    RecalculateTrench(trench);
+    //                    //if (trench.lineMesh.mesh.triangles.Length == 0)
+    //                    //{
+    //                    //    var bruh = false;
+    //                    //}
+    //                }
+
+    //                indexDelta += index + count;
+    //            }
+    //        }
+    //    }
+    //}
+
+    public void FillTrenches(Vector2 pos, float width)
     {
         var boxDelta = Vector2.one * width / 2;
         var boxMin = pos - boxDelta;
@@ -113,9 +284,9 @@ public class TrenchManager : MonoBehaviour
 
         chunkFillList.Clear();
 
-        Chunk.manager.ChunksFromBox(boxMin,boxMax,chunkFillList,false,true);
+        Chunk.manager.ChunksFromBox(boxMin, boxMax, chunkFillList, false, debugLines);
 
-        if (debugLines) LineMesh.DrawBox(boxMin, boxMax, Color.magenta);
+        if (debugLines) GeoFuncs.DrawBox(boxMin, boxMax, Color.magenta);
 
         for (int chunkI = 0; chunkI < chunkFillList.Count; chunkI++)
         {
@@ -126,6 +297,7 @@ public class TrenchManager : MonoBehaviour
             for (int trenchI = 0; trenchI < chunk.trenches.Count; trenchI++)
             {
                 var trench = chunk.trenches[trenchI];
+                var points = trench.lineMesh.points;
 
                 if (debugLines) trench.lineMesh.DrawMeshBox();
 
@@ -134,49 +306,78 @@ public class TrenchManager : MonoBehaviour
                     continue;
                 }
 
-                if(debugLines) DrawCircle(pos, width/2, Color.cyan);
+                if (debugLines) GeoFuncs.DrawCircle(pos, width / 2, Color.cyan);
 
-                Vector2 lastPoint = Vector2.zero;
-                bool lastWithin = false;
+                Vector2 prevPoint = Vector2.zero;
+                Vector2 currentPoint = Vector2.zero;
+                Vector2 nextPoint = Vector2.zero;
+                bool prevIsWithin = false;
+                bool nextIsWithin = false;
+                bool lastWasInner = false;
 
                 intTuples.Clear();
 
-                for (int pointI = 0; pointI < trench.lineMesh.points.Count; pointI++)
+                for (int pointI = 0; pointI < points.Count; pointI++)
                 {
-                    var point = trench.lineMesh.points[pointI];
+                    bool isFirst = pointI == 0;
+                    bool isLast = pointI + 1 == points.Count;
+                    bool isWithin;
 
-                    if (pointI > 0 && debugLines) Debug.DrawLine(point, lastPoint, Color.black);
-
-                    var dist = Vector2.Distance(pos, point);
-                    var withinDist = dist <= width / 2;
-
-                    if (withinDist && (!lastWithin || intTuples.Count == 0))
+                    if (isFirst)
                     {
-                        intTuples.Add((pointI, 1));
+                        currentPoint = points[0];
+                        isWithin = Vector2.Distance(currentPoint, pos) < width / 2;
                     }
-                    else if (withinDist && lastWithin)
+                    else
                     {
-                        var tuple = intTuples[^1];
-                        intTuples[^1] = new(tuple.Item1, tuple.Item2 + 1);
-                    }
-
-                    if (pointI == trench.lineMesh.points.Count-1)
-                    {
-                        DrawX(point, .5f, Color.red);
-                        break;
+                        currentPoint = nextPoint;
+                        isWithin = nextIsWithin;
+                        if (debugLines) Debug.DrawLine(prevPoint, currentPoint, Color.black);
                     }
 
-                    lastWithin = withinDist;
-                    lastPoint = point;//must be after anything accessing lastPoint
+                    if (!isLast) //if this isn't the last point
+                    {
+                        nextPoint = points[pointI + 1];
+                        nextIsWithin = Vector2.Distance(nextPoint, pos) < width / 2;
+                    }
+                    else
+                    {
+                        if (debugLines) GeoFuncs.DrawX(currentPoint, .5f, Color.red);
+                    }
+
+                    //gotta find where to turn lastWasInner off
+
+                    if (!(prevIsWithin && isFirst) && isWithin && !nextIsWithin)
+                    {
+                        var newTrench = trench.SplitAtPoint(pointI, NewTrench());
+                        pointI = 0;
+                    }
+                    else if ((prevIsWithin || isFirst) && isWithin && (nextIsWithin || isLast))
+                    {
+                        if (lastWasInner)
+                        {
+                            var tuple = intTuples[^1];
+                            var countDelta = points.Count - pointI;
+                            intTuples[^1] = (countDelta, tuple.Item2 + 1);
+                        }
+                        else
+                        {
+                            intTuples.Add((pointI, 1));
+                            lastWasInner = true;
+                        }
+                    }
+
+                    prevPoint = currentPoint;
+                    prevIsWithin = isWithin;
                 }
-
-                var indexDelta = 0;
 
                 foreach (var tuple in intTuples)
                 {
+                    if (tuple.Item2 == 0) continue;
+
                     Trench newTrench = null;
 
-                    var index = tuple.Item1 - (indexDelta);
+                    var index = points.Count - tuple.Item1;
 
                     var count = tuple.Item2;
 
@@ -219,22 +420,20 @@ public class TrenchManager : MonoBehaviour
                         //    var bruh = false;
                         //}
                     }
-
-                    indexDelta += index + count;
                 }
             }
         }
     }
 
-    public Trench TestAllTrenches (Vector2 pos)
+    public Trench TestAllTrenches (Vector2 pos, float radius)
     {
-        var chunk = Chunk.manager.ChunkFromPos(pos,false,true);
+        var chunk = Chunk.manager.ChunkFromPos(pos,false,debugLines);
 
         if (chunk == null) return null;
 
         foreach (var trench in chunk.trenches)
         {
-            if (TestTrench(pos, trench))
+            if (TestTrench(pos, radius , trench))
             {
                 return trench;
             }
@@ -243,9 +442,9 @@ public class TrenchManager : MonoBehaviour
         return null;
     }
 
-    public bool TestTrench (Vector2 pos, Trench trench)
+    public bool TestTrench (Vector2 pos, float radius, Trench trench)
     {
-        return trench.lineMesh.TestBoxWithPoint(pos, debugLines) && trench.TestWithin(pos, debugLines);
+        return trench.lineMesh.TestBoxWithPoint(pos, debugLines) && trench.TestWithin(pos, radius, debugLines);
     }
 
     public void RegenerateMesh (Trench trench)
@@ -267,35 +466,5 @@ public class TrenchManager : MonoBehaviour
     public bool TrenchExceedsMaxArea (Trench trench)
     {
         return trench.lineMesh.area > maxTrenchArea;
-    }
-
-    public static void DrawCircle (Vector3 center, float radius, Color color, int res = 4)
-    {
-        Vector3 lastPoint = Vector2.up * radius;
-
-        int verts = res * 4;
-        var angle = 360f / verts;
-
-        for (int i = 1; i < verts+1; i++)
-        {
-            var point = Quaternion.AngleAxis(angle, Vector3.forward) * lastPoint;
-
-            Debug.DrawLine(point + center, lastPoint + center, color);
-
-            lastPoint = point;
-        }
-    }
-
-    public static void DrawX (Vector2 point, float size, Color color)
-    {
-        var min = -Vector2.one * size;
-        var max = -min;
-
-        Debug.DrawLine(min+ point, max + point, color);
-
-        min = Vector2.Perpendicular(min);
-        max = Vector2.Perpendicular(max);
-
-        Debug.DrawLine(min + point, max + point, color);
     }
 }

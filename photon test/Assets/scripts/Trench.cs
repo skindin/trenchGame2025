@@ -122,7 +122,7 @@ public class Trench
         return newTrench;
     }
 
-    public bool TestWithin(Vector2 pos, bool debugLines = false)
+    public bool TestWithin(Vector2 pos, float radius, bool debugLines = false)
     {
         var lastPoint = Vector2.zero;
         var closestDist = Mathf.Infinity;
@@ -136,9 +136,10 @@ public class Trench
             {
                 if (debugLines) Debug.DrawLine(point, lastPoint, Color.black);
 
-                var closestSegPoint = ClosestPointToLineSegment(pos, lastPoint, point);
+                var closestSegPoint = GeoFuncs.ClosestPointToLineSegment(pos, lastPoint, point);
 
-                var dist = Vector2.Distance(pos, closestSegPoint);
+                var dist = Vector2.Distance(pos, closestSegPoint) + radius;
+                GeoFuncs.DrawCircle(pos, radius, Color.green);
                 if (dist <= lineMesh.width / 2)
                 {
                     if (debugLines) Debug.DrawLine(pos, closestSegPoint, Color.green);
@@ -168,22 +169,6 @@ public class Trench
 
         if (debugLines) Debug.DrawLine(pos, closestPoint, Color.red);
         return false;
-    }
-
-    static Vector2 ClosestPointToLineSegment(Vector2 objectPos, Vector2 lineStart, Vector2 lineEnd)
-    {
-
-        if (lineStart == lineEnd) return lineStart;
-        // Calculate the squared length of the line segment
-        float lineLengthSquared = Mathf.Pow(lineEnd.x - lineStart.x, 2) + Mathf.Pow(lineEnd.y - lineStart.y, 2);
-
-        // Calculate the parameter (t) of the closest point to the line segment
-        float t = Mathf.Max(0, Mathf.Min(1, Vector2.Dot(objectPos - lineStart, lineEnd - lineStart) / lineLengthSquared));
-
-        // Calculate the closest point on the line segment
-        Vector2 closestPoint = lineStart + t * (lineEnd - lineStart);
-
-        return closestPoint;
     }
 
     public void OnRemove()

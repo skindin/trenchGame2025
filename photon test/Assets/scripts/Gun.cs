@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Character wielder;
+    public float bulletSpeed, range, firingRate;
+    float lastFireStamp = -Mathf.Infinity;
+
+    public void Trigger (Vector2 direction)
     {
-        
+        if (Time.time > lastFireStamp + (1/firingRate))
+        {
+            Fire(direction);
+            lastFireStamp = Time.time;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public Bullet Fire (Vector2 direction)
     {
-        
+        return Bullet.manager.NewBullet(transform.position, direction.normalized * bulletSpeed, range, this);
     }
 }

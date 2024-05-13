@@ -6,6 +6,7 @@ public class Controller : MonoBehaviour
 {
     public Character character;
     public static Controller active;
+    public bool enableFill = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -18,7 +19,7 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Time.timeScale > 0)
+        //if (Time.timeScale > 0)
             Controls();
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -37,6 +38,13 @@ public class Controller : MonoBehaviour
         {
             Time.timeScale = 10;
             step = true;
+        }
+
+        if (Input.GetMouseButton(1))
+        {
+            var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var direction = mousePos - transform.position;
+            character.Shoot(direction);
         }
 
         //if (Input.GetMouseButton(1))
@@ -72,7 +80,7 @@ public class Controller : MonoBehaviour
         {
             character.Dig(default, true);
         }
-        else if (Input.GetMouseButton(1))
+        else if (Input.GetMouseButton(1) && enableFill)
         {
             character.Fill(transform.position);
         }

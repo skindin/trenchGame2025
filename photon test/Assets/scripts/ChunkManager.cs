@@ -57,28 +57,8 @@ public class ChunkManager : MonoBehaviour
             for (var x = intMin.x; x < intMax.x + 1; x++)
             {
                 var coords = new Vector2Int(x, y);
-                var chunk = ChunkFromCoords(coords, newIfNone);
+                var chunk = ChunkFromCoords(coords, newIfNone, debugLines);
                 if (chunk != null && !chunks.Contains(chunk)) chunks.Add(chunk);
-            }
-        }
-
-        if (debugLines)
-        {
-            int accounted = 0;
-
-            foreach (var chunk in this.chunks)
-            {
-                if (chunks.Contains(chunk))
-                {
-                    DrawChunk(chunk, Color.green);
-                    accounted++;
-                }
-                else
-                {
-                    DrawChunk(chunk, Color.red);
-                }
-
-                if (accounted >= chunks.Count) break;
             }
         }
 

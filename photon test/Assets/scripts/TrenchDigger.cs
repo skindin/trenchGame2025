@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TrenchDigger : MonoBehaviour
 {
-    Vector2 lastDigPoint;
+    Vector2 lastDigPoint, lastFillPoint;
     public float lastAngle;
     public Trench trench;
     public float startWidth = 1, maxWidth = 2, digSpeed = 2, minPointDist = .2f;
@@ -82,7 +82,7 @@ public class TrenchDigger : MonoBehaviour
             trench.lineMesh.points[^1] = point;
             trench.lineMesh.SetWidth(width);
             //if (distFromLast > 0) //commented this out just to make box show up
-                trench.lineMesh.ExtendBox(point);
+                trench.lineMesh.ExtendBox(point, Trench.manager.debugLines);
             //in multiplayer, this'll have to be set to the digger's position on local computer
         }
 
@@ -105,9 +105,13 @@ public class TrenchDigger : MonoBehaviour
 
     public void FillTrenches (Vector2 point, float widthIncrement)
     {
+        //if (lastFillPoint == point && fillRadius >= maxWidth*2) return;
+
         Trench.manager.FillTrenches(point, fillRadius);
 
         fillRadius = Mathf.Min(widthIncrement * digSpeed + fillRadius, maxWidth*2);
+
+        lastFillPoint = point;
     }
 
     public void StopDigging ()
@@ -119,7 +123,5 @@ public class TrenchDigger : MonoBehaviour
     public void StopFilling ()
     {
         fillRadius = startWidth;
-
-
     }
 }
