@@ -426,20 +426,7 @@ public class LineMesh
     {
         if (debugLines) DrawMeshBox();
 
-        return TestBox(mesh.bounds.min, mesh.bounds.max, point);
-    }
-
-    static bool TestBox(Vector2 min, Vector2 max, Vector2 point)
-    {
-        if (point.x < min.x ||
-        point.y < min.y ||
-        point.x > max.x ||
-        point.y > max.y)
-        {
-            return false;
-        }
-
-        return true;
+        return GeoFuncs.TestBox(mesh.bounds.min, mesh.bounds.max, point);
     }
 
     public bool TestBoxOverlap (Vector2 min, Vector2 max, bool debugLines = false)
@@ -447,16 +434,16 @@ public class LineMesh
         if (debugLines) DrawMeshBox();
 
         GeoFuncs.GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
-        if (TestBox(mesh.bounds.min, mesh.bounds.max, min)) return true;
-        if (TestBox(mesh.bounds.min, mesh.bounds.max, max)) return true;
-        if (TestBox(mesh.bounds.min, mesh.bounds.max, topLeft)) return true;
-        if (TestBox(mesh.bounds.min, mesh.bounds.max, bottomRight)) return true;
+        if (GeoFuncs.TestBox(mesh.bounds.min, mesh.bounds.max, min)) return true;
+        if (GeoFuncs.TestBox(mesh.bounds.min, mesh.bounds.max, max)) return true;
+        if (GeoFuncs.TestBox(mesh.bounds.min, mesh.bounds.max, topLeft)) return true;
+        if (GeoFuncs.TestBox(mesh.bounds.min, mesh.bounds.max, bottomRight)) return true;
 
         GeoFuncs.GetTopLeftAndBottomRight(mesh.bounds.min, mesh.bounds.max, out topLeft, out bottomRight);
-        if (TestBox(min, max, mesh.bounds.min)) return true;
-        if (TestBox(min, max, mesh.bounds.max)) return true;
-        if (TestBox(min, max, topLeft)) return true;
-        if (TestBox(min, max, bottomRight)) return true;
+        if (GeoFuncs.TestBox(min, max, mesh.bounds.min)) return true;
+        if (GeoFuncs.TestBox(min, max, mesh.bounds.max)) return true;
+        if (GeoFuncs.TestBox(min, max, topLeft)) return true;
+        if (GeoFuncs.TestBox(min, max, bottomRight)) return true;
 
         return false;
     }

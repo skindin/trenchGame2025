@@ -54,6 +54,8 @@ public class TrenchManager : MonoBehaviour
             newTrench.lineMesh.NewMesh(0, 0);
         }
 
+        //Chunk.manager.UnassignChunks(newTrench);
+
         activeCount++;
 
         totalCount = activeCount + pooledCount;
@@ -467,10 +469,224 @@ public class TrenchManager : MonoBehaviour
         Chunk.manager.AutoAssignChunks(trench);
     }
 
-    //public Vector2 TrenchWallIntersection (Vector2 a, Vector2 b)
-    //{
+    List<Chunk> chunkList = new();
 
-    //}
+    public Vector2 FindTrenchEdgeFromOutside(Vector2 a, Vector2 b)
+    {
+        chunkList.Clear();
+        Chunk.manager.ChunksFromLine(a, b, chunkList, false, debugLines);
+
+        var delta = b - a;
+
+        var closestPoint = b;
+        float closestDist = delta.magnitude;
+
+        foreach (var chunk in chunkList)
+        {
+            foreach (var trench in chunk.trenches)
+            {
+                var lineMesh = trench.lineMesh;
+                var bounds = lineMesh.mesh.bounds;
+
+                if (!GeoFuncs.DoesLineIntersectBox(a, b, bounds.min, bounds.max, debugLines)) continue;
+
+                var points = lineMesh.points;
+
+                Vector2 lastPoint = Vector2.zero;
+
+                for (int i = 0; i < points.Count; i++)
+                {
+                    var point = points[i];
+
+                    if (i > 0)
+                    {
+                        if (debugLines) Debug.DrawLine(lastPoint, point, Color.black);
+
+                        var segDelta = lastPoint - point;
+
+                        var edgeDelta = lineMesh.width / 2 * Vector2.Perpendicular(segDelta).normalized;
+
+                        for (int l = -1; l <= 1; l+=2)
+                        {
+                            var sideDelta = l * edgeDelta;
+
+                            var lastPointEdge = lastPoint + sideDelta;
+                            var thisPointEdge = point + sideDelta;
+
+                            if (debugLines) Debug.DrawLine(lastPointEdge, thisPointEdge, Color.grey);
+
+                            var intersection = GeoFuncs.FindIntersection(a, b, lastPointEdge, thisPointEdge);
+                            if (intersection.x != Mathf.Infinity)
+                            {
+                                //intersection += lineMesh.width / 2 * backWardOne;
+                                if (debugLines) GeoFuncs.DrawX(intersection, .5f, Color.magenta);
+
+                                var distance = (intersection - a).magnitude;
+
+                                if (distance < closestDist)
+                                {
+                                    closestDist = distance;
+                                    closestPoint = intersection;
+                                }
+                                //if ()
+                                //return intersection;
+                            }
+                        }
+                    }
+
+                    if (debugLines) GeoFuncs.DrawCircle(point, lineMesh.width / 2, Color.grey);
+                    var circleIntersection = GeoFuncs.GetCircleLineIntersection(point, lineMesh.width / 2, b, a);
+                    if (circleIntersection.x != Mathf.Infinity)
+                    {
+                        if (debugLines) GeoFuncs.DrawX(circleIntersection, .5f, Color.magenta);
+
+                        var distance = (circleIntersection - a).magnitude;
+
+                        if (distance < closestDist)
+                        {
+                            closestDist = distance;
+                            closestPoint = circleIntersection;
+                        }
+                    }
+
+                    lastPoint = point;
+                }
+            }
+
+            //Chunk.manager.DrawChunk(chunk, Color.black);
+
+        }
+
+        GeoFuncs.DrawX(closestPoint, 1, Color.green);
+
+        return closestPoint;
+    }
+
+    public Vector2 FindTrenchEdgeFromInside(Vector2 a, Vector2 b)
+    {
+        var furthestPoint = GetFirstPointWithinRange(a);
+        if (furthestPoint.x == Mathf.Infinity) return b;
+        float furthesDist = 0;
+
+        chunkList.Clear();
+        Chunk.manager.ChunksFromLine(a, b, chunkList, false, debugLines);
+
+        var delta = b - a;
+
+        foreach (var chunk in chunkList)
+        {
+            var chunkPos = Chunk.manager.GetRealChunkPos(chunk.coords);
+
+            var dist = (chunkPos - a).magnitude;
+
+            if (dist < furthesDist) continue;
+
+            foreach (var trench in chunk.trenches)
+            {
+                var lineMesh = trench.lineMesh;
+                var bounds = lineMesh.mesh.bounds;
+
+                if (!GeoFuncs.DoesLineIntersectBox(a, b, bounds.min, bounds.max, debugLines)) continue;
+
+                var points = lineMesh.points;
+
+                Vector2 lastPoint = Vector2.zero;
+
+                for (int i = 0; i < points.Count; i++)
+                {
+                    var point = points[i];
+
+                    //if (i > 0)
+                    //{
+                    //    if (debugLines) Debug.DrawLine(lastPoint, point, Color.black);
+
+                    //    var segDelta = lastPoint - point;
+
+                    //    var edgeDelta = lineMesh.width / 2 * Vector2.Perpendicular(segDelta).normalized;
+
+                    //    for (int l = -1; l <= 1; l += 2)
+                    //    {
+                    //        var sideDelta = l * edgeDelta;
+
+                    //        var lastPointEdge = lastPoint + sideDelta;
+                    //        var thisPointEdge = point + sideDelta;
+
+                    //        if (debugLines) Debug.DrawLine(lastPointEdge, thisPointEdge, Color.grey);
+
+                    //        var intersection = GeoFuncs.FindIntersection(a, b, lastPointEdge, thisPointEdge);
+                    //        if (intersection.x != Mathf.Infinity)
+                    //        {
+                    //            //intersection += lineMesh.width / 2 * backWardOne;
+                    //            if (debugLines) GeoFuncs.DrawX(intersection, .5f, Color.magenta);
+
+                    //            var distance = (intersection - a).magnitude;
+
+                    //            if (distance < closestDist)
+                    //            {
+                    //                closestDist = distance;
+                    //                closestPoint = intersection;
+                    //            }
+                    //            //if ()
+                    //            //return intersection;
+                    //        }
+                    //    }
+                    //}
+
+                    if (debugLines) GeoFuncs.DrawCircle(point, lineMesh.width / 2, Color.grey);
+
+                    var distFromClosest = (point - furthestPoint).magnitude;
+
+                    if (distFromClosest < lineMesh.width / 2)
+                    {
+
+                        var circleIntersection = GeoFuncs.GetCircleLineIntersection(point, lineMesh.width / 2, a, b);
+                        if (circleIntersection.x != Mathf.Infinity)
+                        {
+                            if (debugLines) GeoFuncs.DrawX(circleIntersection, .5f, Color.magenta);
+
+                            var distance = (circleIntersection - a).magnitude;
+
+                            if (distance > furthesDist)
+                            {
+                                furthesDist = distance;
+                                furthestPoint = circleIntersection;
+                            } //gonna have to make a list of points, AND THEN test if they are in range... crying emoji
+                        }
+                    }
+
+                    lastPoint = point;
+                }
+            }
+
+            //Chunk.manager.DrawChunk(chunk, Color.black);
+
+        }
+
+        GeoFuncs.DrawX(furthestPoint, 1, Color.green);
+
+        return furthestPoint;
+    }
+
+
+    /// <summary>
+    /// Returns the first trench point within range. Returns Vector2.positiveInfinity if there are no trench points
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    public Vector2 GetFirstPointWithinRange (Vector2 pos)
+    {
+        var chunk = Chunk.manager.ChunkFromPos(pos,false,debugLines);
+
+        if (chunk == null) return Vector2.positiveInfinity;
+
+        foreach (var trench in chunk.trenches)
+        {
+            var point = trench.GetFirstInRangePoint(pos, 0, debugLines);
+            if (point.x != Mathf.Infinity) return point;
+        }
+
+        return Vector2.positiveInfinity;
+    }
 
     /// <summary>
     /// Returns true if trench area more than max area

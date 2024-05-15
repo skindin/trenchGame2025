@@ -40,13 +40,6 @@ public class Controller : MonoBehaviour
             step = true;
         }
 
-        if (Input.GetMouseButton(1))
-        {
-            var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var direction = mousePos - transform.position;
-            character.Shoot(direction);
-        }
-
         //if (Input.GetMouseButton(1))
         //{
         //    character.FillTrench(transform.position);
@@ -59,16 +52,16 @@ public class Controller : MonoBehaviour
 
     public void Controls ()
     {
-        Vector2 direction;
+        Vector2 moveDir;
 
-        direction.x = Input.GetAxisRaw("Horizontal");
-        direction.y = Input.GetAxisRaw("Vertical");
+        moveDir.x = Input.GetAxisRaw("Horizontal");
+        moveDir.y = Input.GetAxisRaw("Vertical");
 
-        direction.Normalize();
+        moveDir.Normalize();
 
-        if (direction.magnitude > 0)
+        if (moveDir.magnitude > 0)
         {
-            character.Move(direction);
+            character.Move(moveDir);
         }
 
         if (Input.GetMouseButton(0))
@@ -90,5 +83,17 @@ public class Controller : MonoBehaviour
             character.Fill(default, true);
             Time.timeScale = 1;
         }
+
+        if (Input.GetMouseButton(1))
+        {
+            var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //var mouseDir = mousePos - transform.position;
+            //character.Shoot(mouseDir);
+            Trench.manager.FindTrenchEdgeFromInside(transform.position, mousePos);
+            //chunks.Clear();
+            //Chunk.manager.ChunksFromLine(transform.position, transform.position + mouseDir, chunks, true, true);
+        }
     }
+
+    //List<Chunk> chunks = new();
 }

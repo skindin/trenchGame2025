@@ -40,8 +40,7 @@ public class InstanceRenderer : MonoBehaviour
         {
             foreach (var trench in chunk.trenches)
             {
-                trench.lineMesh.mesh.RecalculateBounds();
-                //should probably utilize this function other ways too lol
+                //trench.lineMesh.mesh.RecalculateBounds();
                 Graphics.DrawMesh(trench.lineMesh.mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
             }
         }

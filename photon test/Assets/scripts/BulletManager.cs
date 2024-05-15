@@ -40,6 +40,8 @@ public class BulletManager : MonoBehaviour
 
         total = activeCount + pooledCount;
 
+        newBullet.withinTrench = Trench.manager.TestAllTrenches(pos,0) != null;
+
         return newBullet;
     }
 
@@ -74,13 +76,15 @@ public class BulletManager : MonoBehaviour
             var nextPos = Vector2.ClampMagnitude(nextDelta, bullet.range) + bullet.startPos;
             Collider closestCollider = null;
 
+
+
             foreach (var collider in Collider.all)
             {
-                if (!collider.vulnerable || bullet.source.wielder.collider == collider) continue;
+                if ((!collider.vulnerable && !bullet.withinTrench) || bullet.source.wielder.collider == collider) continue;
 
                 var radius = collider.size * collider.transform.lossyScale.x / 2;
                 var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
-                if (point == Vector2.positiveInfinity) continue;
+                if (point.x == Mathf.Infinity) continue;
                 var pointDist = (point - bullet.pos).magnitude;
                 var nextDist = (nextPos - bullet.pos).magnitude;
                 if (nextDist > pointDist)
@@ -89,6 +93,8 @@ public class BulletManager : MonoBehaviour
                     closestCollider = collider;
                 }
             }
+
+
 
             if (debugLines)
             {

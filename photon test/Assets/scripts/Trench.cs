@@ -122,7 +122,7 @@ public class Trench
         return newTrench;
     }
 
-    public bool TestWithin(Vector2 pos, float radius, bool debugLines = false)
+    public Vector2 GetFirstInRangePoint (Vector2 pos, float radius, bool debugLines = false)
     {
         var lastPoint = Vector2.zero;
         var closestDist = Mathf.Infinity;
@@ -143,7 +143,7 @@ public class Trench
                 if (dist <= lineMesh.width / 2)
                 {
                     if (debugLines) Debug.DrawLine(pos, closestSegPoint, Color.green);
-                    return true;
+                    return closestSegPoint;
                 }
                 if (dist < closestDist && debugLines)
                 {
@@ -160,7 +160,7 @@ public class Trench
                 if (closestDist <= lineMesh.width / 2)
                 {
                     if (debugLines) Debug.DrawLine(pos, closestPoint, Color.green);
-                    return true;
+                    return closestPoint;
                 }
             }
 
@@ -168,7 +168,12 @@ public class Trench
         }
 
         if (debugLines) Debug.DrawLine(pos, closestPoint, Color.red);
-        return false;
+        return Vector2.positiveInfinity;
+    }
+
+    public bool TestWithin(Vector2 pos, float radius, bool debugLines = false)
+    {
+        return GetFirstInRangePoint(pos, radius, debugLines).x != Mathf.Infinity;
     }
 
     public void OnRemove()

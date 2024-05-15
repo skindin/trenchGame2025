@@ -2942,7 +2942,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 718d7d3edfd4f78449bc9b08dd8a895d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkSize: 10
+  chunkSize: 1
 --- !u!1 &1387928846
 GameObject:
   m_ObjectHideFlags: 0
@@ -3363,7 +3363,7 @@ MonoBehaviour:
   activeCount: 0
   pooledCount: 0
   total: 0
-  debugLines: 1
+  debugLines: 0
   bulletMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   meshScale: 0.1
 --- !u!1 &1884758337

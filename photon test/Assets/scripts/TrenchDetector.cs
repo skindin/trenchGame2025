@@ -14,7 +14,7 @@ public class TrenchDetector : MonoBehaviour
     {
         if (currentChunk == null)
         {
-            DetectTrench(0);
+            //DetectTrench(0);
         }
     }
 

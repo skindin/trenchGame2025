@@ -8,4 +8,5 @@ public class Bullet
     public Vector2 pos, startPos, velocity;
     public float range;
     public Gun source;
+    public bool withinTrench;
 }

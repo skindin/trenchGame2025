@@ -70,6 +70,107 @@ public static class GeoFuncs
         return Vector2.positiveInfinity;
     }
 
+    public static bool DoLinesIntersect(Vector2 pointA, Vector2 pointB, Vector2 pointC, Vector2 pointD, bool debugLines = false)
+    {
+        // Direction vectors
+        Vector2 line1Dir = pointB - pointA;
+        Vector2 line2Dir = pointD - pointC;
+
+        float denominator = (line1Dir.x * line2Dir.y) - (line1Dir.y * line2Dir.x);
+
+        if (debugLines)
+        {
+            //Debug.DrawLine(pointA, pointB, Color.cyan);
+            Debug.DrawLine(pointC, pointD, Color.magenta);
+        }
+
+        if (denominator == 0)
+        {
+            // Lines are parallel
+            return false;
+        }
+
+        Vector2 pointDiff = pointC - pointA;
+        float t = ((pointDiff.x * line2Dir.y) - (pointDiff.y * line2Dir.x)) / denominator;
+        float u = ((pointDiff.x * line1Dir.y) - (pointDiff.y * line1Dir.x)) / denominator;
+
+        if (t >= 0 && t <= 1 && u >= 0 && u <= 1)
+        {
+            // Intersection point lies within the line segments
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool DoesLineIntersectBox (Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, bool debugLines = false)
+    {
+        GetTopLeftAndBottomRight(boxMin, boxMax, out var topLeft, out var bottomRight);
+
+        if (TestBox(boxMin, boxMax, pointA) || TestBox(boxMin, boxMax, pointA))
+        {
+            GeoFuncs.DrawBox(boxMin, boxMax, Color.blue);
+            return true;
+        }
+
+        if (DoLinesIntersect(pointA, pointB, boxMin, topLeft, debugLines))
+        {
+            return true;
+        }
+
+        if (DoLinesIntersect(pointA, pointB, topLeft, boxMax, debugLines))
+        {
+            return true;
+        }
+
+        if (DoLinesIntersect(pointA, pointB, boxMax, bottomRight, debugLines))
+        {
+            return true;
+        }
+
+        if (DoLinesIntersect(pointA, pointB, bottomRight, boxMin, debugLines))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static Vector2 FindIntersection(Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End)
+    {
+        float s1_x, s1_y, s2_x, s2_y;
+        s1_x = line1End.x - line1Start.x;
+        s1_y = line1End.y - line1Start.y;
+        s2_x = line2End.x - line2Start.x;
+        s2_y = line2End.y - line2Start.y;
+
+        float s, t;
+        s = (-s1_y * (line1Start.x - line2Start.x) + s1_x * (line1Start.y - line2Start.y)) / (-s2_x * s1_y + s1_x * s2_y);
+        t = (s2_x * (line1Start.y - line2Start.y) - s2_y * (line1Start.x - line2Start.x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+        if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+        {
+            // Intersection detected
+            return new Vector2(line1Start.x + (t * s1_x), line1Start.y + (t * s1_y));
+        }
+
+        // No intersection
+        return Vector2.positiveInfinity;
+    }
+
+    public static bool TestBox(Vector2 min, Vector2 max, Vector2 point)
+    {
+        if (point.x < min.x ||
+        point.y < min.y ||
+        point.x > max.x ||
+        point.y > max.y)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {
         Vector3 lastPoint = Vector2.up * radius;

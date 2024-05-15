@@ -17,10 +17,20 @@ public class ChunkManager : MonoBehaviour
         Chunk.manager = this;
     }
 
+    public Vector2Int PosToCoords(Vector2 pos)
+    {
+        return Vector2Int.RoundToInt(pos / chunkSize);
+    }
+
     public Chunk ChunkFromPos(Vector2 pos, bool newIfNone = true, bool debugLines = false)
     {
         var coords = PosToCoords(pos);
         return ChunkFromCoords(coords, newIfNone, debugLines);
+    }
+
+    public Vector2 GetRealChunkPos (Vector2Int coords)
+    {
+        return (Vector2)coords * chunkSize;
     }
 
     public Chunk ChunkFromCoords(Vector2Int coords, bool newIfNone = true, bool debugLines = false)
@@ -65,13 +75,77 @@ public class ChunkManager : MonoBehaviour
         return chunks;
     }
 
-    //public List<Chunk> ChunksFromLine(Vector2 a, Vector2 b, List<Chunk> chunks, bool newIfNone = true, bool debugLines = false)
-    //{
-    //    var aCoords = PosToCoords(a);
-    //    var bCoords = PosToCoords(b);
+    public List<Chunk> ChunksFromLine(Vector2 pointA, Vector2 pointB, List<Chunk> chunks, bool newIfNone = true, bool debugLines = false)
+    {
+        Vector2 first;
+        Vector2 last;
 
+        if (pointA.x < pointB.x)
+        {
+            first = pointA;
+            last = pointB;
+        }
+        else
+        {
+            first = pointB;
+            last = pointA;
+        }
 
-    //}
+        var firstCoords = PosToCoords(first);
+        var lastCoords = PosToCoords(last);
+
+        if (firstCoords == lastCoords)
+        {
+            var chunk = ChunkFromCoords(firstCoords, newIfNone, false);
+            if (chunk != null && !chunks.Contains(chunk))
+            {
+                chunks.Add(chunk);
+            }
+
+        }
+        else
+        {
+            var coordsDelta = lastCoords - firstCoords;
+
+            var reversed = coordsDelta.y < 0;
+
+            int yIncrement = 1;
+            if (reversed)
+                yIncrement = -1;
+
+            for (int y = 0; y != coordsDelta.y+yIncrement; y += yIncrement)
+            {
+                for (int x = 0; x < coordsDelta.x + 1; x++)
+                {
+                    var coords = new Vector2Int(x, y) + firstCoords;
+                    var boxDelta = chunkSize / 2 * Vector2.one;
+                    var chunkPos = GetRealChunkPos(coords);
+                    var min = chunkPos - boxDelta;
+                    var max = chunkPos + boxDelta;
+                    if (GeoFuncs.DoesLineIntersectBox(pointA, pointB, min, max, debugLines))
+                    {
+                        var chunk = ChunkFromCoords(coords, newIfNone, debugLines);
+                        if (chunk != null && !chunks.Contains(chunk))
+                        {
+                            chunks.Add(chunk);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (debugLines)
+        {
+            foreach (var chunk in chunks)
+            {
+                DrawChunk(chunk, Color.green);
+            }
+
+            Debug.DrawLine(pointA, pointB, Color.green);
+        }
+
+        return chunks; //this doesn't work at all
+    }
 
     /// <summary>
     /// Calculates chunks.
@@ -80,6 +154,8 @@ public class ChunkManager : MonoBehaviour
     /// <param name="trench"></param>
     public void AutoAssignChunks(Trench trench)
     {
+        UnassignChunks(trench);
+
         var bounds = trench.lineMesh.mesh.bounds;
         var chunks = trench.chunks = ChunksFromBox(bounds.min, bounds.max, trench.chunks);
 
@@ -123,11 +199,6 @@ public class ChunkManager : MonoBehaviour
         Debug.DrawLine(bottomRight, bottomLeft, color);
         Debug.DrawLine(bottomLeft, topLeft, color);
         Debug.DrawLine(topLeft, topRight, color);
-    }
-
-    public Vector2Int PosToCoords (Vector2 pos)
-    {
-        return Vector2Int.RoundToInt(pos / chunkSize);
     }
 
 

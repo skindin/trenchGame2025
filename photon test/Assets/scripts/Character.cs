@@ -43,7 +43,8 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (constantDetect) detector.DetectTrench(0);
+        if (constantDetect)
+            detector.DetectTrench(0);
     }
 
     public void Move(Vector2 direction)
