@@ -29,7 +29,8 @@ public class TrenchDetector : MonoBehaviour
     /// <returns></returns>
     public bool DetectTrench (float radius)
     {
-        if (currentTrench != null && Trench.manager.TestTrench(transform.position, radius, currentTrench))
+        //running this from the trench is much better, except for the fact that I have to refference the manager for debug lines
+        if (currentTrench != null && currentTrench.TestWithin(transform.position,radius,Trench.manager.debugLines))
         {
             withinTrench = true;
         }

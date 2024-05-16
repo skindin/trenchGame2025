@@ -124,6 +124,8 @@ public class Trench
 
     public Vector2 GetFirstInRangePoint (Vector2 pos, float radius, bool debugLines = false)
     {
+        if (!lineMesh.TestBoxWithPoint(pos, debugLines)) return Vector2.positiveInfinity;
+
         var lastPoint = Vector2.zero;
         var closestDist = Mathf.Infinity;
         var closestPoint = Vector2.zero;

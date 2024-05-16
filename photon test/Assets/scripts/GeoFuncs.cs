@@ -29,6 +29,22 @@ public static class GeoFuncs
     /// <param name="lineEnd"></param>
     /// <returns></returns>
 
+    public static bool DoesLineIntersectCircle (Vector2 circleCenter, float circleRadius, Vector2 a, Vector2 b, bool debugLines = false)
+    {
+        var closestPoint = ClosestPointToLineSegment(circleCenter, a, b);
+        var dist = (closestPoint - circleCenter).magnitude;
+        var doesIntersect = dist <= circleRadius;
+        Color lineColor;
+        if (debugLines)
+        {
+            if (doesIntersect) lineColor = Color.green;
+            else lineColor = Color.red;
+
+            Debug.DrawLine(closestPoint, circleCenter, lineColor);
+        }
+        return doesIntersect;
+    }
+
     public static Vector2 GetCircleLineIntersection(Vector2 circleCenter, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
     {
         // Vector from start to end of the line segment
@@ -81,7 +97,7 @@ public static class GeoFuncs
         if (debugLines)
         {
             //Debug.DrawLine(pointA, pointB, Color.cyan);
-            Debug.DrawLine(pointC, pointD, Color.magenta);
+            Debug.DrawLine(pointC, pointD, new Color(.25f, 0, 1));
         }
 
         if (denominator == 0)
@@ -105,33 +121,35 @@ public static class GeoFuncs
 
     public static bool DoesLineIntersectBox (Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, bool debugLines = false)
     {
-        GetTopLeftAndBottomRight(boxMin, boxMax, out var topLeft, out var bottomRight);
-
         if (TestBox(boxMin, boxMax, pointA) || TestBox(boxMin, boxMax, pointA))
         {
             GeoFuncs.DrawBox(boxMin, boxMax, Color.blue);
             return true;
         }
 
-        if (DoLinesIntersect(pointA, pointB, boxMin, topLeft, debugLines))
+        GetTopLeftAndBottomRight(boxMin, boxMax, out var topLeft, out var bottomRight);
+
+        if (DoLinesIntersect(pointA, pointB, boxMin, boxMax, debugLines))
         {
             return true;
         }
 
-        if (DoLinesIntersect(pointA, pointB, topLeft, boxMax, debugLines))
+        if (DoLinesIntersect(pointA, pointB, topLeft, bottomRight, debugLines))
         {
             return true;
         }
 
-        if (DoLinesIntersect(pointA, pointB, boxMax, bottomRight, debugLines))
-        {
-            return true;
-        }
+        //if (DoLinesIntersect(pointA, pointB, boxMax, bottomRight, debugLines))
+        //{
+        //    return true;
+        //}
 
-        if (DoLinesIntersect(pointA, pointB, bottomRight, boxMin, debugLines))
-        {
-            return true;
-        }
+        //if (DoLinesIntersect(pointA, pointB, bottomRight, boxMin, debugLines))
+        //{
+        //    return true;
+        //}
+
+        //realized there is no scenario where you would have to test all four lines if you're already testing if it's within
 
         return false;
     }
