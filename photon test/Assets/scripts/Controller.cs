@@ -87,9 +87,9 @@ public class Controller : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            //var mouseDir = mousePos - transform.position;
-            //character.Shoot(mouseDir);
-            Trench.manager.FindTrenchEdgeFromInside(transform.position, mousePos);
+            var mouseDir = mousePos - transform.position;
+            character.Shoot(mouseDir);
+            //Trench.manager.FindTrenchEdgeFromInside(transform.position, mousePos);
             //chunks.Clear();
             //Chunk.manager.ChunksFromLine(transform.position, transform.position + mouseDir, chunks, true, true);
         }

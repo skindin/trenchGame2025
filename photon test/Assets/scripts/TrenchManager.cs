@@ -447,9 +447,7 @@ public class TrenchManager : MonoBehaviour
 
         if (chunk == null) return null;
 
-        TestChunkTrenches(pos, radius, chunk);
-
-        return null;
+        return TestChunkTrenches(pos, radius, chunk);
     }
 
 
@@ -666,6 +664,7 @@ public class TrenchManager : MonoBehaviour
 
                         //var deltaMod = delta.normalized * 100;
                         var max = GeoFuncs.GetCircleLineIntersection(point, lineMesh.width / 2, b, a);
+                        if (max.x == Mathf.Infinity) continue; //no idea why I have to do this
                         var min = closestSegPoint - (max - closestSegPoint);
 
                         //var min = GeoFuncs.GetCircleLineIntersection(point, lineMesh.width / 2, a, b);
@@ -673,8 +672,8 @@ public class TrenchManager : MonoBehaviour
                         if (min != max)
                         {
 
-                            var minDist = Vector2.Dot(min - a, delta);
-                            var maxDist = Vector2.Dot(max - a, delta);
+                            var minDist = Vector2.Dot(min - a, delta.normalized);
+                            var maxDist = Vector2.Dot(max - a, delta.normalized);
 
                             if (minDist > maxDist)
                             {
@@ -720,9 +719,11 @@ public class TrenchManager : MonoBehaviour
 
         floatTuples.Sort((x, y) => x.Item1.CompareTo(y.Item1));
 
-        foreach (var tuple in floatTuples)
+        for (int i = 0; i < floatTuples.Count; i++)
         {
-            if (tuple.Item1 <= furthesDist && tuple.Item2 >= furthesDist)
+            var tuple = floatTuples[i];
+
+            if (i == 0 || tuple.Item1 <= furthesDist && tuple.Item2 >= furthesDist)
             {
                 furthesDist = tuple.Item2;
                 furthestPoint = delta.normalized * furthesDist + a;

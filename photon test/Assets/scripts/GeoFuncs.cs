@@ -45,8 +45,19 @@ public static class GeoFuncs
         return doesIntersect;
     }
 
+    /// <summary>
+    /// Returns the last point of a circle the line would touch
+    /// </summary>
+    /// <param name="circleCenter"></param>
+    /// <param name="circleRadius"></param>
+    /// <param name="lineStart"></param>
+    /// <param name="lineEnd"></param>
+    /// <returns></returns>
+
     public static Vector2 GetCircleLineIntersection(Vector2 circleCenter, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
     {
+        if (Vector2.Distance(circleCenter, lineStart) <= circleRadius && Vector2.Distance(circleCenter, lineEnd) <= circleRadius) return lineStart;
+
         // Vector from start to end of the line segment
         Vector2 lineVec = lineEnd - lineStart;
 
@@ -121,7 +132,7 @@ public static class GeoFuncs
 
     public static bool DoesLineIntersectBox (Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, bool debugLines = false)
     {
-        if (TestBox(boxMin, boxMax, pointA) || TestBox(boxMin, boxMax, pointA))
+        if (TestBox(boxMin, boxMax, pointA, debugLines) || TestBox(boxMin, boxMax, pointB, debugLines))
         {
             GeoFuncs.DrawBox(boxMin, boxMax, Color.blue);
             return true;
@@ -176,8 +187,10 @@ public static class GeoFuncs
         return Vector2.positiveInfinity;
     }
 
-    public static bool TestBox(Vector2 min, Vector2 max, Vector2 point)
+    public static bool TestBox(Vector2 min, Vector2 max, Vector2 point, bool debugLines = false)
     {
+        DrawBox(min, max, Color.blue);
+
         if (point.x < min.x ||
         point.y < min.y ||
         point.x > max.x ||

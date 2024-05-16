@@ -41,6 +41,7 @@ public class BulletManager : MonoBehaviour
         total = activeCount + pooledCount;
 
         newBullet.withinTrench = Trench.manager.TestAllTrenches(pos,0) != null;
+        newBullet.destroy = false;
 
         return newBullet;
     }
@@ -69,14 +70,31 @@ public class BulletManager : MonoBehaviour
         for (int i = 0; i < activeBullets.Count; i++)
         {
             var bullet = activeBullets[i];
+
+            if (bullet.destroy)
+            {
+                DestroyBullet(bullet);
+                i--;
+                continue;
+            }
+
             var delta = bullet.pos - bullet.startPos;
 
             var nextDelta = delta + (bullet.velocity * seconds);
-            bool destroy = nextDelta.magnitude >= bullet.range;
+            bullet.destroy = nextDelta.magnitude >= bullet.range;
             var nextPos = Vector2.ClampMagnitude(nextDelta, bullet.range) + bullet.startPos;
             Collider closestCollider = null;
 
-
+            if (bullet.withinTrench)
+            {
+                var edgePoint = Trench.manager.FindTrenchEdgeFromInside(bullet.pos, nextPos);
+                if (edgePoint != nextPos)
+                {
+                    bullet.withinTrench = false;
+                    nextPos = edgePoint;
+                    bullet.destroy = true;
+                }
+            }
 
             foreach (var collider in Collider.all)
             {
@@ -107,14 +125,8 @@ public class BulletManager : MonoBehaviour
             if (closestCollider != null)
             {
                 closestCollider.BulletHit(bullet);
-                destroy = true;
+                bullet.destroy = true;
                 //Debug.Log($"Hit {closestCollider.gameObject.name}");
-            }
-
-            if (destroy)
-            {
-                DestroyBullet(bullet);
-                i--;
             }
         }
     }

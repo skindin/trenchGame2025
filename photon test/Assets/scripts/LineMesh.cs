@@ -424,9 +424,7 @@ public class LineMesh
 
     public bool TestBoxWithPoint(Vector2 point, bool debugLines = false)
     {
-        if (debugLines) DrawMeshBox();
-
-        return GeoFuncs.TestBox(mesh.bounds.min, mesh.bounds.max, point);
+        return GeoFuncs.TestBox(mesh.bounds.min, mesh.bounds.max, point, debugLines);
     }
 
     public bool TestBoxOverlap (Vector2 min, Vector2 max, bool debugLines = false)
