@@ -453,7 +453,7 @@ public class TrenchManager : MonoBehaviour
 
     /// <summary>
     /// In situations where it's necessary to search through multiple chunks, this function is to prevent code from repeating for the same trench.
-    /// Doesn't need to be run for break functions
+    /// Doesn't need to be run for functions that break mid-loop
     /// </summary>
     /// <param name="chunks"></param>
     /// <param name="trenches"></param>

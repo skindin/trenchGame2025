@@ -14,7 +14,7 @@ public class TrenchDetector : MonoBehaviour
     {
         if (currentChunk == null)
         {
-            //DetectTrench(0);
+            DetectTrench(0); //this was commented out? I'm not sure why? commenting it out makes passive detection not work
         }
     }
 
@@ -55,6 +55,7 @@ public class TrenchDetector : MonoBehaviour
             if (newChunk == null)
             {
                 withinTrench = false;
+                currentTrench = null;
             }
             else
             {

@@ -422,7 +422,7 @@ public class LineMesh
     //    CalculateArea();
     //}
 
-    public bool TestBoxWithPoint(Vector2 point, bool debugLines = false)
+    public bool TestMeshBox(Vector2 point, bool debugLines = false)
     {
         return GeoFuncs.TestBox(mesh.bounds.min, mesh.bounds.max, point, debugLines);
     }

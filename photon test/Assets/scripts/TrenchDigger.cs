@@ -89,7 +89,7 @@ public class TrenchDigger : MonoBehaviour
         }
 
 
-        if (moveDist > 0 || width != prevWidth)
+        if (moveDist > 0 || width != prevWidth || firstPoint)
         {
             Trench.manager.RegenerateMesh(trench);
         }
@@ -99,8 +99,7 @@ public class TrenchDigger : MonoBehaviour
             //Chunk.manager.UnassignChunks(trench); //auto assign now runs this
             Chunk.manager.AutoAssignChunks(trench);
         }
-
-        if (trench.lineMesh.points.Count > 1)
+        else if (trench.lineMesh.points.Count > 1)
         {
             if (Chunk.manager.TestDifferentChunks(prevBoxMin, trench.lineMesh.mesh.bounds.min))
             {
@@ -121,7 +120,7 @@ public class TrenchDigger : MonoBehaviour
 
                 if (detector.gameObject == gameObject) continue;
 
-                if (trench.lineMesh.TestBoxWithPoint(detector.transform.position))
+                if (trench.lineMesh.TestMeshBox(detector.transform.position))
                 {
                     detector.DetectTrench(0);//if I ever find how to make radii work, i gotta fix this part
                     var newIndex = chunk.detectors.IndexOf(detector);

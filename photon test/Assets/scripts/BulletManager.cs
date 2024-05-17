@@ -8,7 +8,7 @@ public class BulletManager : MonoBehaviour
     public int maxPooled = 100, activeCount, pooledCount, total;
     public bool debugLines = false;
     public Mesh bulletMesh;
-    public float meshScale = .1f;
+    public float meshScale = .1f, deltaTimeDisplay;
 
     private void Awake()
     {
@@ -40,7 +40,7 @@ public class BulletManager : MonoBehaviour
 
         total = activeCount + pooledCount;
 
-        newBullet.withinTrench = Trench.manager.TestAllTrenches(pos,0) != null;
+        newBullet.withinTrench = source.wielder.detector.withinTrench;
         newBullet.destroy = false;
 
         return newBullet;
@@ -63,6 +63,8 @@ public class BulletManager : MonoBehaviour
     private void Update()
     {
         UpdateBullets(Time.deltaTime);
+
+        deltaTimeDisplay = Time.deltaTime;
     }
 
     void UpdateBullets(float seconds)
@@ -85,26 +87,18 @@ public class BulletManager : MonoBehaviour
             var nextPos = Vector2.ClampMagnitude(nextDelta, bullet.range) + bullet.startPos;
             Collider closestCollider = null;
 
-            if (bullet.withinTrench)
-            {
-                var edgePoint = Trench.manager.FindTrenchEdgeFromInside(bullet.pos, nextPos);
-                if (edgePoint != nextPos)
-                {
-                    bullet.withinTrench = false;
-                    nextPos = edgePoint;
-                    bullet.destroy = true;
-                }
-            }
 
             foreach (var collider in Collider.all)
             {
-                if ((!collider.vulnerable && !bullet.withinTrench) || bullet.source.wielder.collider == collider) continue;
+                if (bullet.source.wielder.collider == collider) continue;
+                if (!collider.vulnerable && !bullet.withinTrench) continue;
 
                 var radius = collider.size * collider.transform.lossyScale.x / 2;
-                var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
+                var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, radius, nextPos, bullet.pos); 
                 if (point.x == Mathf.Infinity) continue;
                 var pointDist = (point - bullet.pos).magnitude;
                 var nextDist = (nextPos - bullet.pos).magnitude;
+
                 if (nextDist > pointDist)
                 {
                     nextPos = point;
@@ -112,7 +106,23 @@ public class BulletManager : MonoBehaviour
                 }
             }
 
+            if (bullet.withinTrench)
+            {
+                var edgePoint = Trench.manager.FindTrenchEdgeFromInside(bullet.pos, nextPos);
+                if (edgePoint != nextPos)
+                {
+                    //bullet.withinTrench = false;
+                    //nextPos = edgePoint;
+                    //bullet.destroy = true;
 
+                    if ((nextPos - bullet.pos).magnitude > (edgePoint - bullet.pos).magnitude)
+                    {
+                        closestCollider = null;
+                    }
+
+                    bullet.withinTrench = false;
+                }
+            }
 
             if (debugLines)
             {

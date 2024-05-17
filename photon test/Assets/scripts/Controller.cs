@@ -6,7 +6,7 @@ public class Controller : MonoBehaviour
 {
     public Character character;
     public static Controller active;
-    public bool enableFill = false;
+    public bool enableFill = false, drawEdgeDetection = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -89,7 +89,7 @@ public class Controller : MonoBehaviour
             var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var mouseDir = mousePos - transform.position;
             character.Shoot(mouseDir);
-            //Trench.manager.FindTrenchEdgeFromInside(transform.position, mousePos);
+            if (drawEdgeDetection) Trench.manager.FindTrenchEdgeFromInside(transform.position, mousePos);
             //chunks.Clear();
             //Chunk.manager.ChunksFromLine(transform.position, transform.position + mouseDir, chunks, true, true);
         }
