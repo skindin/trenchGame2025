@@ -140,15 +140,7 @@ public static class GeoFuncs
 
         GetTopLeftAndBottomRight(boxMin, boxMax, out var topLeft, out var bottomRight);
 
-        if (DoLinesIntersect(pointA, pointB, boxMin, boxMax, debugLines))
-        {
-            return true;
-        }
-
-        if (DoLinesIntersect(pointA, pointB, topLeft, bottomRight, debugLines))
-        {
-            return true;
-        }
+        return DoesLineIntersectX(pointA, pointB, boxMin, topLeft, boxMax, bottomRight, debugLines);
 
         //if (DoLinesIntersect(pointA, pointB, boxMax, bottomRight, debugLines))
         //{
@@ -162,11 +154,216 @@ public static class GeoFuncs
 
         //realized there is no scenario where you would have to test all four lines if you're already testing if it's within
 
-        return false;
     }
 
-    public static Vector2 FindIntersection(Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End)
+    public static bool DoesLineIntersectX (Vector2 pointA, Vector2 pointB, Vector2 bottomLeft, Vector2 topLeft, Vector2 topRight, Vector2 bottomRight,
+        bool debugLines = false)
     {
+
+        if (DoLinesIntersect(pointA, pointB, topLeft, bottomRight, debugLines))
+        {
+            return true;
+        }
+
+        return DoLinesIntersect(pointA, pointB, bottomLeft, topRight, debugLines);
+    }
+
+    public static bool IsPointInTriangle(Vector2 point, Vector2 vertex1, Vector2 vertex2, Vector2 vertex3, bool debugLines = false)
+    {
+        // Compute vectors
+        Vector2 v0 = vertex3 - vertex1;
+        Vector2 v1 = vertex2 - vertex1;
+        Vector2 v2 = point - vertex1;
+
+        // Compute dot products
+        float dot00 = Vector2.Dot(v0, v0);
+        float dot01 = Vector2.Dot(v0, v1);
+        float dot02 = Vector2.Dot(v0, v2);
+        float dot11 = Vector2.Dot(v1, v1);
+        float dot12 = Vector2.Dot(v1, v2);
+
+        // Compute barycentric coordinates
+        float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+        float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+        float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+        if (debugLines)
+        {
+            Color color = new(.5f, .8f, 1);
+            Debug.DrawLine(vertex1, vertex2, color);
+            Debug.DrawLine(vertex2, vertex3, color);
+            Debug.DrawLine(vertex3, vertex1, color);
+        }
+
+        // Check if point is in triangle
+        return (u >= 0) && (v >= 0) && (u + v < 1);
+    }
+
+    public static bool IsPointInQuad(Vector2 point, Vector2 vertex1, Vector2 vertex2, Vector2 vertex3, Vector2 vertex4, bool debugLines = false)
+    {
+        if (IsPointInTriangle(point, vertex1, vertex2, vertex3, debugLines)) return true;
+        return IsPointInTriangle(point, vertex1, vertex4, vertex3, debugLines);
+    }
+
+
+    /// <summary>
+    /// Returns true if the line overlaps the quad at all Input vertexes in order!
+    /// </summary>
+    /// <param name="pointA"></param>
+    /// <param name="pointB"></param>
+    /// <param name="vertex1"></param>
+    /// <param name="vertex2"></param>
+    /// <param name="vertex3"></param>
+    /// <param name="vertex4"></param>
+    /// <returns></returns>
+    public static bool DoesLineIntersectQuad(Vector2 pointA, Vector2 pointB, Vector2 vertex1, Vector2 vertex2, Vector2 vertex3, Vector2 vertex4,
+        bool debugLines = false)
+    {
+        if (
+            IsPointInQuad(pointA, vertex1, vertex2, vertex3, vertex4, debugLines) ||
+            IsPointInQuad(pointB, vertex1, vertex2, vertex3, vertex4, debugLines)
+            ) return true;
+
+        return DoesLineIntersectX(pointA, pointB, vertex1, vertex2, vertex3, vertex4, debugLines);
+    }
+
+    public static void GetQuadIntercepts(Vector2 pointA, Vector2 pointB, Vector2 vertex1, Vector2 vertex2, Vector2 vertex3, Vector2 vertex4,
+        out Vector2 interceptA, out Vector2 interceptB, bool debugLines = false)
+    {
+        //interceptA = pointA;
+        //interceptB = pointB;
+
+        interceptA = Vector2.positiveInfinity;
+        interceptB = Vector2.positiveInfinity;
+
+        Vector2 firstFound = pointA;
+
+        var interceptCount = 0;
+
+        var intercept = FindIntersection(pointA, pointB, vertex1, vertex2, debugLines);
+        if (intercept.x != Mathf.Infinity)
+        {
+            firstFound = intercept;
+            interceptCount++;
+        }
+        
+        intercept = FindIntersection(pointA, pointB, vertex3, vertex2, debugLines);
+        if (intercept.x != Mathf.Infinity)
+        {
+            if (interceptCount == 1)
+            {
+                GetClosestAndFurthest(pointA, firstFound, intercept, out var closest, out var furthest);
+                interceptA = closest;
+                interceptB = furthest;
+                return;
+            }
+            else
+            {
+                firstFound = intercept;
+                interceptCount++;
+            }
+        }
+
+        intercept = FindIntersection(pointA, pointB, vertex3, vertex4, debugLines);
+        if (intercept.x != Mathf.Infinity)
+        {
+            if (interceptCount == 1)
+            {
+                GetClosestAndFurthest(pointA, firstFound, intercept, out var closest, out var furthest);
+                interceptA = closest;
+                interceptB = furthest;
+                return;
+            }
+            else
+            {
+                firstFound = intercept;
+                interceptCount++;
+            }
+        }
+
+        intercept = FindIntersection(pointA, pointB, vertex1, vertex4, debugLines);
+        if (intercept.x != Mathf.Infinity)
+        {
+            if (interceptCount == 1)
+            {
+                GetClosestAndFurthest(pointA, firstFound, intercept, out var closest, out var furthest);
+                interceptA = closest;
+                interceptB = furthest;
+                return;
+            }
+        }
+
+        if (interceptCount == 1)
+        {
+            if (IsPointInQuad(pointA, vertex1, vertex2, vertex3, vertex4))
+            {
+                //GetClosestAndFurthest(pointA, firstFound, pointB, out var closest, out var furthest);
+                interceptA = pointA;
+                interceptB = firstFound;
+                return;
+            }
+            else if (IsPointInQuad(pointB, vertex1, vertex2, vertex3, vertex4))
+            {
+                interceptA = firstFound;
+                interceptB = pointB;
+            }
+        }
+        else if (IsPointInQuad(pointA,vertex1,vertex2,vertex3,vertex4,debugLines) ||
+            IsPointInQuad(pointB, vertex1, vertex2, vertex3, vertex4, debugLines))
+        {
+                interceptA = pointA;
+                interceptB = pointB;
+        }
+    }
+
+    public static void GetThickLineInterceps(Vector2 pointA, Vector2 pointB, Vector2 thickPointA, Vector2 thickPointB, float width,
+        out Vector2 closest, out Vector2 furthest, bool debugLines = false)
+    {
+        var delta = thickPointB - thickPointA;
+        var edgeDelta = Vector2.Perpendicular(delta).normalized * width/2;
+
+        var vertex1 = thickPointA + edgeDelta;
+        var vertex2 = thickPointB + edgeDelta;
+        var vertex3 = thickPointB - edgeDelta;
+        var vertex4 = thickPointA - edgeDelta;
+
+        GetQuadIntercepts(pointA, pointB, vertex1, vertex2, vertex3, vertex4, out closest, out furthest, debugLines);
+    }
+
+    public static bool DoesLineInterceptThickLine(Vector2 pointA, Vector2 pointB, Vector2 thickPointA, Vector2 thickPointB, float width, bool debugLines = false)
+    {
+        var delta = thickPointB - thickPointA;
+        var edgeDelta = Vector2.Perpendicular(delta).normalized * width / 2;
+
+        var vertex1 = thickPointA + edgeDelta;
+        var vertex2 = thickPointB + edgeDelta;
+        var vertex3 = thickPointB - edgeDelta;
+        var vertex4 = thickPointA - edgeDelta;
+
+        return DoesLineIntersectQuad(pointA, pointB, vertex1, vertex2, vertex3, vertex4, debugLines);
+    }
+
+    public static void GetClosestAndFurthest (Vector2 subjPoint, Vector2 pointA, Vector2 pointB, out Vector2 closest, out Vector2 furthest)
+    {
+        var distA = (pointA - subjPoint).magnitude;
+        var distB = (pointB - subjPoint).magnitude;
+
+        if (distA < distB)
+        {
+            closest = pointA;
+            furthest = pointB;
+        }
+        else
+        {
+            closest = pointB;
+            furthest = pointA;
+        }
+    }
+
+    public static Vector2 FindIntersection(Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End, bool debugLines = false)
+    {
+        if (debugLines) Debug.DrawLine(line2Start, line2End, Color.cyan);
+
         float s1_x, s1_y, s2_x, s2_y;
         s1_x = line1End.x - line1Start.x;
         s1_y = line1End.y - line1Start.y;
@@ -180,16 +377,19 @@ public static class GeoFuncs
         if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
         {
             // Intersection detected
-            return new Vector2(line1Start.x + (t * s1_x), line1Start.y + (t * s1_y));
+            if (debugLines) Debug.DrawLine(line2Start, line2End, Color.green);
+            var intersection = new Vector2(line1Start.x + (t * s1_x), line1Start.y + (t * s1_y));
+            return intersection;
         }
 
         // No intersection
+        if (debugLines) Debug.DrawLine(line2Start, line2End, Color.red);
         return Vector2.positiveInfinity;
     }
 
     public static bool TestBox(Vector2 min, Vector2 max, Vector2 point, bool debugLines = false)
     {
-        DrawBox(min, max, Color.blue);
+        if (debugLines) DrawBox(min, max, Color.blue);
 
         if (point.x < min.x ||
         point.y < min.y ||
@@ -219,7 +419,7 @@ public static class GeoFuncs
         }
     }
 
-    public static void DrawX(Vector2 point, float size, Color color)
+    public static void MarkPoint(Vector2 point, float size, Color color)
     {
         var min = -Vector2.one * size;
         var max = -min;

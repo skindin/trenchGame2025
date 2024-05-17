@@ -194,6 +194,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &105425023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,6 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 105425026}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &105425026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -338,6 +341,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &136911495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,6 +390,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 136911498}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &136911498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -566,6 +572,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &466165487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -613,6 +621,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 466165490}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &466165490
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -710,6 +719,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &556162941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -757,6 +768,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 556162944}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &556162944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1745,6 +1757,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1195927133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1792,6 +1806,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1195927136}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1195927136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2018,6 +2033,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1400272893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2065,6 +2082,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1400272896}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1400272896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2162,6 +2180,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1401208995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2209,6 +2229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1401208998}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1401208998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2474,6 +2495,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1468275374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2521,6 +2544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1468275377}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1468275377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2618,6 +2642,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1512810598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2665,6 +2691,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1512810601}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1512810601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2762,6 +2789,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1526851364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2809,6 +2838,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1526851367}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1526851367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3074,6 +3104,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1674199220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3121,6 +3153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1674199223}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1674199223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3218,6 +3251,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1764075116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3265,6 +3300,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1764075119}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1764075119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3342,7 +3378,7 @@ MonoBehaviour:
   debugLines: 0
   bulletMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   meshScale: 0.1
-  deltaTimeDisplay: 0
+  fpsDisplay: 0
 --- !u!1 &1775034022
 GameObject:
   m_ObjectHideFlags: 0
@@ -3414,6 +3450,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1775034026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3461,6 +3499,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1775034029}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1775034029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3810,6 +3849,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &1969674972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3857,6 +3898,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 1969674975}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &1969674975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3961,6 +4003,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 2062759855}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &2062759858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4025,8 +4068,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wielder: {fileID: 2062759855}
   bulletSpeed: 100
-  range: 5
+  range: 20
   firingRate: 10
+  maxPerFrame: 5
+  enabled: 1
 --- !u!1 &2064727304
 GameObject:
   m_ObjectHideFlags: 0
@@ -4082,6 +4127,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &2064727307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4129,6 +4176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 2064727310}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &2064727310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4326,6 +4374,8 @@ MonoBehaviour:
   bulletSpeed: 1
   range: 20
   firingRate: 5
+  maxPerFrame: 5
+  enabled: 1
 --- !u!114 &2140677692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4373,6 +4423,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 2140677695}
   enableFill: 0
+  drawEdgeDetection: 0
 --- !u!114 &2140677695
 MonoBehaviour:
   m_ObjectHideFlags: 0

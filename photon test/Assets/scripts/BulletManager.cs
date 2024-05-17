@@ -8,7 +8,7 @@ public class BulletManager : MonoBehaviour
     public int maxPooled = 100, activeCount, pooledCount, total;
     public bool debugLines = false;
     public Mesh bulletMesh;
-    public float meshScale = .1f, deltaTimeDisplay;
+    public float meshScale = .1f, fpsDisplay;
 
     private void Awake()
     {
@@ -64,7 +64,7 @@ public class BulletManager : MonoBehaviour
     {
         UpdateBullets(Time.deltaTime);
 
-        deltaTimeDisplay = Time.deltaTime;
+        fpsDisplay = Mathf.Round(1/Time.deltaTime);
     }
 
     void UpdateBullets(float seconds)

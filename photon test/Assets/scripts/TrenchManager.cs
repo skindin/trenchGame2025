@@ -345,7 +345,7 @@ public class TrenchManager : MonoBehaviour
                     }
                     else
                     {
-                        if (debugLines) GeoFuncs.DrawX(currentPoint, .5f, Color.red);
+                        if (debugLines) GeoFuncs.MarkPoint(currentPoint, .5f, Color.red);
                     }
 
                     //gotta find where to turn lastWasInner off
@@ -536,7 +536,7 @@ public class TrenchManager : MonoBehaviour
                         if (intersection.x != Mathf.Infinity)
                         {
                             //intersection += lineMesh.width / 2 * backWardOne;
-                            if (debugLines) GeoFuncs.DrawX(intersection, .5f, Color.magenta);
+                            if (debugLines) GeoFuncs.MarkPoint(intersection, .5f, Color.magenta);
 
                             var distance = (intersection - a).magnitude;
 
@@ -555,7 +555,7 @@ public class TrenchManager : MonoBehaviour
                 var circleIntersection = GeoFuncs.GetCircleLineIntersection(point, lineMesh.width / 2, b, a);
                 if (circleIntersection.x != Mathf.Infinity)
                 {
-                    if (debugLines) GeoFuncs.DrawX(circleIntersection, .5f, Color.magenta);
+                    if (debugLines) GeoFuncs.MarkPoint(circleIntersection, .5f, Color.magenta);
 
                     var distance = (circleIntersection - a).magnitude;
 
@@ -572,7 +572,7 @@ public class TrenchManager : MonoBehaviour
 
         //Chunk.manager.DrawChunk(chunk, Color.black);
 
-        GeoFuncs.DrawX(closestPoint, 1, Color.green);
+        GeoFuncs.MarkPoint(closestPoint, 1, Color.green);
 
         return closestPoint;
     }
@@ -619,41 +619,30 @@ public class TrenchManager : MonoBehaviour
                 {
                     var point = points[i];
 
-                    //if (i > 0)
-                    //{
-                    //    if (debugLines) Debug.DrawLine(lastPoint, point, Color.black);
+                    if (i > 0)
+                    {
+                        if (GeoFuncs.DoesLineInterceptThickLine(a, b, lastPoint, point, lineMesh.width,debugLines))
+                        {
+                            GeoFuncs.GetThickLineInterceps(a, b, lastPoint, point, lineMesh.width, out var min, out var max, true);
 
-                    //    var segDelta = lastPoint - point;
+                            var minDist = Vector2.Dot(min - a, delta.normalized);
+                            var maxDist = Vector2.Dot(max - a, delta.normalized);
 
-                    //    var edgeDelta = lineMesh.width / 2 * Vector2.Perpendicular(segDelta).normalized;
+                            if (debugLines)
+                            {
+                                var direction = Vector2.Perpendicular(delta).normalized * .5f;
+                                var middle = (min + max) / 2;
+                                Color minColor = new(.5f, 1f, 0);
+                                Color maxColor = new(1, .5f, 0);
+                                Debug.DrawLine(min, middle + direction, minColor);
+                                Debug.DrawLine(max, middle + direction, maxColor);
+                                Debug.DrawLine(min, middle - direction, minColor);
+                                Debug.DrawLine(max, middle - direction, maxColor);
+                            }
 
-                    //    for (int l = -1; l <= 1; l += 2)
-                    //    {
-                    //        var sideDelta = l * edgeDelta;
-
-                    //        var lastPointEdge = lastPoint + sideDelta;
-                    //        var thisPointEdge = point + sideDelta;
-
-                    //        if (debugLines) Debug.DrawLine(lastPointEdge, thisPointEdge, Color.grey);
-
-                    //        var intersection = GeoFuncs.FindIntersection(a, b, lastPointEdge, thisPointEdge);
-                    //        if (intersection.x != Mathf.Infinity)
-                    //        {
-                    //            //intersection += lineMesh.width / 2 * backWardOne;
-                    //            if (debugLines) GeoFuncs.DrawX(intersection, .5f, Color.magenta);
-
-                    //            var distance = (intersection - a).magnitude;
-
-                    //            if (distance < closestDist)
-                    //            {
-                    //                closestDist = distance;
-                    //                closestPoint = intersection;
-                    //            }
-                    //            //if ()
-                    //            //return intersection;
-                    //        }
-                    //    }
-                    //}
+                            floatTuples.Add((minDist, maxDist));
+                        }
+                    }
 
                     var closestSegPoint = GeoFuncs.ClosestPointToLineSegment(point, a, b);
                     var segDist = (closestSegPoint - point).magnitude;
@@ -669,7 +658,7 @@ public class TrenchManager : MonoBehaviour
 
                         //var min = GeoFuncs.GetCircleLineIntersection(point, lineMesh.width / 2, a, b);
 
-                        if (min != max)
+                        if (min != max || true)
                         {
 
                             var minDist = Vector2.Dot(min - a, delta.normalized);
@@ -736,7 +725,7 @@ public class TrenchManager : MonoBehaviour
             }
         }
 
-        GeoFuncs.DrawX(furthestPoint, 1, Color.green);
+        GeoFuncs.MarkPoint(furthestPoint, 1, Color.green);
 
         return furthestPoint;
     }
