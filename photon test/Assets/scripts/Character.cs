@@ -74,7 +74,11 @@ public class Character : MonoBehaviour
     {
         if (!stop)
         {
-            digger.DigTrench(digPoint, Time.deltaTime);
+            if (!digger.DigTrench(digPoint, Time.deltaTime))
+            {
+                digging = false;
+                return;
+            }
         }
         else if (!constantDig)
         {
@@ -83,8 +87,11 @@ public class Character : MonoBehaviour
 
         digging = !stop;
 
-        UpdateVulnerable(true);
-        detector.SetStatus(true);
+        if (digging)
+        {
+            UpdateVulnerable(true);
+            detector.SetStatus(true);
+        }
     }
 
     public void Shoot (Vector2 direction)

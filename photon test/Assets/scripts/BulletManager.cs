@@ -8,7 +8,7 @@ public class BulletManager : MonoBehaviour
     public int maxPooled = 100, activeCount, pooledCount, total;
     public bool debugLines = false;
     public Mesh bulletMesh;
-    public float meshScale = .1f, fpsDisplay;
+    public float meshScale = .1f;
 
     private void Awake()
     {
@@ -63,8 +63,6 @@ public class BulletManager : MonoBehaviour
     private void Update()
     {
         UpdateBullets(Time.deltaTime);
-
-        fpsDisplay = Mathf.Round(1/Time.deltaTime);
     }
 
     void UpdateBullets(float seconds)
@@ -87,6 +85,17 @@ public class BulletManager : MonoBehaviour
             var nextPos = Vector2.ClampMagnitude(nextDelta, bullet.range) + bullet.startPos;
             Collider closestCollider = null;
 
+            float furthestTrenchDist = nextDelta.magnitude;
+            bool leavingTrench = false;
+            if (bullet.withinTrench)
+            {
+                var edgePoint = Trench.manager.FindTrenchEdgeFromInside(bullet.pos, nextPos, debugLines);
+                if (edgePoint != nextPos)
+                {
+                    furthestTrenchDist = (bullet.pos - edgePoint).magnitude;
+                    leavingTrench = true;
+                }
+            }
 
             foreach (var collider in Collider.all)
             {
@@ -97,6 +106,10 @@ public class BulletManager : MonoBehaviour
                 var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, radius, nextPos, bullet.pos); 
                 if (point.x == Mathf.Infinity) continue;
                 var pointDist = (point - bullet.pos).magnitude;
+                if (bullet.withinTrench && !collider.vulnerable)
+                {
+                    if (pointDist > furthestTrenchDist) continue;
+                }
                 var nextDist = (nextPos - bullet.pos).magnitude;
 
                 if (nextDist > pointDist)
@@ -106,22 +119,9 @@ public class BulletManager : MonoBehaviour
                 }
             }
 
-            if (bullet.withinTrench)
+            if (bullet.withinTrench && leavingTrench)
             {
-                var edgePoint = Trench.manager.FindTrenchEdgeFromInside(bullet.pos, nextPos);
-                if (edgePoint != nextPos)
-                {
-                    //bullet.withinTrench = false;
-                    //nextPos = edgePoint;
-                    //bullet.destroy = true;
-
-                    if ((nextPos - bullet.pos).magnitude > (edgePoint - bullet.pos).magnitude)
-                    {
-                        closestCollider = null;
-                    }
-
-                    bullet.withinTrench = false;
-                }
+                bullet.withinTrench = false;
             }
 
             if (debugLines)

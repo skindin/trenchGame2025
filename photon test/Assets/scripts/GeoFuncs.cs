@@ -134,7 +134,7 @@ public static class GeoFuncs
     {
         if (TestBox(boxMin, boxMax, pointA, debugLines) || TestBox(boxMin, boxMax, pointB, debugLines))
         {
-            GeoFuncs.DrawBox(boxMin, boxMax, Color.blue);
+            if (debugLines) DrawBox(boxMin, boxMax, Color.blue);
             return true;
         }
 
@@ -291,6 +291,11 @@ public static class GeoFuncs
                 interceptB = furthest;
                 return;
             }
+            else
+            {
+                firstFound = intercept;
+                interceptCount++;
+            }
         }
 
         if (interceptCount == 1)
@@ -302,14 +307,15 @@ public static class GeoFuncs
                 interceptB = firstFound;
                 return;
             }
-            else if (IsPointInQuad(pointB, vertex1, vertex2, vertex3, vertex4))
+            else
+            //if (IsPointInQuad(pointB, vertex1, vertex2, vertex3, vertex4))
             {
                 interceptA = firstFound;
                 interceptB = pointB;
             }
         }
-        else if (IsPointInQuad(pointA,vertex1,vertex2,vertex3,vertex4,debugLines) ||
-            IsPointInQuad(pointB, vertex1, vertex2, vertex3, vertex4, debugLines))
+        else if (IsPointInQuad(pointA,vertex1,vertex2,vertex3,vertex4) &&
+            IsPointInQuad(pointB, vertex1, vertex2, vertex3, vertex4))
         {
                 interceptA = pointA;
                 interceptB = pointB;

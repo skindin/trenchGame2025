@@ -7,7 +7,8 @@ public class TrenchDigger : MonoBehaviour
     Vector2 lastDigPoint, lastFillPoint;
     public float lastAngle;
     public Trench trench;
-    public float startWidth = 1, maxWidth = 2, digSpeed = 2, minPointDist = .2f;
+    public float startWidth = 1, maxWidth = 2, digSpeed = 2, minPointDist = .2f, cooldown = .5f;
+    float lastStopTime = 0;
     float fillRadius;
 
     private void Awake()
@@ -24,8 +25,11 @@ public class TrenchDigger : MonoBehaviour
         //FillTrenches(transform.position, 10);
     }
 
-    public void DigTrench (Vector2 point, float widthIncrement)
+    public bool DigTrench (Vector2 point, float widthIncrement)
     {
+        if (Time.time - lastStopTime < cooldown || Time.time <= cooldown)
+            return false;
+
         float prevWidth = 0;
         float width;
 
@@ -123,11 +127,13 @@ public class TrenchDigger : MonoBehaviour
                 if (trench.lineMesh.TestMeshBox(detector.transform.position))
                 {
                     detector.DetectTrench(0);//if I ever find how to make radii work, i gotta fix this part
-                    var newIndex = chunk.detectors.IndexOf(detector);
-                    if (newIndex < i) i--;
+                    //var newIndex = chunk.detectors.IndexOf(detector);
+                    //if (newIndex < i) i--; //lets see if anything weird happens when i comment these two lines out
                 }
             }
         }
+
+        return true;
     }
 
     public void FillTrenches (Vector2 point, float widthIncrement)
@@ -143,8 +149,12 @@ public class TrenchDigger : MonoBehaviour
 
     public void StopDigging ()
     {
-        trench.lineMesh.PurgePoints();
-        trench = null;
+        if (trench != null)
+        {
+            trench.lineMesh.PurgePoints();
+            trench = null;
+            lastStopTime = Time.time;
+        }
     }
 
     public void StopFilling ()

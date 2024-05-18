@@ -8,6 +8,7 @@ public class InstanceRenderer : MonoBehaviour
     public Vector2 renderBox = Vector2.one * 10;
     public bool debugLines = false;
     List<Chunk> chunks = new();
+    List<Trench> trenches = new();
 
     public void LateUpdate()
     {
@@ -36,19 +37,21 @@ public class InstanceRenderer : MonoBehaviour
         
         if (debugLines) GeoFuncs.DrawBox(boxMin, boxMax, Color.magenta);
 
-        foreach (var chunk in chunks)
-        {
-            foreach (var trench in chunk.trenches)
-            {
-                //trench.lineMesh.mesh.RecalculateBounds();
-                Graphics.DrawMesh(trench.lineMesh.mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
-            }
-        }
-        
+        Mesh mesh = new();
 
-        //foreach (var trench in Trench.manager.trenches)
-        //{
-        //    Graphics.DrawMesh(trench.lineMesh.mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
-        //}
+        Trench.manager.GetTrenchesFromChunks(chunks, trenches);
+
+        CombineInstance[] combine = new CombineInstance[trenches.Count];
+
+        for (int i = 0; i < trenches.Count; i++)
+        {
+            var trench = trenches[i];
+
+            combine[i].mesh = trench.lineMesh.mesh;
+            combine[i].transform = Matrix4x4.identity;
+        }
+
+        mesh.CombineMeshes(combine);
+        Graphics.DrawMesh(mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
     }
 }

@@ -59,7 +59,7 @@ public class TrenchDetector : MonoBehaviour
             }
             else
             {
-                currentTrench = Trench.manager.TestChunkTrenches(transform.position, radius, currentChunk);
+                currentTrench = Trench.manager.TestChunkTrenches(transform.position, radius, currentChunk, currentTrench);
                 withinTrench = currentTrench != null;
             }
         }

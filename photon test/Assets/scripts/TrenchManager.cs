@@ -428,10 +428,11 @@ public class TrenchManager : MonoBehaviour
         }
     }
 
-    public Trench TestChunkTrenches (Vector2 pos, float radius, Chunk chunk)
+    public Trench TestChunkTrenches (Vector2 pos, float radius, Chunk chunk, Trench discludeTrench = null)
     {
         foreach (var trench in chunk.trenches)
         {
+            if (trench == discludeTrench) continue;
             if (trench.TestWithin(pos,radius,debugLines))
             {
                 return trench;
@@ -488,7 +489,7 @@ public class TrenchManager : MonoBehaviour
     List<Chunk> tempChunkList = new(); //gotta be careful with these and make sure every function is done with them before another uses them
     List<Trench> tempTrenchList = new();
 
-    public Vector2 FindTrenchEdgeFromOutside(Vector2 a, Vector2 b)
+    public Vector2 FindTrenchEdgeFromOutside(Vector2 a, Vector2 b, bool debugLines = false)
     {
         tempChunkList.Clear();
         Chunk.manager.ChunksFromLine(a, b, tempChunkList, false, debugLines);
@@ -572,14 +573,14 @@ public class TrenchManager : MonoBehaviour
 
         //Chunk.manager.DrawChunk(chunk, Color.black);
 
-        GeoFuncs.MarkPoint(closestPoint, 1, Color.green);
+        if(debugLines) GeoFuncs.MarkPoint(closestPoint, 1, Color.green);
 
         return closestPoint;
     }
 
     List<(float, float)> floatTuples = new();
 
-    public Vector2 FindTrenchEdgeFromInside(Vector2 a, Vector2 b)
+    public Vector2 FindTrenchEdgeFromInside(Vector2 a, Vector2 b, bool debugLines = false)
     {
         var furthestPoint = a; // GetFirstPointWithinRange(a);
         //if (furthestPoint.x == Mathf.Infinity) return b;
@@ -621,9 +622,9 @@ public class TrenchManager : MonoBehaviour
 
                     if (i > 0)
                     {
-                        if (GeoFuncs.DoesLineInterceptThickLine(a, b, lastPoint, point, lineMesh.width,debugLines))
+                        if (GeoFuncs.DoesLineInterceptThickLine(a, b, lastPoint, point, lineMesh.width, debugLines))
                         {
-                            GeoFuncs.GetThickLineInterceps(a, b, lastPoint, point, lineMesh.width, out var min, out var max, true);
+                            GeoFuncs.GetThickLineInterceps(a, b, lastPoint, point, lineMesh.width, out var min, out var max, debugLines);
 
                             var minDist = Vector2.Dot(min - a, delta.normalized);
                             var maxDist = Vector2.Dot(max - a, delta.normalized);
@@ -725,7 +726,7 @@ public class TrenchManager : MonoBehaviour
             }
         }
 
-        GeoFuncs.MarkPoint(furthestPoint, 1, Color.green);
+        if (debugLines) GeoFuncs.MarkPoint(furthestPoint, 1, Color.red);
 
         return furthestPoint;
     }
