@@ -314,14 +314,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   texture: {fileID: 0}
   spriteRenderer: {fileID: 717289630}
-  fillColor: {r: 0, g: 0, b: 0, a: 1}
-  blankColor: {r: 1, g: 1, b: 1, a: 1}
+  fillColor: {r: 0.33962262, g: 0.26857522, b: 0.16180134, a: 1}
+  blankColor: {r: 0.49960244, g: 0.6320754, b: 0.48001954, a: 1}
   width: 0
-  startWidth: 1
-  widthSpeed: 1
+  startWidth: 5
+  widthSpeed: 10
   maxWidth: 10
-  mapScale: 10
-  mapSize: 10
+  mapScale: 5
+  mapSize: 20
 --- !u!1 &893604344
 GameObject:
   m_ObjectHideFlags: 0

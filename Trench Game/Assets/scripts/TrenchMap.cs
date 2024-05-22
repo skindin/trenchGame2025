@@ -41,7 +41,10 @@ public class TrenchMap
 
                         var fill = TestPointWithLine(new(x, y), pointA, radA, pointB, radB);
                         if (fill)
+                        {
                             block.SetPoint(true, bitX, bitY);
+                            blocks[blockX, blockY] = block;
+                        }
                     }
                 }
             }
@@ -53,8 +56,15 @@ public class TrenchMap
         DrawLine(point, radius, point, radius);
     }
 
-    public bool TestPointWithLine (Vector2 testPoint, Vector2 pointA, float radA, Vector2 pointB, float radB)
+    public bool TestPointWithLine (Vector2 testPoint, Vector2 pointA, float radA, Vector2 pointB, float radB, bool debugLines = false)
     {
+        if (debugLines)
+        {
+            Debug.DrawLine(pointA, pointB, Color.green);
+            GeoFuncs.DrawCircle(pointA, radA, Color.green);
+            GeoFuncs.DrawCircle(pointB, radB, Color.green);
+        }
+
         var edgeDist = Vector2.Distance(pointA, pointB) - radA - radB;
         if (edgeDist <= 0)
         {
@@ -74,7 +84,16 @@ public class TrenchMap
 
             var testDist = Vector2.Distance(testPoint, biggestPoint);
 
-            return testDist <= biggestRadii;
+            var withinBiggestCircle = testDist <= biggestRadii;
+
+            if (debugLines)
+            {
+                GeoFuncs.DrawCircle(biggestPoint, biggestRadii, Color.blue);
+                if (withinBiggestCircle) GeoFuncs.MarkPoint(testPoint, .5f, Color.green);
+                else GeoFuncs.MarkPoint(testPoint, .5f, Color.red);
+            }
+
+            return withinBiggestCircle;
         }
 
         var closestPoint = GeoFuncs.ClosestPointToLineSegment(testPoint, pointA, pointB, out var ratio);
@@ -82,12 +101,26 @@ public class TrenchMap
 
         if (radA == radB)
         {
-            return dist <= radA;
+            var withinCircle = dist <= radA;
+            if (debugLines)
+            {
+                GeoFuncs.DrawCircle(closestPoint, radA, Color.blue);
+                if (withinCircle) GeoFuncs.MarkPoint(testPoint, .5f, Color.green);
+                else GeoFuncs.MarkPoint(testPoint, .5f, Color.red);
+            }
+            return withinCircle;
         }
 
         var deltaRadius = radB - radA;
         var radius = ratio * deltaRadius + radA;
+        var within = dist <= radius;
+        if (debugLines)
+        {
+            GeoFuncs.DrawCircle(closestPoint, radius, Color.blue);
+            if (within) GeoFuncs.MarkPoint(testPoint, .5f, Color.green);
+            else GeoFuncs.MarkPoint(testPoint, .5f, Color.red);
+        }
 
-        return dist <= radius;
+        return within;
     }
 }

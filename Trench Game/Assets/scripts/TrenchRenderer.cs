@@ -16,8 +16,14 @@ public class TrenchRenderer : MonoBehaviour
     {
         map = new(mapSize);
         texture = new(mapSize * 4, mapSize * 4);
-        transform.localScale *= mapScale;
         spriteRenderer.sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), Vector2.one * .5f, 1f*mapSize*4/mapScale);
+
+        texture.filterMode = FilterMode.Point;
+
+        //texture.mipMapBias = 0;
+        //texture.anisoLevel = 1;
+
+        texture.Apply();
     }
 
     private void Update()
@@ -26,19 +32,23 @@ public class TrenchRenderer : MonoBehaviour
         {
             Vector2 drawPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            drawPos = Vector2.one * mapScale / 2 + drawPos / mapScale;
+            drawPos =
+                (Vector2.one * mapSize * 2) +
+                4 * mapSize *
+                drawPos /mapScale;
 
             if (Input.GetMouseButtonDown(0))
             {
                 width = startWidth;
 
-                map.DrawPoint(drawPos, width / 2/mapScale);
+                map.DrawPoint(drawPos, width / 2);
             }
             else
             {
                 var nextWidth = Mathf.MoveTowards(width, maxWidth, widthSpeed * Time.deltaTime);
 
-                map.DrawLine(lastPos, width/2*mapScale, drawPos, nextWidth*mapScale); //idk whether to divide or multiply map scale?
+                if (lastPos != drawPos || nextWidth != width)
+                    map.DrawLine(lastPos, width/2, drawPos, nextWidth/2); //idk whether to divide or multiply map scale?
 
                 width = nextWidth;
             }
@@ -63,14 +73,16 @@ public class TrenchRenderer : MonoBehaviour
                     {
                         Color color;
 
-                        if (block.GetPoint(bitX, bitY)) color = fillColor;
-                        else color = blankColor;
+                        if (block.GetPoint(bitX, bitY))
+                            color = fillColor;
+                        else
+                            color = blankColor;
 
                         texture.SetPixel(blockX * 4 + bitX, blockY * 4 + bitY, color);
                     }
                 }
 
-                DrawBlock(new(blockX, blockY));
+                //DrawBlock(new(blockX, blockY));
             }
         }
 
