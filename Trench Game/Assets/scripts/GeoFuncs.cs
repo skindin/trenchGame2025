@@ -125,15 +125,16 @@ public static class GeoFuncs
 
         float denominator = (line1Dir.x * line2Dir.y) - (line1Dir.y * line2Dir.x);
 
-        if (debugLines)
-        {
-            //Debug.DrawLine(pointA, pointB, Color.cyan);
-            Debug.DrawLine(pointC, pointD, new Color(.25f, 0, 1));
-        }
+        //if (debugLines)
+        //{
+        //    //Debug.DrawLine(pointA, pointB, Color.cyan);
+        //    Debug.DrawLine(pointC, pointD, new Color(.25f, 0, 1));
+        //}
 
         if (denominator == 0)
         {
             // Lines are parallel
+            if (debugLines) Debug.DrawLine(pointA, pointB, Color.red);
             return false;
         }
 
@@ -144,14 +145,18 @@ public static class GeoFuncs
         if (t >= 0 && t <= 1 && u >= 0 && u <= 1)
         {
             // Intersection point lies within the line segments
+            if (debugLines) Debug.DrawLine(pointC, pointD, Color.green);
             return true;
         }
 
+        if (debugLines) Debug.DrawLine(pointC, pointD, Color.red);
         return false;
     }
 
     public static bool DoesLineIntersectBox (Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, bool debugLines = false)
     {
+        if (debugLines) Debug.DrawLine(pointA, pointB, Color.green);
+
         if (TestBox(boxMin, boxMax, pointA, debugLines) || TestBox(boxMin, boxMax, pointB, debugLines))
         {
             if (debugLines) DrawBox(boxMin, boxMax, Color.blue);
