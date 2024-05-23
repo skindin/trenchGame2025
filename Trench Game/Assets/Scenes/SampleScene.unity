@@ -318,10 +318,10 @@ MonoBehaviour:
   blankColor: {r: 0.49960244, g: 0.6320754, b: 0.48001954, a: 1}
   width: 0
   startWidth: 5
-  widthSpeed: 10
-  maxWidth: 10
-  mapScale: 5
-  mapSize: 20
+  widthSpeed: 30
+  maxWidth: 20
+  mapScale: 10
+  mapSize: 100
 --- !u!1 &893604344
 GameObject:
   m_ObjectHideFlags: 0

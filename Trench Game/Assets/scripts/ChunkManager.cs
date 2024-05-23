@@ -4,7 +4,26 @@ using UnityEngine;
 
 public class ChunkManager : MonoBehaviour
 {
-    public static ChunkManager manager;
+    static ChunkManager manager;
+
+    public static ChunkManager Manager
+    {
+        get
+        {
+            if (manager == null)
+            {
+                manager = FindObjectOfType<ChunkManager>();
+                if (manager == null)
+                {
+                    GameObject go = new GameObject("GameManager");
+                    manager = go.AddComponent<ChunkManager>();
+                    DontDestroyOnLoad(go);
+                }
+            }
+            return manager;
+        }
+    }
+
     public float worldSize = 100;
     public int chunkArraySize = 5, mapSize = 10;
     public Chunk[,] chunks;
@@ -12,7 +31,6 @@ public class ChunkManager : MonoBehaviour
 
     private void Awake()
     {
-        manager = this;
         InstantiateChunks();
     }
 

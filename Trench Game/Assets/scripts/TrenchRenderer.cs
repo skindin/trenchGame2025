@@ -55,6 +55,33 @@ public class TrenchRenderer : MonoBehaviour
 
             lastPos = drawPos;
         }
+        else if (Input.GetMouseButton(1))
+        {
+            Vector2 drawPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            drawPos =
+                (Vector2.one * mapSize * 2) +
+                4 * mapSize *
+                drawPos / mapScale;
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                width = startWidth;
+
+                map.ErasePoint(drawPos, width / 2);
+            }
+            else
+            {
+                var nextWidth = Mathf.MoveTowards(width, maxWidth, widthSpeed * Time.deltaTime);
+
+                if (lastPos != drawPos || nextWidth != width)
+                    map.EraseLine(lastPos, width / 2, drawPos, nextWidth / 2); //idk whether to divide or multiply map scale?
+
+                width = nextWidth;
+            }
+
+            lastPos = drawPos;
+        }
 
         RenderMap(map);
     }
