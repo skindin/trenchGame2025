@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class Gun : Item
 {
-    public float bulletSpeed, range, firingRate, reloadTime = 2;
+    public GunModel model;
+    public int rounds = 10;
     float lastFireStamp = 0, reloadStartStamp = 0;
-    public int maxPerFrame = 5, rounds = 10, maxRounds = 10;
     public Vector2 direction = Vector2.right, barrelPos;
     public bool enabled = true,
         reloading = false,
         drawBerrelPos = false;
-    public AmoType amoType;
 
     public bool Trigger (Vector2 direction = default) //direction parameter to ensure the bullet fires in the right direction across all connections
     {
@@ -21,15 +20,15 @@ public class Gun : Item
 
         var fireDeltaTime = Time.time - lastFireStamp;
 
-        var secsPerBullet = 1 / firingRate;
+        var secsPerBullet = 1 / model.firingRate;
 
         if ((lastFireStamp == 0 && Time.time <= secsPerBullet) || fireDeltaTime > secsPerBullet)
         {
-            var bulletCount = Mathf.FloorToInt(firingRate * Time.deltaTime);
+            var bulletCount = Mathf.FloorToInt(model.firingRate * Time.deltaTime);
 
             bulletCount = Mathf.Max(bulletCount, 1);
 
-            bulletCount = Mathf.Min(bulletCount, maxPerFrame, rounds);
+            bulletCount = Mathf.Min(bulletCount, model.maxPerFrame, rounds);
 
             for (int i = 0; i < bulletCount; i++)
             {
@@ -57,16 +56,16 @@ public class Gun : Item
     {
         if (reloading)
         {
-            var reloadClock = Mathf.Min(Time.time - reloadStartStamp, reloadTime);
+            var reloadClock = Mathf.Min(Time.time - reloadStartStamp, model.reloadTime);
 
-            if (reloadClock >= reloadTime)
+            if (reloadClock >= model.reloadTime)
             {
-                rounds = wielder.reserve.RemoveAmo(amoType, maxRounds - rounds);
+                rounds = wielder.reserve.RemoveAmo(model.amoType, model.maxRounds - rounds);
                 reloadStartStamp = Time.time;
                 reloading = false;
             }
                 
-            var angle = ((reloadTime - reloadClock) / reloadTime) * reloadAnimRots * 360;
+            var angle = ((model.reloadTime - reloadClock) / model.reloadTime) * reloadAnimRots * 360;
             transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
         }
     }
@@ -75,7 +74,7 @@ public class Gun : Item
     {
         if (reloading) return;
 
-        if (wielder.reserve.GetAmoAmount(amoType) > 0)
+        if (wielder.reserve.GetAmoAmount(model.amoType) > 0)
         {
             reloading = true;
             reloadStartStamp = Time.time;
@@ -94,7 +93,7 @@ public class Gun : Item
 
     public Bullet Fire ()
     {
-        return BulletManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos, direction.normalized * bulletSpeed, range, this);
+        return BulletManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos, direction.normalized * model.bulletSpeed, model.range, this);
     }
 
     private void OnDrawGizmos()

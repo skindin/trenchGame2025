@@ -6,6 +6,9 @@ public class SpawnManager : MonoBehaviour
 {
     static SpawnManager manager;
 
+    public List<Gun> gunPrefabs = new();
+    public List<Amo> amoPrefabs = new();
+
     public static SpawnManager Manager
     {
         get

@@ -2297,7 +2297,7 @@ GameObject:
   - component: {fileID: 754954370}
   - component: {fileID: 754954371}
   m_Layer: 0
-  m_Name: respawnManager
+  m_Name: spawnManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2330,6 +2330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2194a8dca4f6e2440948b7307355af01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gunPrefabs: []
+  amoPrefabs: []
   spawnRadius: 10
 --- !u!1 &757709124
 GameObject:
@@ -3293,19 +3295,13 @@ MonoBehaviour:
   wielder: {fileID: 1253392265}
   passivePickup: 0
   passivePickupRadius: 0.5
-  bulletSpeed: 100
-  range: 20
-  firingRate: 20
-  reloadTime: 1
-  maxPerFrame: 5
+  model: {fileID: 11400000, guid: 06016e4aa7d1214418b0540caeab9b97, type: 2}
   rounds: 100
-  maxRounds: 100
   direction: {x: 1, y: 0}
   barrelPos: {x: 0, y: 1.1}
   enabled: 1
   reloading: 0
   drawBerrelPos: 0
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
   reloadAnimRots: 3
 --- !u!4 &1072976478
 Transform:

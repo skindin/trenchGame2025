@@ -58,7 +58,7 @@ public class Item : MonoBehaviour
         wielder = character;
     }
 
-    public void Drop ()
+    public virtual void Drop ()
     {
         wielder = null;
         UpdateChunk();
