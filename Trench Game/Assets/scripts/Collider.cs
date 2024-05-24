@@ -7,7 +7,16 @@ public class Collider : MonoBehaviour
 {
     //public static List<Collider> all = new();
     public UnityEvent<Bullet> onBulletHit = new();
-    public float size = 1;
+
+    public float localSize = 1;
+    public float WorldSize
+    {
+        get
+        {
+            return localSize * transform.lossyScale.x;
+        }
+    }
+
     public bool vulnerable = true;
 
     public void BulletHit (Bullet bullet)

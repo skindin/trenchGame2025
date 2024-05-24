@@ -64,35 +64,48 @@ public class Controller : MonoBehaviour
             character.Move(moveDir);
         }
 
+        //if (Input.GetMouseButton(0))
+        //{
+        //    //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //    character.Dig(transform.position);
+        //}
+        //else if (Input.GetMouseButtonUp(0))
+        //{
+        //    character.Dig(default, true);
+        //}
+        //else if (Input.GetMouseButton(1) && enableFill)
+        //{
+        //    character.Fill(transform.position);
+        //}
+
+        //if (Input.GetMouseButtonUp(1))
+        //{
+        //    character.Fill(default, true);
+        //    Time.timeScale = 1;
+        //}
+
+        var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var mouseDir = mousePos - transform.position;
+
         if (Input.GetMouseButton(0))
         {
-            //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            character.Dig(transform.position);
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            character.Dig(default, true);
-        }
-        else if (Input.GetMouseButton(1) && enableFill)
-        {
-            character.Fill(transform.position);
-        }
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            character.Fill(default, true);
-            Time.timeScale = 1;
-        }
-
-        if (Input.GetMouseButton(1))
-        {
-            var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var mouseDir = mousePos - transform.position;
-            character.Shoot(mouseDir);
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (character.gun.rounds <= 0)
+                {
+                    character.gun.StartReload();
+                }
+            }
+            else
+            {
+                character.gun.Trigger(mouseDir);
+            }
             //if (drawEdgeDetection) Trench.manager.FindTrenchEdgeFromInside(transform.position, mousePos,true);
             //chunks.Clear();
             //Chunk.manager.ChunksFromLine(transform.position, transform.position + mouseDir, chunks, true, true);
         }
+
+        character.gun.Aim(mouseDir);
     }
 
     //List<Chunk> chunks = new();

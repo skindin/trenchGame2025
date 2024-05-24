@@ -123,7 +123,7 @@ public class BulletManager : MonoBehaviour
                     if (bullet.source.wielder.collider == collider) continue;
                     //if (!collider.vulnerable && !bullet.withinTrench) continue;
 
-                    var radius = collider.size * collider.transform.lossyScale.x / 2;
+                    var radius = collider.WorldSize/2;
                     var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, radius, nextPos, bullet.pos);
                     if (point.x == Mathf.Infinity) continue;
                     var pointDist = (point - bullet.pos).magnitude;

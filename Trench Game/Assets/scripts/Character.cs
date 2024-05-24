@@ -14,6 +14,7 @@ public class Character : MonoBehaviour
     //public TrenchDetector detector;
     //public TrenchDigger digger; //eventually this will be attached to the shovel...?
     public Gun gun;
+    public AmoReserve reserve;
     public bool digging = false, filling = false, constantDig = false, constantDetect = false, shooting = false;
 
     // Start is called before the first frame update
@@ -124,11 +125,6 @@ public class Character : MonoBehaviour
         //    UpdateVulnerable(true);
         //    detector.SetStatus(true);
         //}
-    }
-
-    public void Shoot (Vector2 direction)
-    {
-        gun.Trigger(direction);
     }
 
     public void Fill (Vector2 fillPoint, bool stop = false)

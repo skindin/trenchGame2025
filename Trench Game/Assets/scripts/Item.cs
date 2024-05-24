@@ -1,0 +1,72 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+
+public class Item : MonoBehaviour
+{
+    public Character wielder;
+    public static List<Item> all = new();
+    public Chunk chunk;
+    public bool passivePickup = false;
+    public float passivePickupRadius = .5f;
+
+    private void Awake()
+    {
+        all.Add(this);
+        //UpdateChunk();
+    }
+
+    private void Start()
+    {
+        UpdateChunk();
+    }
+
+    private void OnDestroy()
+    {
+        all.Remove(this);
+    }
+
+    private void Update()
+    {
+        ItemUpdate();
+    }
+
+    public virtual void ItemUpdate ()
+    {
+        if (wielder == null && passivePickup)
+        {
+            foreach (var character in chunk.characters)
+            {
+                var dist = Vector2.Distance(character.transform.position, transform.position);
+                if (dist < passivePickupRadius)
+                {
+                    Pickup(character);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void UpdateChunk()
+    {
+        chunk = ChunkManager.Manager.ChunkFromPos(transform.position, true);
+    }
+
+    public virtual void Pickup (Character character)
+    {
+        wielder = character;
+    }
+
+    public void Drop ()
+    {
+        wielder = null;
+        UpdateChunk();
+    }
+
+    public virtual void DestroyItem ()
+    {
+        //destroy logic here shruggin emoji
+        Destroy(gameObject, .0001f);
+    }
+}
