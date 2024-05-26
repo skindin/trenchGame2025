@@ -41,6 +41,17 @@ public class AmoReserve : MonoBehaviour
 
         return 0;
     }
+
+    public AmoTypeReserve GetReserve (AmoType type)
+    {
+        var typeReserve = typeReserves.Find(x => x.type == type);
+        if (typeReserve != null)
+        {
+            return typeReserve;
+        }
+
+        return null;
+    }
 }
 
 [System.Serializable]

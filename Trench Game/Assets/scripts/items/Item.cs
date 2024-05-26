@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class Item : MonoBehaviour
 {
+    public ItemModel model;
     public Character wielder;
     public static List<Item> all = new();
     public Chunk chunk;
@@ -13,8 +14,13 @@ public class Item : MonoBehaviour
 
     private void Awake()
     {
+        //Debug.Log(gameObject.name + " ran base item awake function");
+        ItemAwake();
+    }
+
+    public virtual void ItemAwake ()
+    {
         all.Add(this);
-        //UpdateChunk();
     }
 
     private void Start()

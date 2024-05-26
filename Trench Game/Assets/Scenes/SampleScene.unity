@@ -287,11 +287,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &94150478
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,11 +650,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &296653327
 GameObject:
   m_ObjectHideFlags: 0
@@ -1822,11 +1824,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &571561623
 GameObject:
   m_ObjectHideFlags: 0
@@ -2281,11 +2284,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &754954369
 GameObject:
   m_ObjectHideFlags: 0
@@ -2429,11 +2433,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &790973805
 GameObject:
   m_ObjectHideFlags: 0
@@ -2623,11 +2628,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &835610496
 GameObject:
   m_ObjectHideFlags: 0
@@ -2673,11 +2679,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &876413590
 GameObject:
   m_ObjectHideFlags: 0
@@ -2723,11 +2730,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &893604344
 GameObject:
   m_ObjectHideFlags: 0
@@ -3292,17 +3300,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b9a3c47948680f4c88770e3eea24543, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 06016e4aa7d1214418b0540caeab9b97, type: 2}
   wielder: {fileID: 1253392265}
   passivePickup: 0
   passivePickupRadius: 0.5
-  model: {fileID: 11400000, guid: 06016e4aa7d1214418b0540caeab9b97, type: 2}
-  rounds: 100
+  rounds: 1
   direction: {x: 1, y: 0}
   barrelPos: {x: 0, y: 1.1}
   enabled: 1
+  holdingTrigger: 0
   reloading: 0
+  maxRounds: 1
+  fired: 0
   drawBerrelPos: 0
-  reloadAnimRots: 3
 --- !u!4 &1072976478
 Transform:
   m_ObjectHideFlags: 0
@@ -3448,11 +3458,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1203067191
 GameObject:
   m_ObjectHideFlags: 0
@@ -3498,11 +3509,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1235414235
 GameObject:
   m_ObjectHideFlags: 0
@@ -3548,11 +3560,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1253392262
 GameObject:
   m_ObjectHideFlags: 0
@@ -4107,11 +4120,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1355409432
 GameObject:
   m_ObjectHideFlags: 0
@@ -4309,11 +4323,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 1
 --- !u!4 &1440021047
 Transform:
   m_ObjectHideFlags: 0
@@ -4375,11 +4390,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1488140513
 GameObject:
   m_ObjectHideFlags: 0
@@ -4509,11 +4525,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1555880054
 GameObject:
   m_ObjectHideFlags: 0
@@ -4643,11 +4660,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1615477572
 GameObject:
   m_ObjectHideFlags: 0
@@ -5293,11 +5311,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1783544043
 GameObject:
   m_ObjectHideFlags: 0
@@ -5487,11 +5506,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &1810146027
 GameObject:
   m_ObjectHideFlags: 0
@@ -6365,11 +6385,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &2037304010
 GameObject:
   m_ObjectHideFlags: 0
@@ -6402,7 +6423,7 @@ MonoBehaviour:
   typeReserves:
   - type: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
     rounds: 0
-    maxRounds: 1000
+    maxRounds: 50
 --- !u!4 &2037304012
 Transform:
   m_ObjectHideFlags: 0
@@ -6463,11 +6484,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   passivePickupRadius: 0.5
-  rounds: 100
-  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  rounds: 50
+  maxRounds: 0
 --- !u!1 &2064953616
 GameObject:
   m_ObjectHideFlags: 0
@@ -6552,6 +6574,53 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &2113553809
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2113553811}
+  - component: {fileID: 2113553810}
+  m_Layer: 0
+  m_Name: gunUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2113553810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113553809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bcfdade5615b2e4c98b8474f4b4f3f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 1253392265}
+  textSize: 5
+  color: {r: 1, g: 1, b: 1, a: 1}
+--- !u!4 &2113553811
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113553809}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -6562,3 +6631,4 @@ SceneRoots:
   - {fileID: 1253392268}
   - {fileID: 358615373}
   - {fileID: 757709125}
+  - {fileID: 2113553811}

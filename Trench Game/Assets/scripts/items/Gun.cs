@@ -1,0 +1,164 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Gun : Item
+{
+    public int rounds = 10;
+    float lastFireStamp = 0, reloadStartStamp = 0;
+    public Vector2 direction = Vector2.right, barrelPos;
+    public bool enabled = true,
+        holdingTrigger = false,
+        reloading = false,
+        maxRounds = false, //temporary, until i make the actual spawning script
+        fired = false,
+        drawBerrelPos = false;
+
+    GunModel gunModel;
+    public GunModel GunModel
+    {
+        get
+        {
+            if (gunModel == null)
+            {
+                gunModel = (GunModel)model;
+            }
+            return gunModel;
+        }
+    }
+
+    public override void ItemAwake()
+    {
+        base.ItemAwake();
+
+        if (maxRounds)
+            rounds = GunModel.maxRounds;
+        else
+            rounds = Mathf.Clamp(rounds, 0, GunModel.maxRounds);
+    }
+
+    public bool GunLogic(Vector2 direction = default)
+    {
+        if (!enabled || reloading || (!GunModel.autoFire) && fired) return false;
+
+        if (rounds <= 0)
+        {
+            if (GunModel.autoReload)
+            {
+                StartReload();
+            }
+            return false;
+        }
+
+        if (direction != Vector2.zero) this.direction = direction;
+
+        var fireDeltaTime = Time.time - lastFireStamp;
+
+        var secsPerBullet = 1 / GunModel.firingRate;
+
+        if ((lastFireStamp == 0 && Time.time <= secsPerBullet) || fireDeltaTime > secsPerBullet)
+        {
+            int bulletCount;
+
+            if (GunModel.autoFire)
+            {
+                bulletCount = Mathf.FloorToInt(GunModel.firingRate * Time.deltaTime);
+
+                bulletCount = Mathf.Max(bulletCount, 1);
+
+                bulletCount = Mathf.Min(bulletCount, GunModel.maxPerFrame, rounds);
+            }
+            else
+            {
+                bulletCount = 1;
+                fired = true;
+            }
+
+            for (int i = 0; i < bulletCount; i++)
+            {
+                Fire();
+            }
+
+            rounds -= bulletCount;
+
+            lastFireStamp = Time.time;
+
+            if (rounds <= 0 && GunModel.autoReload)
+            {
+                StartReload();
+            }
+        }
+
+        return true;
+    }
+
+    public bool Trigger (Vector2 direction = default) //direction parameter to ensure the bullet fires in the right direction across all connections
+    {
+        holdingTrigger = true;//not sure how this gonna work on server?
+
+        return GunLogic(direction);
+    }
+
+    //networking procedure
+    //1. client runs fire logic, which can only spawn ghost bullets (bullets that can't actually damage anything, though they are destroyed when they hit something)
+    //2. client sends rpc to server containing direction and time stamp
+    //3. server runs trigger logic, spawning real bullets
+    //4. server sends rpc to all other clients containing direction and time stamp
+    //5. clients run trigger logic and spawn ghost bullets
+
+    private void Update()
+    {
+        if (!holdingTrigger)
+        {
+            fired = false;
+        }
+        holdingTrigger = false;
+
+        if (reloading)
+        {
+            var reloadClock = Mathf.Min(Time.time - reloadStartStamp, GunModel.reloadTime);
+
+            if (reloadClock >= GunModel.reloadTime)
+            {
+                rounds = wielder.reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
+                reloadStartStamp = Time.time;
+                reloading = false;
+            }
+                
+            var angle = ((GunModel.reloadTime - reloadClock) / GunModel.reloadTime) * GunModel.reloadAnimRots * 360;
+            transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+    }
+
+    public void StartReload ()
+    {
+        if (reloading) return;
+
+        if (wielder.reserve.GetAmoAmount(GunModel.amoType) > 0)
+        {
+            reloading = true;
+            reloadStartStamp = Time.time;
+        }
+    }
+
+    public void Aim (Vector2 direction)
+    {
+        this.direction = direction;
+
+        if (reloading) return;
+
+        var angle = Vector2.SignedAngle(Vector2.up, direction);
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+    }
+
+    public Bullet Fire ()
+    {
+        return BulletManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos, direction.normalized * GunModel.bulletSpeed, GunModel.range, this);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (drawBerrelPos)    
+            GeoFuncs.MarkPoint(transform.position + transform.rotation * barrelPos,.2f,Color.blue);
+    }
+}
