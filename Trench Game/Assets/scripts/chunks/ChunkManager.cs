@@ -123,14 +123,14 @@ public class ChunkManager : MonoBehaviour
     public Chunk NewChunk(Vector2Int adress)
     {
         var chunk = new Chunk(adress,1);
-        foreach (var character in Character.chunkless)
-        {
-            if (PosToAdress(character.transform.position) == adress)
-            {
-                chunk.characters.Add(character);
-                chunk.colliders.Add(character.collider);
-            }
-        }
+        //foreach (var character in Character.chunkless)
+        //{
+        //    if (PosToAdress(character.transform.position) == adress)
+        //    {
+        //        chunk.characters.Add(character);
+        //        chunk.colliders.Add(character.collider);
+        //    }
+        //}
         return chunk;
     }
 

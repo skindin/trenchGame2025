@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    public static List<Character> all = new(), chunkless = new();
+    public static List<Character> all = new();//, chunkless = new();
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
     Color startColor;
@@ -22,7 +22,7 @@ public class Character : MonoBehaviour
     void Awake()
     {
         all.Add(this);
-        chunkless.Add(this);
+        //chunkless.Add(this);
         startColor = sprite.color;
         //detector.onDetect.AddListener(UpdateVulnerable);
         //detector.onDetect.AddListener(collider.ToggleSafe);
@@ -31,6 +31,7 @@ public class Character : MonoBehaviour
     private void Start()
     {
         //detector.DetectTrench(0);
+        UpdateChunk();
         collider.onBulletHit.AddListener(
         delegate
         {
@@ -43,7 +44,7 @@ public class Character : MonoBehaviour
     private void OnDestroy()
     {
         all.Remove(this);
-        if (chunkless.Contains(this)) chunkless.Remove(this);
+        //if (chunkless.Contains(this)) chunkless.Remove(this);
     }
 
     // Update is called once per frame
@@ -67,30 +68,31 @@ public class Character : MonoBehaviour
         inventory.DetectItems();
     }
 
-    public void UpdateChunk ()
+    public Chunk Chunk
     {
-        var newChunk = ChunkManager.Manager.ChunkFromPos(transform.position, true);
-        if (newChunk != chunk)
+        get
+        {
+            return chunk;
+        }
+
+        set
         {
             if (chunk != null)
             {
-                chunk.characters.Remove(this);
-                chunk.colliders.Remove(collider);
-            }
-            else if (newChunk != null) chunkless.Remove(this);
-
-            if (newChunk != null)
-            {
-                newChunk.characters.Add(this);
-                newChunk.colliders.Add(collider);
-                chunk = newChunk;
-            }
-            else
-            {
-                chunkless.Add(this);
+                chunk.RemoveCharacter(this);
             }
 
+            if (value != null)
+            {
+                value.AddCharacter(this);
+            }
+            chunk = value;
         }
+    }
+
+    public void UpdateChunk ()
+    {
+        Chunk = ChunkManager.Manager.ChunkFromPos(transform.position, true);
     }
 
     public void UpdateVulnerable (bool trenchStatus)

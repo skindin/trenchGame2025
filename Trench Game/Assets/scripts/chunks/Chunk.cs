@@ -17,14 +17,25 @@ public class Chunk
         map = new(mapSize);
     }
 
-    //public void AddItem(Item item)
-    //{
-    //    items.Add(item);
-    //    foreach ()
-    //}
+    public void AddCharacter (Character character)
+    {
+        characters.Add(character);
+        colliders.Add(character.collider);
+    }
 
-    //public void RemoveItem(Item item)
-    //{
-    //    items.Remove(item);
-    //}
+    public void RemoveCharacter (Character character)
+    {
+        characters.Remove(character);
+        colliders.Remove(character.collider);
+    }
+
+    public void AddItem(Item item)
+    {
+        items.Add(item);
+    }
+
+    public void RemoveItem(Item item)
+    {
+        items.Remove(item);
+    }
 }

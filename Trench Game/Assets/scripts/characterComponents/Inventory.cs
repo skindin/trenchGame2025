@@ -11,7 +11,8 @@ public class Inventory : MonoBehaviour
     public readonly List<Item> withinRadius = new();
     public Chunk[,] chunks;
     float closestDist = Mathf.Infinity;
-    Item closestItem;
+    public Item closestItem;
+    public bool debugLines = false;
 
     public void DetectItems()
     {
@@ -19,8 +20,8 @@ public class Inventory : MonoBehaviour
 
         var radius = activePickupRad;
 
-        var min = (Vector2)transform.position + Vector2.one * radius;
-        var max = (Vector2)transform.position - Vector2.one * radius;
+        var min = (Vector2)transform.position - Vector2.one * radius;
+        var max = (Vector2)transform.position + Vector2.one * radius;
         chunks = ChunkManager.Manager.ChunksFromBox(min, max);
 
         closestDist = Mathf.Infinity;
@@ -69,5 +70,24 @@ public class Inventory : MonoBehaviour
     public void PickupClosest ()
     {
         if (closestItem != null) closestItem.Pickup(character);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (debugLines)
+        {
+            GeoFuncs.DrawCircle(transform.position, passivePickupRad, Color.green);
+            GeoFuncs.DrawCircle(transform.position, activePickupRad, Color.blue);
+
+            foreach (var item in withinRadius)
+            {
+                Color color;
+
+                if (item == closestItem) color = Color.magenta;
+                else color = Color.cyan;
+
+                GeoFuncs.MarkPoint(item.transform.position, .5f, color);
+            }
+        }
     }
 }

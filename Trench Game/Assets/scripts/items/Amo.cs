@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Amo : Item
 {
@@ -48,5 +49,19 @@ public class Amo : Item
         base.ItemUpdate();
 
 
+    }
+
+    public override string[] GetInfo()
+    {
+        var itemInfo = base.GetInfo();
+
+        var rounds = "x" + this.rounds;
+        var type = AmoModel.type.name;
+
+        var amoInfo = new string[] { rounds , type};
+
+        var result = itemInfo.Concat(amoInfo).ToArray();
+
+        return result;
     }
 }

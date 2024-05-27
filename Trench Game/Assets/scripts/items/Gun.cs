@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Gun : Item
 {
@@ -14,16 +15,21 @@ public class Gun : Item
         fired = false,
         drawBerrelPos = false;
 
-    GunModel gunModel;
+    private GunModel cachedGunModel;
     public GunModel GunModel
     {
         get
         {
-            if (gunModel == null)
+            if (cachedGunModel == null || cachedGunModel != model)
             {
-                gunModel = (GunModel)model;
+                cachedGunModel = (GunModel)model;
             }
-            return gunModel;
+            return cachedGunModel;
+        }
+        set
+        {
+            model = value;
+            cachedGunModel = value; // Update the cache when the model changes
         }
     }
 
@@ -106,8 +112,10 @@ public class Gun : Item
     //4. server sends rpc to all other clients containing direction and time stamp
     //5. clients run trigger logic and spawn ghost bullets
 
-    private void Update()
+    public override void ItemUpdate()
     {
+        base.ItemUpdate();
+
         if (!holdingTrigger)
         {
             fired = false;
@@ -160,5 +168,23 @@ public class Gun : Item
     {
         if (drawBerrelPos)    
             GeoFuncs.MarkPoint(transform.position + transform.rotation * barrelPos,.2f,Color.blue);
+    }
+
+    public override string[] GetInfo()
+    {
+        var itemInfo = base.GetInfo();
+
+        var roundRatio = $"{rounds}/{GunModel.maxRounds}";
+        var range = $"{GunModel.range} m";
+        var bulletSpeed = $"{GunModel.bulletSpeed} m/s";
+        var fireRate = $"{GunModel.firingRate}/s";
+        var reload = $"{GunModel.reloadTime} s reload";
+        var amoType = GunModel.amoType.name;
+
+        var gunInfo = new string[] { roundRatio, fireRate, amoType};
+
+        var result = itemInfo.Concat(gunInfo).ToArray();
+
+        return result;
     }
 }

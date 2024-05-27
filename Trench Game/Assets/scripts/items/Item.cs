@@ -20,16 +20,13 @@ public class Item : MonoBehaviour
         {
             if (chunk != null)
             {
-                chunk.items.Remove(this);
+                chunk.RemoveItem(this);
             }
 
             if (value != null)
             {
-                chunk.items.Add(this);
+                value.AddItem(this);
             }
-
-
-
             chunk = value;
         }
     }
@@ -49,12 +46,16 @@ public class Item : MonoBehaviour
 
     private void Start()
     {
-        UpdateChunk();
+        if (!wielder)
+            UpdateChunk();
     }
 
     private void OnDestroy()
     {
         all.Remove(this);
+
+        if (chunk != null)
+            chunk.RemoveItem(this);
     }
 
     private void Update()
@@ -90,5 +91,10 @@ public class Item : MonoBehaviour
     {
         //destroy logic here shruggin emoji
         Destroy(gameObject, Time.deltaTime);
+    }
+
+    public virtual string[] GetInfo ()
+    {
+        return new string[0];// { $"Tier {model.tier}" };
     }
 }
