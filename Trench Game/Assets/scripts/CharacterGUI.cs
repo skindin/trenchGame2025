@@ -7,10 +7,15 @@ public class CharacterGUI : MonoBehaviour
     // Start is called before the first frame update
 
     public Character character;
-    public int textSize = 10;
+    public int amoTextSize = 5;
     public Color color = Color.white;
 
     void OnGUI()
+    {
+        DrawAmoGUI();
+    }
+
+    public void DrawAmoGUI ()
     {
         int width = Screen.width;
         int height = Screen.height;
@@ -24,7 +29,7 @@ public class CharacterGUI : MonoBehaviour
         Rect rect = new (width - rectWidth, height - rectHeight, rectWidth, rectHeight);
 
         style.alignment = TextAnchor.LowerRight;
-        style.fontSize = height * textSize / 100;
+        style.fontSize = height * amoTextSize / 100;
         style.normal.textColor = color;
 
         string gunText = $"Gun {character.gun.rounds}/{character.gun.GunModel.maxRounds}";

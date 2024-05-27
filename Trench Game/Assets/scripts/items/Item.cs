@@ -8,9 +8,33 @@ public class Item : MonoBehaviour
     public ItemModel model;
     public Character wielder;
     public static List<Item> all = new();
-    public Chunk chunk;
+    Chunk chunk;
+    public Chunk Chunk
+    {
+        get
+        {
+            return chunk;
+        }
+
+        set
+        {
+            if (chunk != null)
+            {
+                chunk.items.Remove(this);
+            }
+
+            if (value != null)
+            {
+                chunk.items.Add(this);
+            }
+
+
+
+            chunk = value;
+        }
+    }
+
     public bool passivePickup = false;
-    public float passivePickupRadius = .5f;
 
     private void Awake()
     {
@@ -40,28 +64,20 @@ public class Item : MonoBehaviour
 
     public virtual void ItemUpdate ()
     {
-        if (wielder == null && passivePickup)
-        {
-            foreach (var character in chunk.characters)
-            {
-                var dist = Vector2.Distance(character.transform.position, transform.position);
-                if (dist < passivePickupRadius)
-                {
-                    Pickup(character);
-                    break;
-                }
-            }
-        }
+        //shrugging emoji
     }
 
     public void UpdateChunk()
     {
-        chunk = ChunkManager.Manager.ChunkFromPos(transform.position, true);
+        Chunk = ChunkManager.Manager.ChunkFromPos(transform.position, true);
     }
 
     public virtual void Pickup (Character character)
     {
-        wielder = character;
+        if (wielder == null)
+            wielder = character;
+
+        Chunk = null;
     }
 
     public virtual void Drop ()
@@ -73,6 +89,6 @@ public class Item : MonoBehaviour
     public virtual void DestroyItem ()
     {
         //destroy logic here shruggin emoji
-        Destroy(gameObject, .0001f);
+        Destroy(gameObject, Time.deltaTime);
     }
 }

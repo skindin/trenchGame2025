@@ -15,6 +15,7 @@ public class Character : MonoBehaviour
     //public TrenchDigger digger; //eventually this will be attached to the shovel...?
     public Gun gun;
     public AmoReserve reserve;
+    public Inventory inventory;
     public bool digging = false, filling = false, constantDig = false, constantDetect = false, shooting = false;
 
     // Start is called before the first frame update
@@ -63,6 +64,7 @@ public class Character : MonoBehaviour
 
         //if (!digging && !filling)
         //    detector.DetectTrench(0);
+        inventory.DetectItems();
     }
 
     public void UpdateChunk ()

@@ -29,6 +29,14 @@ public class ItemManager : MonoBehaviour
 
     public List<TierGroup> tierGroups = new();
 
+    public float itemDropRadius = 5, minCount = 1, maxCount = 10, avgCount = 4, countConc = .5f;
+
+    private void Start()
+    {
+        Sort();
+        SpawnItems(Vector2.zero);
+    }
+
     public void Sort ()
     {
         foreach (var item in itemPrefabs)
@@ -52,9 +60,40 @@ public class ItemManager : MonoBehaviour
     /// Generates a list of refferences to prefabs. These prefabs must still be instantiated.
     /// </summary>
     /// <returns></returns>
-    public List<Item> GenerateItemList ()
+    public List<Item> GenerateItemList(List<Item> list, float minCount, float maxCount, float avgCount, float countConc, bool clearList = true)
     {
-        return null;//one sec
+        if (clearList) list.Clear();
+        //return null;//one secd
+        var count = LogicAndMath.MinMaxAvgConc(Random.value, minCount, maxCount, avgCount, countConc);
+
+        for (int i = 0; i < count; i++)
+        {
+            var group = LogicAndMath.GetRandomItemFromListValues(Random.value, tierGroups, x => x.chance);
+            //this is susceptible to finding the same tier group twice, wasting processing. could be optimized...
+
+            if (group != null && group.items.Count > 0)
+            {
+                var itemIndex = Random.Range(0, group.items.Count);
+                var item = group.items[itemIndex];
+
+                list.Add(item);
+            }
+        }
+
+        return list;
+    }
+
+    readonly List<Item> reusableItemList = new();
+
+    public void SpawnItems(Vector2 spawnPos)
+    {
+        GenerateItemList(reusableItemList, minCount, maxCount, avgCount, countConc);
+
+        foreach (var item in reusableItemList)
+        {
+            var itemPos = Random.insideUnitCircle * itemDropRadius + spawnPos;
+            Instantiate(item, itemPos, item.transform.rotation, transform);
+        }
     }
 
     [System.Serializable]
@@ -62,6 +101,7 @@ public class ItemManager : MonoBehaviour
     {
         public List<Item> items;
         public int tier;
+        public float chance = 1;
 
         public TierGroup (List<Item> items, int tier)
         {

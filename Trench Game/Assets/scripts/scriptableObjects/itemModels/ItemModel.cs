@@ -6,4 +6,5 @@ using UnityEngine;
 public class ItemModel : ScriptableObject
 {
     public int tier = 1;
+    //public Item prefab;
 }
