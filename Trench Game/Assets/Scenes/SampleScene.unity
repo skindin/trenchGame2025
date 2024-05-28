@@ -290,6 +290,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -653,6 +654,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -1832,6 +1834,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -2279,6 +2282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -2427,6 +2431,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -2622,6 +2627,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -2672,6 +2678,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -2722,6 +2729,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -3384,6 +3392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -3434,6 +3443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -3484,6 +3494,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -4045,6 +4056,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -4268,6 +4280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -4402,6 +4415,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -4452,6 +4466,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -5105,6 +5120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -5300,6 +5316,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -6182,6 +6199,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -6298,6 +6316,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
+  currentlyHeld: 0
   passivePickup: 1
   rounds: 50
   maxRounds: 0
@@ -6489,6 +6508,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
+      propertyPath: reserve
+      value: 
+      objectReference: {fileID: 2037304011}
     - target: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: wielder
       value: 

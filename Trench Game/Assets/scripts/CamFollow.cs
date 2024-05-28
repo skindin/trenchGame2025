@@ -28,6 +28,7 @@ public class CamFollow : MonoBehaviour
     {
         if (!main) main = this;
 
-        transform.position = target.position + delta;
+        if (target)
+            transform.position = target.position + delta;
     }
 }

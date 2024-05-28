@@ -5,7 +5,7 @@ using System.Linq;
 
 public class AmoReserve : MonoBehaviour
 {
-    public List<AmoTypeReserve> typeReserves = new();
+    public List<AmoPool> typeReserves = new();
 
     public int AddAmo(AmoType type, int amount)
     {
@@ -42,7 +42,7 @@ public class AmoReserve : MonoBehaviour
         return 0;
     }
 
-    public AmoTypeReserve GetReserve (AmoType type)
+    public AmoPool GetPool (AmoType type)
     {
         var typeReserve = typeReserves.Find(x => x.type == type);
         if (typeReserve != null)
@@ -55,7 +55,7 @@ public class AmoReserve : MonoBehaviour
 }
 
 [System.Serializable]
-public class AmoTypeReserve
+public class AmoPool
 {
     public AmoType type;
     public int rounds = 0, maxRounds = 100;

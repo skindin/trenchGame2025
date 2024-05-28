@@ -9,23 +9,20 @@ public class Inventory : MonoBehaviour
     public float passivePickupRad = 1, activePickupRad = 2; //passive should be smaller than active
     public readonly List<Item> items = new();
     public readonly List<Item> withinRadius = new();
-    public Chunk[,] chunks;
-    float closestDist = Mathf.Infinity;
+    public Chunk[,] chunks = new Chunk[0,0];
     public Item closestItem;
     public bool debugLines = false;
+
+    private void Start()
+    {
+        DetectItems();
+    }
 
     public void DetectItems()
     {
         withinRadius.Clear();
 
-        var radius = activePickupRad;
-
-        var min = (Vector2)transform.position - Vector2.one * radius;
-        var max = (Vector2)transform.position + Vector2.one * radius;
-        chunks = ChunkManager.Manager.ChunksFromBox(min, max);
-
-        closestDist = Mathf.Infinity;
-        closestItem = null;
+        UpdateChunks();
 
         foreach (var chunk in chunks)
         {
@@ -37,8 +34,67 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public void UpdateChunks ()
+    {
+        var radius = activePickupRad;
+
+        var min = (Vector2)transform.position - Vector2.one * radius;
+        var max = (Vector2)transform.position + Vector2.one * radius;
+        var newChunks = ChunkManager.Manager.ChunksFromBox(min, max);
+        AddChunkListeners(chunks, newChunks);
+        chunks = newChunks;
+    }
+
+    public void AddChunkListeners (Chunk[,] oldChunks, Chunk[,] newChunks)
+    {
+        //find old
+        foreach (var newChunk in newChunks)
+        {
+            if (newChunk == null) continue;
+
+            bool found = false;
+
+            foreach (var oldChunk in oldChunks)
+            {
+                if (oldChunk == newChunk)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) //if new chunk is not within old chunks
+            {
+                newChunk.onNewItem.AddListener(DetectItem);
+            }
+        }        
+        
+        foreach (var oldChunk in oldChunks)
+        {
+            if (oldChunk == null) continue;
+
+            bool found = false;
+
+            foreach (var newChunk in newChunks)
+            {
+                if (oldChunk == newChunk)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) //if old chunk is not in new chunks
+            {
+                oldChunk.onNewItem.RemoveListener(DetectItem);
+            }
+        }
+    }
+
     public void DetectItem(Item item)
     {
+        if (item.wielder) return;
+
         var dist = Vector2.Distance(transform.position, item.transform.position);
 
         if (dist > activePickupRad) return;
@@ -50,26 +106,63 @@ public class Inventory : MonoBehaviour
         else
         {
             withinRadius.Add(item);
+        }
+    }
 
+    public void PickupItem (Item item)
+    {
+        //if (item.wielder) return; //don't have to run this twice
+
+        if (withinRadius.Contains(item))
+        {
+            if (item.Pickup(character)) withinRadius.Remove(item);
+
+            if (item.GetType() == typeof(Gun))
+            {
+                //if (character.gun != null && character.gun.model == item.model)
+                //{
+                //put unload logic here
+                //}
+                //else
+                if (character.gun != null)
+                {
+                    DropItem(character.gun);
+                    withinRadius.Add(character.gun);
+                }
+
+                character.gun = (Gun)item;
+            }
+        }
+    }
+
+    public void DropItem (Item item)
+    {
+        item.Drop();
+    }
+
+
+    public Item SelectClosest (Vector2 pos)
+    {
+        var closestDist = Mathf.Infinity;
+        Item closestItem = null;
+
+        foreach (var item in withinRadius)
+        {
+            var dist = Vector2.Distance(item.transform.position, pos);
             if (dist < closestDist)
             {
                 closestDist = dist;
                 closestItem = item;
             }
         }
-    }
 
-    public void PickupItem (Item item)
-    {
-        if (withinRadius.Contains(item))
-        {
-            item.Pickup(character);
-        }
+        this.closestItem = closestItem;
+        return closestItem;
     }
 
     public void PickupClosest ()
     {
-        if (closestItem != null) closestItem.Pickup(character);
+        PickupItem(closestItem);
     }
 
     private void OnDrawGizmos()
@@ -88,6 +181,16 @@ public class Inventory : MonoBehaviour
 
                 GeoFuncs.MarkPoint(item.transform.position, .5f, color);
             }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var chunk in chunks)
+        {
+            if (chunk == null) continue;
+
+            chunk.onNewItem.RemoveListener(DetectItem);
         }
     }
 }

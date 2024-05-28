@@ -20,7 +20,7 @@ public class InstanceRenderer : MonoBehaviour
     {
         bulletMaterial.enableInstancing = true;
 
-        var bullets = BulletManager.Manager.activeBullets;
+        var bullets = ProjectileManager.Manager.activeBullets;
 
         Matrix4x4[] transforms = new Matrix4x4[bullets.Count];
 
@@ -29,7 +29,7 @@ public class InstanceRenderer : MonoBehaviour
             var bullet = bullets[i];
             var pos = bullet.pos;
             var rot = Quaternion.LookRotation(Vector3.forward, bullet.velocity);
-            var scale = Vector2.one * BulletManager.Manager.meshScale;
+            var scale = Vector2.one * ProjectileManager.Manager.meshScale;
             transforms[i] = Matrix4x4.TRS(pos, rot, scale);
         }
 
@@ -40,7 +40,7 @@ public class InstanceRenderer : MonoBehaviour
         //    Graphics.DrawMesh(BulletManager.Manager.bulletMesh, matrix, bulletMaterial, 0);
         //}
 
-        Graphics.DrawMeshInstanced(BulletManager.Manager.bulletMesh, 0, bulletMaterial, transforms);
+        Graphics.DrawMeshInstanced(ProjectileManager.Manager.bulletMesh, 0, bulletMaterial, transforms);
     }
 
     public void RenderTrenches ()

@@ -31,7 +31,7 @@ public class Amo : Item
             rounds = Mathf.Clamp(rounds, 0, AmoModel.maxRounds);
     }
 
-    public override void Pickup (Character character)
+    public override bool Pickup (Character character)
     {
         //base.Pickup(character);
 
@@ -39,17 +39,22 @@ public class Amo : Item
         {
             rounds = character.reserve.AddAmo(AmoModel.type, rounds);
 
-            if (rounds <= 0) //shouldn't be less then, but just a percaution
+            if (rounds <= 0)//shouldn't be less then, but just a percaution
+            {
                 DestroyItem();
+                return true;
+            }
         }
+
+        return false;
     }
 
-    public override void ItemUpdate()
-    {
-        base.ItemUpdate();
+    //public override void ItemUpdate()
+    //{
+    //    base.ItemUpdate();
 
 
-    }
+    //}
 
     public override string[] GetInfo()
     {

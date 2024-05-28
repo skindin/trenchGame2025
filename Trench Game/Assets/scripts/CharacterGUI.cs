@@ -45,7 +45,7 @@ public class CharacterGUI : MonoBehaviour
 
         var amoType = character.gun.GunModel.amoType;
         var reserveRounds = character.reserve.GetAmoAmount(amoType);
-        var reserveMaxRounds = character.reserve.GetReserve(amoType).maxRounds;
+        var reserveMaxRounds = character.reserve.GetPool(amoType).maxRounds;
         string reserveText = $"Reserve {reserveRounds}/{reserveMaxRounds}";
 
         string text = $"{gunText}\n{reserveText}";

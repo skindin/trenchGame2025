@@ -7,6 +7,7 @@ public class Item : MonoBehaviour
 {
     public ItemModel model;
     public Character wielder;
+    //public bool currentlyHeld = false;
     public static List<Item> all = new();
     Chunk chunk;
     public Chunk Chunk
@@ -37,6 +38,8 @@ public class Item : MonoBehaviour
     {
         //Debug.Log(gameObject.name + " ran base item awake function");
         ItemAwake();
+
+        //currentlyHeld = wielder;
     }
 
     public virtual void ItemAwake ()
@@ -73,18 +76,30 @@ public class Item : MonoBehaviour
         Chunk = ChunkManager.Manager.ChunkFromPos(transform.position, true);
     }
 
-    public virtual void Pickup (Character character)
+    public virtual bool Pickup (Character character)
     {
         if (wielder == null)
+        {
             wielder = character;
+            transform.parent = character.transform;
+            transform.localPosition = Vector3.zero;
+        }
 
         Chunk = null;
+        return true;
     }
 
+
+    /// <summary>
+    /// Returns true if the item has been removed from the world
+    /// </summary>
     public virtual void Drop ()
     {
         wielder = null;
         UpdateChunk();
+
+        transform.SetParent(null);
+        transform.rotation = Quaternion.identity;
     }
 
     public virtual void DestroyItem ()

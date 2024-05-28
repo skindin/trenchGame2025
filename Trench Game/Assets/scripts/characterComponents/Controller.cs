@@ -93,7 +93,7 @@ public class Controller : MonoBehaviour
             {
                 if (character.gun.rounds <= 0)
                 {
-                    character.gun.StartReload();
+                    character.gun.StartReload(character.reserve);
                 }
             }
             else
@@ -103,6 +103,20 @@ public class Controller : MonoBehaviour
             //if (drawEdgeDetection) Trench.manager.FindTrenchEdgeFromInside(transform.position, mousePos,true);
             //chunks.Clear();
             //Chunk.manager.ChunksFromLine(transform.position, transform.position + mouseDir, chunks, true, true);
+        }
+
+        character.inventory.SelectClosest(mousePos);
+
+        if (Input.GetMouseButton(1))
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                character.inventory.PickupClosest();
+            }
+            else
+            {
+
+            }
         }
 
         character.gun.Aim(mouseDir);

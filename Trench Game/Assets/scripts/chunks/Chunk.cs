@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 //[System.Serializable]
 public class Chunk
@@ -10,6 +11,7 @@ public class Chunk
     public readonly List<Character> characters = new();
     public readonly List<Collider> colliders = new();
     public readonly List<Item> items = new();
+    public UnityEvent<Item> onNewItem = new();
 
     public Chunk (Vector2Int adress, int mapSize)
     {
@@ -32,6 +34,7 @@ public class Chunk
     public void AddItem(Item item)
     {
         items.Add(item);
+        onNewItem.Invoke(item);
     }
 
     public void RemoveItem(Item item)

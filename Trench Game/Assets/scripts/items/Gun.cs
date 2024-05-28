@@ -5,6 +5,7 @@ using System.Linq;
 
 public class Gun : Item
 {
+    public AmoReserve reserve;
     public int rounds = 10;
     float lastFireStamp = 0, reloadStartStamp = 0;
     public Vector2 direction = Vector2.right, barrelPos;
@@ -51,7 +52,7 @@ public class Gun : Item
         {
             if (GunModel.autoReload)
             {
-                StartReload();
+                StartReload(reserve);
             }
             return false;
         }
@@ -91,7 +92,7 @@ public class Gun : Item
 
             if (rounds <= 0 && GunModel.autoReload)
             {
-                StartReload();
+                StartReload(reserve);
             }
         }
 
@@ -128,7 +129,7 @@ public class Gun : Item
 
             if (reloadClock >= GunModel.reloadTime)
             {
-                rounds = wielder.reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
+                Reload();
                 reloadStartStamp = Time.time;
                 reloading = false;
             }
@@ -138,11 +139,27 @@ public class Gun : Item
         }
     }
 
-    public void StartReload ()
+    void Reload ()
     {
-        if (reloading) return;
+        rounds = reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
+    }
 
-        if (wielder.reserve.GetAmoAmount(GunModel.amoType) > 0)
+    void TakeAllAmoFromThis (AmoReserve recievingReserve)
+    {
+        var amoPool = recievingReserve.GetPool(GunModel.amoType);
+        var space = amoPool.maxRounds - amoPool.rounds;
+        var addend = Mathf.Min(space, rounds);
+        rounds -= addend;
+        amoPool.AddAmo(addend); //need to make this TakeAmoFromThis, and put amo in reserve
+    }
+
+    public void StartReload(AmoReserve reserve)
+    {
+        if (reloading || reserve == null) return;
+
+        this.reserve = reserve;
+
+        if (reserve.GetAmoAmount(GunModel.amoType) > 0)
         {
             reloading = true;
             reloadStartStamp = Time.time;
@@ -161,7 +178,7 @@ public class Gun : Item
 
     public Bullet Fire ()
     {
-        return BulletManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos, direction.normalized * GunModel.bulletSpeed, GunModel.range, this);
+        return ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos, direction.normalized * GunModel.bulletSpeed, GunModel.range, wielder);
     }
 
     private void OnDrawGizmos()
@@ -187,4 +204,9 @@ public class Gun : Item
 
         return result;
     }
+
+    //public override bool Pickup(Character character)
+    //{
+    //    return base.Pickup(character);
+    //}
 }

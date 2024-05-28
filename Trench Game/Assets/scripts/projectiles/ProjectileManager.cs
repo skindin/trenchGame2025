@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletManager : MonoBehaviour
+public class ProjectileManager : MonoBehaviour
 {
-    static BulletManager manager;
+    static ProjectileManager manager;
 
-    public static BulletManager Manager
+    public static ProjectileManager Manager
     {
         get
         {
             if (manager == null)
             {
-                manager = FindObjectOfType<BulletManager>();
+                manager = FindObjectOfType<ProjectileManager>();
                 //if (manager == null)
                 //{
                 //    GameObject go = new GameObject("Bullet");
@@ -30,7 +30,7 @@ public class BulletManager : MonoBehaviour
     public Mesh bulletMesh;
     public float meshScale = .1f;
 
-    public Bullet NewBullet (Vector2 pos, Vector2 velocity, float range, Gun source)
+    public Bullet NewBullet (Vector2 pos, Vector2 velocity, float range, Character source)
     {
         Bullet newBullet;
 
@@ -120,7 +120,7 @@ public class BulletManager : MonoBehaviour
             {
                 foreach (var collider in chunk.colliders)
                 {
-                    if (bullet.source.wielder.collider == collider) continue;
+                    if (bullet.source.collider == collider) continue;
                     //if (!collider.vulnerable && !bullet.withinTrench) continue;
 
                     var radius = collider.WorldSize/2;
