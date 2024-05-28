@@ -29,12 +29,32 @@ public class ItemManager : MonoBehaviour
 
     public List<TierGroup> tierGroups = new();
 
-    public float itemDropRadius = 5, minCount = 1, maxCount = 10, avgCount = 4, countConc = .5f;
+    public Transform container;
+
+    public float itemDropRadius = 5, minCount = 1, maxCount = 10, avgCount = 4, countConc = .5f, dropInterval = 60, dropTimer = 0;
+
+    //WaitForSeconds wait;
+
+    public void RunDropInterval (float seconds)
+    {
+        dropTimer += seconds;
+
+        if (dropTimer >= dropInterval)
+        {
+            var spawnPoint = ChunkManager.Manager.GetRandomPosMargin(itemDropRadius);
+            SpawnDrop(spawnPoint);
+            dropTimer = 0;
+        }
+    }
 
     private void Start()
     {
         Sort();
-        SpawnItems(Vector2.zero);
+    }
+
+    private void Update()
+    {
+        RunDropInterval(Time.deltaTime);
     }
 
     public void Sort ()
@@ -85,14 +105,14 @@ public class ItemManager : MonoBehaviour
 
     readonly List<Item> reusableItemList = new();
 
-    public void SpawnItems(Vector2 spawnPos)
+    public void SpawnDrop(Vector2 spawnPos)
     {
         GenerateItemList(reusableItemList, minCount, maxCount, avgCount, countConc);
 
         foreach (var item in reusableItemList)
         {
             var itemPos = Random.insideUnitCircle * itemDropRadius + spawnPos;
-            Instantiate(item, itemPos, item.transform.rotation, transform);
+            Instantiate(item, itemPos, item.transform.rotation, container);
         }
     }
 

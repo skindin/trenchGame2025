@@ -5,11 +5,11 @@ using System.Linq;
 
 public class AmoReserve : MonoBehaviour
 {
-    public List<AmoPool> typeReserves = new();
+    public List<AmoPool> amoPools = new();
 
     public int AddAmo(AmoType type, int amount)
     {
-        var typeReserve = typeReserves.Find(x => x.type == type);
+        var typeReserve = amoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
             return typeReserve.AddAmo(amount);
@@ -21,7 +21,7 @@ public class AmoReserve : MonoBehaviour
 
     public int RemoveAmo(AmoType type, int amount)
     {
-        var typeReserve = typeReserves.Find(x => x.type == type);
+        var typeReserve = amoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
             return typeReserve.RemoveAmo(amount);
@@ -33,7 +33,7 @@ public class AmoReserve : MonoBehaviour
 
     public int GetAmoAmount (AmoType type)
     {
-        var typeReserve = typeReserves.Find(x => x.type == type);
+        var typeReserve = amoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
             return typeReserve.rounds;
@@ -44,13 +44,27 @@ public class AmoReserve : MonoBehaviour
 
     public AmoPool GetPool (AmoType type)
     {
-        var typeReserve = typeReserves.Find(x => x.type == type);
+        var typeReserve = amoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
             return typeReserve;
         }
 
         return null;
+    }
+
+    public string[] GetInfo ()
+    {
+        var info = new string[amoPools.Count];
+
+        for (int i = 0; i < amoPools.Count; i++)
+        {
+            var pool = amoPools[i];
+
+            info[i] = $"{pool.rounds}/{pool.maxRounds} {pool.type.name}";
+        }
+
+        return info;
     }
 }
 

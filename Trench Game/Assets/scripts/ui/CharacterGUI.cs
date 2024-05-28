@@ -16,7 +16,7 @@ public class CharacterGUI : MonoBehaviour
         DrawAmoGUI();
         DrawNearbyItems();
 
-        infoBoxTexture = new Texture2D(100, 100);
+        infoBoxTexture = new Texture2D(1,1);
         //infoBoxTexture.SetPixels
     }
 
@@ -40,15 +40,16 @@ public class CharacterGUI : MonoBehaviour
         // Position the rect in the lower right corner
         Rect rect = new (width - rectWidth, height - rectHeight, rectWidth, rectHeight);
 
+        var gunInfo = character.gun.GetInfo();
+        string gunText = string.Join(" ", gunInfo);
 
-        string gunText = $"Gun {character.gun.rounds}/{character.gun.GunModel.maxRounds}";
+        var reserveInfo = character.reserve.GetInfo();
+        string reserveText = string.Join("\n", reserveInfo);
 
-        var amoType = character.gun.GunModel.amoType;
-        var reserveRounds = character.reserve.GetAmoAmount(amoType);
-        var reserveMaxRounds = character.reserve.GetPool(amoType).maxRounds;
-        string reserveText = $"Reserve {reserveRounds}/{reserveMaxRounds}";
+        string text = $"{gunText}\n\n{reserveText}";
 
-        string text = $"{gunText}\n{reserveText}";
+        if (character.gun.reloading) text = "(Reloading)\n" + text;
+
         GUI.Label(rect, text, style);
     }
 

@@ -29,6 +29,7 @@ public class Chunk
     {
         characters.Remove(character);
         colliders.Remove(character.collider);
+        DestroyIfEmpty();
     }
 
     public void AddItem(Item item)
@@ -40,5 +41,23 @@ public class Chunk
     public void RemoveItem(Item item)
     {
         items.Remove(item);
+        DestroyIfEmpty();
+    }
+
+    public void DestroyIfEmpty ()
+    {
+        if (items.Count == 0 && characters.Count == 0 && ChunkManager.Manager) //should test for colliders too, but don't need to atm
+        {
+            ChunkManager.Manager.RemoveChunk(this); //this line caused two null refference exceptions at one point...?
+        }
+    }
+
+    public void Reset (Vector2Int newAdress)
+    {
+        items.Clear();
+        characters.Clear();
+        colliders.Clear();
+        onNewItem.RemoveAllListeners();
+        adress = newAdress;
     }
 }

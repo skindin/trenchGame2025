@@ -35,7 +35,7 @@ public class Character : MonoBehaviour
         collider.onBulletHit.AddListener(
         delegate
         {
-            SpawnManager.Manager.Relocate(transform);
+            transform.position = ChunkManager.Manager.GetRandomPos();
             UpdateChunk();
             //detector.DetectTrench(0);
         });
@@ -77,6 +77,8 @@ public class Character : MonoBehaviour
 
         set
         {
+            if (chunk == value) return;
+
             if (chunk != null)
             {
                 chunk.RemoveCharacter(this);
@@ -92,7 +94,7 @@ public class Character : MonoBehaviour
 
     public void UpdateChunk ()
     {
-        Chunk = ChunkManager.Manager.ChunkFromPos(transform.position, true);
+        Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
     }
 
     public void UpdateVulnerable (bool trenchStatus)

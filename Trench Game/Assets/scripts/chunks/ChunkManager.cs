@@ -31,7 +31,9 @@ public class ChunkManager : MonoBehaviour
     int chunkArraySize;
 
     public Chunk[,] chunks;
-    public bool logOutOfBounds = false, drawChunkTest = false;
+    public int maxChunksPooled = 10;
+    readonly List<Chunk> chunkPool = new();
+    public bool logOutOfBounds = false, drawChunks = false;
 
     private void Awake()
     {
@@ -40,24 +42,31 @@ public class ChunkManager : MonoBehaviour
 
     private void Update()
     {
-        if (drawChunkTest) Test();
+        if (drawChunks) DrawChunks();
     }
 
     List<Chunk> reusableChunkList = new();
 
-    public void Test ()
+    public void DrawChunks ()
     {
-        foreach (var chunk in this.chunks)
+        foreach (var chunk in chunkPool)
         {
-            if (chunk != null) DrawChunk(chunk, Color.red);
+            DrawChunk(chunk, Color.black);
         }
 
-        var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        var chunks = ChunksFromLine(Vector2.zero, mousePos, reusableChunkList, true, true);
-        foreach (var chunk in chunks)
+        foreach (var chunk in this.chunks)
         {
             if (chunk != null) DrawChunk(chunk, Color.green);
         }
+
+        //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        //GeoFuncs.MarkPoint(ClampPosToNearestChunk(mousePos), .5f, Color.red);
+        //var chunks = ChunksFromLine(Vector2.zero, mousePos, reusableChunkList, true, true);
+        //foreach (var chunk in chunks)
+        //{
+        //    if (chunk != null) DrawChunk(chunk, Color.green);
+        //}
     }
 
     public void InstantiateChunks ()
@@ -87,6 +96,24 @@ public class ChunkManager : MonoBehaviour
         return adress;
     }
 
+    public Vector2 GetRandomPos ()
+    {
+        var x = Random.Range(-worldSize, worldSize)/2;
+        var y = Random.Range(-worldSize, worldSize)/2;
+
+        return new(x, y);
+    }
+
+    public Vector2 GetRandomPosMargin (float margin)
+    {
+        var edge = worldSize - margin;
+
+        var x = Random.Range(-edge, edge) / 2;
+        var y = Random.Range(-edge, edge) / 2;
+
+        return new(x, y);
+    }
+
     /// <summary>
     /// Will still return null if outside bounds!
     /// </summary>
@@ -114,15 +141,27 @@ public class ChunkManager : MonoBehaviour
         if (chunk == null)
         {
             if (newIfNone)
-            { }
-                chunk = chunks[adress.x, adress.y] = NewChunk(adress);
+            {
+                chunk = NewChunk(adress);
+            }
         }
         return chunk;
     }
 
     public Chunk NewChunk(Vector2Int adress)
     {
-        var chunk = new Chunk(adress,1);
+        Chunk newChunk;
+
+        if (chunkPool.Count > 0)
+        {
+            newChunk = chunkPool[0];
+            newChunk.Reset(adress);
+            chunkPool.RemoveAt(0);
+        }
+        else
+        {
+            newChunk = new Chunk(adress, 1);
+        }
         //foreach (var character in Character.chunkless)
         //{
         //    if (PosToAdress(character.transform.position) == adress)
@@ -131,13 +170,60 @@ public class ChunkManager : MonoBehaviour
         //        chunk.colliders.Add(character.collider);
         //    }
         //}
-        return chunk;
+        chunks[adress.x, adress.y] = newChunk;
+
+        return newChunk;
+    }
+
+    public void RemoveChunk (Chunk chunk)
+    {
+        chunks[chunk.adress.x, chunk.adress.y] = null;
+
+        if (chunkPool.Count < maxChunksPooled)
+        {
+            chunkPool.Add(chunk);
+        }
     }
 
     public Chunk ChunkFromPos (Vector2 pos, bool newIfNone = false)
     {
         var adress = PosToAdress(pos);
         return ChunkFromAdress(adress,newIfNone);
+    }
+
+    public Chunk ChunkFromPosClamped (Transform transform, bool newIfNone = true)
+    {
+        var clampedPos = ClampPosToNearestChunk(transform.position, out var adress);
+        transform.position = clampedPos;
+        return ChunkFromAdress(adress, newIfNone);
+    }
+
+    public Vector2 ClampPosToNearestChunk (Vector2 pos, out Vector2Int closestAdress)
+    {
+        var adress = PosToAdress(pos);
+        closestAdress = Vector2Int.Max(adress, Vector2Int.zero);
+        closestAdress = Vector2Int.Min(closestAdress, (chunkArraySize-1) * Vector2Int.one);
+
+        GetChunkBox(closestAdress, out var chunkMin, out var chunkMax);
+
+        var closestPos = Vector2.Max(pos, chunkMin);
+        closestPos = Vector2.Min(closestPos, chunkMax);
+
+        return closestPos;
+    }
+
+    public Vector2 ClampPosToNearestChunk(Vector2 pos)
+    {
+        var adress = PosToAdress(pos);
+        var closestAdress = Vector2Int.Max(adress, Vector2Int.zero);
+        closestAdress = Vector2Int.Min(closestAdress, (chunkArraySize - 1) * Vector2Int.one);
+
+        GetChunkBox(closestAdress, out var chunkMin, out var chunkMax);
+
+        var closestPos = Vector2.Max(pos, chunkMin);
+        closestPos = Vector2.Min(closestPos, chunkMax);
+
+        return closestPos;
     }
 
     public Vector2Int[,] AdressesFromBox (Vector2 min, Vector2 max)

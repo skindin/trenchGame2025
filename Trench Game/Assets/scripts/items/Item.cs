@@ -19,6 +19,8 @@ public class Item : MonoBehaviour
 
         set
         {
+            if (chunk == value) return;
+
             if (chunk != null)
             {
                 chunk.RemoveItem(this);
@@ -73,7 +75,7 @@ public class Item : MonoBehaviour
 
     public void UpdateChunk()
     {
-        Chunk = ChunkManager.Manager.ChunkFromPos(transform.position, true);
+        Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
     }
 
     public virtual bool Pickup (Character character)
