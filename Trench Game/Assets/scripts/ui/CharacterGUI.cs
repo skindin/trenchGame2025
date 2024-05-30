@@ -40,10 +40,9 @@ public class CharacterGUI : MonoBehaviour
         // Position the rect in the lower right corner
         Rect rect = new (width - rectWidth, height - rectHeight, rectWidth, rectHeight);
 
-        var gunInfo = character.gun.GetInfo();
-        string gunText = string.Join(" ", gunInfo);
+        string gunText = character.gun.GetInfo("\n");
 
-        var reserveInfo = character.reserve.GetInfo();
+        var reserveInfo = character.reserve.GetInfo("\n");
         string reserveText = string.Join("\n", reserveInfo);
 
         string text = $"{gunText}\n\n{reserveText}";
@@ -69,7 +68,7 @@ public class CharacterGUI : MonoBehaviour
         foreach (var item in character.inventory.withinRadius)
         {
             if (item == character.inventory.closestItem) continue;
-            DrawItemUI(item,style,scaleFactor);
+                DrawTextBox(item.model.name, item.transform.position, style, scaleFactor);
         }
 
         if (character.inventory.closestItem != null)
@@ -81,12 +80,16 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawItemUI (Item item, GUIStyle style, float scaleFactor)
     {
-        var infoArray = item.GetInfo();
-        var infoString = string.Join(" ", infoArray);
+        var info = item.GetInfo("\n");
 
+        DrawTextBox(info, item.transform.position, style, scaleFactor);
+    }
+
+    public void DrawTextBox (string infoString, Vector3 pos,  GUIStyle style, float scaleFactor)
+    {
         var size = style.CalcSize(new GUIContent(infoString));
 
-        var screenPos = Camera.main.WorldToScreenPoint(item.transform.position);
+        var screenPos = Camera.main.WorldToScreenPoint(pos);
 
         var guiPos = new Vector2(screenPos.x, Screen.height - screenPos.y) - (size / 2) + (infoBoxOffset * scaleFactor);
 

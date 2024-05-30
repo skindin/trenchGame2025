@@ -187,22 +187,22 @@ public class Gun : Item
             GeoFuncs.MarkPoint(transform.position + transform.rotation * barrelPos,.2f,Color.blue);
     }
 
-    public override string[] GetInfo()
+    public override string GetInfo(string separator = " ")
     {
         var itemInfo = base.GetInfo();
 
         var roundRatio = $"{rounds}/{GunModel.maxRounds}";
-        var range = $"{GunModel.range} m";
+        var range = $"{GunModel.range} m range";
         var bulletSpeed = $"{GunModel.bulletSpeed} m/s";
-        var fireRate = $"{GunModel.firingRate}/s";
+        var fireRate = $"{GunModel.firingRate} rounds/s";
         var reload = $"{GunModel.reloadTime} s reload";
         var amoType = GunModel.amoType.name;
 
-        var gunInfo = new string[] { roundRatio, fireRate, amoType};
+        var array = new string[] {itemInfo, roundRatio, fireRate, range, bulletSpeed, reload, amoType};
 
-        var result = itemInfo.Concat(gunInfo).ToArray();
+        //var result = itemInfo.Concat(gunInfo).ToArray();
 
-        return result;
+        return string.Join(separator, array);
     }
 
     //public override bool Pickup(Character character)

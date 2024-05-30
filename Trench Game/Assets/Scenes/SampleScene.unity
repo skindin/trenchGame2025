@@ -1800,7 +1800,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkSize: 10
-  maxWorldSize: 70
+  maxWorldSize: 50
   maxChunksPooled: 10
   logOutOfBounds: 0
   drawChunks: 0
@@ -2200,8 +2200,9 @@ MonoBehaviour:
   maxCount: 20
   avgCount: 10
   countConc: 1
-  dropInterval: 60
+  dropInterval: 20
   dropTimer: 0
+  dropOnStart: 1
 --- !u!114 &1072976477 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}

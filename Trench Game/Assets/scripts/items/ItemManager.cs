@@ -32,6 +32,7 @@ public class ItemManager : MonoBehaviour
     public Transform container;
 
     public float itemDropRadius = 5, minCount = 1, maxCount = 10, avgCount = 4, countConc = .5f, dropInterval = 60, dropTimer = 0;
+    public bool dropOnStart = false;
 
     //WaitForSeconds wait;
 
@@ -50,6 +51,11 @@ public class ItemManager : MonoBehaviour
     private void Start()
     {
         Sort();
+
+        if (dropOnStart)
+        {
+            RunDropInterval(dropInterval);
+        }
     }
 
     private void Update()

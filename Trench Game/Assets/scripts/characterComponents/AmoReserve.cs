@@ -53,18 +53,18 @@ public class AmoReserve : MonoBehaviour
         return null;
     }
 
-    public string[] GetInfo ()
+    public string GetInfo (string separator = " ")
     {
-        var info = new string[amoPools.Count];
+        var array = new string[amoPools.Count];
 
         for (int i = 0; i < amoPools.Count; i++)
         {
             var pool = amoPools[i];
 
-            info[i] = $"{pool.rounds}/{pool.maxRounds} {pool.type.name}";
+            array[i] = $"{pool.rounds}/{pool.maxRounds} {pool.type.name}";
         }
 
-        return info;
+        return string.Join(separator, array) ;
     }
 }
 

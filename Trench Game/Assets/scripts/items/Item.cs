@@ -110,8 +110,8 @@ public class Item : MonoBehaviour
         Destroy(gameObject, Time.deltaTime);
     }
 
-    public virtual string[] GetInfo ()
+    public virtual string GetInfo(string separator = " ")
     {
-        return new string[0];// { $"Tier {model.tier}" };
+        return model.name;// { $"Tier {model.tier}" };
     }
 }

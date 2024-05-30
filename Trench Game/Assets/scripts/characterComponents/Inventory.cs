@@ -101,7 +101,10 @@ public class Inventory : MonoBehaviour
 
         if (item.passivePickup && dist <= passivePickupRad)
         {
-            item.Pickup(character);
+            if (!item.Pickup(character))
+            {
+                withinRadius.Add(item);
+            }
         }
         else
         {

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PixelRect:
     serializedVersion: 2
-    x: 622
-    y: 243
-    width: 1550
-    height: 1064
+    x: 8
+    y: 51
+    width: 2544
+    height: 1341
   m_ShowMode: 4
   m_Title: Game
   m_RootView: {fileID: 3}
@@ -41,8 +41,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 30
-    width: 1550
-    height: 1014
+    width: 2544
+    height: 1291
   m_MinSize: {x: 100, y: 123}
   m_MaxSize: {x: 4000, y: 4023}
   m_ActualView: {fileID: 6}
@@ -66,8 +66,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1550
-    height: 1064
+    width: 2544
+    height: 1341
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
   m_UseTopView: 1
@@ -91,7 +91,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1550
+    width: 2544
     height: 30
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
@@ -112,8 +112,8 @@ MonoBehaviour:
   m_Position:
     serializedVersion: 2
     x: 0
-    y: 1044
-    width: 1550
+    y: 1321
+    width: 2544
     height: 20
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
@@ -137,10 +137,10 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 622
-    y: 273
-    width: 1550
-    height: 995
+    x: 8
+    y: 81
+    width: 2544
+    height: 1272
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -157,7 +157,7 @@ MonoBehaviour:
   m_ShowGizmos: 1
   m_TargetDisplay: 0
   m_ClearColor: {r: 0, g: 0, b: 0, a: 0}
-  m_TargetSize: {x: 1550, y: 974}
+  m_TargetSize: {x: 2544, y: 1251}
   m_TextureFilterMode: 0
   m_TextureHideFlags: 61
   m_RenderIMGUI: 1
@@ -172,10 +172,10 @@ MonoBehaviour:
     m_VRangeLocked: 0
     hZoomLockedByDefault: 0
     vZoomLockedByDefault: 0
-    m_HBaseRangeMin: -775
-    m_HBaseRangeMax: 775
-    m_VBaseRangeMin: -487
-    m_VBaseRangeMax: 487
+    m_HBaseRangeMin: -1272
+    m_HBaseRangeMax: 1272
+    m_VBaseRangeMin: -625.5
+    m_VBaseRangeMax: 625.5
     m_HAllowExceedBaseRangeMin: 1
     m_HAllowExceedBaseRangeMax: 1
     m_VAllowExceedBaseRangeMin: 1
@@ -193,23 +193,23 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
-      width: 1550
-      height: 974
+      width: 2544
+      height: 1251
     m_Scale: {x: 1, y: 1}
-    m_Translation: {x: 775, y: 487}
+    m_Translation: {x: 1272, y: 625.5}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -775
-      y: -487
-      width: 1550
-      height: 974
+      x: -1272
+      y: -625.5
+      width: 2544
+      height: 1251
     m_MinimalGUI: 1
   m_defaultScale: 1
-  m_LastWindowPixelSize: {x: 1550, y: 995}
+  m_LastWindowPixelSize: {x: 2544, y: 1272}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000001000000000000

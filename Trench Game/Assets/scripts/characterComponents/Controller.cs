@@ -50,6 +50,13 @@ public class Controller : MonoBehaviour
         //}
     }
 
+    private void LateUpdate()
+    {
+        var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var mouseDir = mousePos - transform.position;
+        character.gun.Aim(mouseDir);
+    }
+
     public void Controls ()
     {
         Vector2 moveDir;
@@ -118,8 +125,6 @@ public class Controller : MonoBehaviour
 
             }
         }
-
-        character.gun.Aim(mouseDir);
     }
 
     //List<Chunk> chunks = new();
