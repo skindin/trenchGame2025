@@ -3817,6 +3817,7 @@ MonoBehaviour:
   character: {fileID: 1253392265}
   passivePickupRad: 1
   activePickupRad: 3
+  withinRadius: []
   closestItem: {fileID: 0}
   debugLines: 0
 --- !u!1 &2113553809
@@ -3853,10 +3854,12 @@ MonoBehaviour:
   amoTextSize: 3
   itemTextSize: 2.5
   plainText: {r: 1, g: 1, b: 1, a: 1}
-  backgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0.8}
   importantColor: {r: 0.33296537, g: 1, b: 0, a: 1}
   infoBoxOffset: {x: 0, y: 5}
   scale: 0.015
+  infoBoxPadding: 0.5
+  screenPadding: 1
 --- !u!4 &2113553811
 Transform:
   m_ObjectHideFlags: 0
@@ -3887,6 +3890,7 @@ MonoBehaviour:
   textSize: 3
   scale: 0.015
   textColor: {r: 1, g: 1, b: 1, a: 1}
+  padding: 1
 --- !u!1001 &5997344472831419622
 PrefabInstance:
   m_ObjectHideFlags: 0

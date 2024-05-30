@@ -8,6 +8,7 @@ public class GameUI : MonoBehaviour
     public float textSize = 5, scale = .015f;
     public Color textColor = Color.white;
     float deltaTime;
+    public float padding = 10;
 
     private void Update()
     {
@@ -27,17 +28,19 @@ public class GameUI : MonoBehaviour
         Rect rect = new(0,0, width, height);
 
         var fontSize = Mathf.RoundToInt(textSize * height * scale);
+        var padding = Mathf.RoundToInt(this.padding * height * scale);
 
-        DrawFPS(rect,fontSize);
-        DrawDropTimer(rect, fontSize);
+        DrawFPS(rect,fontSize, padding);
+        DrawDropTimer(rect, fontSize, padding);
     }
 
-    public void DrawFPS (Rect rect, int fontSize)
+    public void DrawFPS (Rect rect, int fontSize, int padding)
     {
         GUIStyle style = new();
         style.alignment = TextAnchor.UpperLeft;
         style.fontSize = fontSize;
         style.normal.textColor = textColor;
+        style.padding = new(padding, padding, padding, padding);
 
         var fps = Mathf.RoundToInt(1 / deltaTime);
 
@@ -46,12 +49,13 @@ public class GameUI : MonoBehaviour
         GUI.Label(rect, text, style);
     }
 
-    public void DrawDropTimer (Rect rect, int fontSize)
+    public void DrawDropTimer (Rect rect, int fontSize, int padding)
     {
         GUIStyle style = new();
         style.alignment = TextAnchor.UpperRight;
         style.fontSize = fontSize;
         style.normal.textColor = textColor;
+        style.padding = new(padding, padding, padding, padding);
 
         var timeLeft = ItemManager.Manager.dropInterval - ItemManager.Manager.dropTimer;
 

@@ -52,7 +52,7 @@ public class Gun : Item
         {
             if (GunModel.autoReload)
             {
-                StartReload(reserve);
+                StartReload();
             }
             return false;
         }
@@ -92,7 +92,7 @@ public class Gun : Item
 
             if (rounds <= 0 && GunModel.autoReload)
             {
-                StartReload(reserve);
+                StartReload();
             }
         }
 
@@ -144,20 +144,18 @@ public class Gun : Item
         rounds = reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
     }
 
-    void TakeAllAmoFromThis (AmoReserve recievingReserve)
-    {
-        var amoPool = recievingReserve.GetPool(GunModel.amoType);
-        var space = amoPool.maxRounds - amoPool.rounds;
-        var addend = Mathf.Min(space, rounds);
-        rounds -= addend;
-        amoPool.AddAmo(addend); //need to make this TakeAmoFromThis, and put amo in reserve
-    }
+    //void TakeAllAmoFromThis (AmoReserve recievingReserve)
+    //{
+    //    var amoPool = recievingReserve.GetPool(GunModel.amoType);
+    //    var space = amoPool.maxRounds - amoPool.rounds;
+    //    var addend = Mathf.Min(space, rounds);
+    //    rounds -= addend;
+    //    amoPool.AddAmo(addend); //need to make this TakeAmoFromThis, and put amo in reserve
+    //}
 
-    public void StartReload(AmoReserve reserve)
+    public void StartReload()
     {
         if (reloading || reserve == null) return;
-
-        this.reserve = reserve;
 
         if (reserve.GetAmoAmount(GunModel.amoType) > 0)
         {
@@ -205,8 +203,19 @@ public class Gun : Item
         return string.Join(separator, array);
     }
 
-    //public override bool Pickup(Character character)
-    //{
-    //    return base.Pickup(character);
-    //}
+    public override bool Pickup(Character character)
+    {
+        base.Pickup(character);
+
+        reserve = character.reserve;
+        return true;
+    }
+
+    public override void Drop()
+    {
+        base.Drop();
+
+        reserve = null;
+        reloading = false;
+    }
 }

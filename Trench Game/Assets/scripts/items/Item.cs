@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class Item : MonoBehaviour
 {
+    public static Transform defaultContainer;
     public ItemModel model;
     public Character wielder;
     //public bool currentlyHeld = false;
@@ -53,6 +54,13 @@ public class Item : MonoBehaviour
     {
         if (!wielder)
             UpdateChunk();
+
+        ItemStart();
+    }
+
+    public virtual void ItemStart()
+    {
+
     }
 
     private void OnDestroy()
@@ -80,7 +88,7 @@ public class Item : MonoBehaviour
 
     public virtual bool Pickup (Character character)
     {
-        if (wielder == null)
+        if (wielder != character)
         {
             wielder = character;
             transform.parent = character.transform;
@@ -100,7 +108,7 @@ public class Item : MonoBehaviour
         wielder = null;
         UpdateChunk();
 
-        transform.SetParent(null);
+        transform.SetParent(defaultContainer);
         transform.rotation = Quaternion.identity;
     }
 

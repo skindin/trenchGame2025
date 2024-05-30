@@ -36,6 +36,11 @@ public class ItemManager : MonoBehaviour
 
     //WaitForSeconds wait;
 
+    private void Awake()
+    {
+        Item.defaultContainer = container;
+    }
+
     public void RunDropInterval (float seconds)
     {
         dropTimer += seconds;
@@ -118,8 +123,15 @@ public class ItemManager : MonoBehaviour
         foreach (var item in reusableItemList)
         {
             var itemPos = Random.insideUnitCircle * itemDropRadius + spawnPos;
-            Instantiate(item, itemPos, item.transform.rotation, container);
+            NewItem(item,itemPos);
         }
+    }
+
+    public Item NewItem (Item prfab, Vector3 pos)
+    {        
+        var item = Instantiate(prfab, pos, Quaternion.identity, container).GetComponent<Item>();
+        item.Drop();
+        return item;
     }
 
     [System.Serializable]

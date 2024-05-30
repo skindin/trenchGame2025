@@ -8,7 +8,7 @@ public class CharacterGUI : MonoBehaviour
     public float amoTextSize = 5, itemTextSize = 2;
     public Color plainText = Color.white, backgroundColor = Color.white, importantColor = Color.white;
     public Vector2 infoBoxOffset;
-    public float scale = 100;
+    public float scale = 100, infoBoxPadding = 10, screenPadding = 10;
     Texture2D infoBoxTexture;
 
     void OnGUI()
@@ -29,6 +29,10 @@ public class CharacterGUI : MonoBehaviour
 
         style.fontSize = Mathf.RoundToInt(amoTextSize * scaleFactor);
         style.alignment = TextAnchor.LowerRight;
+
+        var padding = Mathf.RoundToInt(screenPadding * scaleFactor);
+
+        style.padding = new (padding, padding, padding, padding);
 
         int width = Screen.width;
         int height = Screen.height;
@@ -61,9 +65,11 @@ public class CharacterGUI : MonoBehaviour
         style.normal.textColor = plainText;
 
         var scaleFactor = Screen.height * scale;
-        style.alignment = TextAnchor.MiddleCenter;
+        style.alignment = TextAnchor.UpperCenter;
         style.fontSize = Mathf.RoundToInt(itemTextSize * scaleFactor);
         style.normal.background = infoBoxTexture;
+        var padding = Mathf.RoundToInt(infoBoxPadding * scaleFactor);
+        style.padding = new(padding, padding, padding, padding);
 
         foreach (var item in character.inventory.withinRadius)
         {
@@ -91,7 +97,8 @@ public class CharacterGUI : MonoBehaviour
 
         var screenPos = Camera.main.WorldToScreenPoint(pos);
 
-        var guiPos = new Vector2(screenPos.x, Screen.height - screenPos.y) - (size / 2) + (infoBoxOffset * scaleFactor);
+        //var guiPos = new Vector2(screenPos.x, Screen.height - screenPos.y) - (size / 2) + (infoBoxOffset * scaleFactor);
+        var guiPos = new Vector2(screenPos.x - size.x / 2, Screen.height - screenPos.y) + (infoBoxOffset * scaleFactor);
 
         GUI.Box(new Rect(guiPos.x, guiPos.y, size.x, size.y), infoString, style);
     }

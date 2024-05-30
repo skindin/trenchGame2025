@@ -7,8 +7,8 @@ public class Inventory : MonoBehaviour
 {
     public Character character;
     public float passivePickupRad = 1, activePickupRad = 2; //passive should be smaller than active
-    public readonly List<Item> items = new();
-    public readonly List<Item> withinRadius = new();
+    //public readonly List<Item> items = new(); //apparently none of my code uses this crying emoji
+    public List<Item> withinRadius = new();
     public Chunk[,] chunks = new Chunk[0,0];
     public Item closestItem;
     public bool debugLines = false;
@@ -118,9 +118,10 @@ public class Inventory : MonoBehaviour
 
         if (withinRadius.Contains(item))
         {
-            if (item.Pickup(character)) withinRadius.Remove(item);
+            if (item.Pickup(character))
+                withinRadius.Remove(item);
 
-            if (item.GetType() == typeof(Gun))
+            if (item is Gun gun)
             {
                 //if (character.gun != null && character.gun.model == item.model)
                 //{
@@ -130,10 +131,9 @@ public class Inventory : MonoBehaviour
                 if (character.gun != null)
                 {
                     DropItem(character.gun);
-                    withinRadius.Add(character.gun);
                 }
 
-                character.gun = (Gun)item;
+                character.gun = gun;
             }
         }
     }
@@ -141,6 +141,7 @@ public class Inventory : MonoBehaviour
     public void DropItem (Item item)
     {
         item.Drop();
+        //withinRadius.Add(item); //its already being added by the chunk event dipshit
     }
 
 

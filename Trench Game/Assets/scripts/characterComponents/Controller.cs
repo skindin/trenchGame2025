@@ -100,7 +100,7 @@ public class Controller : MonoBehaviour
             {
                 if (character.gun.rounds <= 0)
                 {
-                    character.gun.StartReload(character.reserve);
+                    character.gun.StartReload();
                 }
             }
             else
