@@ -51,6 +51,8 @@ public class GameUI : MonoBehaviour
 
     public void DrawDropTimer (Rect rect, int fontSize, int padding)
     {
+        if (!ItemManager.Manager) return;
+
         GUIStyle style = new();
         style.alignment = TextAnchor.UpperRight;
         style.fontSize = fontSize;

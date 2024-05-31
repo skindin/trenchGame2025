@@ -42,14 +42,20 @@ public class StackableItem : Item
     //    Combine();
     //}
 
+    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
+    {
+        base.Pickup(character, out wasPickedUp, out wasDestroyed);
+        CombineWithItems(character.inventory.items);
+    }
+
     public override void Drop() //just remember to run Drop() every time you spawn a new item!
     {
         base.Drop();
 
-        Combine();
+        CombineAll();
     }
 
-    public bool Combine() //idk where to run this
+    public bool CombineAll() //idk where to run this
     {
         var min = transform.position - Vector3.one * StackableModel.combineRadius;
         var max = transform.position + Vector3.one * StackableModel.combineRadius;
@@ -60,26 +66,33 @@ public class StackableItem : Item
         {
             if (chunk == null) continue;
 
-            foreach (var item in chunk.items)
-            {
-                if (!(item is StackableItem stackItem)) continue;
+            if (CombineWithItems(chunk.items)) return true;
+        }
 
-                if (StackableModel != stackItem.StackableModel) continue;
+        return false;
+    }
 
-                var dist = Vector2.Distance(item.transform.position, transform.position);
-                if (dist > StackableModel.combineRadius) continue;
+    public bool CombineWithItems(List<Item> items)
+    {
+        foreach (var item in items)
+        {
+            if (item is not StackableItem stackItem) continue;
 
-                var spaceLeft = StackableModel.maxAmount - stackItem.amount;
+            if (StackableModel != stackItem.StackableModel) continue;
 
-                var addend = Mathf.Min(amount, spaceLeft);
+            var dist = Vector2.Distance(item.transform.position, transform.position);
+            if (dist > StackableModel.combineRadius) continue;
 
-                stackItem.amount += addend;
-                amount -= addend;
+            var spaceLeft = StackableModel.maxAmount - stackItem.amount;
 
-                if (amount == 0) DestroyItem();
+            var addend = Mathf.Min(amount, spaceLeft);
 
-                return true;
-            }
+            stackItem.amount += addend;
+            amount -= addend;
+
+            if (amount == 0) DestroyItem();
+
+            return true;
         }
 
         return false;

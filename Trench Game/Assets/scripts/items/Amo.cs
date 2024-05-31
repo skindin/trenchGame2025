@@ -23,23 +23,23 @@ public class Amo : StackableItem
     //    base.ItemAwake();
     //}
 
-    public override bool Pickup (Character character) //WOULD BE COOL IF AMO COULD COMBINE WHEN WITHIN A GIVEN PROXIMITY
+    public override void Pickup (Character character, out bool wasPickedup, out bool wasDestroyed)
     {
         //base.Pickup(character);
-
+        wasPickedup = wasDestroyed = false;
 
         if (character.reserve)
         {
             amount = character.reserve.AddAmo(AmoModel.type, amount);
 
+            wasPickedup = true;
+
             if (amount <= 0)//shouldn't be less then, but just a percaution
             {
                 DestroyItem();
-                return true;
+                wasDestroyed = true;
             }
         }
-
-        return false;
     }
 
     //public override void ItemUpdate()

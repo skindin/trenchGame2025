@@ -7,7 +7,7 @@ public class Inventory : MonoBehaviour
 {
     public Character character;
     public float passivePickupRad = 1, activePickupRad = 2; //passive should be smaller than active
-    //public readonly List<Item> items = new(); //apparently none of my code uses this crying emoji
+    public List<Item> items = new();
     public List<Item> withinRadius = new();
     public Chunk[,] chunks = new Chunk[0,0];
     public Item closestItem;
@@ -101,7 +101,8 @@ public class Inventory : MonoBehaviour
 
         if (item.passivePickup && dist <= passivePickupRad)
         {
-            if (!item.Pickup(character))
+            item.Pickup(character, out var pickedUp, out _);
+            if (!pickedUp)
             {
                 withinRadius.Add(item);
             }
@@ -118,8 +119,13 @@ public class Inventory : MonoBehaviour
 
         if (withinRadius.Contains(item))
         {
-            if (item.Pickup(character))
+            item.Pickup(character, out var pickedUp, out var destroyed);
+            if (pickedUp)
                 withinRadius.Remove(item);
+
+            if (!destroyed)
+                items.Add(item);
+
 
             if (item is Gun gun)
             {
@@ -128,10 +134,7 @@ public class Inventory : MonoBehaviour
                 //put unload logic here
                 //}
                 //else
-                if (character.gun != null)
-                {
-                    DropItem(character.gun);
-                }
+                if (character.gun) DropItem(character.gun); //we only want to drop the gun when they already have the gun
 
                 character.gun = gun;
             }
@@ -140,10 +143,31 @@ public class Inventory : MonoBehaviour
 
     public void DropItem (Item item)
     {
+        if (item is Gun)
+        {
+            character.gun = null;
+        }
+
         item.Drop();
+
+        items.Remove(item);
         //withinRadius.Add(item); //its already being added by the chunk event dipshit
     }
 
+    public void DropAllItems()
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            var item = items[0];
+            DropItem(item);
+        }
+    }
+
+    public void DropPrevItem ()
+    {
+        var item = items[^1];
+        DropItem(item);
+    }
 
     public Item SelectClosest (Vector2 pos)
     {

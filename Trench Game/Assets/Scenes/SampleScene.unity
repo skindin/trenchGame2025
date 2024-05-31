@@ -2156,7 +2156,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1054766972
 Transform:
   m_ObjectHideFlags: 0
@@ -3817,6 +3817,8 @@ MonoBehaviour:
   character: {fileID: 1253392265}
   passivePickupRad: 1
   activePickupRad: 3
+  items:
+  - {fileID: 1072976477}
   withinRadius: []
   closestItem: {fileID: 0}
   debugLines: 0

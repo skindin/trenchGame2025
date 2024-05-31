@@ -65,7 +65,7 @@ public class ItemManager : MonoBehaviour
 
     private void Update()
     {
-        RunDropInterval(Time.deltaTime);
+        RunDropInterval(Time.deltaTime); //i think this line caused a stack overflow but i have no idea why
     }
 
     public void Sort ()

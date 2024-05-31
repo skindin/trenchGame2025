@@ -86,7 +86,7 @@ public class Item : MonoBehaviour
         Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
     }
 
-    public virtual bool Pickup (Character character)
+    public virtual void Pickup (Character character, out bool wasPickedUp, out bool wasDestroyed)
     {
         if (wielder != character)
         {
@@ -96,7 +96,13 @@ public class Item : MonoBehaviour
         }
 
         Chunk = null;
-        return true;
+        wasDestroyed = false;
+        wasPickedUp = true;
+    }
+
+    public void Pickup (Character character) //not overidable, becase it's just a shorthand
+    {
+        Pickup(character, out _, out _);
     }
 
 

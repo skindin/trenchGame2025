@@ -203,12 +203,11 @@ public class Gun : Item
         return string.Join(separator, array);
     }
 
-    public override bool Pickup(Character character)
+    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
     {
-        base.Pickup(character);
+        base.Pickup(character,out wasPickedUp, out wasDestroyed);
 
         reserve = character.reserve;
-        return true;
     }
 
     public override void Drop()

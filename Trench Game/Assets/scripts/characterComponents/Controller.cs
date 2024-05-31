@@ -22,31 +22,22 @@ public class Controller : MonoBehaviour
         //if (Time.timeScale > 0)
             Controls();
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (Time.timeScale == 0) Time.timeScale = 1;
-            else Time.timeScale = 0;
-        }
-
-        if (step)
-        {
-            Time.timeScale = 0;
-            step = false;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Time.timeScale = 10;
-            step = true;
-        }
-
-        //if (Input.GetMouseButton(1))
+        //if (Input.GetKeyDown(KeyCode.Space))
         //{
-        //    character.FillTrench(transform.position);
+        //    if (Time.timeScale == 0) Time.timeScale = 1;
+        //    else Time.timeScale = 0;
         //}
-        //else
+
+        //if (step)
         //{
-        //    character.FillTrench(Vector2.zero, true);
+        //    Time.timeScale = 0;
+        //    step = false;
+        //}
+
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    Time.timeScale = 10;
+        //    step = true;
         //}
     }
 
@@ -54,7 +45,7 @@ public class Controller : MonoBehaviour
     {
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         var mouseDir = mousePos - transform.position;
-        character.gun.Aim(mouseDir);
+        if (character.gun) character.gun.Aim(mouseDir);
     }
 
     public void Controls ()
@@ -94,7 +85,7 @@ public class Controller : MonoBehaviour
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         var mouseDir = mousePos - transform.position;
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && character.gun)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -124,6 +115,11 @@ public class Controller : MonoBehaviour
             {
 
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            character.inventory.DropPrevItem();
         }
     }
 

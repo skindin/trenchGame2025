@@ -22,6 +22,8 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawAmoGUI ()
     {
+        if (!character.gun) return; //technically should still draw the reserve but whatever
+
         var scaleFactor = Screen.height * scale;
         GUIStyle style = new();
 
