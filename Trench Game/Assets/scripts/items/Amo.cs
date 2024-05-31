@@ -23,6 +23,13 @@ public class Amo : StackableItem
     //    base.ItemAwake();
     //}
 
+
+    /// <summary>
+    /// Picked up means was removed from ground
+    /// </summary>
+    /// <param name="character"></param>
+    /// <param name="wasPickedup"></param>
+    /// <param name="wasDestroyed"></param>
     public override void Pickup (Character character, out bool wasPickedup, out bool wasDestroyed)
     {
         //base.Pickup(character);
@@ -30,14 +37,16 @@ public class Amo : StackableItem
 
         if (character.reserve)
         {
+            //var prevAmount = amount;
             amount = character.reserve.AddAmo(AmoModel.type, amount);
 
-            wasPickedup = true;
+            //if (prevAmount != amount)
+            //    wasPickedup = true;
 
             if (amount <= 0)//shouldn't be less then, but just a percaution
             {
                 DestroyItem();
-                wasDestroyed = true;
+                wasPickedup = wasDestroyed = true;
             }
         }
     }

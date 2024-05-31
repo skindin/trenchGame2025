@@ -1622,8 +1622,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2194a8dca4f6e2440948b7307355af01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunPrefabs: []
-  amoPrefabs: []
   spawnRadius: 10
 --- !u!1 &790973805
 GameObject:
@@ -2156,7 +2154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1054766972
 Transform:
   m_ObjectHideFlags: 0
@@ -2555,13 +2553,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40d8750cc4d4214cb94d203cab5a43c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPooled: 100
-  activeCount: 0
-  pooledCount: 0
-  total: 0
   debugLines: 0
   bulletMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   meshScale: 0.1
+  bulletPool:
+    currentPooled: 0
+    maxPooled: 100
 --- !u!1 &1526754500
 GameObject:
   m_ObjectHideFlags: 0

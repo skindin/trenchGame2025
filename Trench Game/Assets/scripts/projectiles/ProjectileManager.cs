@@ -24,26 +24,21 @@ public class ProjectileManager : MonoBehaviour
         }
     }
 
-    public readonly List<Bullet> activeBullets = new(), pooledBullets = new();
-    public int maxPooled = 100, activeCount, pooledCount, total;
+    public readonly List<Bullet> activeBullets = new();//, pooledBullets = new();
+    //public int maxPooled = 100, activeCount, pooledCount, total;
     public bool debugLines = false;
     public Mesh bulletMesh;
     public float meshScale = .1f;
+    public ObjectPool<Bullet> bulletPool = new(
+            newFunc: () => new Bullet(),
+            resetAction: null,
+            disableAction: null,
+            removeAction: null
+            );
 
     public Bullet NewBullet (Vector2 pos, Vector2 velocity, float range, Character source)
     {
-        Bullet newBullet;
-
-        if (pooledBullets.Count > 0)
-        {
-            newBullet = pooledBullets[0];
-            pooledBullets.Remove(newBullet);
-            pooledCount = pooledBullets.Count;
-        }
-        else
-        {
-            newBullet = new();
-        }
+        var newBullet = bulletPool.Get();
 
         newBullet.pos = newBullet.startPos = pos;
         newBullet.velocity = velocity;
@@ -51,9 +46,9 @@ public class ProjectileManager : MonoBehaviour
         newBullet.source = source;
 
         activeBullets.Add(newBullet);
-        activeCount = activeBullets.Count;
+        //activeCount = activeBullets.Count;
 
-        total = activeCount + pooledCount;
+        //total = activeCount + pooledCount;
 
         //newBullet.withinTrench = source.wielder.detector.withinTrench;
         newBullet.destroy = false;
@@ -64,15 +59,17 @@ public class ProjectileManager : MonoBehaviour
     public void DestroyBullet (Bullet bullet)
     {
         activeBullets.Remove(bullet);
-        if (pooledBullets.Count < maxPooled)
-        {
-            pooledBullets.Add(bullet);
-            pooledCount = pooledBullets.Count;
-        }
 
-        activeCount = activeBullets.Count;
+        bulletPool.Remove(bullet);
+        //if (pooledBullets.Count < maxPooled)
+        //{
+        //    pooledBullets.Add(bullet);
+        //    pooledCount = pooledBullets.Count;
+        //}
 
-        total = activeCount + pooledCount;
+        //activeCount = activeBullets.Count;
+
+        //total = activeCount + pooledCount;
     }
 
     private void Update()

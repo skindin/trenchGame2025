@@ -13,11 +13,15 @@ public class Chunk
     public readonly List<Item> items = new();
     public UnityEvent<Item> onNewItem = new();
 
+
+
     public Chunk (Vector2Int adress, int mapSize)
     {
         this.adress = adress;
         map = new(mapSize);
     }
+
+    public Chunk() { }
 
     public void AddCharacter (Character character)
     {
@@ -54,10 +58,15 @@ public class Chunk
 
     public void Reset (Vector2Int newAdress)
     {
+        Reset();
+        adress = newAdress;
+    }
+
+    public void Reset()
+    {
         items.Clear();
         characters.Clear();
         colliders.Clear();
         onNewItem.RemoveAllListeners();
-        adress = newAdress;
     }
 }

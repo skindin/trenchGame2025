@@ -31,8 +31,15 @@ public class ChunkManager : MonoBehaviour
     int chunkArraySize;
 
     public Chunk[,] chunks;
-    public int maxChunksPooled = 10;
-    readonly List<Chunk> chunkPool = new();
+    //public int maxChunksPooled = 10;
+    //readonly List<Chunk> chunkPool = new();
+    public ObjectPool<Chunk> chunkPool = new(
+        newFunc: () => new Chunk(),
+        resetAction: chunk => chunk.Reset(),
+        disableAction: null,
+        removeAction: null
+        );
+
     public bool logOutOfBounds = false, drawChunks = false;
 
     private void Awake()
@@ -49,7 +56,7 @@ public class ChunkManager : MonoBehaviour
 
     public void DrawChunks ()
     {
-        foreach (var chunk in chunkPool)
+        foreach (var chunk in chunkPool.objects)
         {
             DrawChunk(chunk, Color.black);
         }
@@ -150,18 +157,8 @@ public class ChunkManager : MonoBehaviour
 
     public Chunk NewChunk(Vector2Int adress)
     {
-        Chunk newChunk;
-
-        if (chunkPool.Count > 0)
-        {
-            newChunk = chunkPool[0];
-            newChunk.Reset(adress);
-            chunkPool.RemoveAt(0);
-        }
-        else
-        {
-            newChunk = new Chunk(adress, 1);
-        }
+        var newChunk = chunkPool.Get();
+        newChunk.adress = adress;
         //foreach (var character in Character.chunkless)
         //{
         //    if (PosToAdress(character.transform.position) == adress)
@@ -179,10 +176,7 @@ public class ChunkManager : MonoBehaviour
     {
         chunks[chunk.adress.x, chunk.adress.y] = null;
 
-        if (chunkPool.Count < maxChunksPooled)
-        {
-            chunkPool.Add(chunk);
-        }
+        chunkPool.Remove(chunk);
     }
 
     public Chunk ChunkFromPos (Vector2 pos, bool newIfNone = false)

@@ -123,7 +123,7 @@ public class Inventory : MonoBehaviour
             if (pickedUp)
                 withinRadius.Remove(item);
 
-            if (!destroyed)
+            if (pickedUp && !destroyed)
                 items.Add(item);
 
 

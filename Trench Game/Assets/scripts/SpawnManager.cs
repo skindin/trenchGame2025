@@ -6,8 +6,8 @@ public class SpawnManager : MonoBehaviour
 {
     static SpawnManager manager;
 
-    public List<Gun> gunPrefabs = new();
-    public List<Amo> amoPrefabs = new();
+    //public List<Gun> gunPrefabs = new();
+    //public List<Amo> amoPrefabs = new();
 
     public static SpawnManager Manager
     {
@@ -29,8 +29,16 @@ public class SpawnManager : MonoBehaviour
 
     public float spawnRadius = 50;
 
+
+
     public void Relocate (Transform transform)
     {
         transform.position = Random.insideUnitCircle * spawnRadius;
     }
 }
+
+//public class SpawnGroup
+//{
+//    public List<GameObject> active = new();
+//    public ObjectPool<GameObject> pool;
+//}

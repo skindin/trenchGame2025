@@ -22,7 +22,7 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawAmoGUI ()
     {
-        if (!character.gun) return; //technically should still draw the reserve but whatever
+        //if (!character.gun) return; //technically should still draw the reserve but whatever
 
         var scaleFactor = Screen.height * scale;
         GUIStyle style = new();
@@ -46,14 +46,20 @@ public class CharacterGUI : MonoBehaviour
         // Position the rect in the lower right corner
         Rect rect = new (width - rectWidth, height - rectHeight, rectWidth, rectHeight);
 
-        string gunText = character.gun.GetInfo("\n");
+        string text = "";
+        if (character.gun)
+        {
+            if (character.gun.reloading)
+                text += "(Reloading)\n";
+            text += character.gun.GetInfo("\n");
+        }
 
-        var reserveInfo = character.reserve.GetInfo("\n");
-        string reserveText = string.Join("\n", reserveInfo);
-
-        string text = $"{gunText}\n\n{reserveText}";
-
-        if (character.gun.reloading) text = "(Reloading)\n" + text;
+        if (character.reserve)
+        {
+            var reserveInfo = character.reserve.GetInfo("\n");
+            string reserveText = string.Join("\n", reserveInfo);
+            text += $"\n\n{reserveText}";
+        }
 
         GUI.Label(rect, text, style);
     }
