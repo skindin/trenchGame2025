@@ -40,6 +40,7 @@ public class Item : MonoBehaviour
     private void Awake()
     {
         //Debug.Log(gameObject.name + " ran base item awake function");
+        //ResetItem();
         ItemAwake();
 
         //currentlyHeld = wielder;
@@ -121,7 +122,14 @@ public class Item : MonoBehaviour
     public virtual void DestroyItem ()
     {
         //destroy logic here shruggin emoji
-        Destroy(gameObject, Time.deltaTime);
+        Chunk = null;
+        ItemManager.Manager.RemoveItem(this);
+    }
+
+    public virtual void ResetItem ()
+    {
+        ItemAwake();
+        wielder = null;
     }
 
     public virtual string GetInfo(string separator = " ")

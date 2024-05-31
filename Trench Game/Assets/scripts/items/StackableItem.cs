@@ -27,6 +27,13 @@ public class StackableItem : Item
     public int amount = 1;
     public bool startFull = false;
 
+    public override void ResetItem()
+    {
+        base.ResetItem();
+
+        amount = 1;
+    }
+
     public override void ItemAwake()
     {
         base.ItemAwake();
@@ -83,9 +90,16 @@ public class StackableItem : Item
             var dist = Vector2.Distance(item.transform.position, transform.position);
             if (dist > StackableModel.combineRadius) continue;
 
-            var spaceLeft = StackableModel.maxAmount - stackItem.amount;
-
-            var addend = Mathf.Min(amount, spaceLeft);
+            int addend;
+            if (StackableModel.limitAmount)
+            { 
+                var spaceLeft = StackableModel.maxAmount - stackItem.amount;
+                addend = Mathf.Min(amount, spaceLeft);
+            }
+            else
+            {
+                addend = amount; 
+            }
 
             stackItem.amount += addend;
             amount -= addend;

@@ -29,16 +29,21 @@ public class ProjectileManager : MonoBehaviour
     public bool debugLines = false;
     public Mesh bulletMesh;
     public float meshScale = .1f;
-    public ObjectPool<Bullet> bulletPool = new(
+    public ObjectPool<Bullet> bulletPool;
+
+    private void Awake()
+    {
+        bulletPool = new(
             newFunc: () => new Bullet(),
             resetAction: null,
             disableAction: null,
             removeAction: null
             );
+    }
 
     public Bullet NewBullet (Vector2 pos, Vector2 velocity, float range, Character source)
     {
-        var newBullet = bulletPool.Get();
+        var newBullet = bulletPool.GetFromPool();
 
         newBullet.pos = newBullet.startPos = pos;
         newBullet.velocity = velocity;
@@ -60,7 +65,7 @@ public class ProjectileManager : MonoBehaviour
     {
         activeBullets.Remove(bullet);
 
-        bulletPool.Remove(bullet);
+        bulletPool.AddToPool(bullet);
         //if (pooledBullets.Count < maxPooled)
         //{
         //    pooledBullets.Add(bullet);

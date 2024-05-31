@@ -7,19 +7,35 @@ using System;
 public class ObjectPool<T> where T : class
 {
     public List<T> objects = new();
-    public Func<T> newFunc; 
+    public Func<T> newFunc;
     public Action<T> resetAction, disableAction, removeAction;
-    public int currentPooled, maxPooled = 100;
+    public int currentPooled, minPooled = 5, maxPooled = 100;
 
-    public ObjectPool (Func<T> newFunc, Action<T> resetAction, Action<T> disableAction, Action<T> removeAction)
+    public ObjectPool (int minPooled = 0, int maxPooled = 100, Func<T> newFunc = null, Action<T> resetAction = null, Action<T> disableAction = null, Action<T> removeAction = null)
     {
         this.newFunc = newFunc;
         this.resetAction = resetAction;
         this.disableAction = disableAction;
         this.removeAction = removeAction;
+
+        this.minPooled = minPooled;
+        this.maxPooled = maxPooled;
+
+
+        EnsureMin();
     }
 
-    public T Get ()
+    void EnsureMin ()
+    {
+        for (int i = 0; minPooled > i; i = objects.Count)
+        {
+            var obj = newFunc();
+            objects.Add(obj);
+            disableAction?.Invoke(obj);
+        }
+    }
+
+    public T GetFromPool ()
     {
         T obj;
 
@@ -36,10 +52,12 @@ public class ObjectPool<T> where T : class
 
         currentPooled = objects.Count;
 
+        EnsureMin();
+
         return obj;
     }
 
-    public void Remove (T obj)
+    public void AddToPool (T obj)
     {
         if (objects.Count < maxPooled)
         {

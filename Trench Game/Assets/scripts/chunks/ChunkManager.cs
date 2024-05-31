@@ -33,17 +33,19 @@ public class ChunkManager : MonoBehaviour
     public Chunk[,] chunks;
     //public int maxChunksPooled = 10;
     //readonly List<Chunk> chunkPool = new();
-    public ObjectPool<Chunk> chunkPool = new(
+    public ObjectPool<Chunk> chunkPool;
+
+    public bool logOutOfBounds = false, drawChunks = false;
+
+    private void Awake()
+    {
+        chunkPool = new(
         newFunc: () => new Chunk(),
         resetAction: chunk => chunk.Reset(),
         disableAction: null,
         removeAction: null
         );
 
-    public bool logOutOfBounds = false, drawChunks = false;
-
-    private void Awake()
-    {
         InstantiateChunks();
     }
 
@@ -157,7 +159,7 @@ public class ChunkManager : MonoBehaviour
 
     public Chunk NewChunk(Vector2Int adress)
     {
-        var newChunk = chunkPool.Get();
+        var newChunk = chunkPool.GetFromPool();
         newChunk.adress = adress;
         //foreach (var character in Character.chunkless)
         //{
@@ -176,7 +178,7 @@ public class ChunkManager : MonoBehaviour
     {
         chunks[chunk.adress.x, chunk.adress.y] = null;
 
-        chunkPool.Remove(chunk);
+        chunkPool.AddToPool(chunk);
     }
 
     public Chunk ChunkFromPos (Vector2 pos, bool newIfNone = false)

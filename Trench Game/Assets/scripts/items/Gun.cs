@@ -9,7 +9,7 @@ public class Gun : Item
     public int rounds = 10;
     float lastFireStamp = 0, reloadStartStamp = 0;
     public Vector2 direction = Vector2.right, barrelPos;
-    public bool enabled = true,
+    public bool safetyOff = true,
         holdingTrigger = false,
         reloading = false,
         maxRounds = false, //temporary, until i make the actual spawning script
@@ -34,6 +34,20 @@ public class Gun : Item
         }
     }
 
+    public override void ResetItem()
+    {
+        base.ResetItem();
+
+        safetyOff = true;
+        holdingTrigger = reloading = fired = false;
+
+        direction = Vector2.right;
+
+        lastFireStamp = reloadStartStamp = 0;
+
+        reserve = null;
+    }
+
     public override void ItemAwake()
     {
         base.ItemAwake();
@@ -41,12 +55,12 @@ public class Gun : Item
         if (maxRounds)
             rounds = GunModel.maxRounds;
         else
-            rounds = Mathf.Clamp(rounds, 0, GunModel.maxRounds);
+            rounds = 0;
     }
 
     public bool GunLogic(Vector2 direction = default)
     {
-        if (!enabled || reloading || (!GunModel.autoFire) && fired) return false;
+        if (!safetyOff || reloading || (!GunModel.autoFire) && fired) return false;
 
         if (rounds <= 0)
         {

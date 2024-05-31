@@ -29,16 +29,8 @@ public class SpawnManager : MonoBehaviour
 
     public float spawnRadius = 50;
 
-
-
     public void Relocate (Transform transform)
     {
         transform.position = Random.insideUnitCircle * spawnRadius;
     }
 }
-
-//public class SpawnGroup
-//{
-//    public List<GameObject> active = new();
-//    public ObjectPool<GameObject> pool;
-//}

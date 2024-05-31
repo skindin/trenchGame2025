@@ -1799,7 +1799,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkSize: 10
   maxWorldSize: 50
-  maxChunksPooled: 10
+  chunkPool:
+    currentPooled: 0
+    minPooled: 0
+    maxPooled: 100
   logOutOfBounds: 0
   drawChunks: 0
 --- !u!4 &893604346
@@ -2182,15 +2185,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aeb7d8dd1392b1b46a7ad7768c9373c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPrefabs:
-  - {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
-  - {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
-  tierGroups:
-  - items: []
-    tier: 1
-    chance: 5
-  - items: []
-    tier: 2
+  itemsGroups:
+  - itemGroups:
+    - prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
+      chance: 1
+      active: []
+      pool:
+        objects: []
+        currentPooled: 0
+        minPooled: 0
+        maxPooled: 0
+      container: {fileID: 0}
+      spawnCap: 0
+    - prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      chance: 5
+      active: []
+      pool:
+        objects: []
+        currentPooled: 0
+        minPooled: 0
+        maxPooled: 100
+      container: {fileID: 0}
+      spawnCap: 0
     chance: 1
   container: {fileID: 1526754501}
   itemDropRadius: 5
@@ -2558,6 +2574,7 @@ MonoBehaviour:
   meshScale: 0.1
   bulletPool:
     currentPooled: 0
+    minPooled: 0
     maxPooled: 100
 --- !u!1 &1526754500
 GameObject:
@@ -2569,7 +2586,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1526754501}
   m_Layer: 0
-  m_Name: items
+  m_Name: activeItems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -25,9 +25,7 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    public List<Item> itemPrefabs = new();
-
-    public List<TierGroup> tierGroups = new();
+    public List<ItemsGroup> itemsGroups = new();
 
     public Transform container;
 
@@ -39,6 +37,14 @@ public class ItemManager : MonoBehaviour
     private void Awake()
     {
         Item.defaultContainer = container;
+
+        foreach (var a in itemsGroups)
+        {
+            foreach (var b in a.itemGroups)
+            {
+                b.New(b.prefab);
+            }
+        }
     }
 
     public void RunDropInterval (float seconds)
@@ -68,22 +74,60 @@ public class ItemManager : MonoBehaviour
         RunDropInterval(Time.deltaTime); //i think this line caused a stack overflow but i have no idea why
     }
 
-    public void Sort ()
+    Item NewItem(Item prefab, Vector3 pos)
     {
-        foreach (var item in itemPrefabs)
-        {
-            var group = tierGroups.Find(x => x.tier == item.model.tier);
+        ItemGroup group = null;
 
-            if (group == null)
+        foreach (var g in itemsGroups)
+        {
+            var itemGroup = g.itemGroups.Find(x => x.prefab == prefab);
+            if (itemGroup != null)
             {
-                group = new(new() {item}, item.model.tier);
-                tierGroups.Add(group);
-            }
-            else
-            {
-                group.items.Add(item);
+                group = itemGroup;
+                break;
             }
         }
+
+        if (group != null)
+        {
+            var item = group.NewItem(pos);
+            item.Drop();
+            return item;
+        }
+
+        return null;
+    }
+
+    public void RemoveItem (Item item)
+    {
+        foreach (var a in itemsGroups)
+        {
+            foreach (var b in a.itemGroups)
+
+            if (b.active.Contains(item))
+            {
+                b.Remove(item);
+                return;
+            }
+        }
+    }
+
+    public void Sort ()
+    {
+        //foreach (var item in itemPrefabs)
+        //{
+        //    var group = tierGroups.Find(x => x.tier == item.model.tier);
+
+        //    if (group == null)
+        //    {
+        //        group = new(new() {item}, item.model.tier);
+        //        tierGroups.Add(group);
+        //    }
+        //    else
+        //    {
+        //        group.items.Add(item);
+        //    }
+        //}
     }
 
 
@@ -99,15 +143,15 @@ public class ItemManager : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            var group = LogicAndMath.GetRandomItemFromListValues(Random.value, tierGroups, x => x.chance);
+            var group = LogicAndMath.GetRandomItemFromListValues(Random.value, itemsGroups, x => x.chance);
             //this is susceptible to finding the same tier group twice, wasting processing. could be optimized...
 
-            if (group != null && group.items.Count > 0)
+            if (group != null && group.itemGroups.Count > 0)
             {
-                var itemIndex = Random.Range(0, group.items.Count);
-                var item = group.items[itemIndex];
+                var itemIndex = Random.Range(0, group.itemGroups.Count);
+                var item = LogicAndMath.GetRandomItemFromListValues(Random.value,group.itemGroups, x => x.chance);
 
-                list.Add(item);
+                list.Add(item.prefab);
             }
         }
 
@@ -127,24 +171,83 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    public Item NewItem (Item prfab, Vector3 pos)
-    {        
-        var item = Instantiate(prfab, pos, Quaternion.identity, container).GetComponent<Item>();
-        item.Drop();
-        return item;
-    }
+    //public Item NewItem (Item prfab, Vector3 pos)
+    //{        
+    //    var item = Instantiate(prfab, pos, Quaternion.identity, container).GetComponent<Item>();
+    //    item.Drop();
+    //    return item;
+    //}
 
     [System.Serializable]
-    public class TierGroup
+    public class ItemsGroup
     {
-        public List<Item> items;
-        public int tier;
+        public List<ItemGroup> itemGroups;
         public float chance = 1;
 
-        public TierGroup (List<Item> items, int tier)
+        //public TierGroup (List<Item> items, int tier)
+        //{
+        //    this.items = items;
+        //    this.tier = tier;
+        //}
+    }
+
+    //[System.Serializable]
+    //public class ItemChance
+    //{
+    //    public Item item;
+    //    public float chance;
+    //}
+
+    [System.Serializable]
+    public class ItemGroup
+    {
+        public Item prefab;
+        public float chance = 1;
+
+        public List<Item> active = new();
+        public ObjectPool<Item> pool;
+        public Transform container;
+
+        public int spawnCap;
+
+        public void Remove (Item item)
         {
-            this.items = items;
-            this.tier = tier;
+            if (!active.Contains(item))
+                return;
+
+            active.Remove(item);
+            pool.AddToPool(item);
+        }
+
+        public void New (Item prefab)
+        {
+            container = new GameObject(prefab.model.name).transform;
+            container.parent = Manager.container;
+
+            pool.newFunc = () => Instantiate(prefab, container).GetComponent<Item>();
+
+            pool.disableAction = item =>
+            {
+                item.gameObject.SetActive(false);
+                item.transform.parent = container;
+            };
+
+            pool.resetAction = item =>
+            {
+                item.ResetItem();
+                item.gameObject.SetActive(true);
+                item.transform.parent = container;
+            };
+
+            pool.removeAction = item => Destroy(item, 0.0001f);
+        }
+
+        public Item NewItem (Vector3 pos)
+        {
+            var item = pool.GetFromPool();
+            active.Add(item);
+            item.transform.position = pos;
+            return item;
         }
     }
 }

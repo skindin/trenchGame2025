@@ -133,4 +133,4 @@ MonoBehaviour:
   wielder: {fileID: 0}
   passivePickup: 1
   amount: 50
-  startFull: 0
+  startFull: 1

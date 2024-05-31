@@ -27,9 +27,12 @@ public class Inventory : MonoBehaviour
         foreach (var chunk in chunks)
         {
             if (chunk == null) continue;
-            foreach (var item in chunk.items)
+            for (int i = 0; i < chunk.items.Count; i++)
             {
+                var item = chunk.items[i];
                 DetectItem(item);
+
+                if (!chunk.items.Contains(item)) i--;
             }
         }
     }
@@ -47,6 +50,8 @@ public class Inventory : MonoBehaviour
 
     public void AddChunkListeners (Chunk[,] oldChunks, Chunk[,] newChunks)
     {
+        if (oldChunks == newChunks) return;
+
         //find old
         foreach (var newChunk in newChunks)
         {
@@ -93,7 +98,7 @@ public class Inventory : MonoBehaviour
 
     public void DetectItem(Item item)
     {
-        if (item.wielder) return;
+        if (item.wielder) return; //this should never be true if on the ground
 
         var dist = Vector2.Distance(transform.position, item.transform.position);
 
