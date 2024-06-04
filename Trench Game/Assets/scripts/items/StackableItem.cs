@@ -31,15 +31,17 @@ public class StackableItem : Item
     {
         base.ResetItem();
 
-        amount = 1;
+        //amount = 1; //idk why the fuck this was here
     }
 
     public override void ItemAwake()
     {
         base.ItemAwake();
 
-        if (startFull) amount = StackableModel.maxAmount;
-        else amount = Mathf.Clamp(amount, 0, StackableModel.maxAmount);
+        if (startFull) 
+            amount = StackableModel.maxAmount;
+        else 
+            amount = Mathf.Clamp(amount, 0, StackableModel.maxAmount);
     }
 
     //public override void ItemStart()

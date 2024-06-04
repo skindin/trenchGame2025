@@ -29,20 +29,19 @@ public class ItemManager : MonoBehaviour
 
     public Transform container;
 
-    public float itemDropRadius = 5, minCount = 1, maxCount = 10, avgCount = 4, countConc = .5f, dropInterval = 60, dropTimer = 0;
-    public bool dropOnStart = false;
+    public float itemDropRadius = 5, dropInterval = 60, dropTimer = 0;
+    public int dropCount = 10;
+    public bool dropOnStart = false, replaceCappedItems = false;
 
     //WaitForSeconds wait;
 
     private void Awake()
     {
-        Item.defaultContainer = container;
-
         foreach (var a in itemsGroups)
         {
             foreach (var b in a.itemGroups)
             {
-                b.New(b.prefab);
+                b.Setup(b.prefab);
             }
         }
     }
@@ -135,23 +134,31 @@ public class ItemManager : MonoBehaviour
     /// Generates a list of refferences to prefabs. These prefabs must still be instantiated.
     /// </summary>
     /// <returns></returns>
-    public List<Item> GenerateItemList(List<Item> list, float minCount, float maxCount, float avgCount, float countConc, bool clearList = true)
+    public List<Item> GenerateItemList(List<Item> list, int count, bool clearList = true)
     {
         if (clearList) list.Clear();
         //return null;//one secd
-        var count = LogicAndMath.MinMaxAvgConc(Random.value, minCount, maxCount, avgCount, countConc);
 
-        for (int i = 0; i < count; i++)
+        var itemsGroupPairs = LogicAndMath.GetOccurancePairs(itemsGroups, count, x => x.Chance);
+
+        foreach (var itemsGroupPair in itemsGroupPairs)
         {
-            var group = LogicAndMath.GetRandomItemFromListValues(Random.value, itemsGroups, x => x.chance);
-            //this is susceptible to finding the same tier group twice, wasting processing. could be optimized...
+            var groups = itemsGroupPair.Item1.itemGroups;
+            var groupsCount = itemsGroupPair.Item2;
+            var itemGroupPairs = LogicAndMath.GetOccurancePairs(
+                groups, 
+                groupsCount, 
+                x => x.Chance, 
+                x => x.MaxNew, 
+                true, 
+                replaceCappedItems);
 
-            if (group != null && group.itemGroups.Count > 0)
+            foreach (var itemGroupPair in itemGroupPairs)
             {
-                var itemIndex = Random.Range(0, group.itemGroups.Count);
-                var item = LogicAndMath.GetRandomItemFromListValues(Random.value,group.itemGroups, x => x.chance);
-
-                list.Add(item.prefab);
+                for (int i = 0; i < itemGroupPair.Item2; i++)
+                {
+                    list.Add(itemGroupPair.Item1.prefab);
+                }
             }
         }
 
@@ -162,7 +169,9 @@ public class ItemManager : MonoBehaviour
 
     public void SpawnDrop(Vector2 spawnPos)
     {
-        GenerateItemList(reusableItemList, minCount, maxCount, avgCount, countConc);
+        //var count = LogicAndMath.MinMaxAvgConcToInt(Random.value, minCount, maxCount, avgCount, countConc);
+
+        GenerateItemList(reusableItemList, dropCount);
 
         foreach (var item in reusableItemList)
         {
@@ -183,6 +192,15 @@ public class ItemManager : MonoBehaviour
     {
         public List<ItemGroup> itemGroups;
         public float chance = 1;
+        public float Chance
+        {
+            get
+            {
+                if (itemGroups.Find(x => x.Chance > 0) == null) //if none of them have a chance, neither does this
+                    return 0;
+                else return chance;
+            }
+        }
 
         //public TierGroup (List<Item> items, int tier)
         //{
@@ -204,11 +222,30 @@ public class ItemManager : MonoBehaviour
         public Item prefab;
         public float chance = 1;
 
+        public float Chance
+        {
+            get
+            {
+                if (active.Count >= spawnCap) return 0;
+                return chance;
+            }
+        }
+
+        public int MaxNew
+        {
+            get
+            {
+                return spawnCap - active.Count;
+            }
+        }
+
         public List<Item> active = new();
         public ObjectPool<Item> pool;
         public Transform container;
 
         public int spawnCap;
+
+        public bool exceedsCap = false;
 
         public void Remove (Item item)
         {
@@ -219,7 +256,7 @@ public class ItemManager : MonoBehaviour
             pool.AddToPool(item);
         }
 
-        public void New (Item prefab)
+        public void Setup (Item prefab)
         {
             container = new GameObject(prefab.model.name).transform;
             container.parent = Manager.container;
@@ -236,7 +273,7 @@ public class ItemManager : MonoBehaviour
             {
                 item.ResetItem();
                 item.gameObject.SetActive(true);
-                item.transform.parent = container;
+                //item.transform.parent = container;
             };
 
             pool.removeAction = item => Destroy(item, 0.0001f);
@@ -246,6 +283,7 @@ public class ItemManager : MonoBehaviour
         {
             var item = pool.GetFromPool();
             active.Add(item);
+            item.defaultContainer = container;
             item.transform.position = pos;
             return item;
         }

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe00c31931bd6c64cb89db1a34915041, type: 3}
-  m_Name: baseAmoModel
+  m_Name: basic amo
   m_EditorClassIdentifier: 
   limitAmount: 0
   maxAmount: 50

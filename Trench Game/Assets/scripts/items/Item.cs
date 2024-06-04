@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class Item : MonoBehaviour
 {
-    public static Transform defaultContainer;
+    public Transform defaultContainer;
     public ItemModel model;
     public Character wielder;
     //public bool currentlyHeld = false;
