@@ -26,6 +26,8 @@ public class ItemManager : MonoBehaviour
     }
 
     public List<ItemsGroup> itemsGroups = new();
+    //spawn groups should probably be separate from object pools. pools have much more to do with local performance,
+    //but clients don't need to know anything about spawn caps etc, because only the server will use them
 
     public Transform container;
 

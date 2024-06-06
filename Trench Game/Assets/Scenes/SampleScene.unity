@@ -2187,17 +2187,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemsGroups:
   - itemGroups:
-    - prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
-      chance: 1
-      active: []
-      pool:
-        objects: []
-        currentPooled: 0
-        minPooled: 0
-        maxPooled: 0
-      container: {fileID: 0}
-      spawnCap: 10
-      exceedsCap: 0
     - prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
       chance: 5
       active: []
@@ -2209,17 +2198,25 @@ MonoBehaviour:
       container: {fileID: 0}
       spawnCap: 20
       exceedsCap: 0
+    - prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
+      chance: 1
+      active: []
+      pool:
+        objects: []
+        currentPooled: 0
+        minPooled: 0
+        maxPooled: 0
+      container: {fileID: 0}
+      spawnCap: 10
+      exceedsCap: 0
     chance: 1
   container: {fileID: 1526754501}
   itemDropRadius: 5
-  minCount: 1
-  maxCount: 20
-  avgCount: 10
-  countConc: 1
-  dropInterval: 1
+  dropInterval: 20
   dropTimer: 0
+  dropCount: 10
   dropOnStart: 1
-  replaceCappedItems: 0
+  replaceCappedItems: 1
 --- !u!114 &1072976477 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
