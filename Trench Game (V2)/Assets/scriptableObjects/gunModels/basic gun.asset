@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b3d2a070673b394ea6372a5309a501e, type: 3}
   m_Name: basic gun
   m_EditorClassIdentifier: 
-  tier: 2
   bulletSpeed: 100
   range: 20
   firingRate: 5

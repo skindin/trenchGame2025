@@ -48,6 +48,11 @@ public class Amo : StackableItem
                 DestroyItem();
                 wasPickedup = wasDestroyed = true;
             }
+            //else
+            //{
+
+            //    CombineAll(); //man idk why this not working
+            //}
         }
     }
 

@@ -18,6 +18,21 @@ public class Inventory : MonoBehaviour
         DetectItems();
     }
 
+    public void ResetInventory (bool dropAllItems = false)
+    {
+        closestItem = null;
+        var emptyChunkArray = new Chunk[0,0];
+        AddChunkListeners(chunks, emptyChunkArray);
+        chunks = emptyChunkArray;
+
+        if (dropAllItems)
+        {
+            DropAllItems();
+        }
+
+        withinRadius.Clear();
+    }
+
     public void DetectItems()
     {
         withinRadius.Clear();

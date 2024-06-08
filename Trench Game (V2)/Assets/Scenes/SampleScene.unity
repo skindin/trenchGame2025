@@ -157,6 +157,7 @@ Transform:
   - {fileID: 754954370}
   - {fileID: 1050430837}
   - {fileID: 1054766972}
+  - {fileID: 896552507}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &213354681
@@ -223,11 +224,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 213354687}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 213354683}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -368,11 +372,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 296653333}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 296653329}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -564,11 +571,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 384985398}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 384985394}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -694,11 +704,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 421474458}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 421474454}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -854,11 +867,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 428394675}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 428394671}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -1123,11 +1139,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 526903926}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 526903922}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -1268,11 +1287,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 566288918}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 566288914}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -1413,11 +1435,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 653802816}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 653802812}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -1687,11 +1712,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 790973811}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 790973807}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -1820,6 +1848,58 @@ Transform:
   m_Children: []
   m_Father: {fileID: 62624779}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &896552506
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 896552507}
+  - component: {fileID: 896552508}
+  m_Layer: 0
+  m_Name: characterManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &896552507
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896552506}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 62624779}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &896552508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896552506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 824bd15d91dc7d546948a2a3d2ee72c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pool:
+    objects: []
+    currentPooled: 0
+    minPooled: 0
+    maxPooled: 20
+  active: []
+  prefab: {fileID: 0}
+  container: {fileID: 0}
 --- !u!1 &902018401
 GameObject:
   m_ObjectHideFlags: 0
@@ -1884,11 +1964,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 902018407}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 902018403}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -2029,11 +2112,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 971915508}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 971915504}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -2282,11 +2368,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1253392267}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 5
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1253392263}
   gun: {fileID: 1072976477}
   reserve: {fileID: 2037304011}
@@ -2444,11 +2533,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1293027649}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1293027645}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -2671,11 +2763,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1667450019}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1667450015}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -2816,11 +2911,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1757755705}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1757755701}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -2961,11 +3059,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1758276822}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1758276818}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -3106,11 +3207,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1783544049}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1783544045}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -3251,11 +3355,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1810146033}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1810146029}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -3396,11 +3503,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1829128839}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1829128835}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -3541,11 +3651,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1891057276}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1891057272}
   gun: {fileID: 0}
   reserve: {fileID: 0}
@@ -3686,11 +3799,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 0}
+  aiController: {fileID: 0}
   sprite: {fileID: 1971937828}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
   moveSpeed: 10
   digMoveSpeed: 1
   initialDigSpeed: 5
+  deathDropRadius: 1
   collider: {fileID: 1971937824}
   gun: {fileID: 0}
   reserve: {fileID: 0}

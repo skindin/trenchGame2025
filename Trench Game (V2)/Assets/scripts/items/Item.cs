@@ -132,6 +132,11 @@ public class Item : MonoBehaviour
         wielder = null;
     }
 
+    public void DeParent()
+    {
+        transform.SetParent(defaultContainer);
+    }
+
     public virtual string GetInfo(string separator = " ")
     {
         return model.name;// { $"Tier {model.tier}" };

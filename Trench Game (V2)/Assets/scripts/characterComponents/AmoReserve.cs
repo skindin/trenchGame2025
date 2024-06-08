@@ -76,6 +76,14 @@ public class AmoReserve : MonoBehaviour
             pool.rounds = 0;
         }
     }
+
+    public void Clear ()
+    {
+        foreach (var pool in amoPools)
+        {
+            pool.rounds = 0;
+        }
+    }
 }
 
 [System.Serializable]

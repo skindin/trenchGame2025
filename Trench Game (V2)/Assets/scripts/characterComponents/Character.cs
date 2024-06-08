@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    public static List<Character> all = new();//, chunkless = new();
+    //public static List<Character> all = new();//, chunkless = new();
+    public Controller controller;
+    public AIController aiController;
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
     Color startColor;
@@ -16,12 +18,43 @@ public class Character : MonoBehaviour
     public Gun gun;
     public AmoReserve reserve;
     public Inventory inventory;
-    public bool digging = false, filling = false, constantDig = false, constantDetect = false, shooting = false;
+    public bool digging = false, filling = false, constantDig = false, constantDetect = false, shooting = false; //most of these will probably be moved once i design shovels
+
+    CharacterType type;
+    public CharacterType Type
+    {
+        get
+        {
+            return type;
+        }
+
+        set
+        {
+            if (value == CharacterType.localPlayer && controller)
+            {
+                controller.enabled = true;
+            }
+            else if (value == CharacterType.npc && aiController)
+            {
+                aiController.enabled = true;
+            }
+            else
+            {                
+                if (controller)
+                    controller.enabled = false;
+
+                if (aiController)
+                    aiController.enabled = false;
+            }
+
+            type = value;
+        }
+    }
 
     // Start is called before the first frame update
     void Awake()
     {
-        all.Add(this);
+        //all.Add(this);
         //chunkless.Add(this);
         startColor = sprite.color;
         //detector.onDetect.AddListener(UpdateVulnerable);
@@ -30,36 +63,51 @@ public class Character : MonoBehaviour
 
     private void Start()
     {
-        //detector.DetectTrench(0);
         UpdateChunk();
         collider.onBulletHit.AddListener(
         delegate
         {
-            transform.position = ChunkManager.Manager.GetRandomPos();
-            UpdateChunk();
-            //detector.DetectTrench(0);
+            //transform.position = ChunkManager.Manager.GetRandomPos();
+            //UpdateChunk();
+            Kill();
+            CharacterManager.Manager.RemoveCharacter(this);
+            //Debug.Log(gameObject.name + " was hit");
         });
     }
 
-    private void OnDestroy()
-    {
-        all.Remove(this);
-        //if (chunkless.Contains(this)) chunkless.Remove(this);
-    }
+    //private void OnEnable()
+    //{
+    //    //detector.DetectTrench(0);
+    //    UpdateChunk();
+
+    //}
+
+    //private void OnDestroy()
+    //{
+    //    all.Remove(this);
+    //    //if (chunkless.Contains(this)) chunkless.Remove(this);
+    //}
 
     // Update is called once per frame
-    void Update()
-    {
-        //if (constantDetect)
-        //    detector.DetectTrench(0);
-    }
+    //void Update()
+    //{
+    //    //if (constantDetect)
+    //    //    detector.DetectTrench(0);
+    //}
 
-    public void Move(Vector2 direction)
+    /// <summary>
+    /// Takes vector2 of magnitude between 0 and 1
+    /// </summary>
+    /// <param name="input"></param>
+    public void Move(Vector2 input)
     {
-        Vector3 dir = direction;
+        Vector3 dir = input;
         var speed = moveSpeed;
         if (digging || filling) speed = digMoveSpeed;
-        transform.position += dir * speed * Time.deltaTime;
+
+        dir = Vector2.ClampMagnitude(dir, 1) * speed;
+
+        transform.position += dir * Time.deltaTime;
 
         UpdateChunk();
 
@@ -151,7 +199,32 @@ public class Character : MonoBehaviour
 
     public void Kill ()
     {
-        reserve.DropEverything(deathDropRadius);
-        inventory.DropAllItems();
+        if (reserve)
+            reserve.DropEverything(deathDropRadius);
+
+        if (inventory)
+            inventory.DropAllItems();
+    }
+
+    public void ResetCharacter (bool clearItems = false) //clearItems parameter in case I need to remove character without dropping it's items
+    {
+        //reset code
+        digging = filling = constantDig = constantDetect =  shooting = false;
+
+        if (clearItems)
+        {
+            inventory.ResetInventory(true);
+            reserve.Clear();
+        }
+
+        Type = CharacterType.none;
+    }
+
+    public enum CharacterType
+    {
+        none,
+        localPlayer,
+        remotePlayer,
+        npc
     }
 }

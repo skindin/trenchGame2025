@@ -293,7 +293,7 @@ public class ItemManager : MonoBehaviour
                 //item.transform.parent = container;
             };
 
-            pool.removeAction = item => Destroy(item, 0.0001f);
+            pool.removeAction = item => Destroy(item.gameObject, 0.0001f);
         }
 
         public Item NewItem (Vector3 pos)
