@@ -69,7 +69,7 @@ public class StackableItem : Item
         var min = transform.position - Vector3.one * StackableModel.combineRadius;
         var max = transform.position + Vector3.one * StackableModel.combineRadius;
 
-        var chunks = ChunkManager.Manager.ChunksFromBox(min, max);
+        var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
 
         foreach (var chunk in chunks)
         {

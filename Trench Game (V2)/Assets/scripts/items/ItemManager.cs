@@ -156,7 +156,7 @@ public class ItemManager : MonoBehaviour
         if (clearList) list.Clear();
         //return null;//one secd
 
-        var itemsGroupPairs = LogicAndMath.GetOccurancePairs(itemsGroups, count, x => x.Chance);
+        var itemsGroupPairs = LogicAndMath.GetOccurancePairs(itemsGroups, count - 1, x => x.chance);
 
         foreach (var itemsGroupPair in itemsGroupPairs)
         {
@@ -165,7 +165,7 @@ public class ItemManager : MonoBehaviour
             var itemGroupPairs = LogicAndMath.GetOccurancePairs(
                 groups, 
                 groupsCount, 
-                x => x.Chance, 
+                x => x.chance, 
                 x => x.MaxNew, 
                 true, 
                 replaceCappedItems);

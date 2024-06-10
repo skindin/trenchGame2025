@@ -58,7 +58,7 @@ public class Gun : Item
             rounds = 0;
     }
 
-    public bool GunLogic(Vector2 direction = default)
+    bool GunLogic(Vector2 direction = default)
     {
         if (!safetyOff || reloading || (!GunModel.autoFire) && fired) return false;
 
@@ -71,7 +71,7 @@ public class Gun : Item
             return false;
         }
 
-        if (direction != Vector2.zero) this.direction = direction;
+        if (direction != Vector2.zero) Aim(direction);
 
         var fireDeltaTime = Time.time - lastFireStamp;
 

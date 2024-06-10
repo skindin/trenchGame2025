@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class ChunkManager : MonoBehaviour
 {
@@ -60,12 +62,12 @@ public class ChunkManager : MonoBehaviour
     {
         foreach (var chunk in chunkPool.objects)
         {
-            DrawChunk(chunk, Color.black);
+            DrawChunk(chunk, UnityEngine.Color.black);
         }
 
         foreach (var chunk in this.chunks)
         {
-            if (chunk != null) DrawChunk(chunk, Color.green);
+            if (chunk != null) DrawChunk(chunk, UnityEngine.Color.green);
         }
 
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -131,7 +133,7 @@ public class ChunkManager : MonoBehaviour
     /// <returns></returns>
     public Chunk ChunkFromAdress (Vector2Int adress, bool newIfNone = false, bool debugLines = false)
     {
-        if (debugLines) DrawAdressBox(adress, Color.magenta); 
+        if (debugLines) DrawAdressBox(adress, UnityEngine.Color.magenta); 
 
         var min = Vector2Int.zero;
 
@@ -244,7 +246,7 @@ public class ChunkManager : MonoBehaviour
         return output;
     }
 
-    public Chunk[,] ChunksFromBox (Vector2 min, Vector2 max, bool newIfNone = false)
+    public Chunk[,] ChunksFromBoxMinMax (Vector2 min, Vector2 max, bool newIfNone = false)
     {
         var minAdress = PosToAdress(min);
         var maxAdress = PosToAdress(max);// + Vector2Int.one;
@@ -266,6 +268,19 @@ public class ChunkManager : MonoBehaviour
         }
 
         return output;
+    }
+
+    public Chunk[,] ChunksFromBoxPosSize (Vector2 pos, Vector2 size, bool newIfNone = false)
+    {
+        Vector2 min = new Vector2(-size.x, -size.y) / 2 + pos;
+        Vector2 max = new Vector2(size.x, size.y) / 2 + pos;
+        return ChunksFromBoxMinMax(min, max,newIfNone);
+    }
+
+    public void GetWorldBox (out Vector2 min, out Vector2 max)
+    {
+        min = -new Vector2(worldSize, worldSize) / 2;
+        max = -min;
     }
 
     public List<Chunk> ChunksFromLine (Vector2 pointA, Vector2 pointB, List<Chunk> chunkList, bool newIfNone = false, bool debugLines = false, bool clearList = true)
@@ -291,7 +306,7 @@ public class ChunkManager : MonoBehaviour
         return chunkList;
     }
 
-    public void DrawChunk (Chunk chunk, Color color)
+    public void DrawChunk (Chunk chunk, UnityEngine.Color color)
     {
         DrawAdressBox(chunk.adress,color);
     }
@@ -302,10 +317,10 @@ public class ChunkManager : MonoBehaviour
         max = AdressToPos(adress + Vector2Int.one);
     }
 
-    public void DrawAdressBox (Vector2Int adress, Color color)
+    public void DrawAdressBox (Vector2Int adress, UnityEngine.Color color)
     {
         var min = AdressToPos(adress);
         var max = AdressToPos(adress + Vector2Int.one);
-        GeoFuncs.DrawBox(min, max, color);
+        GeoFuncs.DrawBoxMinMax(min, max, color);
     }
 }

@@ -227,4 +227,78 @@ public static class LogicAndMath
         if (index < list.Count) return list[index];
         return default;
     }
+
+    public static T GetClosest<T> (Vector2 pos, IEnumerable<T> list, Func<T, Vector2> posPredicate) where T : class
+    {
+        float closestDist = Mathf.Infinity;
+        T closestItem = null;
+
+        foreach (var item in list)
+        {
+            var dist = Vector2.Distance(posPredicate(item), pos);
+
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closestItem = item;
+            }
+        }
+
+        return closestItem;
+    }
+
+    public static T GetClosestWithCondition<T> (Vector2 pos, IEnumerable<T> list, Func<T, Vector2> posPredicate, Func<T, bool> conditionPredicate) where T : class
+    {
+        float closestDist = Mathf.Infinity;
+        T closestItem = null;
+
+        foreach (var item in list)
+        {
+            if (!conditionPredicate(item))
+                continue;
+
+            var dist = Vector2.Distance(posPredicate(item), pos);
+
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closestItem = item;
+            }
+        }
+
+        return closestItem;
+    }
+
+    public static Vector2 GetBestNextPoint(Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, float safeDistance)
+    {
+        Vector2 bestPoint = pointA;
+        float maxDistance = float.MinValue;
+
+        // Generate a set of candidate points
+        for (float x = boxMin.x; x <= boxMax.x; x += 0.1f)
+        {
+            for (float y = boxMin.y; y <= boxMax.y; y += 0.1f)
+            {
+                Vector2 candidatePoint = new Vector2(x, y);
+
+                // Check if the candidate point is within the safe distance from pointB
+                if (Vector2.Distance(candidatePoint, pointB) < safeDistance)
+                {
+                    continue;
+                }
+
+                // Calculate the distance from pointA to the candidate point
+                float distanceToA = Vector2.Distance(pointA, candidatePoint);
+
+                // Find the candidate point that maximizes the distance from pointA
+                if (distanceToA > maxDistance)
+                {
+                    bestPoint = candidatePoint;
+                    maxDistance = distanceToA;
+                }
+            }
+        }
+
+        return bestPoint;
+    }
 }

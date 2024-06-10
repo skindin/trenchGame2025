@@ -5,7 +5,7 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
-    public Controller controller;
+    public Controller userController;
     public AIController aiController;
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
@@ -20,6 +20,7 @@ public class Character : MonoBehaviour
     public Inventory inventory;
     public bool digging = false, filling = false, constantDig = false, constantDetect = false, shooting = false; //most of these will probably be moved once i design shovels
 
+    public CharacterType controlType = CharacterType.none;
     CharacterType type;
     public CharacterType Type
     {
@@ -30,22 +31,11 @@ public class Character : MonoBehaviour
 
         set
         {
-            if (value == CharacterType.localPlayer && controller)
-            {
-                controller.enabled = true;
-            }
-            else if (value == CharacterType.npc && aiController)
-            {
-                aiController.enabled = true;
-            }
-            else
-            {                
-                if (controller)
-                    controller.enabled = false;
+            if (userController)
+                userController.enabled = value == CharacterType.localPlayer;
 
-                if (aiController)
-                    aiController.enabled = false;
-            }
+            if (aiController)
+                aiController.enabled = value == CharacterType.npc;
 
             type = value;
         }
@@ -54,6 +44,7 @@ public class Character : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        Type = controlType;
         //all.Add(this);
         //chunkless.Add(this);
         startColor = sprite.color;

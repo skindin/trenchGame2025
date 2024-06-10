@@ -122,7 +122,7 @@ public class ProjectileManager : MonoBehaviour
             {
                 foreach (var collider in chunk.colliders)
                 {
-                    if (bullet.source.collider == collider) continue;
+                    if (bullet.source && bullet.source.collider == collider) continue;
                     //if (!collider.vulnerable && !bullet.withinTrench) continue;
 
                     var radius = collider.WorldSize/2;

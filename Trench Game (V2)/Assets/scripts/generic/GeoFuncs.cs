@@ -157,9 +157,9 @@ public static class GeoFuncs
     {
         if (debugLines) Debug.DrawLine(pointA, pointB, Color.green);
 
-        if (TestBox(boxMin, boxMax, pointA, debugLines) || TestBox(boxMin, boxMax, pointB, debugLines))
+        if (TestBoxMinMax(boxMin, boxMax, pointA, debugLines) || TestBoxMinMax(boxMin, boxMax, pointB, debugLines))
         {
-            if (debugLines) DrawBox(boxMin, boxMax, Color.blue);
+            if (debugLines) DrawBoxMinMax(boxMin, boxMax, Color.blue);
             return true;
         }
 
@@ -418,19 +418,34 @@ public static class GeoFuncs
         return Vector2.positiveInfinity;
     }
 
-    public static bool TestBox(Vector2 min, Vector2 max, Vector2 point, bool debugLines = false)
+    public static bool TestBoxMinMax(Vector2 min, Vector2 max, Vector2 point, bool debugLines = false)
     {
-        if (debugLines) DrawBox(min, max, Color.blue);
+        if (debugLines)
+        {
+            DrawBoxMinMax(min, max, Color.blue);
+        }
 
         if (point.x < min.x ||
         point.y < min.y ||
         point.x > max.x ||
         point.y > max.y)
         {
+            if (debugLines)
+                MarkPoint(point,.5f, Color.red);
             return false;
         }
 
+        if (debugLines)
+            MarkPoint(point,.5f,Color.green);
+
         return true;
+    }
+
+    public static bool TestBoxPosSize (Vector2 pos, Vector2 size, Vector2 point, bool debugLines = false)
+    {
+        Vector2 min = new Vector2(-size.x, -size.y) / 2 + pos;
+        Vector2 max = new Vector2(size.x, size.y) / 2 + pos;
+        return TestBoxMinMax(min, max, point, debugLines );
     }
 
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
@@ -463,13 +478,20 @@ public static class GeoFuncs
         Debug.DrawLine(min + point, max + point, color);
     }
 
-    public static void DrawBox(Vector2 min, Vector2 max, Color color)
+    public static void DrawBoxMinMax(Vector2 min, Vector2 max, Color color)
     {
         GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
         Debug.DrawLine(min, topLeft, color);
         Debug.DrawLine(topLeft, max, color);
         Debug.DrawLine(max, bottomRight, color);
         Debug.DrawLine(bottomRight, min, color);
+    }
+
+    public static void DrawBoxPosSize(Vector2 pos, Vector2 size, Color color)
+    {
+        Vector2 min = new Vector2(-size.x, -size.y) / 2 + pos;
+        Vector2 max = new Vector2(size.x, size.y) / 2 + pos;
+        DrawBoxMinMax(min, max, color);
     }
 
     public static void GetTopLeftAndBottomRight(Vector2 min, Vector2 max, out Vector2 topLeft, out Vector2 bottomRight)

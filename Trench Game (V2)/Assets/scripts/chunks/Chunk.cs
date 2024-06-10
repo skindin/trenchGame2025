@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -69,4 +71,55 @@ public class Chunk
         colliders.Clear();
         onNewItem.RemoveAllListeners();
     }
+
+    public T[] GetItems<T>(T[] array, bool clearArray = false) where T : Item
+    {
+        if (clearArray)
+        {
+            Array.Clear(array, 0, array.Length);
+        }
+
+        var type = typeof(T);
+        int count = array.Length;
+
+        foreach (var item in items)
+        {
+            if (type.IsAssignableFrom(item.GetType()))
+            {
+                count++;
+                Array.Resize(ref array, count);
+                array[count-1] = item as T;
+            }
+        }
+
+        // Resize the array to fit the number of valid items found
+        //Array.Resize(ref array, count);
+
+        return array;
+    }
+
+
+    public T[] GetCharacters<T>(T[] array, bool clearArray = false) where T : Character
+    {
+        if (clearArray)
+        {
+            Array.Clear(array, 0, array.Length);
+        }
+
+        var type = typeof(T);
+        int count = array.Length;
+
+        foreach (var item in characters)
+        {
+            if (type.IsAssignableFrom(item.GetType()))
+            {
+                count++;
+                Array.Resize(ref array, count);
+                array[count-1] = item as T;
+            }
+        }
+
+        return array;
+    }
+
 }

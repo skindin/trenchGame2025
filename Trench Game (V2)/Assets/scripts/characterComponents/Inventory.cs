@@ -58,7 +58,7 @@ public class Inventory : MonoBehaviour
 
         var min = (Vector2)transform.position - Vector2.one * radius;
         var max = (Vector2)transform.position + Vector2.one * radius;
-        var newChunks = ChunkManager.Manager.ChunksFromBox(min, max);
+        var newChunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
         AddChunkListeners(chunks, newChunks);
         chunks = newChunks;
     }

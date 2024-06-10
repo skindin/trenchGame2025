@@ -62,11 +62,15 @@ public class CharacterManager : MonoBehaviour
 
         newCharacter.Type = type;
 
+        active.Add(newCharacter);
+
         return newCharacter;
     }
 
     public void RemoveCharacter(Character character)
     {
+        active.Remove(character);
+
         pool.AddToPool(character);
         character.Chunk = null;
     }
