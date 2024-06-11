@@ -59,7 +59,7 @@ public class Controller : MonoBehaviour
 
         if (moveDir.magnitude > 0)
         {
-            character.Move(moveDir);
+            character.MoveInDirection(moveDir);
         }
 
         //if (Input.GetMouseButton(0))

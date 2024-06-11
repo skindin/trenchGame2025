@@ -79,10 +79,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1029159826405028024}
   - component: {fileID: 2843638735860869320}
-  - component: {fileID: 8968939273650880824}
   - component: {fileID: 7562934035425285329}
-  - component: {fileID: 6768170971662278183}
+  - component: {fileID: 8968939273650880824}
   - component: {fileID: 9129561575884848698}
+  - component: {fileID: 6768170971662278183}
   m_Layer: 0
   m_Name: character
   m_TagString: Untagged
@@ -159,21 +159,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8968939273650880824
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8796109463886426131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0858688b30604a0409d34646353589a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 7562934035425285329}
-  enableFill: 0
-  drawEdgeDetection: 0
 --- !u!114 &7562934035425285329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,7 +175,7 @@ MonoBehaviour:
   aiController: {fileID: 9129561575884848698}
   sprite: {fileID: 2843638735860869320}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
-  moveSpeed: 5
+  baseMoveSpeed: 5
   digMoveSpeed: 1
   initialDigSpeed: 5
   deathDropRadius: 1
@@ -204,6 +189,46 @@ MonoBehaviour:
   constantDetect: 0
   shooting: 0
   controlType: 0
+--- !u!114 &8968939273650880824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8796109463886426131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0858688b30604a0409d34646353589a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 7562934035425285329}
+  enableFill: 0
+  drawEdgeDetection: 0
+--- !u!114 &9129561575884848698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8796109463886426131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c6f2d3d8c3996c44927a8320254aabc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 7562934035425285329}
+  visionBox: {x: 20, y: 20}
+  wandering: 0
+  dodging: 0
+  debugLines: 0
+  dangerRadius: 10
+  dodgeRadius: 5
+  pointerSpeed: 10
+  minPointerMag: 1
+  maxPointerMag: 1
+  targetItem: {fileID: 0}
+  targetCollider: {fileID: 0}
+  closestEnemy: {fileID: 0}
 --- !u!114 &6768170971662278183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,29 +246,6 @@ MonoBehaviour:
       m_Calls: []
   localSize: 1
   vulnerable: 1
---- !u!114 &9129561575884848698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8796109463886426131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c6f2d3d8c3996c44927a8320254aabc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 7562934035425285329}
-  visionBox: {x: 20, y: 20}
-  wandering: 0
-  debugLines: 0
-  dangerRadius: 10
-  wanderRadius: 50
-  changeDirRadius: 1
-  targetPos: {x: 0, y: 0}
-  targetItem: {fileID: 0}
-  targetCollider: {fileID: 0}
-  closestEnemy: {fileID: 0}
 --- !u!1001 &2149341669520741861
 PrefabInstance:
   m_ObjectHideFlags: 0

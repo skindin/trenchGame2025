@@ -84,6 +84,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: npc
       objectReference: {fileID: 0}
+    - target: {fileID: 9129561575884848698, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
+      propertyPath: visionBox.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9129561575884848698, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
+      propertyPath: visionBox.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9129561575884848698, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
+      propertyPath: pointerSpeed
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 1686790376503473666, guid: a5c190df75122c747bb32818c0ff1908, type: 3}

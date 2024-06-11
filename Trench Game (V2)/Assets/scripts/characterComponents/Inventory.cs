@@ -135,7 +135,12 @@ public class Inventory : MonoBehaviour
 
     public void PickupItem (Item item)
     {
-        //if (item.wielder) return; //don't have to run this twice
+        if (item.wielder)
+        {
+            withinRadius.Remove(item);
+            return;
+        }//actually, I do have to run this, because sometimes items are picked up by other characters, and the chunk won't alert them of that
+        //would probably better for the chunk to manage all this...
 
         if (withinRadius.Contains(item))
         {

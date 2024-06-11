@@ -61,7 +61,9 @@ public static class GeoFuncs
             else lineColor = Color.red;
 
             Debug.DrawLine(closestPoint, circleCenter, lineColor);
+            DrawCircle(circleCenter, circleRadius, lineColor);
         }
+        
         return doesIntersect;
     }
 
@@ -498,5 +500,21 @@ public static class GeoFuncs
     {
         topLeft = new(min.x, max.y);
         bottomRight = new(max.x, min.y);
+    }
+
+    public static Vector2 RandomPosInBoxMinMax (Vector2 min , Vector2 max)
+    {
+        return new Vector2(Random.Range(min.x,max.x),Random.Range(min.y,max.y));
+    }
+
+    public static Vector2 RandomPosInBoxPosSize (Vector2 pos, Vector2 size)
+    {
+        return RandomPosInBoxMinMax(pos - size / 2, pos + size / 2);
+    }
+
+    public static Vector2 RandomInsideRing (Vector2 center, float minRad, float maxRad)
+    {
+        var dist = Random.Range(minRad, maxRad);
+        return (Vector2)(Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward) * Vector3.up * dist + (Vector3)center);
     }
 }

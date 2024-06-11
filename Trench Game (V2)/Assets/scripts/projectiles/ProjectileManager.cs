@@ -123,7 +123,7 @@ public class ProjectileManager : MonoBehaviour
                 foreach (var collider in chunk.colliders)
                 {
                     if (bullet.source && bullet.source.collider == collider) continue;
-                    //if (!collider.vulnerable && !bullet.withinTrench) continue;
+                    if (!collider.vulnerable) continue;
 
                     var radius = collider.WorldSize/2;
                     var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, radius, nextPos, bullet.pos);

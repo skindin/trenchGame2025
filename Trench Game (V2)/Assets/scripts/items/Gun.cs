@@ -16,6 +16,14 @@ public class Gun : Item
         fired = false,
         drawBerrelPos = false;
 
+    public Vector2 BarrelPos
+    {
+        get 
+        {
+            return transform.rotation * barrelPos + transform.position; //doesn't account for scale!
+        }
+    }
+
     private GunModel cachedGunModel;
     public GunModel GunModel
     {

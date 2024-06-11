@@ -247,22 +247,24 @@ public static class LogicAndMath
         return closestItem;
     }
 
-    public static T GetClosestWithCondition<T> (Vector2 pos, IEnumerable<T> list, Func<T, Vector2> posPredicate, Func<T, bool> conditionPredicate) where T : class
+    public static T GetClosestWithCondition<T>(
+        Vector3 position,
+        List<T> items,
+        Func<T, Vector3> positionSelector,
+        Func<T, bool> condition) where T : class
     {
-        float closestDist = Mathf.Infinity;
         T closestItem = null;
+        float closestDistance = float.MaxValue;
 
-        foreach (var item in list)
+        foreach (var item in items)
         {
-            if (!conditionPredicate(item))
-                continue;
+            if (item == null || !condition(item)) continue;
 
-            var dist = Vector2.Distance(posPredicate(item), pos);
-
-            if (dist < closestDist)
+            float distance = Vector3.Distance(position, positionSelector(item));
+            if (distance < closestDistance)
             {
-                closestDist = dist;
                 closestItem = item;
+                closestDistance = distance;
             }
         }
 

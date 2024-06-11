@@ -10,7 +10,19 @@ public class Character : MonoBehaviour
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
     Color startColor;
-    public float moveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1;
+    public float baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1;
+    public float MoveSpeed
+    {
+        get
+        {
+            //var speed = baseMoveSpeed;
+            if (digging || filling) 
+                return digMoveSpeed;
+            else 
+                return baseMoveSpeed;
+        }
+    }
+
     public Chunk chunk;
     public Collider collider;
     //public TrenchDetector detector;
@@ -35,7 +47,7 @@ public class Character : MonoBehaviour
                 userController.enabled = value == CharacterType.localPlayer;
 
             if (aiController)
-                aiController.enabled = value == CharacterType.npc;
+                aiController.enabled = value == CharacterType.localNPC;
 
             type = value;
         }
@@ -86,24 +98,25 @@ public class Character : MonoBehaviour
     //    //    detector.DetectTrench(0);
     //}
 
-    /// <summary>
-    /// Takes vector2 of magnitude between 0 and 1
-    /// </summary>
-    /// <param name="input"></param>
-    public void Move(Vector2 input)
+    public void MoveInDirection(Vector2 direction)
     {
-        Vector3 dir = input;
-        var speed = moveSpeed;
-        if (digging || filling) speed = digMoveSpeed;
+        Vector3 dir = Vector2.ClampMagnitude(direction, MoveSpeed * Time.deltaTime);
 
-        dir = Vector2.ClampMagnitude(dir, 1) * speed;
+        SetPos(transform.position + dir);
+    }
 
-        transform.position += dir * Time.deltaTime;
+    public void MoveToPos (Vector2 pos)
+    {
+        SetPos(Vector2.MoveTowards(transform.position, pos, MoveSpeed * Time.deltaTime));
+
+        //transform.position += d * Time.deltaTime;
+    }
+
+    void SetPos (Vector2 pos) //this would be the rpc
+    {
+        transform.position = pos;
 
         UpdateChunk();
-
-        //if (!digging && !filling)
-        //    detector.DetectTrench(0);
         inventory.DetectItems();
     }
 
@@ -215,7 +228,7 @@ public class Character : MonoBehaviour
     {
         none,
         localPlayer,
-        remotePlayer,
-        npc
+        remote,
+        localNPC
     }
 }
