@@ -72,54 +72,36 @@ public class Chunk
         onNewItem.RemoveAllListeners();
     }
 
-    public T[] GetItems<T>(T[] array, bool clearArray = false) where T : Item
+    public IEnumerable<T> GetItems<T>() where T : Item
     {
-        if (clearArray)
-        {
-            Array.Clear(array, 0, array.Length);
-        }
-
-        var type = typeof(T);
-        int count = array.Length;
-
-        foreach (var item in items)
-        {
-            if (type.IsAssignableFrom(item.GetType()))
-            {
-                count++;
-                Array.Resize(ref array, count);
-                array[count-1] = item as T;
-            }
-        }
-
-        // Resize the array to fit the number of valid items found
-        //Array.Resize(ref array, count);
-
-        return array;
+        return items.OfType<T>();
     }
 
-
-    public T[] GetCharacters<T>(T[] array, bool clearArray = false) where T : Character
+    public IEnumerable<T> GetCharacters<T>() where T : Character
     {
-        if (clearArray)
-        {
-            Array.Clear(array, 0, array.Length);
-        }
-
-        var type = typeof(T);
-        int count = array.Length;
-
-        foreach (var item in characters)
-        {
-            if (type.IsAssignableFrom(item.GetType()))
-            {
-                count++;
-                Array.Resize(ref array, count);
-                array[count-1] = item as T;
-            }
-        }
-
-        return array;
+        return characters.OfType<T>();
     }
 
+    //public T[] GetObjects<T> (T[] array, IEnumerable<T> collection, bool clearArray = false) where T : MonoBehaviour
+    //{
+    //    if (clearArray)
+    //    {
+    //        Array.Clear(array, 0, array.Length);
+    //    }
+
+    //    var type = typeof(T);
+    //    int count = array.Length;
+
+    //    foreach (var behavior in collection)
+    //    {
+    //        if (type.IsAssignableFrom(behavior.GetType()))
+    //        {
+    //            count++;
+    //            Array.Resize(ref array, count);
+    //            array[count - 1] = behavior as T;
+    //        }
+    //    }
+
+    //    return array;
+    //}
 }

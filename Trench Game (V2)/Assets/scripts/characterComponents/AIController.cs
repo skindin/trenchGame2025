@@ -9,8 +9,9 @@ public class AIController : MonoBehaviour
     public Character character;
     public Vector2 visionBox;
     public bool wandering = false, dodging = false, debugLines = false;
-    public float dangerRadius = 10, dodgeRadius = .1f, pointerSpeed = 50, minPointerMag = 1, maxPointerMag = 1, maxPointerOffset = .5f;
-    Vector2 targetPos, pointerPos, targetPointerPos; //pointer pos and target pointer pos are in LOCAL space
+    public float dangerRadius = 10, dodgeRadius = .1f, pointerSpeed = 50, minPointerMag = 1, maxPointerMag = 1, maxPointerOffset = .5f, maxTargetOffset = .5f;
+    Vector2 targetPos, targetPosOffset, pointerPos, targetPointerPos; //pointer pos and target pointer pos are in LOCAL space
+    Chunk[,] chunks = default;
 
     Vector2 TargetPointerPos
     {
@@ -33,14 +34,15 @@ public class AIController : MonoBehaviour
     {
         get
         {
+            targetPosOffset = (Vector2)UnityEngine.Random.insideUnitSphere * maxTargetOffset;
             return targetPos;
         }
 
         set
         {
-            value = ChunkManager.Manager.ClampPosToNearestChunk(value);
+            value = ChunkManager.Manager.ClampToWorld(value);
             targetPos = value;
-            path.Add(targetPos);
+            path.Add(transform.position);
         }
     }
 
@@ -56,14 +58,15 @@ public class AIController : MonoBehaviour
         //var delta = targetPos - (Vector2)transform.position;
         //character.Move(delta);
 
+        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
+
         SoldierLogic();
     }
 
     public void SoldierLogic ()
     {
-        var chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
-
-        closestEnemy = FindClosestCharacterWithinChunks<Character>(chunks);
+        //closestEnemy = FindClosestCharacterWithinChunks<Character>(chunks);
+        closestEnemy = FindClosestCharacter<Character>(character => character != this.character && (character.gun || this.character.gun));
 
         if (targetCollider && !targetCollider.gameObject.activeInHierarchy) 
             targetCollider = null;
@@ -136,7 +139,7 @@ public class AIController : MonoBehaviour
         }
         else //if you still don't have a gun...
         {
-            var closestGun = FindClosestItemWithinChunks<Gun>(chunks); //find the closest gun you can see
+            var closestGun = FindClosestItem<Gun>(); //find the closest gun you can see
 
             if (closestGun) //if you find a gun...
             {
@@ -176,7 +179,10 @@ public class AIController : MonoBehaviour
 
         if (!closestEnemy)
         {
-            var closestAmo = FindClosestItemWithinChunks<Amo>(chunks);
+            //var closestAmo = FindClosestItem<StackableItem>();
+            //bool pickupAmo = closestAmo;
+
+            var closestAmo = FindClosestItem<Amo>();
 
             bool pickupAmo = false;
 
@@ -215,6 +221,10 @@ public class AIController : MonoBehaviour
             //targetPointerPos = TargetPos - (Vector2)transform.position;
             //GeoFuncs.RandomPosInBoxPosSize(transform.position, visionBox);
         }
+        else
+        {
+            wandering = false;
+        }
 
 
         //else //theres gotta be a better way to do this
@@ -230,6 +240,7 @@ public class AIController : MonoBehaviour
         //var moveDirection = Vector2.MoveTowards(transform.position, TargetPos, 10) - (Vector2)transform.position;
 
         character.MoveToPos(TargetPos);
+        path[^1] = transform.position;
 
         pointerPos = Vector2.MoveTowards(pointerPos,TargetPointerPos,Time.deltaTime * pointerSpeed);
 
@@ -237,23 +248,93 @@ public class AIController : MonoBehaviour
         {
             GeoFuncs.MarkPoint(targetPointerPos + (Vector2)transform.position, 1, Color.red);
             GeoFuncs.MarkPoint(pointerPos + (Vector2)transform.position, 1, Color.blue);
+
+            GeoFuncs.DrawLine(path, Color.black);
         }
 
         if (character.gun)
             character.gun.Aim(pointerPos);
     }
 
-    public void Wander ()
+    List<Vector2> wanderPoints = new();
+    int wanderIndex = -1;
+
+    public void Wander()
     {
-        if (!wandering || 
-            (Vector2)transform.position == TargetPos
-            //Vector2.Distance((Vector2)transform.position,TargetPos) <= changeDirRadius
-            )
+        if (!wandering)
         {
-            TargetPos = ChunkManager.Manager.GetRandomPos();
+            if (wanderIndex < 0)
+            {
+                wanderPoints = ChunkManager.Manager.DistributePoints(visionBox, wanderPoints);
+
+                for (int i = 0; i < wanderPoints.Count; i++)
+                {
+                    wanderPoints[i] += (Vector2)UnityEngine.Random.insideUnitSphere * maxTargetOffset;
+                }
+            }
+
             wandering = true;
+            TargetPos = transform.position;
+
+            //wanderIndex = -1;
+        }
+        else
+        {
+            bool foundPoint = false;
+
+            if (wanderIndex > -1 && (Vector2)transform.position == TargetPos)
+            {
+                wanderPoints.RemoveAt(wanderIndex);
+                foundPoint = true;
+                //wanderIndex = -1;
+            }
+
+            if (wanderIndex < 0 || foundPoint)
+            {
+                wanderIndex = LogicAndMath.GetClosestIndex(transform.position, wanderPoints, point => point, null);
+
+                if (wanderIndex > -1) // Ensure valid index
+                {
+                    var min = (Vector2)transform.position - visionBox / 2;
+                    var max = (Vector2)transform.position + visionBox / 2;
+
+                    var wanderPoint = wanderPoints[wanderIndex];
+
+                    var closestVisiblePoint = Vector2.Max(wanderPoint, min);
+                    closestVisiblePoint = Vector2.Min(closestVisiblePoint, max);
+
+                    var delta = wanderPoint - closestVisiblePoint;
+
+                    //if (debugLines)
+                    //    GeoFuncs.MarkPoint(closestVisiblePoint, 1, Color.yellow);
+
+                    TargetPos = (Vector2)transform.position + delta;
+
+                    if (debugLines)
+                        GeoFuncs.MarkPoint(closestVisiblePoint, 1, Color.yellow);
+                }
+
+            }
+
+            if (wanderIndex < 0) // if there are no points left, redistribute points
+            {
+                wandering = false;
+                Wander(); //IT KEEPS RUNNING THIS EVERY TIME 
+                return;
+            }
+        }
+
+        if (debugLines)
+        {
+            for (int i = 0; i < wanderPoints.Count; i++)
+            {
+                var point = wanderPoints[i];
+                Color color = (i == wanderIndex) ? Color.green : Color.blue;
+                GeoFuncs.MarkPoint(point, 1, color);
+            }
         }
     }
+
 
     public void Dodge()
     {
@@ -280,7 +361,7 @@ public class AIController : MonoBehaviour
     public void PickupClosestItemWithCondition<T>(Func<Item, bool> condition) where T : Item
     {
 
-        var closestItem = LogicAndMath.GetClosestWithCondition(
+        var closestItem = LogicAndMath.GetClosest(
             transform.position,
             character.inventory.withinRadius,
             item => item.transform.position,
@@ -298,70 +379,14 @@ public class AIController : MonoBehaviour
         PickupClosestItemWithCondition<T>(item => item is T);
     }
 
-    public T FindClosestItemWithinChunks<T>(Chunk[,] chunks) where T : Item
+    public T FindClosestCharacter<T>(Func<T,bool> condition = null) where T : Character
     {
-        T[] array = new T[0];
-
-        foreach (var chunk in chunks)
-        {
-            if (chunk == null) continue;
-
-            if (debugLines)
-                ChunkManager.Manager.DrawChunk(chunk,Color.green);
-
-            array = chunk.GetItems(array, false);
-        }
-
-        float closestDist = Mathf.Infinity;
-        T closestItem = null;
-
-        foreach (var item in array)
-        {
-            if (!GeoFuncs.TestBoxPosSize(transform.position, visionBox, item.transform.position, debugLines))
-                continue;
-
-            var dist = Vector2.Distance(item.transform.position, transform.position);
-
-            if (dist < closestDist)
-            {
-                closestDist = dist;
-                closestItem = item;
-            }
-        }
-
-        return closestItem;
+        return ChunkManager.Manager.FindClosestCharacterWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
     }
 
-    public T FindClosestCharacterWithinChunks<T>(Chunk[,] chunks) where T : Character
+    public T FindClosestItem<T>(Func<T, bool> condition = null) where T : Item
     {
-        T[] array = new T[0];
-
-        foreach (var chunk in chunks)
-        {
-            if (chunk == null) continue;
-
-            array = chunk.GetCharacters(array, false);
-        }
-
-        float closestDist = Mathf.Infinity;
-        T closestCharacter = null;
-
-        foreach (var character in array)
-        {
-            if (character == this.character || //almost forgot to disclude this character lol
-                !GeoFuncs.TestBoxPosSize(transform.position, visionBox, character.transform.position, debugLines))
-                continue;
-
-            var dist = Vector2.Distance(character.transform.position, transform.position);
-
-            if (dist < closestDist)
-            {
-                closestDist = dist;
-                closestCharacter = character;
-            }
-        }
-
-        return closestCharacter;
+        return ChunkManager.Manager.FindClosestItemWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
     }
 
     private void OnDrawGizmos()

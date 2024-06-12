@@ -517,4 +517,48 @@ public static class GeoFuncs
         var dist = Random.Range(minRad, maxRad);
         return (Vector2)(Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward) * Vector3.up * dist + (Vector3)center);
     }
+
+    public static List<Vector2> DistributePointsInBoxPosSize(Vector2 pos, Vector2 size, Vector2 distributeSize, List<Vector2> list, bool clearList = true)
+    {
+        if (clearList)
+            list.Clear();
+
+        Vector2Int intSize = Vector2Int.CeilToInt(size / distributeSize);
+        Vector2 outerMin = pos - size / 2 + (size - new Vector2(intSize.x, intSize.y) * distributeSize) / 2;
+
+        var boxMin = pos - size / 2;
+        var boxMax = pos + size / 2;
+
+        for (var y = 0; y < intSize.y+1; y++)
+        {
+            for (int x = 0; x < intSize.x+1; x++)
+            {
+                Vector2 point = outerMin + new Vector2(x, y) * distributeSize;
+                point = Vector2.Min(point, boxMax);
+                point = Vector2.Max(point, boxMin);
+
+                list.Add(point);
+            }
+        }
+
+        return list;
+    }
+
+
+    public static void DrawLine (List<Vector2> points, Color color)
+    {
+        Vector2 lastPoint = Vector2.zero;
+
+        for (var i = 0; i < points.Count; i++)
+        {
+            var point = points[i];
+
+            if (i > 0)
+            {
+                Debug.DrawLine(lastPoint, point, color);
+            }
+
+            lastPoint = point;
+        }
+    }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -109,8 +110,8 @@ public class ChunkManager : MonoBehaviour
 
     public Vector2 GetRandomPos ()
     {
-        var x = Random.Range(-worldSize, worldSize)/2;
-        var y = Random.Range(-worldSize, worldSize)/2;
+        var x = UnityEngine.Random.Range(-worldSize, worldSize)/2;
+        var y = UnityEngine.Random.Range(-worldSize, worldSize)/2;
 
         return new(x, y);
     }
@@ -119,8 +120,8 @@ public class ChunkManager : MonoBehaviour
     {
         var edge = worldSize - margin;
 
-        var x = Random.Range(-edge, edge) / 2;
-        var y = Random.Range(-edge, edge) / 2;
+        var x = UnityEngine.Random.Range(-edge, edge) / 2;
+        var y = UnityEngine.Random.Range(-edge, edge) / 2;
 
         return new(x, y);
     }
@@ -191,37 +192,35 @@ public class ChunkManager : MonoBehaviour
 
     public Chunk ChunkFromPosClamped (Transform transform, bool newIfNone = true)
     {
-        var clampedPos = ClampPosToNearestChunk(transform.position, out var adress);
+        var clampedPos = ClampToWorld(transform.position, out var pos);
         transform.position = clampedPos;
-        return ChunkFromAdress(adress, newIfNone);
+        return ChunkFromPos(pos, newIfNone);
     }
 
-    public Vector2 ClampPosToNearestChunk (Vector2 pos, out Vector2Int closestAdress)
+    public Vector2 ClampToWorld(Vector2 pos, out Vector2 closestPos, float margin = 0)
     {
-        var adress = PosToAdress(pos);
-        closestAdress = Vector2Int.Max(adress, Vector2Int.zero);
-        closestAdress = Vector2Int.Min(closestAdress, (chunkArraySize-1) * Vector2Int.one);
+        GetWorldBox(out var min, out var max, margin);
 
-        GetChunkBox(closestAdress, out var chunkMin, out var chunkMax);
-
-        var closestPos = Vector2.Max(pos, chunkMin);
-        closestPos = Vector2.Min(closestPos, chunkMax);
+        closestPos = Vector2.Max(pos, min);
+        closestPos = Vector2.Min(closestPos, max);
 
         return closestPos;
     }
 
-    public Vector2 ClampPosToNearestChunk(Vector2 pos)
+    public Vector2 ClampToWorld(Vector2 pos, float margin = 0)
     {
-        var adress = PosToAdress(pos);
-        var closestAdress = Vector2Int.Max(adress, Vector2Int.zero);
-        closestAdress = Vector2Int.Min(closestAdress, (chunkArraySize - 1) * Vector2Int.one);
+        return ClampToWorld(pos, out _, margin);
+    }
 
-        GetChunkBox(closestAdress, out var chunkMin, out var chunkMax);
+    public bool IsPointInWorld (Vector2 point, bool debugLines = false)
+    {
+        //GetWorldBox(out var min, out var max);
+        return GeoFuncs.TestBoxPosSize(Vector2.zero, Vector2.one * worldSize, point, debugLines);
+    }
 
-        var closestPos = Vector2.Max(pos, chunkMin);
-        closestPos = Vector2.Min(closestPos, chunkMax);
-
-        return closestPos;
+    public List<Vector2> DistributePoints (Vector2 distributionBox, List<Vector2> verts, bool clearList = true)
+    {
+        return GeoFuncs.DistributePointsInBoxPosSize(Vector2.zero, Vector2.one * worldSize, distributionBox, verts, clearList);
     }
 
     public Vector2Int[,] AdressesFromBox (Vector2 min, Vector2 max)
@@ -277,9 +276,9 @@ public class ChunkManager : MonoBehaviour
         return ChunksFromBoxMinMax(min, max,newIfNone);
     }
 
-    public void GetWorldBox (out Vector2 min, out Vector2 max)
+    public void GetWorldBox (out Vector2 min, out Vector2 max, float margin = 0)
     {
-        min = -new Vector2(worldSize, worldSize) / 2;
+        min = -new Vector2(worldSize, worldSize) / 2 - Vector2.one * margin;
         max = -min;
     }
 
@@ -322,5 +321,52 @@ public class ChunkManager : MonoBehaviour
         var min = AdressToPos(adress);
         var max = AdressToPos(adress + Vector2Int.one);
         GeoFuncs.DrawBoxMinMax(min, max, color);
+    }
+
+    public T FindClosestCharacterWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : Character
+    {
+        return FindClosestObjectWithinBoxPosSize(pos, size, chunk => chunk.GetCharacters<T>(), condition, chunks, debugLines);
+    }
+
+    public T FindClosestItemWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : Item
+    {
+        return FindClosestObjectWithinBoxPosSize(pos, size, chunk => chunk.GetItems<T>(), condition, chunks, debugLines);
+    }
+
+    public T FindClosestObjectWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<Chunk,IEnumerable<T>> chunkList, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : MonoBehaviour
+    {
+        if (chunks == default)
+            chunks = ChunksFromBoxPosSize(pos, size);
+
+        float closestDist = Mathf.Infinity;
+        T closestBehavior = null;
+
+        foreach (var chunk in chunks)
+        {
+            if (chunk == null) continue;
+
+            if (debugLines)
+                DrawChunk(chunk, UnityEngine.Color.green);
+
+            var behaviorArray = chunkList(chunk);
+
+            foreach (var behavior in behaviorArray)
+            {
+                if (//condition goes here
+                    (condition != null && !condition(behavior)) ||
+                    !GeoFuncs.TestBoxPosSize(pos, size, behavior.transform.position, debugLines))
+                    continue;
+
+                var dist = Vector2.Distance(behavior.transform.position, pos);
+
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    closestBehavior = behavior;
+                }
+            }
+        }
+
+        return closestBehavior;
     }
 }

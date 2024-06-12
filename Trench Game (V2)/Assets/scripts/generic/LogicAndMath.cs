@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using System.Reflection;
+using System.Collections.ObjectModel;
+using static UnityEditor.Progress;
+using static UnityEditor.PlayerSettings;
+using UnityEditor;
 
 public static class LogicAndMath
 {
@@ -228,47 +233,56 @@ public static class LogicAndMath
         return default;
     }
 
-    public static T GetClosest<T> (Vector2 pos, IEnumerable<T> list, Func<T, Vector2> posPredicate) where T : class
+    public static int GetClosestIndex<T>(Vector3 pos, List<T> list, Func<T, Vector2> getPos, Func<T, bool> condition = null, bool debugLines = false)
     {
         float closestDist = Mathf.Infinity;
-        T closestItem = null;
+        Vector2 closestPos = pos;
+        int closestIndex = -1;
 
-        foreach (var item in list)
+        for (int i = 0; i < list.Count; i++)
         {
-            var dist = Vector2.Distance(posPredicate(item), pos);
+            var item = list[i];
+
+            var itemPos = getPos(item);
+
+            if (condition != null && !condition(item))
+            {
+                if (debugLines)
+                    GeoFuncs.MarkPoint(itemPos, 1, Color.red);
+                continue;
+            }
+
+
+
+            var dist = Vector2.Distance(pos, itemPos);
 
             if (dist < closestDist)
             {
                 closestDist = dist;
-                closestItem = item;
+                closestIndex = i;
+                closestPos = itemPos;
+            }
+            else
+            {
+                if (debugLines)
+                    GeoFuncs.MarkPoint(itemPos, 1, Color.blue);
             }
         }
 
-        return closestItem;
+        if (debugLines)
+            GeoFuncs.MarkPoint(closestPos, 1, Color.green);
+
+        return closestIndex;
     }
 
-    public static T GetClosestWithCondition<T>(
-        Vector3 position,
-        List<T> items,
-        Func<T, Vector3> positionSelector,
-        Func<T, bool> condition) where T : class
+    public static T GetClosest<T>(Vector3 pos, List<T> list, Func<T, Vector2> getPos, Func<T, bool> condition = null, T defaultValue = default, bool debugLines = false)
     {
-        T closestItem = null;
-        float closestDistance = float.MaxValue;
+        var index = GetClosestIndex(pos, list, getPos, condition, debugLines);
 
-        foreach (var item in items)
-        {
-            if (item == null || !condition(item)) continue;
-
-            float distance = Vector3.Distance(position, positionSelector(item));
-            if (distance < closestDistance)
-            {
-                closestItem = item;
-                closestDistance = distance;
-            }
-        }
-
-        return closestItem;
+        if (index > -1)
+            return list[index];
+        else
+            return defaultValue;
     }
 
     public static Vector2 GetBestNextPoint(Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, float safeDistance)
@@ -302,5 +316,26 @@ public static class LogicAndMath
         }
 
         return bestPoint;
+    }
+
+    public static int RandomNegOrPos ()
+    {
+        var value = UnityEngine.Random.Range(0, 2);
+
+        if (value == 0)
+        {
+            return -1;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+    public static bool RandomBool ()
+    {
+        var value = UnityEngine.Random.Range(0, 2);
+
+        return value == 0;
     }
 }
