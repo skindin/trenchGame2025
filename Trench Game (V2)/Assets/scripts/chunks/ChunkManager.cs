@@ -193,24 +193,28 @@ public class ChunkManager : MonoBehaviour
 
     public Chunk ChunkFromPosClamped (Transform transform, bool newIfNone = true)
     {
-        var clampedPos = ClampToWorld(transform.position, out var pos);
+        var clampedPos = ClampToWorld(transform.position, out var adress);
         transform.position = clampedPos;
-        return ChunkFromPos(pos, newIfNone);
+        return ChunkFromAdress(adress, newIfNone);
     }
 
-    public Vector2 ClampToWorld(Vector2 pos, out Vector2 closestPos, float margin = 0)
+    public Vector2 ClampToWorld(Vector2 pos, out Vector2Int closestAdress)
     {
-        GetWorldBox(out var min, out var max, margin);
+        var adress = PosToAdress(pos);
+        closestAdress = Vector2Int.Max(adress, Vector2Int.zero);
+        closestAdress = Vector2Int.Min(closestAdress, (chunkArraySize - 1) * Vector2Int.one);
 
-        closestPos = Vector2.Max(pos, min);
-        closestPos = Vector2.Min(closestPos, max);
+        GetChunkBox(closestAdress, out var chunkMin, out var chunkMax);
 
-        return closestPos;
+        var closestPos = Vector2.Max(pos, chunkMin);
+        closestPos = Vector2.Min(closestPos, chunkMax);
+
+        return closestPos; //there's a reason this is so complicated! if you just clamp it to the world box, sometimes the pos doesn't convert to an adress within the world
     }
 
-    public Vector2 ClampToWorld(Vector2 pos, float margin = 0)
+    public Vector2 ClampToWorld(Vector2 pos)
     {
-        return ClampToWorld(pos, out _, margin);
+        return ClampToWorld(pos, out _);
     }
 
     public bool IsPointInWorld (Vector2 point, bool debugLines = false)
@@ -355,7 +359,7 @@ public class ChunkManager : MonoBehaviour
 
         Func<T, bool> objCondition = obj => (condition == null || condition(obj)) && GeoFuncs.TestBoxPosSize(pos, size, obj.transform.position, debugLines);
 
-        return LogicAndMath.GetClosest<T>(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, debugLines);
+        return LogicAndMath.GetClosest<T>(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, Mathf.Infinity, debugLines);
         //return closestBehavior;
     }
 }

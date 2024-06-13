@@ -47,7 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 7562934035425285329}
   passivePickupRad: 1
-  activePickupRad: 3
+  activePickupRad: 5
+  selectionRad: 1
   items:
   - {fileID: 8605249435648912790}
   withinRadius: []
@@ -179,6 +180,8 @@ MonoBehaviour:
   digMoveSpeed: 1
   initialDigSpeed: 5
   deathDropRadius: 1
+  hp: 10
+  maxHp: 10
   collider: {fileID: 6768170971662278183}
   gun: {fileID: 8605249435648912790}
   reserve: {fileID: 5931548437021222437}
@@ -226,6 +229,9 @@ MonoBehaviour:
   pointerSpeed: 10
   minPointerMag: 1
   maxPointerMag: 1
+  maxPointerOffset: 0.5
+  maxTargetOffset: 0.5
+  maxWanderOffset: 5
   targetItem: {fileID: 0}
   targetCollider: {fileID: 0}
   closestEnemy: {fileID: 0}
@@ -241,9 +247,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9af10b153f1df57459e3415ad1e2468f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onBulletHit:
-    m_PersistentCalls:
-      m_Calls: []
   localSize: 1
   vulnerable: 1
 --- !u!1001 &2149341669520741861

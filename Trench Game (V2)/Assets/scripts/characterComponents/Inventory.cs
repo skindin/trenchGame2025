@@ -6,17 +6,17 @@ using UnityEngine.Events;
 public class Inventory : MonoBehaviour
 {
     public Character character;
-    public float passivePickupRad = 1, activePickupRad = 2; //passive should be smaller than active
+    public float passivePickupRad = 1, activePickupRad = 2, selectionRad = .5f; //passive should be smaller than active
     public List<Item> items = new();
     public List<Item> withinRadius = new();
     public Chunk[,] chunks = new Chunk[0,0];
     public Item closestItem;
     public bool debugLines = false;
 
-    private void Start()
-    {
-        DetectItems();
-    }
+    //private void Start()
+    //{
+    //    DetectItems();
+    //}
 
     public void ResetInventory (bool dropAllItems = false)
     {
@@ -190,32 +190,23 @@ public class Inventory : MonoBehaviour
 
     public void DropPrevItem ()
     {
-        var item = items[^1];
-        DropItem(item);
+        if (items.Count > 0)
+        {
+            var item = items[^1];
+            DropItem(item);
+        }
     }
 
     public Item SelectClosest (Vector2 pos)
     {
-        var closestDist = Mathf.Infinity;
-        Item closestItem = null;
-
-        foreach (var item in withinRadius)
-        {
-            var dist = Vector2.Distance(item.transform.position, pos);
-            if (dist < closestDist)
-            {
-                closestDist = dist;
-                closestItem = item;
-            }
-        }
-
-        this.closestItem = closestItem;
+        closestItem = LogicAndMath.GetClosest(pos, withinRadius.ToArray(), item => item.transform.position, out _, null, null, selectionRad, debugLines);
         return closestItem;
     }
 
     public void PickupClosest ()
     {
-        PickupItem(closestItem);
+        if (closestItem)
+            PickupItem(closestItem);
     }
 
     private void OnDrawGizmos()
@@ -237,7 +228,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    public void OnRemoved ()
     {
         foreach (var chunk in chunks)
         {
@@ -246,4 +237,14 @@ public class Inventory : MonoBehaviour
             chunk.onNewItem.RemoveListener(DetectItem);
         }
     }
+
+    //private void OnDestroy()
+    //{
+    //    foreach (var chunk in chunks)
+    //    {
+    //        if (chunk == null) continue;
+
+    //        chunk.onNewItem.RemoveListener(DetectItem);
+    //    }
+    //}
 }

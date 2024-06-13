@@ -55,7 +55,7 @@ public static class LogicAndMath
     {
         T[] results = new T[count];
 
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < results.Length; i++)
         {
             results[i] = GetRandomItemFromListValues(UnityEngine.Random.value, list, chancePredicate);
         }
@@ -82,7 +82,7 @@ public static class LogicAndMath
     {
         T[] results = new T[count];
 
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < results.Length; i++)
         {
             //T result;
             //if (enforceCount)
@@ -244,9 +244,9 @@ public static class LogicAndMath
         GeoFuncs.MarkPoint(getPos(item), .5f, Color.green);
     }
 
-    public static T GetClosest<T>(Vector2 pos, T[] array, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultValue = default, bool debugLines = false)
+    public static T GetClosest<T>(Vector2 pos, T[] array, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxDist = Mathf.Infinity, bool debugLines = false)
     {
-        void MarkPos<T> (T item, Func<T,Vector2> getPos, Color color)
+        static void MarkPos<T> (T item, Func<T,Vector2> getPos, Color color)
         {
             GeoFuncs.MarkPoint(getPos(item), .5f, color);
         }
@@ -255,14 +255,14 @@ public static class LogicAndMath
         Action<T> onClosest = debugLines ? item => MarkPos(item,getPos,Color.green) : null;
         Action<T> onNotClosest = debugLines ? item => MarkPos(item, getPos, Color.red) : null;
 
-        return GetLowest(array, item => GetDistance(item,pos,getPos), out lowestIndex, condition, defaultValue, onClosest, onNotClosest);
+        return GetLowest(array, item => GetDistance(item,pos,getPos), out lowestIndex, condition, defaultItem, maxDist, onClosest, onNotClosest);
     }
 
-    public static T GetLowest<T> (T[] array, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultValue = default, Action<T> onSelected = null, Action<T> onNotSelected = null)
+    public static T GetLowest<T> (T[] array, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
         lowestIndex = -1;
-        float lowestValue = Mathf.Infinity;
-        T lowestItem = defaultValue;
+        float lowestValue = maxValue;
+        T lowestItem = defaultItem;
 
         for (int i = 0; i < array.Length; i++)
         {
@@ -308,5 +308,33 @@ public static class LogicAndMath
     public static bool RandomBool ()
     {
         return (UnityEngine.Random.Range(0, 2) == 1) ? true : false;
+    }
+
+    public static string FormatFloat(float number, int maxDecimalPlaces)
+    {
+        // Format with the maximum number of decimal places
+        string format = "F" + maxDecimalPlaces;
+        string result = number.ToString(format);
+
+        // Trim trailing zeros up to the maximum decimal places
+        for (int i = maxDecimalPlaces; i > 0; i--)
+        {
+            if (result.Contains(".") && result.EndsWith("0"))
+            {
+                result = result.Substring(0, result.Length - 1);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        // If the number ends with a decimal point, remove it
+        if (result.EndsWith("."))
+        {
+            result = result.Substring(0, result.Length - 1);
+        }
+
+        return result;
     }
 }

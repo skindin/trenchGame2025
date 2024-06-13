@@ -66,7 +66,7 @@ public class Character : MonoBehaviour
 
     private void Start()
     {
-        UpdateChunk();
+        SetPos(transform.position);
         //collider.onHit.AddListener(
         //delegate
         //{
@@ -184,8 +184,13 @@ public class Character : MonoBehaviour
 
         if (inventory)
             inventory.DropAllItems();
+    }
 
+    public void RemoveCharacter ()
+    {
         CharacterManager.Manager.RemoveCharacter(this);
+        if (inventory)
+            inventory.OnRemoved();
     }
 
     public void ResetCharacter (bool clearItems = false) //clearItems parameter in case I need to remove character without dropping it's items

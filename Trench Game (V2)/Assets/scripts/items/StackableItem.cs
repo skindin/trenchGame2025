@@ -53,8 +53,8 @@ public class StackableItem : Item
 
     public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
     {
-        base.Pickup(character, out wasPickedUp, out wasDestroyed);
-        CombineWithItems(character.inventory.items);
+        base.Pickup(character, out wasPickedUp, out _);
+        CombineWithItems(character.inventory.items, out wasDestroyed);
     }
 
     public override void Drop() //just remember to run Drop() every time you spawn a new item!
@@ -75,14 +75,16 @@ public class StackableItem : Item
         {
             if (chunk == null) continue;
 
-            if (CombineWithItems(chunk.items)) return true;
+            if (CombineWithItems(chunk.items, out _)) return true;
         }
 
         return false;
     }
 
-    public bool CombineWithItems(List<Item> items)
+    public bool CombineWithItems(List<Item> items, out bool wasDestroyed)
     {
+        wasDestroyed = false;
+
         foreach (var item in items)
         {
             if (item is not StackableItem stackItem) continue;
@@ -106,7 +108,11 @@ public class StackableItem : Item
             stackItem.amount += addend;
             amount -= addend;
 
-            if (amount == 0) DestroyItem();
+            if (amount == 0)
+            {
+                DestroyItem();
+                wasDestroyed = true;
+            }
 
             return true;
         }

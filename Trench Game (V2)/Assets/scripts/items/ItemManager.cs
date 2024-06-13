@@ -25,6 +25,8 @@ public class ItemManager : MonoBehaviour
         }
     }
 
+    public bool spawnDrops = true;
+
     public List<ItemsGroup> itemsGroups = new();
     //spawn groups should probably be separate from object pools. pools have much more to do with local performance,
     //but clients don't need to know anything about spawn caps etc, because only the server will use them
@@ -64,7 +66,7 @@ public class ItemManager : MonoBehaviour
     {
         Sort();
 
-        if (dropOnStart)
+        if (dropOnStart && spawnDrops)
         {
             RunDropInterval(dropInterval);
         }
@@ -72,7 +74,8 @@ public class ItemManager : MonoBehaviour
 
     private void Update()
     {
-        RunDropInterval(Time.deltaTime); //i think this line caused a stack overflow but i have no idea why
+        if (spawnDrops)
+            RunDropInterval(Time.deltaTime); //i think this line caused a stack overflow but i have no idea why
     }
 
     Item NewItem(Item prefab, Vector3 pos)
@@ -156,12 +159,20 @@ public class ItemManager : MonoBehaviour
         if (clearList) list.Clear();
         //return null;//one secd
 
-        var itemsGroupPairs = LogicAndMath.GetOccurancePairs(itemsGroups, count - 1, x => x.chance);
+        var itemsGroupPairs = LogicAndMath.GetOccurancePairs(itemsGroups, count, x => x.chance);
+        //i have no idea why im subtracting 1 from the count here, but im not gonna mess with it
+
+        //unrelated note: something about this function isn't working. it seems that the only itemsGroup that can spawn is the first one
+        //if I set the chance of the first itemsGroup to 0, and have another itemsGroup with a higher value, it only spawns anything the very first time it is run...
 
         foreach (var itemsGroupPair in itemsGroupPairs)
         {
             var groups = itemsGroupPair.Item1.itemGroups;
             var groupsCount = itemsGroupPair.Item2;
+
+            if (groupsCount == 0)
+                continue;
+
             var itemGroupPairs = LogicAndMath.GetOccurancePairs(
                 groups, 
                 groupsCount, 

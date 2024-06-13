@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7ecda7cbac7b345b1c64ffbcb676e3, type: 3}
   m_Name: StackableItem
   m_EditorClassIdentifier: 
-  tier: 1
+  limitAmount: 0
   maxAmount: 10
-  combineRadius: 2
+  combineRadius: 1

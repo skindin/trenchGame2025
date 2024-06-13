@@ -14,7 +14,7 @@ public class Controller : MonoBehaviour
         active = this; //this definitely needs improvement for multiplayer but idc rn
     }
 
-    bool step = false;
+    //bool step = false;
 
     // Update is called once per frame
     void Update()

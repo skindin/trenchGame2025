@@ -212,13 +212,14 @@ public class Gun : Item
         var itemInfo = base.GetInfo();
 
         var roundRatio = $"{rounds}/{GunModel.maxRounds}";
-        var range = $"{GunModel.range} m range";
-        var bulletSpeed = $"{GunModel.bulletSpeed} m/s";
-        var fireRate = $"{GunModel.firingRate} rounds/s";
-        var reload = $"{GunModel.reloadTime} s reload";
+        var range = $"{GunModel.range:F1} m range";
+        var bulletSpeed = $"{GunModel.bulletSpeed:F1} m/s";
+        var fireRate = $"{GunModel.firingRate:F1} rounds/s";
+        var damageRate = $"{GunModel.damageRate:F1} hp/s";
+        var reload = $"{ GunModel.reloadTime:F1} s reload";
         var amoType = GunModel.amoType.name;
 
-        var array = new string[] {itemInfo, roundRatio, fireRate, range, bulletSpeed, reload, amoType};
+        var array = new string[] {itemInfo, roundRatio, fireRate, damageRate, range, bulletSpeed, reload, amoType};
 
         //var result = itemInfo.Concat(gunInfo).ToArray();
 
