@@ -307,7 +307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &291024281
 Transform:
   m_ObjectHideFlags: 0
@@ -543,6 +543,10 @@ PrefabInstance:
       propertyPath: debugLines
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 504053870291546787, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
+      propertyPath: wanderMemoryDur
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 2711494704276624062, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: vulnerable
       value: 1
@@ -553,7 +557,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8503986705403083809, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 20.130001
+      value: 8.5
       objectReference: {fileID: 0}
     - target: {fileID: 8503986705403083809, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1916,7 +1920,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1471029731889219177, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3717005610972555357, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: vulnerable

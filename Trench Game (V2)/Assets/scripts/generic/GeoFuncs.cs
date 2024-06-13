@@ -518,13 +518,13 @@ public static class GeoFuncs
         return (Vector2)(Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward) * Vector3.up * dist + (Vector3)center);
     }
 
-    public static List<Vector2> DistributePointsInBoxPosSize(Vector2 pos, Vector2 size, Vector2 distributeSize, List<Vector2> list, bool clearList = true)
+    public static Vector2[,] DistributePointsInBoxPosSize(Vector2 pos, Vector2 size, Vector2 distributeSize)
     {
-        if (clearList)
-            list.Clear();
 
         Vector2Int intSize = Vector2Int.CeilToInt(size / distributeSize);
         Vector2 outerMin = pos - size / 2 + (size - new Vector2(intSize.x, intSize.y) * distributeSize) / 2;
+
+        var array = new Vector2[intSize.x+1, intSize.y+1];
 
         var boxMin = pos - size / 2;
         var boxMax = pos + size / 2;
@@ -534,14 +534,18 @@ public static class GeoFuncs
             for (int x = 0; x < intSize.x+1; x++)
             {
                 Vector2 point = outerMin + new Vector2(x, y) * distributeSize;
-                point = Vector2.Min(point, boxMax);
-                point = Vector2.Max(point, boxMin);
+                                
+                if (x == 0 || y == 0)
+                    point = Vector2.Max(point, boxMin);
 
-                list.Add(point);
+                if (x == intSize.x || y == intSize.y)
+                    point = Vector2.Min(point, boxMax);
+
+                array[x, y] = point;
             }
         }
 
-        return list;
+        return array;
     }
 
 
@@ -560,5 +564,29 @@ public static class GeoFuncs
 
             lastPoint = point;
         }
+    }
+
+    public static float GetLineLength (List<Vector2> points, bool debugLines = false)
+    {
+        float total = 0;
+
+        Vector2 lastPoint = Vector2.zero;
+
+        for (var i = 0; i < points.Count; i++)
+        {
+            var point = points[i];
+
+            if (i > 0)
+            {
+                total += Vector2.Distance(lastPoint, point);
+
+                if (debugLines)
+                    Debug.DrawLine(lastPoint, point, Color.cyan);
+            }
+
+            lastPoint = point;
+        }
+
+        return total;
     }
 }

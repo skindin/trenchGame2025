@@ -10,4 +10,5 @@ public class Projectile
     public bool
         //withinTrench, 
         destroy = false;
+    public float damage = 1;
 }

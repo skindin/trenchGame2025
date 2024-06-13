@@ -10,7 +10,7 @@ public class Character : MonoBehaviour
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
     Color startColor;
-    public float baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1;
+    public float baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1, hp = 10, maxHp = 10;
     public float MoveSpeed
     {
         get
@@ -67,15 +67,31 @@ public class Character : MonoBehaviour
     private void Start()
     {
         UpdateChunk();
-        collider.onBulletHit.AddListener(
-        delegate
+        //collider.onHit.AddListener(
+        //delegate
+        //{
+        //    //transform.position = ChunkManager.Manager.GetRandomPos();
+        //    //UpdateChunk();
+        //    Kill();
+        //    CharacterManager.Manager.RemoveCharacter(this);
+        //    //Debug.Log(gameObject.name + " was hit");
+        //});
+
+        collider.onHit = bullet => Damage(bullet.damage);
+    }
+
+
+
+    public void Damage (float hp)
+    {
+        this.hp -= hp;
+
+        if (this.hp <= 0)
         {
-            //transform.position = ChunkManager.Manager.GetRandomPos();
-            //UpdateChunk();
+            this.hp = 0;
+
             Kill();
-            CharacterManager.Manager.RemoveCharacter(this);
-            //Debug.Log(gameObject.name + " was hit");
-        });
+        }
     }
 
     //private void OnEnable()
@@ -161,46 +177,6 @@ public class Character : MonoBehaviour
         }
     }
 
-    public void Dig (Vector2 digPoint, bool stop = false)
-    {
-        //if (!stop)
-        //{
-        //    if (!digger.DigTrench(digPoint, Time.deltaTime))
-        //    {
-        //        digging = false;
-        //        return;
-        //    }
-        //}
-        //else if (!constantDig)
-        //{
-        //    digger.StopDigging();
-        //}
-
-        //digging = !stop;
-
-        //if (digging)
-        //{
-        //    UpdateVulnerable(true);
-        //    detector.SetStatus(true);
-        //}
-    }
-
-    public void Fill (Vector2 fillPoint, bool stop = false)
-    {
-        //if (stop)
-        //{
-        //    digger.StopFilling();
-        //    filling = false;
-        //    return;
-        //}
-
-        //UpdateVulnerable(false);
-        //detector.SetStatus(false);
-
-        //digger.FillTrenches(fillPoint, Time.deltaTime);
-        //filling = true;
-    }
-
     public void Kill ()
     {
         if (reserve)
@@ -208,6 +184,8 @@ public class Character : MonoBehaviour
 
         if (inventory)
             inventory.DropAllItems();
+
+        CharacterManager.Manager.RemoveCharacter(this);
     }
 
     public void ResetCharacter (bool clearItems = false) //clearItems parameter in case I need to remove character without dropping it's items
@@ -217,9 +195,16 @@ public class Character : MonoBehaviour
 
         if (clearItems)
         {
-            inventory.ResetInventory(true);
-            reserve.Clear();
+            if (inventory)
+                inventory.ResetInventory(true);
+
+            if (reserve)
+                reserve.Clear();
         }
+
+        collider.ResetCollider();
+
+        hp = maxHp;
 
         Type = CharacterType.none;
     }

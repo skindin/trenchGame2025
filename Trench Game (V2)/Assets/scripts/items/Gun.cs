@@ -198,7 +198,7 @@ public class Gun : Item
 
     public Bullet Fire ()
     {
-        return ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos, direction.normalized * GunModel.bulletSpeed, GunModel.range, wielder);
+        return ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos, direction.normalized * GunModel.bulletSpeed, GunModel.range, GunModel.DamagePerBullet, wielder);
     }
 
     private void OnDrawGizmos()

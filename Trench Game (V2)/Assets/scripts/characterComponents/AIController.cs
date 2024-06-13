@@ -3,13 +3,22 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using System;
+using System.Drawing;
 
 public class AIController : MonoBehaviour
 {
     public Character character;
     public Vector2 visionBox;
     public bool wandering = false, dodging = false, debugLines = false;
-    public float dangerRadius = 10, dodgeRadius = .1f, pointerSpeed = 50, minPointerMag = 1, maxPointerMag = 1, maxPointerOffset = .5f, maxTargetOffset = .5f;
+    public float dangerRadius = 10,
+        dodgeRadius = .1f,
+        pointerSpeed = 50,
+        minPointerMag = 1,
+        maxPointerMag = 1,
+        maxPointerOffset = .5f,
+        maxTargetOffset = .5f,
+        maxWanderOffset = 5;
+        //wanderDistMemory = 5;
     Vector2 targetPos, targetPosOffset, pointerPos, targetPointerPos; //pointer pos and target pointer pos are in LOCAL space
     Chunk[,] chunks = default;
 
@@ -34,15 +43,23 @@ public class AIController : MonoBehaviour
     {
         get
         {
-            targetPosOffset = (Vector2)UnityEngine.Random.insideUnitSphere * maxTargetOffset;
             return targetPos;
         }
 
         set
         {
             value = ChunkManager.Manager.ClampToWorld(value);
+            targetPosOffset = (Vector2)UnityEngine.Random.insideUnitSphere * maxTargetOffset;
             targetPos = value;
             path.Add(transform.position);
+        }
+    }
+
+    public Vector2 OffsetTargetPos
+    {
+        get
+        {
+            return ChunkManager.Manager.ClampToWorld(TargetPos + targetPosOffset);
         }
     }
 
@@ -61,12 +78,20 @@ public class AIController : MonoBehaviour
         chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
 
         SoldierLogic();
+
+        //if (exploredPoints.Count > 0 && Time.deltaTime - prevMemLossStamp >= wanderMemoryDur)
+        //{
+        //    var arrayIndex = exploredPoints[0];
+        //    exploredPoints.RemoveAt(0);
+
+        //    unexploredPoints.Add(arrayIndex);
+        //}
     }
 
     public void SoldierLogic ()
     {
         //closestEnemy = FindClosestCharacterWithinChunks<Character>(chunks);
-        closestEnemy = FindClosestCharacter<Character>(character => character != this.character && (character.gun || this.character.gun));
+        closestEnemy = FindClosestCharacter<Character>(character => character != this.character && (this.character.gun || character.gun));
 
         if (targetCollider && !targetCollider.gameObject.activeInHierarchy) 
             targetCollider = null;
@@ -107,7 +132,7 @@ public class AIController : MonoBehaviour
                     var range = character.gun.GunModel.range;
 
                     if (debugLines)
-                        GeoFuncs.DrawCircle(character.gun.BarrelPos, range, Color.red, 8);
+                        GeoFuncs.DrawCircle(character.gun.BarrelPos, range, UnityEngine.Color.red, 8);
 
                     if (dist <= range) //if within range..
                     {
@@ -149,7 +174,7 @@ public class AIController : MonoBehaviour
             else //if you couldn't find a gun...
             {
                 if (debugLines)
-                    GeoFuncs.DrawCircle(transform.position, dangerRadius, Color.red, 8);
+                    GeoFuncs.DrawCircle(transform.position, dangerRadius, UnityEngine.Color.red, 8);
 
                 if (closestEnemy && Vector2.Distance(closestEnemy.transform.position,transform.position) <= dangerRadius) //and you are too close to an enemy...
                 {
@@ -197,7 +222,7 @@ public class AIController : MonoBehaviour
             {
                 TargetPos = closestAmo.transform.position;
 
-                wandering = false;
+                Wander(false);
             }
             else
             {
@@ -223,7 +248,7 @@ public class AIController : MonoBehaviour
         }
         else
         {
-            wandering = false;
+            Wander(false);
         }
 
 
@@ -233,7 +258,7 @@ public class AIController : MonoBehaviour
         //}
 
         if (debugLines)
-            GeoFuncs.MarkPoint(TargetPos, .5f, Color.magenta);
+            GeoFuncs.MarkPoint(TargetPos, .5f, UnityEngine.Color.magenta);
 
         //var moveDirection = TargetPos - (Vector2)transform.position;
 
@@ -246,30 +271,66 @@ public class AIController : MonoBehaviour
 
         if (debugLines)
         {
-            GeoFuncs.MarkPoint(targetPointerPos + (Vector2)transform.position, 1, Color.red);
-            GeoFuncs.MarkPoint(pointerPos + (Vector2)transform.position, 1, Color.blue);
+            GeoFuncs.MarkPoint(targetPointerPos + (Vector2)transform.position, 1, UnityEngine.Color.red);
+            GeoFuncs.MarkPoint(pointerPos + (Vector2)transform.position, 1, UnityEngine.Color.blue);
 
-            GeoFuncs.DrawLine(path, Color.black);
+            GeoFuncs.DrawLine(path, UnityEngine.Color.black);
+        }
+
+        for (int i = 0; i < unexploredPoints.Count; i++)
+        {
+            if (i == wanderIndex)
+                continue;
+
+            var arrayIndex = unexploredPoints[i];
+            var point = wanderPoints[arrayIndex.x, arrayIndex.y];
+
+            if (GeoFuncs.TestBoxPosSize(transform.position, visionBox, point, debugLines))
+            {
+                unexploredPoints.RemoveAt(i);
+                exploredPoints.Add(arrayIndex);
+                if (wanderIndex > i)
+                    wanderIndex--;
+                i--;
+            }
         }
 
         if (character.gun)
             character.gun.Aim(pointerPos);
     }
 
-    List<Vector2> wanderPoints = new();
+    Vector2[,] wanderPoints = new Vector2[0,0];
+    readonly List<Vector2Int> unexploredPoints = new(), exploredPoints = new();
     int wanderIndex = -1;
 
-    public void Wander()
+    public void Wander(bool wander = true)
     {
+        if (!wander)
+        {
+            wandering = false;
+            return;
+        }
+
         if (!wandering)
         {
-            if (wanderIndex < 0)
+            if (unexploredPoints.Count < 1)
             {
-                wanderPoints = ChunkManager.Manager.DistributePoints(visionBox, wanderPoints);
+                wanderPoints = ChunkManager.Manager.DistributePoints(visionBox);
 
-                for (int i = 0; i < wanderPoints.Count; i++)
+                unexploredPoints.Clear();
+                exploredPoints.Clear();
+
+                var height = wanderPoints.GetLength(1);
+
+                for (int y = 0; y < height; y++)
                 {
-                    wanderPoints[i] += (Vector2)UnityEngine.Random.insideUnitSphere * maxTargetOffset;
+                    var width = wanderPoints.GetLength(0);
+
+                    for (int x = 0; x < width; x++)
+                    {
+                        //wanderPoints[x, y] += UnityEngine.Random.insideUnitCircle * maxWanderOffset;
+                        unexploredPoints.Add(new(x, y));
+                    }
                 }
             }
 
@@ -284,21 +345,23 @@ public class AIController : MonoBehaviour
 
             if (wanderIndex > -1 && (Vector2)transform.position == TargetPos)
             {
-                wanderPoints.RemoveAt(wanderIndex);
+                exploredPoints.Add(unexploredPoints[wanderIndex]);
+                unexploredPoints.RemoveAt(wanderIndex);
                 foundPoint = true;
                 //wanderIndex = -1;
             }
 
             if (wanderIndex < 0 || foundPoint)
             {
-                wanderIndex = LogicAndMath.GetClosestIndex(transform.position, wanderPoints, point => point, null);
+                LogicAndMath.GetClosest(transform.position, unexploredPoints.ToArray(), arrayPos => wanderPoints[arrayPos.x,arrayPos.y], out wanderIndex, null);
 
                 if (wanderIndex > -1) // Ensure valid index
                 {
                     var min = (Vector2)transform.position - visionBox / 2;
                     var max = (Vector2)transform.position + visionBox / 2;
 
-                    var wanderPoint = wanderPoints[wanderIndex];
+                    var arrayPos = unexploredPoints[wanderIndex];
+                    var wanderPoint = wanderPoints[arrayPos.x,arrayPos.y];
 
                     var closestVisiblePoint = Vector2.Max(wanderPoint, min);
                     closestVisiblePoint = Vector2.Min(closestVisiblePoint, max);
@@ -308,10 +371,10 @@ public class AIController : MonoBehaviour
                     //if (debugLines)
                     //    GeoFuncs.MarkPoint(closestVisiblePoint, 1, Color.yellow);
 
-                    TargetPos = (Vector2)transform.position + delta;
+                    TargetPos = (Vector2)transform.position + delta + UnityEngine.Random.insideUnitCircle * maxWanderOffset;
 
                     if (debugLines)
-                        GeoFuncs.MarkPoint(closestVisiblePoint, 1, Color.yellow);
+                        GeoFuncs.MarkPoint(closestVisiblePoint, 1, UnityEngine.Color.yellow);
                 }
 
             }
@@ -319,18 +382,39 @@ public class AIController : MonoBehaviour
             if (wanderIndex < 0) // if there are no points left, redistribute points
             {
                 wandering = false;
-                Wander(); //IT KEEPS RUNNING THIS EVERY TIME 
+                Wander();
                 return;
             }
         }
 
         if (debugLines)
         {
-            for (int i = 0; i < wanderPoints.Count; i++)
+            var height = wanderPoints.GetLength(1);
+
+            for (int y = 0; y < height; y++)
             {
-                var point = wanderPoints[i];
-                Color color = (i == wanderIndex) ? Color.green : Color.blue;
-                GeoFuncs.MarkPoint(point, 1, color);
+                var width = wanderPoints.GetLength(0);
+
+                for (int x = 0; x < width; x++)
+                {
+                    var arrayIndex = new Vector2Int(x, y);
+
+                    UnityEngine.Color color;
+
+                    var arrayIndexIndex = unexploredPoints.IndexOf(arrayIndex);
+
+                    if (arrayIndexIndex != -1)
+                    {
+                        if (arrayIndexIndex == wanderIndex)
+                            color = UnityEngine.Color.green;
+                        else
+                            color = UnityEngine.Color.red;
+                    }
+                    else
+                        color = UnityEngine.Color.blue;
+
+                    GeoFuncs.MarkPoint(wanderPoints[x,y], 1, color);
+                }
             }
         }
     }
@@ -358,13 +442,13 @@ public class AIController : MonoBehaviour
     //{
     //}
 
-    public void PickupClosestItemWithCondition<T>(Func<Item, bool> condition) where T : Item
+    public void PickupClosestItem<T>(Func<Item, bool> condition = null) where T : Item
     {
-
         var closestItem = LogicAndMath.GetClosest(
             transform.position,
-            character.inventory.withinRadius,
+            character.inventory.withinRadius.ToArray(),
             item => item.transform.position,
+            out _,
             condition
         );
 
@@ -372,11 +456,6 @@ public class AIController : MonoBehaviour
         {
             character.inventory.PickupItem(closestItem);
         }
-    }
-
-    public void PickupClosestItem<T>() where T : Item
-    {
-        PickupClosestItemWithCondition<T>(item => item is T);
     }
 
     public T FindClosestCharacter<T>(Func<T,bool> condition = null) where T : Character
@@ -393,7 +472,7 @@ public class AIController : MonoBehaviour
     {
         if (debugLines)
         {
-            GeoFuncs.DrawBoxPosSize(transform.position, visionBox, Color.magenta);
+            GeoFuncs.DrawBoxPosSize(transform.position, visionBox, UnityEngine.Color.magenta);
         }
     }
 }

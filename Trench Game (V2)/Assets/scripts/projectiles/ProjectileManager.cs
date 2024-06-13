@@ -41,7 +41,7 @@ public class ProjectileManager : MonoBehaviour
             );
     }
 
-    public Bullet NewBullet (Vector2 pos, Vector2 velocity, float range, Character source)
+    public Bullet NewBullet (Vector2 pos, Vector2 velocity, float range, float damage, Character source)
     {
         var newBullet = bulletPool.GetFromPool();
 
@@ -54,6 +54,8 @@ public class ProjectileManager : MonoBehaviour
         //activeCount = activeBullets.Count;
 
         //total = activeCount + pooledCount;
+
+        newBullet.damage = damage;
 
         //newBullet.withinTrench = source.wielder.detector.withinTrench;
         newBullet.destroy = false;
@@ -158,7 +160,7 @@ public class ProjectileManager : MonoBehaviour
 
             if (closestCollider != null)
             {
-                closestCollider.BulletHit(bullet);
+                closestCollider.HitCollider(bullet);
                 bullet.destroy = true;
                 //Debug.Log($"Hit {closestCollider.gameObject.name}");
             }

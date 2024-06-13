@@ -4,6 +4,26 @@ public class CharacterGUI : MonoBehaviour
 {
     // Start is called before the first frame update
 
+    CharacterGUI main;
+
+    public CharacterGUI Main
+    { 
+        get
+        {
+            if (!main)
+            {
+                main = GetComponent<CharacterGUI>();
+            }
+
+            return main;
+        }
+
+        set
+        {
+            main = value;
+        }
+    }
+
     public Character character;
     public float amoTextSize = 5, itemTextSize = 2;
     public Color plainText = Color.white, backgroundColor = Color.white, importantColor = Color.white;
@@ -13,14 +33,14 @@ public class CharacterGUI : MonoBehaviour
 
     void OnGUI()
     {
-        DrawAmoGUI();
+        DrawInventoryGui();
         DrawNearbyItems();
 
         infoBoxTexture = new Texture2D(1,1);
         //infoBoxTexture.SetPixels
     }
 
-    public void DrawAmoGUI ()
+    public void DrawInventoryGui ()
     {
         //if (!character.gun) return; //technically should still draw the reserve but whatever
 

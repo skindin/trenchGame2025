@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -218,9 +219,9 @@ public class ChunkManager : MonoBehaviour
         return GeoFuncs.TestBoxPosSize(Vector2.zero, Vector2.one * worldSize, point, debugLines);
     }
 
-    public List<Vector2> DistributePoints (Vector2 distributionBox, List<Vector2> verts, bool clearList = true)
+    public Vector2[,] DistributePoints (Vector2 distributionBox)
     {
-        return GeoFuncs.DistributePointsInBoxPosSize(Vector2.zero, Vector2.one * worldSize, distributionBox, verts, clearList);
+        return GeoFuncs.DistributePointsInBoxPosSize(Vector2.zero, Vector2.one * worldSize, distributionBox);
     }
 
     public Vector2Int[,] AdressesFromBox (Vector2 min, Vector2 max)
@@ -333,13 +334,12 @@ public class ChunkManager : MonoBehaviour
         return FindClosestObjectWithinBoxPosSize(pos, size, chunk => chunk.GetItems<T>(), condition, chunks, debugLines);
     }
 
-    public T FindClosestObjectWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<Chunk,IEnumerable<T>> chunkList, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : MonoBehaviour
+    public T FindClosestObjectWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<Chunk, T[]> getObjList, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : MonoBehaviour
     {
         if (chunks == default)
             chunks = ChunksFromBoxPosSize(pos, size);
 
-        float closestDist = Mathf.Infinity;
-        T closestBehavior = null;
+        T[] allObjects = new T[0];
 
         foreach (var chunk in chunks)
         {
@@ -348,25 +348,14 @@ public class ChunkManager : MonoBehaviour
             if (debugLines)
                 DrawChunk(chunk, UnityEngine.Color.green);
 
-            var behaviorArray = chunkList(chunk);
+            var objects = getObjList(chunk);
 
-            foreach (var behavior in behaviorArray)
-            {
-                if (//condition goes here
-                    (condition != null && !condition(behavior)) ||
-                    !GeoFuncs.TestBoxPosSize(pos, size, behavior.transform.position, debugLines))
-                    continue;
-
-                var dist = Vector2.Distance(behavior.transform.position, pos);
-
-                if (dist < closestDist)
-                {
-                    closestDist = dist;
-                    closestBehavior = behavior;
-                }
-            }
+            allObjects = allObjects.Concat(objects).ToArray();
         }
 
-        return closestBehavior;
+        Func<T, bool> objCondition = obj => (condition == null || condition(obj)) && GeoFuncs.TestBoxPosSize(pos, size, obj.transform.position, debugLines);
+
+        return LogicAndMath.GetClosest<T>(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, debugLines);
+        //return closestBehavior;
     }
 }

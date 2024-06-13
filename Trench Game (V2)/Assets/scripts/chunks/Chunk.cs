@@ -72,14 +72,14 @@ public class Chunk
         onNewItem.RemoveAllListeners();
     }
 
-    public IEnumerable<T> GetItems<T>() where T : Item
+    public T[] GetItems<T>() where T : Item
     {
-        return items.OfType<T>();
+        return items.OfType<T>().ToArray();
     }
 
-    public IEnumerable<T> GetCharacters<T>() where T : Character
+    public T[] GetCharacters<T>() where T : Character
     {
-        return characters.OfType<T>();
+        return characters.OfType<T>().ToArray();
     }
 
     //public T[] GetObjects<T> (T[] array, IEnumerable<T> collection, bool clearArray = false) where T : MonoBehaviour

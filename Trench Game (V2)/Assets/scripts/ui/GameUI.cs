@@ -17,6 +17,11 @@ public class GameUI : MonoBehaviour
 
     private void OnGUI()
     {
+        //foreach (var character in CharacterManager.Manager.active)
+        //{
+        //    CharacterGUI.Main.DrawTextBox
+        //}
+
         int width = Screen.width;
         int height = Screen.height;
 

@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using static UnityEditor.Progress;
 using static UnityEditor.PlayerSettings;
 using UnityEditor;
+using JetBrains.Annotations;
 
 public static class LogicAndMath
 {
@@ -233,109 +234,79 @@ public static class LogicAndMath
         return default;
     }
 
-    public static int GetClosestIndex<T>(Vector3 pos, List<T> list, Func<T, Vector2> getPos, Func<T, bool> condition = null, bool debugLines = false)
+    static float GetDistance<T> (T item, Vector2 pos, Func<T, Vector2> getPos)
     {
-        float closestDist = Mathf.Infinity;
-        Vector2 closestPos = pos;
-        int closestIndex = -1;
+        return Vector2.Distance(pos, getPos(item));
+    }
 
-        for (int i = 0; i < list.Count; i++)
+    static void OnPosSelected<T> (T item, Func<T, Vector2> getPos)
+    {
+        GeoFuncs.MarkPoint(getPos(item), .5f, Color.green);
+    }
+
+    public static T GetClosest<T>(Vector2 pos, T[] array, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultValue = default, bool debugLines = false)
+    {
+        void MarkPos<T> (T item, Func<T,Vector2> getPos, Color color)
         {
-            var item = list[i];
+            GeoFuncs.MarkPoint(getPos(item), .5f, color);
+        }
 
-            var itemPos = getPos(item);
+        //Func<T, float> getDistance = item => Vector2.Distance(pos, getPos(item));
+        Action<T> onClosest = debugLines ? item => MarkPos(item,getPos,Color.green) : null;
+        Action<T> onNotClosest = debugLines ? item => MarkPos(item, getPos, Color.red) : null;
+
+        return GetLowest(array, item => GetDistance(item,pos,getPos), out lowestIndex, condition, defaultValue, onClosest, onNotClosest);
+    }
+
+    public static T GetLowest<T> (T[] array, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultValue = default, Action<T> onSelected = null, Action<T> onNotSelected = null)
+    {
+        lowestIndex = -1;
+        float lowestValue = Mathf.Infinity;
+        T lowestItem = defaultValue;
+
+        for (int i = 0; i < array.Length; i++)
+        {
+            var item = array[i];
 
             if (condition != null && !condition(item))
-            {
-                if (debugLines)
-                    GeoFuncs.MarkPoint(itemPos, 1, Color.red);
                 continue;
-            }
 
+            var value = getValue(item);
 
-
-            var dist = Vector2.Distance(pos, itemPos);
-
-            if (dist < closestDist)
+            if (value < lowestValue)
             {
-                closestDist = dist;
-                closestIndex = i;
-                closestPos = itemPos;
-            }
-            else
-            {
-                if (debugLines)
-                    GeoFuncs.MarkPoint(itemPos, 1, Color.blue);
+                lowestValue = value;
+                lowestIndex = i;
+                lowestItem = item;
             }
         }
 
-        if (debugLines)
-            GeoFuncs.MarkPoint(closestPos, 1, Color.green);
-
-        return closestIndex;
-    }
-
-    public static T GetClosest<T>(Vector3 pos, List<T> list, Func<T, Vector2> getPos, Func<T, bool> condition = null, T defaultValue = default, bool debugLines = false)
-    {
-        var index = GetClosestIndex(pos, list, getPos, condition, debugLines);
-
-        if (index > -1)
-            return list[index];
-        else
-            return defaultValue;
-    }
-
-    public static Vector2 GetBestNextPoint(Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, float safeDistance)
-    {
-        Vector2 bestPoint = pointA;
-        float maxDistance = float.MinValue;
-
-        // Generate a set of candidate points
-        for (float x = boxMin.x; x <= boxMax.x; x += 0.1f)
+        if (onNotSelected != null)
         {
-            for (float y = boxMin.y; y <= boxMax.y; y += 0.1f)
+            for (int i = 0; i < array.Length; i++)
             {
-                Vector2 candidatePoint = new Vector2(x, y);
+                var item = array[i];
 
-                // Check if the candidate point is within the safe distance from pointB
-                if (Vector2.Distance(candidatePoint, pointB) < safeDistance)
-                {
-                    continue;
-                }
-
-                // Calculate the distance from pointA to the candidate point
-                float distanceToA = Vector2.Distance(pointA, candidatePoint);
-
-                // Find the candidate point that maximizes the distance from pointA
-                if (distanceToA > maxDistance)
-                {
-                    bestPoint = candidatePoint;
-                    maxDistance = distanceToA;
-                }
+                if (item is not null)
+                    onNotSelected(item);
             }
         }
 
-        return bestPoint;
+        if (onSelected != null && lowestItem is not null)
+        {
+            onSelected(lowestItem);
+        }
+
+        return lowestItem;
     }
 
     public static int RandomNegOrPos ()
     {
-        var value = UnityEngine.Random.Range(0, 2);
-
-        if (value == 0)
-        {
-            return -1;
-        }
-        else
-        {
-            return 1;
-        }
+        return (UnityEngine.Random.Range(0, 2) == 1) ? 1 : -1;
     }
 
     public static bool RandomBool ()
     {
-        var value = UnityEngine.Random.Range(0, 2);
-
-        return value == 0;
+        return (UnityEngine.Random.Range(0, 2) == 1) ? true : false;
     }
 }

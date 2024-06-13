@@ -98,7 +98,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9129561575884848698, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
       propertyPath: maxTargetOffset
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
