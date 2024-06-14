@@ -27,7 +27,7 @@ public class CharacterGUI : MonoBehaviour
     public Character character;
     public float amoTextSize = 5, itemTextSize = 2;
     public Color plainTextColor = Color.white, backgroundColor = Color.white, importantColor = Color.white;
-    public Vector2 infoBoxOffset;
+    public Vector2 itemBoxOffset, characterBoxOffset;
     public float scale = 100, infoBoxPadding = 10, screenPadding = 10;
     Texture2D infoBoxTexture;
 
@@ -68,6 +68,8 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawAssignedCharacterUI (float scaleFactor)
     {
+        if (!character) return;
+
         GUIStyle style = new();
 
         style.normal.textColor = plainTextColor;
@@ -113,10 +115,12 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawNearbyItemsUI (GUIStyle style, float scaleFactor)
     {
+        if (!character) return;
+
         foreach (var item in character.inventory.withinRadius)
         {
             if (item == character.inventory.SelectedItem) continue;
-                DrawTextBox(item.model.name, item.transform.position, style, scaleFactor);
+                DrawTextBox(item.model.name, item.transform.position, style, itemBoxOffset * scaleFactor);
         }
 
         if (character.inventory.SelectedItem != null)
@@ -131,7 +135,7 @@ public class CharacterGUI : MonoBehaviour
     {
         var info = item.GetInfo("\n");
 
-        DrawTextBox(info, item.transform.position, style, scaleFactor);
+        DrawTextBox(info, (Vector2)item.transform.position, style, itemBoxOffset * scaleFactor);
     }
 
     public void DrawAllCharacterUI (GUIStyle style, float scaleFactor)
@@ -153,17 +157,17 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawCharacterUI (Character character, GUIStyle style, float scaleFactor)
     {
-        DrawTextBox(character.GetInfo(), character.transform.position, style, scaleFactor);
+        DrawTextBox(character.GetInfo(), (Vector2)character.transform.position, style, characterBoxOffset * scaleFactor);
     }
 
-    public void DrawTextBox (string infoString, Vector3 pos,  GUIStyle style, float scaleFactor)
+    public void DrawTextBox (string infoString, Vector2 pos,  GUIStyle style, Vector2 offset = default)
     {
         var size = style.CalcSize(new GUIContent(infoString));
 
         var screenPos = Camera.main.WorldToScreenPoint(pos);
 
         //var guiPos = new Vector2(screenPos.x, Screen.height - screenPos.y) - (size / 2) + (infoBoxOffset * scaleFactor);
-        var guiPos = new Vector2(screenPos.x - size.x / 2, Screen.height - screenPos.y) + (infoBoxOffset * scaleFactor);
+        var guiPos = new Vector2(screenPos.x - size.x / 2, Screen.height - screenPos.y) + new Vector2(offset.x,-offset.y);
 
         GUI.Box(new Rect(guiPos.x, guiPos.y, size.x, size.y), infoString, style);
     }

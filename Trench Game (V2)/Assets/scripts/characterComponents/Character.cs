@@ -6,7 +6,7 @@ public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
     public PlayerController userController;
-    public AIController aiController;
+    public BotController aiController;
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
     Color startColor;
@@ -47,7 +47,7 @@ public class Character : MonoBehaviour
                 userController.enabled = value == CharacterType.localPlayer;
 
             if (aiController)
-                aiController.enabled = value == CharacterType.localNPC;
+                aiController.enabled = value == CharacterType.localBot;
 
             type = value;
         }
@@ -185,7 +185,15 @@ public class Character : MonoBehaviour
         if (inventory)
             inventory.DropAllItems();
 
-        RemoveCharacter();
+
+        if (Type != CharacterType.localPlayer)
+            RemoveCharacter();
+        else
+        {
+            transform.position = ChunkManager.Manager.GetRandomPos();
+            ResetCharacter();
+            Type = CharacterType.localPlayer;
+        }
     }
 
     public void RemoveCharacter ()
@@ -226,6 +234,6 @@ public class Character : MonoBehaviour
         none,
         localPlayer,
         remote,
-        localNPC
+        localBot
     }
 }

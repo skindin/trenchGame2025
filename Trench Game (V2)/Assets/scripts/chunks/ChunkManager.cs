@@ -109,15 +109,7 @@ public class ChunkManager : MonoBehaviour
         return adress;
     }
 
-    public Vector2 GetRandomPos ()
-    {
-        var x = UnityEngine.Random.Range(-worldSize, worldSize)/2;
-        var y = UnityEngine.Random.Range(-worldSize, worldSize)/2;
-
-        return new(x, y);
-    }
-
-    public Vector2 GetRandomPosMargin (float margin)
+    public Vector2 GetRandomPos (float margin = 0)
     {
         var edge = worldSize - margin;
 

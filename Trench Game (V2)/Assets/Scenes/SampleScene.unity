@@ -1036,7 +1036,7 @@ MonoBehaviour:
     maxPooled: 20
   active: []
   prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
-  container: {fileID: 0}
+  container: {fileID: 1284647723}
   squadRadius: 5
   squadSpawnInterval: 20
   botsPerSquad: 5
@@ -1224,7 +1224,7 @@ MonoBehaviour:
   itemDropRadius: 5
   dropInterval: 5
   dropTimer: 0
-  dropCount: 20
+  dropCount: 10
   dropOnStart: 1
   replaceCappedItems: 1
 --- !u!114 &1253392265 stripped
@@ -1243,6 +1243,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6931149930741630658, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
   m_PrefabInstance: {fileID: 986051951592155817}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1284647722
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1284647723}
+  m_Layer: 0
+  m_Name: characters
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1284647723
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284647722}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.1549501, y: -10.558813, z: 30.026146}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1293002177
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1829,7 +1860,8 @@ MonoBehaviour:
   plainTextColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundColor: {r: 0, g: 0, b: 0, a: 0.8}
   importantColor: {r: 0.33296537, g: 1, b: 0, a: 1}
-  infoBoxOffset: {x: 0, y: 5}
+  itemBoxOffset: {x: 0, y: -5}
+  characterBoxOffset: {x: 0, y: 8}
   scale: 0.015
   infoBoxPadding: 0.5
   screenPadding: 1
@@ -1882,11 +1914,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 2.6
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 18.43
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2010,3 +2042,4 @@ SceneRoots:
   - {fileID: 1526754501}
   - {fileID: 657836290}
   - {fileID: 291024281}
+  - {fileID: 1284647723}

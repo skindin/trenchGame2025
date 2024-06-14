@@ -10,7 +10,7 @@ public class CharacterManager : MonoBehaviour
     public Character prefab;
     public Transform container;
     public float squadRadius = 5, squadSpawnInterval = 20;
-    public int botsPerSquad = 5;
+    public int botsPerSquad = 5, spawnCap = 10;
     float lastSquadStamp = 0;
 
     public float TimeToSquadSpawn
@@ -75,7 +75,7 @@ public class CharacterManager : MonoBehaviour
         {
             if (Time.time - lastSquadStamp > squadSpawnInterval || (Time.time == 0 && spawnSquadOnStart))
             {
-                var pos = ChunkManager.Manager.GetRandomPosMargin(squadRadius);
+                var pos = ChunkManager.Manager.GetRandomPos(squadRadius);
                 SpawnBotSquad(pos);
                 lastSquadStamp = Time.time;
             }
@@ -84,17 +84,27 @@ public class CharacterManager : MonoBehaviour
 
     public void SpawnBotSquad (Vector2 pos)
     {
+        var amount = Mathf.Min(spawnCap - active.Count, botsPerSquad);
 
-
-        for (int i = 0; i < botsPerSquad; i++)
+        for (int i = 0; i < amount; i++)
         {
             var botPos = Random.insideUnitCircle * squadRadius + pos;
 
-            NewCharacter(botPos, Character.CharacterType.localNPC);
+            NewBot(botPos);
         }
     }
 
-    public Character NewCharacter (Vector2 pos, Character.CharacterType type)
+    public Character NewBot (Vector2 pos)
+    {
+        return NewCharacter(pos, Character.CharacterType.localBot);
+    }
+
+    public Character NewLocalPlayer(Vector2 pos)
+    {
+        return NewCharacter(pos, Character.CharacterType.localPlayer);
+    }
+
+    Character NewCharacter (Vector2 pos, Character.CharacterType type)
     {
         var newCharacter = pool.GetFromPool();
 

@@ -64,7 +64,7 @@ public class ItemManager : MonoBehaviour
 
         if (dropTimer >= dropInterval)
         {
-            var spawnPoint = ChunkManager.Manager.GetRandomPosMargin(itemDropRadius);
+            var spawnPoint = ChunkManager.Manager.GetRandomPos(itemDropRadius);
             SpawnDrop(spawnPoint);
             dropTimer = 0;
         }

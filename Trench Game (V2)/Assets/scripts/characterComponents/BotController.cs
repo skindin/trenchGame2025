@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 using System;
-using System.Drawing;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class AIController : MonoBehaviour
+public class BotController : MonoBehaviour
 {
     public Character character;
     public Vector2 visionBox;
