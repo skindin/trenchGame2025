@@ -12,7 +12,7 @@ public class Gun : Item
     public bool safetyOff = true,
         holdingTrigger = false,
         reloading = false,
-        maxRounds = false, //temporary, until i make the actual spawning script
+        startFull = true, //temporary, until i make the actual spawning script
         fired = false,
         drawBerrelPos = false;
 
@@ -60,7 +60,7 @@ public class Gun : Item
     {
         base.ItemAwake();
 
-        if (maxRounds)
+        if (startFull)
             rounds = GunModel.maxRounds;
         else
             rounds = 0;
@@ -163,7 +163,7 @@ public class Gun : Item
 
     void Reload ()
     {
-        rounds = reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
+        rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
     }
 
     //void TakeAllAmoFromThis (AmoReserve recievingReserve)
@@ -179,7 +179,7 @@ public class Gun : Item
     {
         if (reloading || reserve == null) return;
 
-        if (reserve.GetAmoAmount(GunModel.amoType) > 0)
+        if (rounds < GunModel.maxRounds && reserve.GetAmoAmount(GunModel.amoType) > 0)
         {
             reloading = true;
             reloadStartStamp = Time.time;

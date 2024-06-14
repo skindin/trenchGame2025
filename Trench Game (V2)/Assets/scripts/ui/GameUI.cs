@@ -36,7 +36,7 @@ public class GameUI : MonoBehaviour
         var padding = Mathf.RoundToInt(this.padding * height * scale);
 
         DrawFPS(rect,fontSize, padding);
-        DrawDropTimer(rect, fontSize, padding);
+        DrawTimers(rect, fontSize, padding);
     }
 
     public void DrawFPS (Rect rect, int fontSize, int padding)
@@ -54,7 +54,7 @@ public class GameUI : MonoBehaviour
         GUI.Label(rect, text, style);
     }
 
-    public void DrawDropTimer (Rect rect, int fontSize, int padding)
+    public void DrawTimers (Rect rect, int fontSize, int padding)
     {
         if (!ItemManager.Manager) return;
 
@@ -64,16 +64,24 @@ public class GameUI : MonoBehaviour
         style.normal.textColor = textColor;
         style.padding = new(padding, padding, padding, padding);
 
-        var timeLeft = ItemManager.Manager.dropInterval - ItemManager.Manager.dropTimer;
+        var timeLeft = ItemManager.Manager.TimeToNextDrop;
 
-        TimeSpan timeSpan = TimeSpan.FromSeconds(timeLeft);
-
-        // Format as "HH:mm:ss"
-        string formattedTime = timeSpan.ToString(@"mm\:ss");
+        string itemDropTimeText = GetTimeText(ItemManager.Manager.TimeToNextDrop) + " to item drop";
+        string squadSpawnTimeText = GetTimeText(CharacterManager.Manager.TimeToSquadSpawn) + " to squad spawn";
         //Console.WriteLine(formattedTime);  // Output: 01:01:01
 
-        var text = $"{formattedTime} until next drop";
+        var text = itemDropTimeText + "\n" + squadSpawnTimeText;
 
         GUI.Label(rect, text, style);
+    }
+
+    public string GetTimeText (float seconds)
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
+
+        // Format as "HH:mm:ss"
+        string timeText = timeSpan.ToString(@"mm\:ss");
+
+        return timeText;
     }
 }

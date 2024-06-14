@@ -13,7 +13,7 @@ public class Chunk
     public readonly List<Character> characters = new();
     public readonly List<Collider> colliders = new();
     public readonly List<Item> items = new();
-    public UnityEvent<Item> onNewItem = new();
+    public List<Inventory> listeningInventories = new();
 
 
 
@@ -41,12 +41,21 @@ public class Chunk
     public void AddItem(Item item)
     {
         items.Add(item);
-        onNewItem.Invoke(item);
+        foreach (var inventory in listeningInventories)
+        {
+            inventory.onItemAdded(item);
+        }
     }
 
     public void RemoveItem(Item item)
     {
         items.Remove(item);
+
+        foreach (var inventory in listeningInventories)
+        {
+            inventory.onItemRemoved?.Invoke(item);
+        }
+
         DestroyIfEmpty();
     }
 
@@ -69,7 +78,7 @@ public class Chunk
         items.Clear();
         characters.Clear();
         colliders.Clear();
-        onNewItem.RemoveAllListeners();
+        listeningInventories.Clear();
     }
 
     public T[] GetItems<T>() where T : Item

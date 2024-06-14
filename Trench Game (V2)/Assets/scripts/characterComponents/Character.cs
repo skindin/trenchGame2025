@@ -5,7 +5,7 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
-    public Controller userController;
+    public PlayerController userController;
     public AIController aiController;
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
@@ -184,6 +184,8 @@ public class Character : MonoBehaviour
 
         if (inventory)
             inventory.DropAllItems();
+
+        RemoveCharacter();
     }
 
     public void RemoveCharacter ()
@@ -212,6 +214,11 @@ public class Character : MonoBehaviour
         hp = maxHp;
 
         Type = CharacterType.none;
+    }
+
+    public virtual string GetInfo (string separator = " ")
+    {
+        return $"{hp:F1}/{maxHp:F1} hp";
     }
 
     public enum CharacterType

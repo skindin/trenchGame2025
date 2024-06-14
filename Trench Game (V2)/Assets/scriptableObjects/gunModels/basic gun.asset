@@ -16,7 +16,7 @@ MonoBehaviour:
   range: 20
   firingRate: 5
   reloadTime: 1
-  damageRate: 2
+  damageRate: 5
   maxPerFrame: 5
   maxRounds: 20
   reloadAnimRots: 3

@@ -37,6 +37,14 @@ public class ItemManager : MonoBehaviour
     public int dropCount = 10;
     public bool dropOnStart = false, replaceCappedItems = false;
 
+    public float TimeToNextDrop
+    {
+        get
+        {
+            return dropInterval - dropTimer;
+        }
+    }
+
     //WaitForSeconds wait;
 
     private void Awake()

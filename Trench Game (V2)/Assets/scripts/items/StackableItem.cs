@@ -53,15 +53,16 @@ public class StackableItem : Item
 
     public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
     {
-        base.Pickup(character, out wasPickedUp, out _);
-        CombineWithItems(character.inventory.items, out wasDestroyed);
+        wasPickedUp = true;
+        CombineWithItems(character.inventory.items, out wasDestroyed, false);
+        if (!wasDestroyed) base.Pickup(character, out wasPickedUp, out _);
     }
 
     public override void Drop() //just remember to run Drop() every time you spawn a new item!
     {
-        base.Drop();
-
         CombineAll();
+
+        base.Drop();
     }
 
     public bool CombineAll() //idk where to run this
@@ -81,18 +82,23 @@ public class StackableItem : Item
         return false;
     }
 
-    public bool CombineWithItems(List<Item> items, out bool wasDestroyed)
+    public bool CombineWithItems(List<Item> items, out bool wasDestroyed, bool testDist = true)
     {
         wasDestroyed = false;
 
         foreach (var item in items)
         {
+            if (item == this) continue;
+
             if (item is not StackableItem stackItem) continue;
 
             if (StackableModel != stackItem.StackableModel) continue;
 
-            var dist = Vector2.Distance(item.transform.position, transform.position);
-            if (dist > StackableModel.combineRadius) continue;
+            if (testDist)
+            {
+                var dist = Vector2.Distance(item.transform.position, transform.position);
+                if (dist > StackableModel.combineRadius) continue;
+            }
 
             int addend;
             if (StackableModel.limitAmount)

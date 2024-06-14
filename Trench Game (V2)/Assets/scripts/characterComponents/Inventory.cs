@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -10,7 +12,39 @@ public class Inventory : MonoBehaviour
     public List<Item> items = new();
     public List<Item> withinRadius = new();
     public Chunk[,] chunks = new Chunk[0,0];
-    public Item closestItem;
+    Item selectedItem;
+    public Action<Item> onItemAdded, onItemRemoved;
+
+    private void Awake()
+    {
+        onItemAdded = item => DetectItem(item);
+        onItemRemoved = item => withinRadius.Remove(item);
+    }
+
+    //public Action<Item> OnNewItem
+    //{
+    //    get => onNewItem;
+    //    set => onNewItem = value ?? (_ => { }); // Ensure the value is not null
+    //}
+
+    public Item SelectedItem
+    {
+        get
+        {
+            if (selectedItem && (selectedItem.wielder || !selectedItem.gameObject.activeInHierarchy))
+            {
+                selectedItem = null;
+            }
+
+            return selectedItem;
+        }
+
+        set
+        {
+            selectedItem = value;
+        }
+    }
+
     public bool debugLines = false;
 
     //private void Start()
@@ -20,7 +54,7 @@ public class Inventory : MonoBehaviour
 
     public void ResetInventory (bool dropAllItems = false)
     {
-        closestItem = null;
+        SelectedItem = null;
         var emptyChunkArray = new Chunk[0,0];
         AddChunkListeners(chunks, emptyChunkArray);
         chunks = emptyChunkArray;
@@ -85,7 +119,7 @@ public class Inventory : MonoBehaviour
 
             if (!found) //if new chunk is not within old chunks
             {
-                newChunk.onNewItem.AddListener(DetectItem);
+                newChunk.listeningInventories.Add(this);
             }
         }        
         
@@ -106,7 +140,7 @@ public class Inventory : MonoBehaviour
 
             if (!found) //if old chunk is not in new chunks
             {
-                oldChunk.onNewItem.RemoveListener(DetectItem);
+                oldChunk.listeningInventories.Remove(this);
             }
         }
     }
@@ -199,14 +233,17 @@ public class Inventory : MonoBehaviour
 
     public Item SelectClosest (Vector2 pos)
     {
-        closestItem = LogicAndMath.GetClosest(pos, withinRadius.ToArray(), item => item.transform.position, out _, null, null, selectionRad, debugLines);
-        return closestItem;
+        SelectedItem = LogicAndMath.GetClosest(pos, withinRadius.ToArray(), item => item.transform.position, out _, null, null, selectionRad, debugLines);
+        return SelectedItem;
     }
 
     public void PickupClosest ()
     {
-        if (closestItem)
-            PickupItem(closestItem);
+        if (SelectedItem)
+        {
+            PickupItem(SelectedItem);
+            SelectedItem = null;
+        }
     }
 
     private void OnDrawGizmos()
@@ -220,7 +257,7 @@ public class Inventory : MonoBehaviour
             {
                 Color color;
 
-                if (item == closestItem) color = Color.magenta;
+                if (item == SelectedItem) color = Color.magenta;
                 else color = Color.cyan;
 
                 GeoFuncs.MarkPoint(item.transform.position, .5f, color);
@@ -234,8 +271,10 @@ public class Inventory : MonoBehaviour
         {
             if (chunk == null) continue;
 
-            chunk.onNewItem.RemoveListener(DetectItem);
+            chunk.listeningInventories.Remove(this);
         }
+
+        SelectedItem = null;
     }
 
     //private void OnDestroy()

@@ -565,7 +565,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8503986705403083809, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8503986705403083809, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -577,15 +577,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8503986705403083809, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8503986705403083809, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8503986705403083809, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8503986705403083809, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1027,14 +1027,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824bd15d91dc7d546948a2a3d2ee72c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnSquads: 1
+  spawnSquadOnStart: 1
   pool:
     objects: []
     currentPooled: 0
     minPooled: 0
     maxPooled: 20
   active: []
-  prefab: {fileID: 0}
+  prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
   container: {fileID: 0}
+  squadRadius: 5
+  squadSpawnInterval: 20
+  botsPerSquad: 5
 --- !u!1001 &934589855
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1201,7 +1206,7 @@ MonoBehaviour:
       container: {fileID: 0}
       spawnCap: 20
       exceedsCap: 0
-    chance: 0
+    chance: 1
   - itemGroups:
     - prefab: {fileID: 4952939617605819681, guid: 6c5147f43a405a1428619ec3241444c4, type: 3}
       chance: 3
@@ -1214,7 +1219,7 @@ MonoBehaviour:
       container: {fileID: 0}
       spawnCap: 20
       exceedsCap: 0
-    chance: 1
+    chance: 0
   container: {fileID: 1526754501}
   itemDropRadius: 5
   dropInterval: 5
@@ -1821,7 +1826,7 @@ MonoBehaviour:
   character: {fileID: 1253392265}
   amoTextSize: 3
   itemTextSize: 2.5
-  plainText: {r: 1, g: 1, b: 1, a: 1}
+  plainTextColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundColor: {r: 0, g: 0, b: 0, a: 0.8}
   importantColor: {r: 0.33296537, g: 1, b: 0, a: 1}
   infoBoxOffset: {x: 0, y: 5}
@@ -1873,7 +1878,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 773299950840964071, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.x

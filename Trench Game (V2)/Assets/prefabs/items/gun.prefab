@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b9a3c47948680f4c88770e3eea24543, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultContainer: {fileID: 0}
   model: {fileID: 11400000, guid: 06016e4aa7d1214418b0540caeab9b97, type: 2}
   wielder: {fileID: 0}
   passivePickup: 0
@@ -52,10 +53,10 @@ MonoBehaviour:
   rounds: 1
   direction: {x: 1, y: 0}
   barrelPos: {x: 0, y: 1.1}
-  enabled: 1
+  safetyOff: 1
   holdingTrigger: 0
   reloading: 0
-  maxRounds: 1
+  startFull: 1
   fired: 0
   drawBerrelPos: 0
 --- !u!1 &6316052255433128907
@@ -130,7 +131,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
   m_FlipX: 0

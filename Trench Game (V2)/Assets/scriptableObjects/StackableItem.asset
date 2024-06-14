@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: StackableItem
   m_EditorClassIdentifier: 
   limitAmount: 0
-  maxAmount: 10
+  maxAmount: 1
   combineRadius: 1

@@ -26,28 +26,51 @@ public class CharacterGUI : MonoBehaviour
 
     public Character character;
     public float amoTextSize = 5, itemTextSize = 2;
-    public Color plainText = Color.white, backgroundColor = Color.white, importantColor = Color.white;
+    public Color plainTextColor = Color.white, backgroundColor = Color.white, importantColor = Color.white;
     public Vector2 infoBoxOffset;
     public float scale = 100, infoBoxPadding = 10, screenPadding = 10;
     Texture2D infoBoxTexture;
 
-    void OnGUI()
+    private void Awake()
     {
-        DrawInventoryGui();
-        DrawNearbyItems();
-
-        infoBoxTexture = new Texture2D(1,1);
-        //infoBoxTexture.SetPixels
+        infoBoxTexture = new Texture2D(1, 1);
     }
 
-    public void DrawInventoryGui ()
+    void OnGUI()
     {
-        //if (!character.gun) return; //technically should still draw the reserve but whatever
-
         var scaleFactor = Screen.height * scale;
+
+        var boxStyle = GetBoxStyle();
+
+        DrawNearbyItemsUI(boxStyle,scaleFactor);
+        DrawAllCharacterUI(boxStyle,scaleFactor);
+
+        DrawAssignedCharacterUI(scaleFactor);
+    }
+
+    public GUIStyle GetBoxStyle ()
+    {
+        GUI.backgroundColor = backgroundColor;
+
         GUIStyle style = new();
 
-        style.normal.textColor = plainText;
+        style.normal.textColor = plainTextColor;
+
+        var scaleFactor = Screen.height * scale;
+        style.alignment = TextAnchor.UpperCenter;
+        style.fontSize = Mathf.RoundToInt(itemTextSize * scaleFactor);
+        style.normal.background = infoBoxTexture;
+        var padding = Mathf.RoundToInt(infoBoxPadding * scaleFactor);
+        style.padding = new(padding, padding, padding, padding);
+
+        return style;
+    }
+
+    public void DrawAssignedCharacterUI (float scaleFactor)
+    {
+        GUIStyle style = new();
+
+        style.normal.textColor = plainTextColor;
 
         style.fontSize = Mathf.RoundToInt(amoTextSize * scaleFactor);
         style.alignment = TextAnchor.LowerRight;
@@ -60,11 +83,11 @@ public class CharacterGUI : MonoBehaviour
         int height = Screen.height;
 
         // Calculate the size of the text area
-        int rectWidth = width / 4;
-        int rectHeight = height * 2 / 100;
+        //int rectWidth = width / 4;
+        //int rectHeight = height * 2 / 100;
 
         // Position the rect in the lower right corner
-        Rect rect = new (width - rectWidth, height - rectHeight, rectWidth, rectHeight);
+        Rect rect = new (0, 0, width, height);
 
         string text = "";
         if (character.gun)
@@ -82,33 +105,25 @@ public class CharacterGUI : MonoBehaviour
         }
 
         GUI.Label(rect, text, style);
+
+        style.alignment = TextAnchor.LowerCenter;
+
+        GUI.Label(rect, character.GetInfo(), style);
     }
 
-    public void DrawNearbyItems ()
+    public void DrawNearbyItemsUI (GUIStyle style, float scaleFactor)
     {
-        GUI.backgroundColor = backgroundColor;
-
-        GUIStyle style = new();
-
-        style.normal.textColor = plainText;
-
-        var scaleFactor = Screen.height * scale;
-        style.alignment = TextAnchor.UpperCenter;
-        style.fontSize = Mathf.RoundToInt(itemTextSize * scaleFactor);
-        style.normal.background = infoBoxTexture;
-        var padding = Mathf.RoundToInt(infoBoxPadding * scaleFactor);
-        style.padding = new(padding, padding, padding, padding);
-
         foreach (var item in character.inventory.withinRadius)
         {
-            if (item == character.inventory.closestItem) continue;
+            if (item == character.inventory.SelectedItem) continue;
                 DrawTextBox(item.model.name, item.transform.position, style, scaleFactor);
         }
 
-        if (character.inventory.closestItem != null)
+        if (character.inventory.SelectedItem != null)
         {
             style.normal.textColor = importantColor;
-            DrawItemUI(character.inventory.closestItem, style, scaleFactor);
+            DrawItemUI(character.inventory.SelectedItem, style, scaleFactor);
+            style.normal.textColor = plainTextColor;
         }
     }
 
@@ -117,6 +132,28 @@ public class CharacterGUI : MonoBehaviour
         var info = item.GetInfo("\n");
 
         DrawTextBox(info, item.transform.position, style, scaleFactor);
+    }
+
+    public void DrawAllCharacterUI (GUIStyle style, float scaleFactor)
+    {
+
+        foreach (var chunk in ChunkManager.Manager.chunks)
+        {
+            if (chunk == null) continue;
+
+            foreach (var character in chunk.characters)
+            {
+                if (character == this.character)
+                    continue;
+
+                DrawCharacterUI(character, style, scaleFactor);
+            }
+        }
+    }
+
+    public void DrawCharacterUI (Character character, GUIStyle style, float scaleFactor)
+    {
+        DrawTextBox(character.GetInfo(), character.transform.position, style, scaleFactor);
     }
 
     public void DrawTextBox (string infoString, Vector3 pos,  GUIStyle style, float scaleFactor)

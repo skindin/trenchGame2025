@@ -32,7 +32,8 @@ public class Amo : StackableItem
     /// <param name="wasDestroyed"></param>
     public override void Pickup (Character character, out bool wasPickedup, out bool wasDestroyed)
     {
-        //base.Pickup(character);
+        //base.Pickup(character, out wasPickedup, out wasDestroyed);
+
         wasPickedup = wasDestroyed = false;
 
         if (character.reserve)

@@ -218,6 +218,16 @@ public class AIController : MonoBehaviour
                     pickupAmo = true;
             }
 
+            if (character.gun && character.reserve)
+            {
+                var deficit = character.gun.GunModel.maxRounds - character.gun.rounds;
+
+                if (deficit > 0 && character.reserve.GetAmoAmount(character.gun.GunModel.amoType) > 0)
+                {
+                    character.gun.StartReload();
+                }
+            }
+
             if (pickupAmo)
             {
                 TargetPos = closestAmo.transform.position;

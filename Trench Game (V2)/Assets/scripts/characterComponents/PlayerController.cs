@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Controller : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public Character character;
-    public static Controller active;
+    public static PlayerController active;
     public bool enableFill = false, drawEdgeDetection = false;
 
     // Start is called before the first frame update
@@ -89,10 +89,10 @@ public class Controller : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (character.gun.rounds <= 0)
-                {
-                    character.gun.StartReload();
-                }
+                //if (character.gun.rounds <= 0)
+                //{
+                //    character.gun.StartReload();
+                //}
             }
             else
             {
@@ -115,6 +115,11 @@ public class Controller : MonoBehaviour
             {
 
             }
+        }
+
+        if (character.gun && Input.GetKeyDown(KeyCode.E))
+        {
+            character.gun.StartReload();
         }
 
         if (Input.GetKeyDown(KeyCode.Q))
