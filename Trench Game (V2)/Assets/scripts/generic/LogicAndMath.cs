@@ -30,13 +30,13 @@ public static class LogicAndMath
         return Mathf.RoundToInt(MinMaxAvgConc(x, min, max, avg, conc));
     }
 
-    public static float GetListValueTotal<T> (List<T> list, Func<T,float> predicate)
+    public static float GetListValueTotal<T> (T[] list, Func<T,float> getValue)
     {
         float total = 0f;
 
         foreach (var item in list)
         {
-            total += predicate(item);
+            total += getValue(item);
         }
 
         return total;
@@ -46,7 +46,7 @@ public static class LogicAndMath
     {
         var itemValue = predicate(item);
 
-        var total = GetListValueTotal(list, predicate);
+        var total = GetListValueTotal(list.ToArray(), predicate);
 
         return itemValue / total;
     }
@@ -183,7 +183,7 @@ public static class LogicAndMath
         return output;
     }
 
-    public static int GetTotal<T> (IEnumerable<T> list, Func<T, bool> predicate)
+    public static int GetTotal<T> (T[] list, Func<T, bool> predicate)
     {
         int total = 0;
 
@@ -210,7 +210,7 @@ public static class LogicAndMath
 
         var idk = 0f;
 
-        var total = GetListValueTotal(list, predicate);
+        var total = GetListValueTotal(list.ToArray(), predicate);
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -336,5 +336,19 @@ public static class LogicAndMath
         }
 
         return result;
+    }
+
+    public static T[] FlattenArray<T>(T[,] multidimArray)
+    {
+        return multidimArray.Cast<T>().ToArray();
+    }
+
+    public static T[] FlattenArray<T>(T[][] jaggedArray)
+    {
+        //int size = Mathf.FloorToInt(GetListValueTotal(jaggedArray, obj => obj.Length));
+
+        //var flattenedArray = new T[size];
+
+        return jaggedArray.SelectMany(innerArray => innerArray).ToArray();
     }
 }

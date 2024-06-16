@@ -5,6 +5,7 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
+    public int id;
     public PlayerController userController;
     public BotController aiController;
     public SpriteRenderer sprite;
@@ -189,11 +190,14 @@ public class Character : MonoBehaviour
         if (Type != CharacterType.localPlayer)
             RemoveCharacter();
         else
-        {
-            transform.position = ChunkManager.Manager.GetRandomPos();
-            ResetCharacter();
-            Type = CharacterType.localPlayer;
-        }
+            RespawnCharacter(CharacterType.localPlayer);
+    }
+
+    public void RespawnCharacter (CharacterType type)
+    {
+        transform.position = ChunkManager.Manager.GetRandomPos();
+        ResetCharacter();
+        Type = type;
     }
 
     public void RemoveCharacter ()
@@ -224,9 +228,51 @@ public class Character : MonoBehaviour
         Type = CharacterType.none;
     }
 
-    public virtual string GetInfo (string separator = " ")
+    public virtual string InfoString (string separator = " ")
     {
         return $"{hp:F1}/{maxHp:F1} hp";
+    }
+
+    public virtual DataDict<object> Data
+    {
+        get
+        {
+            return new DataDict<object>(
+            (Naming.id, id),
+            (Naming.pos, new DataDict<float>((Naming.x, transform.position.x), (Naming.y, transform.position.y) )),
+            (Naming.maxHp, maxHp),
+            (Naming.hp, hp)
+            );
+        }
+    }
+
+    public virtual DataDict<object> PublicData
+    {
+        get
+        {
+            var publicData = Data;
+
+            if (gun)
+                DataDict<object>.Combine(ref publicData, (Naming.gun, gun.PublicData));
+
+            return publicData;
+        }
+    }
+
+    public virtual DataDict<object> PrivateData
+    {
+        get
+        {
+            var privateData = Data;
+
+            if (gun)
+                DataDict<object>.Combine(ref privateData, (Naming.gun, gun.PrivateData));
+
+            if (reserve)
+                DataDict<object>.Combine(ref privateData, (Naming.amoReserve, reserve.Data));
+
+            return privateData;
+        }
     }
 
     public enum CharacterType

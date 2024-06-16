@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
         //if (Time.timeScale > 0)
             Controls();
 
-        //if (Input.GetKeyDown(KeyCode.Space))
+        //if (Input.GestringDown(KeyCode.Space))
         //{
         //    if (Time.timeScale == 0) Time.timeScale = 1;
         //    else Time.timeScale = 0;
@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
         //    step = false;
         //}
 
-        //if (Input.GetKeyDown(KeyCode.Q))
+        //if (Input.GestringDown(KeyCode.Q))
         //{
         //    Time.timeScale = 10;
         //    step = true;
@@ -125,6 +125,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             character.inventory.DropPrevItem();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log(character.PrivateData.ToJson());
         }
     }
 

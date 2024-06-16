@@ -96,7 +96,7 @@ public class CharacterGUI : MonoBehaviour
         {
             if (character.gun.reloading)
                 text += "(Reloading)\n";
-            text += character.gun.GetInfo("\n");
+            text += character.gun.InfoString("\n");
         }
 
         if (character.reserve)
@@ -110,7 +110,7 @@ public class CharacterGUI : MonoBehaviour
 
         style.alignment = TextAnchor.LowerCenter;
 
-        GUI.Label(rect, character.GetInfo(), style);
+        GUI.Label(rect, character.InfoString(), style);
     }
 
     public void DrawNearbyItemsUI (GUIStyle style, float scaleFactor)
@@ -133,7 +133,7 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawItemUI (Item item, GUIStyle style, float scaleFactor)
     {
-        var info = item.GetInfo("\n");
+        var info = item.InfoString("\n");
 
         DrawTextBox(info, (Vector2)item.transform.position, style, itemBoxOffset * scaleFactor);
     }
@@ -157,7 +157,7 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawCharacterUI (Character character, GUIStyle style, float scaleFactor)
     {
-        DrawTextBox(character.GetInfo(), (Vector2)character.transform.position, style, characterBoxOffset * scaleFactor);
+        DrawTextBox(character.InfoString(), (Vector2)character.transform.position, style, characterBoxOffset * scaleFactor);
     }
 
     public void DrawTextBox (string infoString, Vector2 pos,  GUIStyle style, Vector2 offset = default)

@@ -67,6 +67,7 @@ public class BotController : MonoBehaviour
 
     private void Update()
     {
+
         //targetPos += Random.insideUnitCircle;
         //targetPos = ChunkManager.Manager.ClampPosToNearestChunk(targetPos);
         //var delta = targetPos - (Vector2)transform.position;

@@ -207,9 +207,9 @@ public class Gun : Item
             GeoFuncs.MarkPoint(transform.position + transform.rotation * barrelPos,.2f,Color.blue);
     }
 
-    public override string GetInfo(string separator = " ")
+    public override string InfoString(string separator = " ")
     {
-        var itemInfo = base.GetInfo();
+        var itemInfo = base.InfoString();
 
         var roundRatio = $"{rounds}/{GunModel.maxRounds}";
         var range = $"{GunModel.range:F1} m range";
@@ -224,6 +224,21 @@ public class Gun : Item
         //var result = itemInfo.Concat(gunInfo).ToArray();
 
         return string.Join(separator, array);
+    }
+
+    public override DataDict<object> PrivateData
+    {
+        get 
+        {
+            var data = base.PrivateData;
+                DataDict<object>.Combine(ref data,
+                (Naming.rounds, rounds),
+                (Naming.maxRounds, GunModel.maxRounds),
+                (Naming.amoType, GunModel.amoType.name)
+                );
+
+            return data;
+        }
     }
 
     public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)

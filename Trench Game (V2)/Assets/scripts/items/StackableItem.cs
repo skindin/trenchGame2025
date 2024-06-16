@@ -126,12 +126,25 @@ public class StackableItem : Item
         return false;
     }
 
-    public override string GetInfo(string separator = " ")
+    public override string InfoString(string separator = " ")
     {
-        var itemInfo = base.GetInfo(separator);
+        var itemInfo = base.InfoString(separator);
 
         var stackInfo = $"x{amount}";
 
         return itemInfo + separator + stackInfo;
+    }
+
+
+    public override DataDict<object> PrivateData
+    {
+        get
+        {
+            var data = base.PrivateData;
+
+            DataDict<object>.Combine(ref data, Naming.amount, amount);
+
+            return data;
+        }
     }
 }

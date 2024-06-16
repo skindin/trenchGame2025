@@ -3,8 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //no create asset menu, this is just a parent class
-public class ItemModel : ScriptableObject
+public abstract class ItemModel : ScriptableObject
 {
     //public int tier = 1;
     //public Item prefab;
+
+    public readonly List<ItemTags> Tag = new List<ItemTags>();
+
+    public enum ItemTags
+    {
+        resource,
+        weapon,
+        projectile,
+        gun,
+        amo,
+    }
 }

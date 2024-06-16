@@ -1040,6 +1040,7 @@ MonoBehaviour:
   squadRadius: 5
   squadSpawnInterval: 20
   botsPerSquad: 5
+  spawnCap: 10
 --- !u!1001 &934589855
 PrefabInstance:
   m_ObjectHideFlags: 0

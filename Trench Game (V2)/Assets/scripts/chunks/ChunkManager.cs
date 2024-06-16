@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -335,23 +336,34 @@ public class ChunkManager : MonoBehaviour
         if (chunks == default)
             chunks = ChunksFromBoxPosSize(pos, size);
 
-        T[] allObjects = new T[0];
+        var flattenedChunks = LogicAndMath.FlattenArray<Chunk>(chunks);
 
-        foreach (var chunk in chunks)
+        T[][] jaggedArray = new T[flattenedChunks.Length][];
+
+        for ( int i = 0; i < flattenedChunks.Length; i++ )
         {
-            if (chunk == null) continue;
+            var chunk = flattenedChunks[i];
+
+            if (chunk == null)
+            {
+                jaggedArray[i] = new T[0];
+                continue;
+            }
 
             if (debugLines)
                 DrawChunk(chunk, UnityEngine.Color.green);
 
             var objects = getObjList(chunk);
 
-            allObjects = allObjects.Concat(objects).ToArray();
+            jaggedArray[i] = objects;
         }
+
+
+        T[] allObjects = LogicAndMath.FlattenArray(jaggedArray);
 
         Func<T, bool> objCondition = obj => (condition == null || condition(obj)) && GeoFuncs.TestBoxPosSize(pos, size, obj.transform.position, debugLines);
 
-        return LogicAndMath.GetClosest<T>(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, Mathf.Infinity, debugLines);
+        return LogicAndMath.GetClosest(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, Mathf.Infinity, debugLines);
         //return closestBehavior;
     }
 }

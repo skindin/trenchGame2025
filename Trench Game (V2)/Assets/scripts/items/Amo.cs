@@ -57,6 +57,16 @@ public class Amo : StackableItem
         }
     }
 
+    public override DataDict<object> PublicData //probably don't need to add the type, because it's already in the name...
+    {
+        get
+        {
+            var data = base.PublicData;
+            DataDict<object>.Combine(ref data, Naming.amoType, AmoModel.name);
+            return data;
+        }
+    }
+
     //public override void ItemUpdate()
     //{
     //    base.ItemUpdate();

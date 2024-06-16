@@ -15,7 +15,22 @@ public class Chunk
     public readonly List<Item> items = new();
     public List<Inventory> listeningInventories = new();
 
+    readonly List<Bullet> bullets = new();
+    public List<Bullet> Bullets //this is not an efficient way to do this but whatever
+    {
+        get
+        {
+            bullets.Clear();
 
+            foreach (var bullet in ProjectileManager.Manager.activeBullets)
+            {
+                if (ChunkManager.Manager.PosToAdress(bullet.pos) == adress)
+                    bullets.Add(bullet);
+            }
+
+            return bullets;
+        }
+    }
 
     public Chunk (Vector2Int adress, int mapSize)
     {
