@@ -66,4 +66,10 @@ public class BotController1 : MonoBehaviour
 
         //if ()
     }
+
+    [System.Serializable]
+    public class DataForBot
+    {
+        
+    }
 }

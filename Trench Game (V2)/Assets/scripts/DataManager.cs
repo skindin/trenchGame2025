@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 using static DataManager;
 using static UnityEditor.Progress;
+using Newtonsoft.Json.Linq;
 
 public static class DataManager //might be better for all these data types to be structs...? but idk
 {
@@ -13,7 +15,7 @@ public static class DataManager //might be better for all these data types to be
         public int id, wielderId;
         public string modelName;
         public List<string> tags = new List<string>();
-        Vector2 pos;
+        Vector2Data pos;
 
         public BaseItemData(Item item)
         {
@@ -23,7 +25,7 @@ public static class DataManager //might be better for all these data types to be
 
             tags = LogicAndMath.GetValuesList(item.model.Tags, tag => tag.ToString());
 
-            pos = item.transform.position;
+            pos = new(item.transform.position);
             //modelData = new ItemModelData(item.model);
         }
     }
@@ -55,7 +57,7 @@ public static class DataManager //might be better for all these data types to be
     public class GunData : BaseItemData
     {
         public int rounds;
-        public Vector2 direction;
+        public Vector2Data direction;
         public float bulletSpeed, range, firingRate, reloadTime = 2, damageRate = 5;
         public int maxPerFrame = 5, maxRounds = 10, reloadAnimRots = 3;
         public string amoType;
@@ -64,7 +66,7 @@ public static class DataManager //might be better for all these data types to be
         public GunData (Gun gun) : base(gun)
         {
             rounds = gun.rounds;
-            direction = gun.direction;
+            direction = new(gun.direction);
 
             var model = gun.GunModel;
 
@@ -105,6 +107,7 @@ public static class DataManager //might be better for all these data types to be
         public int id;
         public string name;
         public float hp, maxHp;
+        public Vector2Data pos;
         public TGunData gun = null;
 
         public BaseCharacterData(Character character)
@@ -113,6 +116,7 @@ public static class DataManager //might be better for all these data types to be
             name = character.Name;
             hp = character.hp;
             maxHp = character.maxHp;
+            pos = new(character.transform.position);
         }
     }
 
@@ -176,9 +180,9 @@ public class JsonAble<T> where T : class
         //{
         //    return "{}";
         //}
-        //return JsonConvert.SerializeObject(this);
+        return JsonConvert.SerializeObject(this);
 
-        return "";
+        //return "";
     }
 
     public static T FromJson(string json)
@@ -187,11 +191,23 @@ public class JsonAble<T> where T : class
         {
             return null;
         }
-        //else
-        //{
-        //    return JsonConvert.DeserializeObject<T>(json);
-        //}
+        else
+        {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
 
-        return null;
+        //return null;
+    }
+}
+
+[System.Serializable]
+public struct Vector2Data
+{
+    public float x, y;
+
+    public Vector2Data(Vector2 vector)
+    {
+        x = vector.x;
+        y = vector.y;
     }
 }
