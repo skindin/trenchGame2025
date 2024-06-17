@@ -51,22 +51,21 @@ public class CharacterManager : MonoBehaviour
 
     void SetupPool ()
     {
-        pool.newFunc = () => Instantiate(prefab, container).GetComponent<Character>();
-
-        pool.disableAction = character =>
-        {
-            character.gameObject.SetActive(false);
-            //character.transform.parent = container;
-        };
-
-        pool.resetAction = character =>
-        {
-            character.ResetSelf();
-            character.gameObject.SetActive(true);
-            //item.transform.parent = container;
-        };
-
-        pool.removeAction = character => Destroy(character.gameObject, 0.0001f);
+        pool = new ObjectPool<Character>(pool.minPooled, pool.maxPooled,
+            newFunc: () => Instantiate(prefab, container).GetComponent<Character>(),
+            resetAction: character =>
+            {
+                character.ResetSelf();
+                character.gameObject.SetActive(true);
+                //item.transform.parent = container;
+            },
+            disableAction: character =>
+            {
+                character.gameObject.SetActive(false);
+                //character.transform.parent = container;
+            },
+            destroyAction: character => Destroy(character.gameObject, 0.0001f)
+            );
     }
 
     private void Update()

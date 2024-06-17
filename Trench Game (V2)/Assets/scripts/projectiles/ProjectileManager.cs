@@ -37,7 +37,7 @@ public class ProjectileManager : MonoBehaviour
             newFunc: () => new Bullet(),
             resetAction: null,
             disableAction: null,
-            removeAction: null
+            destroyAction: null
             );
     }
 

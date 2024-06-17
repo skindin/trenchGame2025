@@ -60,6 +60,8 @@ public class Chunk
         {
             inventory.onItemAdded(item);
         }
+
+        Debug.Log($"Item {item} was added to chunk {adress}");
     }
 
     public void RemoveItem(Item item)
@@ -72,6 +74,8 @@ public class Chunk
         }
 
         DestroyIfEmpty();
+
+        Debug.Log($"Item {item} was removed from chunk {adress}");
     }
 
     public void DestroyIfEmpty ()

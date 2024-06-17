@@ -79,7 +79,7 @@ public class Gun : Item
             return false;
         }
 
-        if (direction != Vector2.zero) Aim(direction);
+        Aim((direction == default) ? Vector2.up : direction);
 
         var fireDeltaTime = Time.time - lastFireStamp;
 
@@ -188,9 +188,9 @@ public class Gun : Item
 
     public void Aim (Vector2 direction)
     {
-        this.direction = direction;
-
         if (reloading) return;
+
+        this.direction = direction;
 
         var angle = Vector2.SignedAngle(Vector2.up, direction);
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -248,9 +248,9 @@ public class Gun : Item
         reserve = character.reserve;
     }
 
-    public override void Drop()
+    public override void Drop(Vector2 pos)
     {
-        base.Drop();
+        base.Drop(pos);
 
         reserve = null;
         reloading = false;

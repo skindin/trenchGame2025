@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,26 +29,18 @@ public class StackableItem : Item
     public override void ResetItem()
     {
         base.ResetItem();
-
-        //amount = 1; //idk why the fuck this was here
+        // Removed unnecessary initialization
     }
 
     public override void ItemAwake()
     {
         base.ItemAwake();
 
-        if (startFull) 
+        if (startFull)
             amount = StackableModel.maxAmount;
-        else 
+        else
             amount = Mathf.Clamp(amount, 0, StackableModel.maxAmount);
     }
-
-    //public override void ItemStart()
-    //{
-    //    base.ItemStart();
-
-    //    Combine();
-    //}
 
     public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
     {
@@ -58,14 +49,13 @@ public class StackableItem : Item
         if (!wasDestroyed) base.Pickup(character, out wasPickedUp, out _);
     }
 
-    public override void Drop() //just remember to run Drop() every time you spawn a new item!
+    public override void Drop(Vector2 pos)
     {
         CombineAll();
-
-        base.Drop();
+        base.Drop(pos);
     }
 
-    public bool CombineAll() //idk where to run this
+    public bool CombineAll()
     {
         var min = transform.position - Vector3.one * StackableModel.combineRadius;
         var max = transform.position + Vector3.one * StackableModel.combineRadius;
@@ -97,18 +87,21 @@ public class StackableItem : Item
             if (testDist)
             {
                 var dist = Vector2.Distance(item.transform.position, transform.position);
-                if (dist > StackableModel.combineRadius) continue;
+                if (dist > StackableModel.combineRadius) 
+                    continue;
+                else
+                    Mathf.Abs(dist);
             }
 
             int addend;
             if (StackableModel.limitAmount)
-            { 
+            {
                 var spaceLeft = StackableModel.maxAmount - stackItem.amount;
                 addend = Mathf.Min(amount, spaceLeft);
             }
             else
             {
-                addend = amount; 
+                addend = amount;
             }
 
             stackItem.amount += addend;
@@ -116,6 +109,7 @@ public class StackableItem : Item
 
             if (amount == 0)
             {
+                //Debug.Log($"Destroying item: {this.name}");
                 DestroyItem();
                 wasDestroyed = true;
             }
@@ -126,25 +120,21 @@ public class StackableItem : Item
         return false;
     }
 
+    //void RemoveItemReferences()
+    //{
+    //    var chunk = ChunkManager.Manager.GetChunkContainingItem(this);
+    //    if (chunk != null)
+    //    {
+    //        chunk.items.Remove(this);
+    //    }
+
+    //    ItemManager.Manager.RemoveItem(this);
+    //}
+
     public override string InfoString(string separator = " ")
     {
         var itemInfo = base.InfoString(separator);
-
         var stackInfo = $"x{amount}";
-
         return itemInfo + separator + stackInfo;
     }
-
-
-    //public override DataDict<object> PrivateData
-    //{
-    //    get
-    //    {
-    //        var data = base.PrivateData;
-
-    //        DataDict<object>.Combine(ref data, Naming.amount, amount);
-
-    //        return data;
-    //    }
-    //}
 }

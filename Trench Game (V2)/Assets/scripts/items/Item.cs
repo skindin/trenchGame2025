@@ -11,7 +11,7 @@ public class Item : MonoBehaviour
     public Character wielder;
     //public bool currentlyHeld = false;
     public static List<Item> all = new();
-    Chunk chunk;
+    Chunk chunk = null;
     public Chunk Chunk
     {
         get
@@ -21,7 +21,11 @@ public class Item : MonoBehaviour
 
         set
         {
-            if (chunk == value) return;
+            if (chunk == value)
+            {
+                Debug.Log($"Item {this} chunk was already {(chunk == null ? "null" : $"chunk {chunk.adress}")}");
+                return;
+            }
 
             if (chunk != null)
             {
@@ -33,6 +37,8 @@ public class Item : MonoBehaviour
                 value.AddItem(this);
             }
             chunk = value;
+
+            Debug.Log($"Item {this} chunk was set to {(value == null ? "null" : $"Chunk {chunk.adress}")}");
         }
     }
 
@@ -49,13 +55,14 @@ public class Item : MonoBehaviour
 
     public virtual void ItemAwake ()
     {
-        all.Add(this);
+        if (!all.Contains(this))
+            all.Add(this);
     }
 
     private void Start()
     {
-        if (!wielder)
-            UpdateChunk();
+        //if (!wielder)
+        //    UpdateChunk();
 
         ItemStart();
     }
@@ -111,19 +118,19 @@ public class Item : MonoBehaviour
     /// <summary>
     /// Returns true if the item has been removed from the world
     /// </summary>
-    public virtual void Drop ()
+    public virtual void Drop (Vector2 pos)
     {
         wielder = null;
-        UpdateChunk();
 
         transform.SetParent(defaultContainer);
+        transform.position = pos;
         transform.rotation = Quaternion.identity;
+        UpdateChunk();
     }
 
     public virtual void DestroyItem ()
     {
         //destroy logic here shruggin emoji
-        Chunk = null;
         ItemManager.Manager.RemoveItem(this);
     }
 

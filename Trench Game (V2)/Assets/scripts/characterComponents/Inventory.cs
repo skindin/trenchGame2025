@@ -79,6 +79,15 @@ public class Inventory : MonoBehaviour
             for (int i = 0; i < chunk.items.Count; i++)
             {
                 var item = chunk.items[i];
+
+                if (!item.gameObject.activeSelf)
+                {
+                    Debug.DrawLine(item.transform.position, transform.position, Color.red);
+                    GeoFuncs.MarkPoint(item.transform.position, 1, Color.red);
+                    GeoFuncs.MarkPoint(transform.position, 1, Color.red);
+                    //Debug.LogError($"Item {item} isn't active but is refferenced by chunk {chunk.adress}");
+                }
+
                 DetectItem(item);
 
                 if (!chunk.items.Contains(item)) i--;
@@ -207,7 +216,9 @@ public class Inventory : MonoBehaviour
             character.gun = null;
         }
 
-        item.Drop();
+        //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;
+        var pos = character.transform.position;
+        item.Drop(pos);
 
         items.Remove(item);
         //withinRadius.Add(item); //its already being added by the chunk event dipshit
@@ -218,6 +229,7 @@ public class Inventory : MonoBehaviour
         for (int i = 0; i < items.Count; i++)
         {
             var item = items[0];
+
             DropItem(item);
         }
     }

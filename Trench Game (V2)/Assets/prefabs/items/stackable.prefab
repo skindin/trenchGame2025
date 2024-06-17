@@ -97,9 +97,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3485095c9b8995448a2c661b1e2d4ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   defaultContainer: {fileID: 0}
   model: {fileID: 11400000, guid: e81f89ae81316ab46a51d54288a79395, type: 2}
   wielder: {fileID: 0}
-  passivePickup: 0
+  passivePickup: 1
   amount: 1
   startFull: 1

@@ -83,17 +83,16 @@ public class Character : MonoBehaviour
         collider.onHit = bullet => Damage(bullet.damage);
     }
 
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.Space))
-        {
-            Debug.Log(DataManager.GetPrivateCharacterData(this).ToJson());
-        }
-        else if(Input.GetKey(KeyCode.LeftShift))
-        {
-            DataManager.GetPrivateCharacterData(this).ToJson();
-        }
-    }
+    //private void Update()
+    //{
+    //    if (Input.GetKey(KeyCode.Space))
+    //    {
+    //        if (Input.GetKey(KeyCode.LeftShift))
+    //            DataManager.GetPrivateCharacterData(this);
+    //        else
+    //            DataManager.GetPrivateCharacterData(this).ToJson();
+    //    }
+    //}
 
     public void Damage (float hp)
     {

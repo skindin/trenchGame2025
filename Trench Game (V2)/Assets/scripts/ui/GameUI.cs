@@ -12,7 +12,7 @@ public class GameUI : MonoBehaviour
 
     private void Update()
     {
-        deltaTime = Time.deltaTime;
+        deltaTime = Time.unscaledDeltaTime;
     }
 
     private void OnGUI()

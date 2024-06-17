@@ -5,6 +5,8 @@ using System.Linq;
 
 public class AmoReserve : MonoBehaviour
 {
+    public Character character;
+
     public List<AmoPool> amoPools = new();
 
     public int AddAmo(AmoType type, int amount)
@@ -24,7 +26,12 @@ public class AmoReserve : MonoBehaviour
         var typeReserve = amoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
-            return typeReserve.RemoveAmo(amount);
+            var leftOver = typeReserve.RemoveAmo(amount);
+
+            if (character.inventory)
+                character.inventory.DetectItems(); //when they reload, refill reserve
+
+            return leftOver;
         }
 
         Debug.Log("Reserve doesn't contain amo of type " + type.name);

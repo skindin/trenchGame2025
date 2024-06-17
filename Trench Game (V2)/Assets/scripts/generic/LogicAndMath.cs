@@ -78,32 +78,15 @@ public static class LogicAndMath
         return GetItems(allPairs, x => x.Item2 > 0);
     }
 
-    public static (T, int)[] GetOccurancePairs<T>(List<T> list, int count, Func<T, float> chancePredicate, Func<T, int> maxOccurancePredicate, bool onlyReturnApplicable = true, bool enforceCount = false)
+    public static (T, int)[] GetOccurancePairs<T>(List<T> list, int count, Func<T, float> getChance, Func<T, int> getMaxOccurance, bool onlyReturnApplicable = true, bool enforceCount = false)
     {
         T[] results = new T[count];
 
         for (int i = 0; i < results.Length; i++)
         {
-            //T result;
-            //if (enforceCount)
-            //{
-            //    bool condition(T x) => GetTotal(results, y => x.Equals(y)) < maxOccurancePredicate(x);
-            //    result = GetRandomItemFromListValuesWithCondition(UnityEngine.Random.value, list, chancePredicate, condition);
-            //}
-            //else
-            //{
-            //    result = GetRandomItemFromListValues(UnityEngine.Random.value, list, chancePredicate);
-            //    var total = GetTotal(results, x => result.Equals(x));
-            //    var max = maxOccurancePredicate(result);
-            //    if (total >= max)
-            //    {
-            //        result = default;
-            //    }
-            //}
-
-            T result = GetRandomItemFromListValues(UnityEngine.Random.value, list, chancePredicate);
+            T result = GetRandomItemFromListValues(UnityEngine.Random.value, list, getChance);
             var total = GetTotal(results, x => result.Equals(x));
-            var max = maxOccurancePredicate(result);
+            var max = getMaxOccurance(result);
             if (total >= max)
             {
                 result = default;
@@ -120,7 +103,8 @@ public static class LogicAndMath
 
             allPairs[i].Item1 = item;
 
-            int occurances = GetTotal(results, x => item.Equals(x));
+            int occurances = GetTotal(results,x =>{
+                     return item.Equals(x); });
 
             allPairs[i].Item2 = occurances;
         }

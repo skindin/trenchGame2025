@@ -48,7 +48,7 @@ public class ChunkManager : MonoBehaviour
         newFunc: () => new Chunk(),
         resetAction: chunk => chunk.Reset(),
         disableAction: null,
-        removeAction: null
+        destroyAction: null
         );
 
         InstantiateChunks();

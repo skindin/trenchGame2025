@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class CharacterGUI : MonoBehaviour
 {
@@ -120,6 +121,13 @@ public class CharacterGUI : MonoBehaviour
         foreach (var item in character.inventory.withinRadius)
         {
             if (item == character.inventory.SelectedItem) continue;
+
+            if (item.Chunk == null)
+                throw new Exception($"{item.name} is not in a chunk");
+
+            if (!item.gameObject.activeSelf)
+                throw new Exception($"{item.name} is disabled");
+
                 DrawTextBox(item.model.name, item.transform.position, style, itemBoxOffset * scaleFactor);
         }
 

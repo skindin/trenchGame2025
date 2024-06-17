@@ -89,7 +89,7 @@ public class BotController : MonoBehaviour
     public void SoldierLogic ()
     {
         //closestEnemy = FindClosestCharacterWithinChunks<Character>(chunks);
-        closestEnemy = FindClosestCharacter<Character>(character => character != this.character && (this.character.gun || character.gun));
+        closestEnemy = FindClosestCharacter<Character>(character => character != this.character && (character.gun || this.character.gun));
 
         if (targetCollider && !targetCollider.gameObject.activeInHierarchy) 
             targetCollider = null;
