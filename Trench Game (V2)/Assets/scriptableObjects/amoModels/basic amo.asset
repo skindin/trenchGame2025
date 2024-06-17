@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe00c31931bd6c64cb89db1a34915041, type: 3}
   m_Name: basic amo
   m_EditorClassIdentifier: 
+  Tags: 0000000004000000
   limitAmount: 0
   maxAmount: 50
   combineRadius: 1

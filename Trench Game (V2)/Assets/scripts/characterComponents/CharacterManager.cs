@@ -9,7 +9,7 @@ public class CharacterManager : MonoBehaviour
     public List<Character> active = new();
     public Character prefab;
     public Transform container;
-    public float squadRadius = 5, squadSpawnInterval = 20;
+    public float squadRadius = 5, squadSpawnInterval = 20, respawnWait = .5f;
     public int botsPerSquad = 5, spawnCap = 10;
     float lastSquadStamp = 0;
 
@@ -61,7 +61,7 @@ public class CharacterManager : MonoBehaviour
 
         pool.resetAction = character =>
         {
-            character.ResetCharacter();
+            character.ResetSelf();
             character.gameObject.SetActive(true);
             //item.transform.parent = container;
         };
@@ -124,5 +124,26 @@ public class CharacterManager : MonoBehaviour
 
         pool.AddToPool(character);
         character.Chunk = null;
+    }
+
+    public void StartRespawn (Character character)
+    {
+        StartCoroutine(RespawnCharacter(character));
+    }
+
+    IEnumerator RespawnCharacter (Character character)
+    {
+        var type = character.Type;
+
+        character.gameObject.SetActive(false);
+        character.ResetSelf();
+
+        yield return new WaitForSeconds(respawnWait);
+
+        character.gameObject.SetActive(true);
+        character.SetPos(ChunkManager.Manager.GetRandomPos());
+        character.Type = type;
+
+        character.UpdateChunk();
     }
 }

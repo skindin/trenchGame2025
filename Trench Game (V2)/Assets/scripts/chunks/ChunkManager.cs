@@ -32,8 +32,8 @@ public class ChunkManager : MonoBehaviour
     //public float worldSize = 100;
     //public int chunkArraySize = 5, mapSize = 10;
     public float chunkSize = 10, maxWorldSize = 100;
-    float worldSize;
-    int chunkArraySize;
+    public float worldSize;
+    public int chunkArraySize;
 
     public Chunk[,] chunks;
     //public int maxChunksPooled = 10;

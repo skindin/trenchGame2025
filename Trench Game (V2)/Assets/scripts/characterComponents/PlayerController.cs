@@ -127,10 +127,10 @@ public class PlayerController : MonoBehaviour
             character.inventory.DropPrevItem();
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log(DataManager.GetPrivateCharacterData(character).ToJson());
-        }
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Debug.Log(DataManager.GetPrivateCharacterData(character).ToJson());
+        //}
     }
 
     //List<Chunk> chunks = new();

@@ -23,7 +23,7 @@ public static class DataManager //might be better for all these data types to be
             modelName = item.model.name;
             wielderId = item.wielder.id;
 
-            tags = LogicAndMath.GetValuesList(item.model.Tags, tag => tag.ToString());
+            tags = LogicAndMath.GetValuesList(item.model.Tags, tags, tag => tag.ToString());
 
             pos = new(item.transform.position);
             //modelData = new ItemModelData(item.model);
@@ -97,6 +97,23 @@ public static class DataManager //might be better for all these data types to be
         return (TData)constructor.Invoke(new object[] { item });
     }
 
+    public static BaseItemData GetItemData(Item item)
+    {
+        if (item is Gun gun)
+        {
+            return new GunData(gun);
+        }
+        else if (item is Amo amo)
+        {
+            return new AmoData(amo);
+        }
+        else
+        {
+            return GetItemData<Item, BaseItemData>(item);
+        }
+    }
+
+
     //public static TData GetData<TItem, TData>(TItem item, Type dataType) where TItem : Item where TData : ItemData
     //{
     //    return (TData)Activator.CreateInstance(dataType, item);
@@ -109,6 +126,7 @@ public static class DataManager //might be better for all these data types to be
         public float hp, maxHp;
         public Vector2Data pos;
         public TGunData gun = null;
+        //public bool reloading;
 
         public BaseCharacterData(Character character)
         {
@@ -117,16 +135,40 @@ public static class DataManager //might be better for all these data types to be
             hp = character.hp;
             maxHp = character.maxHp;
             pos = new(character.transform.position);
+            //reloading = character.gun && character.gun.reloading;
         }
     }
 
     public class PrivateCharacterData : BaseCharacterData<GunData>
     {
+        public Dictionary<string,AmoReserveData> amoReserve = new();
+
         public PrivateCharacterData (Character character) : base(character)
         {
             if (character.gun)
                 gun = GetItemData<Gun, GunData>(character.gun);
+
+            if (character.reserve)
+            {
+                foreach (var pool in character.reserve.amoPools)
+                {
+                    amoReserve.Add(pool.type.name, new(pool));
+                }
+            }
         }
+
+        [System.Serializable]
+        public class AmoReserveData
+        {
+            public int rounds, maxRounds;
+
+            public AmoReserveData(AmoPool pool)
+            {
+                rounds = pool.rounds;
+                maxRounds = pool.maxRounds;
+            }
+        }
+
     }
 
     public static PrivateCharacterData GetPrivateCharacterData(Character character)

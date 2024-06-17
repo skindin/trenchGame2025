@@ -8,7 +8,7 @@ public abstract class ItemModel : ScriptableObject
     //public int tier = 1;
     //public Item prefab;
 
-    public readonly List<ItemTags> Tags = new List<ItemTags>();
+    public List<ItemTags> Tags = new List<ItemTags>();
 
     public enum ItemTags
     {

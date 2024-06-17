@@ -7,6 +7,8 @@ public class BotController1 : MonoBehaviour
 {
     public Character character;
     public Vector2 visionBox = Vector2.one * 10;
+    public DataForBot forBot;
+
     public void SendData ()
     {
         var chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
@@ -17,59 +19,39 @@ public class BotController1 : MonoBehaviour
         {
             if (chunk == null) continue;
 
-            var itemData = new DataDict<object>(chunk.items.Count);
-            for (var i = 0; i < chunk.items.Count; i++) //might have to also add a count key to the dictionary... shruggin emoji
-            {
-                var item = chunk.items[i];
-
-                DataDict<object>.Combine(ref itemData, i.ToString(), item.PublicData);
-            }
-            DataDict< object>.Combine(ref data, Naming.items, itemData);
-
-
-            var characterData = new DataDict<object>(chunk.characters.Count);
-            for (var i = 0; i < chunk.characters.Count; i++) //might have to also add a count key to the dictionary... shruggin emoji
-            {
-                var character = chunk.items[i];
-
-                DataDict<object>.Combine(ref itemData, i.ToString(), character.PublicData);
-            }
-            DataDict<object>.Combine(ref data, Naming.characters, characterData);
-
-            var bullets = chunk.Bullets; //put this out here because it's gonna test every active bullet if it's within this chunk every time this is called
-            var bulletData = new DataDict<object>(bullets.Count);
-            for (int i = 0; i < bullets.Count; i++)
-            {
-                var bullet = bullets[i];
-                DataDict<object>.Combine(ref bulletData, i.ToString(), bullet.Data);
-            }
-
-            DataDict<object>.Combine(ref data, Naming.bullets, bulletData);
-
-            DataDict<object>.Combine(ref data, (Naming.self, character.PrivateData));
+            LogicAndMath.GetValuesList(chunk.items, forBot.items, item => DataManager.GetItemData(item), item => GeoFuncs.TestBoxPosSize(transform.position,visionBox,item.transform.position));
+            LogicAndMath.GetValuesList(chunk.characters, forBot.characters, character => DataManager.GetPublicCharacterData(character), character => GeoFuncs.TestBoxPosSize(transform.position, visionBox, character.transform.position));
+            //LogicAndMath.GetValuesList(chunk.Bullets, forBot.bullets, bullet => )
 
             //should implement bullets but whatever
         }
+
+        forBot.self = DataManager.GetPrivateCharacterData(character);
     }
 
-    public void Respond (string json)
-    {
-        var data = DataDict<object>.JsonToObj(json);
+    //public void Respond (string json)
+    //{
+    //    var data = DataDict<object>.JsonToObj(json);
 
-        if (data.TryKey(Naming.dir, out object moveData) && 
-            moveData is DataDict<float> moveDirection &&
-            moveDirection.TryKey(Naming.x, out var x) && 
-            moveDirection.TryKey(Naming.y, out var y))
-        {
-            character.MoveInDirection(new(x,y));
-        }
+    //    if (data.TryKey(Naming.dir, out object moveData) && 
+    //        moveData is DataDict<float> moveDirection &&
+    //        moveDirection.TryKey(Naming.x, out var x) && 
+    //        moveDirection.TryKey(Naming.y, out var y))
+    //    {
+    //        character.MoveInDirection(new(x,y));
+    //    }
 
-        //if ()
-    }
+    //    //if ()
+    //}
 
     [System.Serializable]
-    public class DataForBot
+    public class DataForBot : JsonAble<DataForBot>
     {
-        
+        readonly public List<DataManager.PublicCharacterData> characters = new();
+        readonly public List<DataManager.BaseItemData> items = new();
+
+        //readonly public List<Bullet> bullets = new();
+
+        public DataManager.PrivateCharacterData self;
     }
 }

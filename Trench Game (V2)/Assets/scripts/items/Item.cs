@@ -143,24 +143,24 @@ public class Item : MonoBehaviour
         return model.name;// { $"Tier {model.tier}" };
     }
 
-    public virtual DataDict<object> PublicData //to be used when observing an item that another character is holding
-    {
-        get
-        {
-            return new(
-            (Naming.id, id),
-            (Naming.name, model.name),
-            (Naming.pos, new DataDict<float>((Naming.x, transform.position.x), (Naming.y, transform.position.y))),
-            (Naming.wielderId, (wielder) ? wielder.id : -1)
-            );
-        }
-    }
+    //public virtual DataDict<object> PublicData //to be used when observing an item that another character is holding
+    //{
+    //    get
+    //    {
+    //        return new(
+    //        (Naming.id, id),
+    //        (Naming.name, model.name),
+    //        (Naming.pos, new DataDict<float>((Naming.x, transform.position.x), (Naming.y, transform.position.y))),
+    //        (Naming.wielderId, (wielder) ? wielder.id : -1)
+    //        );
+    //    }
+    //}
 
-    public virtual DataDict<object> PrivateData //to be used when observing an item not being held or being held by wielder
-    {
-        get
-        {
-            return PublicData;
-        }
-    }
+    //public virtual DataDict<object> PrivateData //to be used when observing an item not being held or being held by wielder
+    //{
+    //    get
+    //    {
+    //        return PublicData;
+    //    }
+    //}
 }

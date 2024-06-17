@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class Character : MonoBehaviour
 {
@@ -82,7 +83,17 @@ public class Character : MonoBehaviour
         collider.onHit = bullet => Damage(bullet.damage);
     }
 
-
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            Debug.Log(DataManager.GetPrivateCharacterData(this).ToJson());
+        }
+        else if(Input.GetKey(KeyCode.LeftShift))
+        {
+            DataManager.GetPrivateCharacterData(this).ToJson();
+        }
+    }
 
     public void Damage (float hp)
     {
@@ -130,7 +141,7 @@ public class Character : MonoBehaviour
         //transform.position += d * Time.deltaTime;
     }
 
-    void SetPos (Vector2 pos) //this would be the rpc
+    public void SetPos (Vector2 pos) //this would be the rpc
     {
         transform.position = pos;
 
@@ -189,26 +200,21 @@ public class Character : MonoBehaviour
 
 
         if (Type != CharacterType.localPlayer)
-            RemoveCharacter();
+            RemoveSelf();
         else
-            RespawnCharacter(CharacterType.localPlayer);
+            CharacterManager.Manager.StartRespawn(this);
     }
 
-    public void RespawnCharacter (CharacterType type)
-    {
-        transform.position = ChunkManager.Manager.GetRandomPos();
-        ResetCharacter();
-        Type = type;
-    }
 
-    public void RemoveCharacter ()
+
+    public void RemoveSelf ()
     {
         CharacterManager.Manager.RemoveCharacter(this);
         if (inventory)
             inventory.OnRemoved();
     }
 
-    public void ResetCharacter (bool clearItems = false) //clearItems parameter in case I need to remove character without dropping it's items
+    public void ResetSelf (bool clearItems = false) //clearItems parameter in case I need to remove character without dropping it's items
     {
         //reset code
         digging = filling = constantDig = constantDetect =  shooting = false;
@@ -234,47 +240,47 @@ public class Character : MonoBehaviour
         return $"{hp:F1}/{maxHp:F1} hp";
     }
 
-    public virtual DataDict<object> Data
-    {
-        get
-        {
-            return new DataDict<object>(
-            (Naming.id, id),
-            (Naming.pos, new DataDict<float>((Naming.x, transform.position.x), (Naming.y, transform.position.y) )),
-            (Naming.maxHp, maxHp),
-            (Naming.hp, hp)
-            );
-        }
-    }
+    //public virtual DataDict<object> Data
+    //{
+    //    get
+    //    {
+    //        return new DataDict<object>(
+    //        (Naming.id, id),
+    //        (Naming.pos, new DataDict<float>((Naming.x, transform.position.x), (Naming.y, transform.position.y) )),
+    //        (Naming.maxHp, maxHp),
+    //        (Naming.hp, hp)
+    //        );
+    //    }
+    //}
 
-    public virtual DataDict<object> PublicData
-    {
-        get
-        {
-            var publicData = Data;
+    //public virtual DataDict<object> PublicData
+    //{
+    //    get
+    //    {
+    //        var publicData = Data;
 
-            if (gun)
-                DataDict<object>.Combine(ref publicData, (Naming.gun, gun.PublicData));
+    //        if (gun)
+    //            DataDict<object>.Combine(ref publicData, (Naming.gun, gun.PublicData));
 
-            return publicData;
-        }
-    }
+    //        return publicData;
+    //    }
+    //}
 
-    public virtual DataDict<object> PrivateData
-    {
-        get
-        {
-            var privateData = Data;
+    //public virtual DataDict<object> PrivateData
+    //{
+    //    get
+    //    {
+    //        var privateData = Data;
 
-            if (gun)
-                DataDict<object>.Combine(ref privateData, (Naming.gun, gun.PrivateData));
+    //        if (gun)
+    //            DataDict<object>.Combine(ref privateData, (Naming.gun, gun.PrivateData));
 
-            if (reserve)
-                DataDict<object>.Combine(ref privateData, (Naming.amoReserve, reserve.Data));
+    //        if (reserve)
+    //            DataDict<object>.Combine(ref privateData, (Naming.amoReserve, reserve.Data));
 
-            return privateData;
-        }
-    }
+    //        return privateData;
+    //    }
+    //}
 
     public enum CharacterType
     {
