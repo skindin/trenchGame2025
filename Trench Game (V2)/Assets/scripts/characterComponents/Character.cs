@@ -6,12 +6,15 @@ public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
     public int id;
+    public string Name;
     public PlayerController userController;
     public BotController aiController;
     public SpriteRenderer sprite;
     public Color dangerColor = Color.white;
     Color startColor;
-    public float baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1, hp = 10, maxHp = 10;
+    public float 
+        baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1, 
+        hp = 10, maxHp = 10;
     public float MoveSpeed
     {
         get
@@ -233,47 +236,47 @@ public class Character : MonoBehaviour
         return $"{hp:F1}/{maxHp:F1} hp";
     }
 
-    public virtual DataDict<object> Data
-    {
-        get
-        {
-            return new DataDict<object>(
-            (Naming.id, id),
-            (Naming.pos, new DataDict<float>((Naming.x, transform.position.x), (Naming.y, transform.position.y) )),
-            (Naming.maxHp, maxHp),
-            (Naming.hp, hp)
-            );
-        }
-    }
+    //public virtual DataDict<object> Data
+    //{
+    //    get
+    //    {
+    //        return new DataDict<object>(
+    //        (Naming.id, id),
+    //        (Naming.pos, new DataDict<float>((Naming.x, transform.position.x), (Naming.y, transform.position.y) )),
+    //        (Naming.maxHp, maxHp),
+    //        (Naming.hp, hp)
+    //        );
+    //    }
+    //}
 
-    public virtual DataDict<object> PublicData
-    {
-        get
-        {
-            var publicData = Data;
+    //public virtual DataDict<object> PublicData
+    //{
+    //    get
+    //    {
+    //        var publicData = Data;
 
-            if (gun)
-                DataDict<object>.Combine(ref publicData, (Naming.gun, gun.PublicData));
+    //        if (gun)
+    //            DataDict<object>.Combine(ref publicData, (Naming.gun, gun.PublicData));
 
-            return publicData;
-        }
-    }
+    //        return publicData;
+    //    }
+    //}
 
-    public virtual DataDict<object> PrivateData
-    {
-        get
-        {
-            var privateData = Data;
+    //public virtual DataDict<object> PrivateData
+    //{
+    //    get
+    //    {
+    //        var privateData = Data;
 
-            if (gun)
-                DataDict<object>.Combine(ref privateData, (Naming.gun, gun.PrivateData));
+    //        if (gun)
+    //            DataDict<object>.Combine(ref privateData, (Naming.gun, gun.PrivateData));
 
-            if (reserve)
-                DataDict<object>.Combine(ref privateData, (Naming.amoReserve, reserve.Data));
+    //        if (reserve)
+    //            DataDict<object>.Combine(ref privateData, (Naming.amoReserve, reserve.Data));
 
-            return privateData;
-        }
-    }
+    //        return privateData;
+    //    }
+    //}
 
     public enum CharacterType
     {

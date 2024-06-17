@@ -5,10 +5,31 @@ using UnityEngine;
 //no create asset menu, this is just a parent class
 public abstract class ItemModel : ScriptableObject
 {
+    readonly static List<ItemModel> all = new();
+
+    public ItemModel ()
+    {
+        all.Add(this);
+    }
+
+    int id = -1;
+    public int Id
+    {
+        get
+        {
+            if (id == -1)
+            {
+                id = all.IndexOf (this);
+            }
+
+            return id;
+        }
+    }
+
     //public int tier = 1;
     //public Item prefab;
 
-    public readonly List<ItemTags> Tag = new List<ItemTags>();
+    public List<ItemTags> Tags = new List<ItemTags>();
 
     public enum ItemTags
     {

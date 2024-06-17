@@ -226,20 +226,20 @@ public class Gun : Item
         return string.Join(separator, array);
     }
 
-    public override DataDict<object> PrivateData
-    {
-        get 
-        {
-            var data = base.PrivateData;
-                DataDict<object>.Combine(ref data,
-                (Naming.rounds, rounds),
-                (Naming.maxRounds, GunModel.maxRounds),
-                (Naming.amoType, GunModel.amoType.name)
-                );
+    //public override DataDict<object> PrivateData
+    //{
+    //    get 
+    //    {
+    //        var data = base.PrivateData;
+    //            DataDict<object>.Combine(ref data,
+    //            (Naming.rounds, rounds),
+    //            (Naming.maxRounds, GunModel.maxRounds),
+    //            (Naming.amoType, GunModel.amoType.name)
+    //            );
 
-            return data;
-        }
-    }
+    //        return data;
+    //    }
+    //}
 
     public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
     {

@@ -351,4 +351,32 @@ public static class LogicAndMath
 
         return jaggedArray.SelectMany(innerArray => innerArray).ToArray();
     }
+
+    public static ValueType[] GetValuesList<ItemType,ValueType>(ItemType[] array, Func<ItemType, ValueType> getValue)
+    {
+        var result = new ValueType[array.Length];
+
+        for (int i = 0; i < result.Length; i++)
+        {
+            var item = array[i];
+
+            result[i] = getValue(item);
+        }
+
+        return result;
+    }
+
+    public static List<ValueType> GetValuesList<ItemType, ValueType>(List<ItemType> array, Func<ItemType, ValueType> getValue)
+    {
+        var result = new List<ValueType>();
+
+        for (int i = 0; i < result.Count; i++)
+        {
+            var item = array[i];
+
+            result[i] = getValue(item);
+        }
+
+        return result;
+    }
 }

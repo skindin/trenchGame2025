@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.U2D.Animation;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -129,7 +130,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log(character.PrivateData.ToJson());
+            Debug.Log(DataManager.GetPrivateCharacterData(character).ToJson());
         }
     }
 

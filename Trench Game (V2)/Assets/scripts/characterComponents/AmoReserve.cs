@@ -86,24 +86,24 @@ public class AmoReserve : MonoBehaviour
         }
     }
 
-    public DataDict<object> Data
-    {
-        get
-        {
-            var data = new DataDict<object> (amoPools.Count);
+    //public DataDict<object> Data
+    //{
+    //    get
+    //    {
+    //        var data = new DataDict<object> (amoPools.Count);
 
-            for (int i = 0;i < amoPools.Count;i++)
-            {
-                var pool = amoPools[i];
+    //        for (int i = 0;i < amoPools.Count;i++)
+    //        {
+    //            var pool = amoPools[i];
 
-                var poolData = pool.Data;//temporary
+    //            var poolData = pool.Data;//temporary
 
-                DataDict<object>.Combine(ref data, (i.ToString(),pool.Data));
-            }
+    //            DataDict<object>.Combine(ref data, (i.ToString(),pool.Data));
+    //        }
 
-            return data;
-        }
-    }
+    //        return data;
+    //    }
+    //}
 }
 
 [System.Serializable]
@@ -127,15 +127,15 @@ public class AmoPool
         return avlblRounds;
     }
 
-    public DataDict<object> Data
-    {
-        get
-        {
-            return new(
-                (Naming.amoType, type.name),
-                (Naming.rounds, rounds),
-                (Naming.maxRounds, maxRounds)
-                );
-        }
-    }
+    //public DataDict<object> Data
+    //{
+    //    get
+    //    {
+    //        return new(
+    //            (Naming.amoType, type.name),
+    //            (Naming.rounds, rounds),
+    //            (Naming.maxRounds, maxRounds)
+    //            );
+    //    }
+    //}
 }

@@ -136,15 +136,15 @@ public class StackableItem : Item
     }
 
 
-    public override DataDict<object> PrivateData
-    {
-        get
-        {
-            var data = base.PrivateData;
+    //public override DataDict<object> PrivateData
+    //{
+    //    get
+    //    {
+    //        var data = base.PrivateData;
 
-            DataDict<object>.Combine(ref data, Naming.amount, amount);
+    //        DataDict<object>.Combine(ref data, Naming.amount, amount);
 
-            return data;
-        }
-    }
+    //        return data;
+    //    }
+    //}
 }
