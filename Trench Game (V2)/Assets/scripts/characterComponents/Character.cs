@@ -6,6 +6,7 @@ public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
     public int id;
+    public string Name;
     public PlayerController userController;
     public BotController aiController;
     public SpriteRenderer sprite;
