@@ -51,8 +51,8 @@ public class StackableItem : Item
 
     public override void DropLogic(Vector2 pos, out bool destroyedSelf)
     {
-        CombineAll(out destroyedSelf);
         base.DropLogic(pos, out _);
+        CombineAll(out destroyedSelf);
     }
 
     public bool CombineAll(out bool destroyedSelf)
@@ -91,8 +91,6 @@ public class StackableItem : Item
                 var dist = Vector2.Distance(item.transform.position, transform.position);
                 if (dist > StackableModel.combineRadius) 
                     continue;
-                else
-                    Mathf.Abs(dist);
             }
 
             int addend;
