@@ -248,9 +248,9 @@ public class Gun : Item
         reserve = character.reserve;
     }
 
-    public override void Drop(Vector2 pos)
+    public override void DropLogic(Vector2 pos, out bool wasDestroyed)
     {
-        base.Drop(pos);
+        base.DropLogic(pos, out wasDestroyed);
 
         reserve = null;
         reloading = false;

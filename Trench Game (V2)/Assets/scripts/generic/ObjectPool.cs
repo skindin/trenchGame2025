@@ -49,14 +49,15 @@ public class ObjectPool<T> where T : class
         else
         {
             obj = newFunc();
+            //resetAction?.Invoke(obj); //prob unnecessary
         }
 
         EnsureMin();
 
-        if (obj is Item item)
-        {
-            Debug.Log($"Item {item} chunk was {(item.Chunk != null ? $"{item.Chunk} {item.Chunk.adress} which {(item.Chunk.items.Contains(item) ? $"contained " : "didn't contain ")}item" : "null")} when taken out of pool");
-        }
+        //if (obj is Item item)
+        //{
+        //    Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} chunk was {(item.Chunk != null ? $"{item.Chunk} {item.Chunk.adress} which {(item.Chunk.items.Contains(item) ? $"contained " : "didn't contain ")}item" : "null")} when taken out of pool");
+        //}
 
         return obj;
     }
@@ -80,5 +81,10 @@ public class ObjectPool<T> where T : class
         {
             destroyAction?.Invoke(obj);
         }
+
+        //if (obj is Item item)
+        //{
+        //    Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} chunk was {(item.Chunk == null ? "null ": $"chunk {item.Chunk.adress}")} when it was added to pool");
+        //}
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEditor.Progress;
 
 public class Item : MonoBehaviour
 {
@@ -23,22 +24,17 @@ public class Item : MonoBehaviour
         {
             if (chunk == value)
             {
-                Debug.Log($"Item {this} chunk was already {(chunk == null ? "null" : $"chunk {chunk.adress}")}");
+                //Debug.Log($"Item {this} {gameObject.GetInstanceID()} chunk was already {(chunk == null ? "null" : $"chunk {chunk.adress}")}");
                 return;
             }
 
-            if (chunk != null)
-            {
-                chunk.RemoveItem(this);
-            }
+            chunk?.RemoveItem(this);
 
-            if (value != null)
-            {
-                value.AddItem(this);
-            }
-            chunk = value;
+            chunk = value; //you wouldn't BELIEVE how important the order of these three lines is
 
-            Debug.Log($"Item {this} chunk was set to {(value == null ? "null" : $"Chunk {chunk.adress}")}");
+            chunk?.AddItem(this);
+
+            //Debug.Log($"Item {this}{gameObject.GetInstanceID()} chunk was set to {(value == null ? "null" : $"Chunk {chunk.adress}")}");
         }
     }
 
@@ -118,14 +114,24 @@ public class Item : MonoBehaviour
     /// <summary>
     /// Returns true if the item has been removed from the world
     /// </summary>
-    public virtual void Drop (Vector2 pos)
+    public virtual void DropLogic (Vector2 pos, out bool wasDestroyed)
     {
         wielder = null;
 
         transform.SetParent(defaultContainer);
         transform.position = pos;
         transform.rotation = Quaternion.identity;
-        UpdateChunk();
+        //UpdateChunk();
+        wasDestroyed = false;
+
+        //Debug.Log($"Item {this} {this.gameObject.GetInstanceID()} was dropped");
+    }
+
+    public void Drop(Vector2 pos)
+    {
+        DropLogic(pos, out var destroyedSelf);
+        if (!destroyedSelf && gameObject.activeSelf)
+            UpdateChunk();
     }
 
     public virtual void DestroyItem ()

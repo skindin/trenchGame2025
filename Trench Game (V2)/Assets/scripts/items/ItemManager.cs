@@ -97,7 +97,10 @@ public class ItemManager : MonoBehaviour
                 if (b.active.Contains(item))
                 {
                     //Debug.Log($"Removing item: {item.name}");
+                    //Debug.Log($"{item} chunk was {(item.Chunk != null ? $"chunk {item.Chunk.adress}" : "null")} before it was removed");
                     b.Remove(item);
+                    //Debug.Log($"{item} chunk was {(item.Chunk != null ? $"chunk {item.Chunk.adress}" : "null")} after it was removed");
+                    //Debug.Log($"... and {(item.gameObject.activeSelf ? "was " : "wasn't")} active...");
                     return;
                 }
             }
@@ -169,7 +172,10 @@ public class ItemManager : MonoBehaviour
         foreach (var item in reusableItemList)
         {
             var itemPos = Random.insideUnitCircle * itemDropRadius + spawnPos;
-            NewItem(item).Drop(itemPos);
+            var newItem = NewItem(item);
+            //Debug.Log($"{newItem} chunk was {(newItem.Chunk != null ? $"chunk {newItem.Chunk.adress}" : "null")} before it was dropped");
+            newItem.Drop(itemPos);
+            //Debug.Log($"{newItem} chunk was {(newItem.Chunk != null ? $"chunk {newItem.Chunk.adress}" : "null")} after it was dropped");
         }
     }
 
@@ -208,16 +214,19 @@ public class ItemManager : MonoBehaviour
         {
             if (item == null) return;
 
+            item.Chunk = null;
+
             if (!active.Contains(item)) return;
 
             //Debug.Log($"Item removed: {item.name}");
             active.Remove(item);
             pool.AddToPool(item);
+
         }
 
         public void Setup(Item prefab)
         {
-            container = new GameObject((prefab)?prefab.model.name:"").transform;
+            container = new GameObject(prefab?prefab.model.name:"").transform;
             container.parent = Manager.container;
 
             pool = new ObjectPool<Item>(
@@ -226,15 +235,16 @@ public class ItemManager : MonoBehaviour
                 newFunc: () => Instantiate(prefab, container).GetComponent<Item>(),
                 disableAction: item =>
                 {
-                    var chunk = item.Chunk;
-                    item.gameObject.SetActive(false); Debug.Log($"Item {item} was disabled");
+                    //var chunk = item.Chunk;
+                    item.gameObject.SetActive(false); 
+                    //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was disabled");
                     item.transform.parent = container;
-                    item.Chunk = null;
                 },
                 resetAction: item =>
                 {
                     item.gameObject.SetActive(true);
-                    item.ResetItem(); Debug.Log($"Item {item} was reset");
+                    item.ResetItem();
+                    //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was reset");
                     //item.Chunk = null;
                 },
                 destroyAction: item => Destroy(item.gameObject)

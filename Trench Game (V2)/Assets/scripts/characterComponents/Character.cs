@@ -33,7 +33,7 @@ public class Character : MonoBehaviour
     public Gun gun;
     public AmoReserve reserve;
     public Inventory inventory;
-    public bool digging = false, filling = false, constantDig = false, constantDetect = false, shooting = false; //most of these will probably be moved once i design shovels
+    public bool digging = false, filling = false, constantDig = false, constantlyUpdateChunk = false, shooting = false; //most of these will probably be moved once i design shovels
 
     public CharacterType controlType = CharacterType.none;
     CharacterType type;
@@ -120,11 +120,11 @@ public class Character : MonoBehaviour
     //}
 
     // Update is called once per frame
-    //void Update()
-    //{
-    //    //if (constantDetect)
-    //    //    detector.DetectTrench(0);
-    //}
+    void Update()
+    {
+        if (constantlyUpdateChunk)
+            SetPos(transform.position);
+    }
 
     public void MoveInDirection(Vector2 direction)
     {
@@ -142,6 +142,8 @@ public class Character : MonoBehaviour
 
     public void SetPos (Vector2 pos) //this would be the rpc
     {
+        //if ((Vector2)transform.position == pos) return;
+
         transform.position = pos;
 
         UpdateChunk();
@@ -216,7 +218,7 @@ public class Character : MonoBehaviour
     public void ResetSelf (bool clearItems = false) //clearItems parameter in case I need to remove character without dropping it's items
     {
         //reset code
-        digging = filling = constantDig = constantDetect =  shooting = false;
+        digging = filling = shooting = false;
 
         if (clearItems)
         {

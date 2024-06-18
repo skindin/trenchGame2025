@@ -44,18 +44,18 @@ public class StackableItem : Item
 
     public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
     {
-        wasPickedUp = true;
+        wasPickedUp = false;
         CombineWithItems(character.inventory.items, out wasDestroyed, false);
-        if (!wasDestroyed) base.Pickup(character, out wasPickedUp, out _);
+        if (!wasDestroyed) base.Pickup(character, out wasPickedUp, out wasDestroyed);
     }
 
-    public override void Drop(Vector2 pos)
+    public override void DropLogic(Vector2 pos, out bool destroyedSelf)
     {
-        CombineAll();
-        base.Drop(pos);
+        CombineAll(out destroyedSelf);
+        base.DropLogic(pos, out _);
     }
 
-    public bool CombineAll()
+    public bool CombineAll(out bool destroyedSelf)
     {
         var min = transform.position - Vector3.one * StackableModel.combineRadius;
         var max = transform.position + Vector3.one * StackableModel.combineRadius;
@@ -66,15 +66,17 @@ public class StackableItem : Item
         {
             if (chunk == null) continue;
 
-            if (CombineWithItems(chunk.items, out _)) return true;
+            if (CombineWithItems(chunk.items, out destroyedSelf)) 
+                return true;
         }
 
+        destroyedSelf = false;
         return false;
     }
 
-    public bool CombineWithItems(List<Item> items, out bool wasDestroyed, bool testDist = true)
+    public bool CombineWithItems(List<Item> items, out bool destroyedSelf, bool testDist = true)
     {
-        wasDestroyed = false;
+        destroyedSelf = false;
 
         foreach (var item in items)
         {
@@ -111,7 +113,7 @@ public class StackableItem : Item
             {
                 //Debug.Log($"Destroying item: {this.name}");
                 DestroyItem();
-                wasDestroyed = true;
+                destroyedSelf = true;
             }
 
             return true;

@@ -1018,6 +1018,14 @@ PrefabInstance:
       propertyPath: controlType
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
+      propertyPath: constantDetect
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
+      propertyPath: constantlyUpdateChunk
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1209951706319063104, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: debugLines
       value: 0

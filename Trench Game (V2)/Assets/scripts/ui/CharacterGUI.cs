@@ -123,7 +123,7 @@ public class CharacterGUI : MonoBehaviour
             if (item == character.inventory.SelectedItem) continue;
 
             if (item.Chunk == null)
-                throw new Exception($"{item.name} is not in a chunk");
+                throw new Exception($"{transform.parent.gameObject} {item.name} is not in a chunk");
 
             if (!item.gameObject.activeSelf)
                 throw new Exception($"{item.name} is disabled");
