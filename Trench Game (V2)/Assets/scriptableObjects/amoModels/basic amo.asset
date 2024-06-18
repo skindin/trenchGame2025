@@ -15,5 +15,5 @@ MonoBehaviour:
   Tags: 0000000004000000
   limitAmount: 0
   maxAmount: 50
-  combineRadius: 0
+  combineRadius: 1
   type: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
