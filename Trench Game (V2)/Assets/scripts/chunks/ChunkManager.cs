@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
+//using static UnityEditor.PlayerSettings;
 
 public class ChunkManager : MonoBehaviour
 {

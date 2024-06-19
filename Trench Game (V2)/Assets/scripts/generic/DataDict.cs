@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows.Speech;
+//using UnityEngine.Windows.Speech;
 
 [System.Serializable]
 public struct DataDict<T> : ICustomJson<DataDict<T>>

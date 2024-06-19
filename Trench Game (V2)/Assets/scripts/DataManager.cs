@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
-using static DataManager;
-using static UnityEditor.Progress;
+//using static DataManager;
+//using static UnityEditor.Progress;
 using Newtonsoft.Json.Linq;
 
 public static class DataManager //might be better for all these data types to be structs...? but idk
