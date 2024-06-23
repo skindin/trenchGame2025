@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class GeoFuncs
+public static class GeoUtils
 {
     public static Vector2 ClosestPointToLineSegment(Vector2 objectPos, Vector2 lineStart, Vector2 lineEnd)
     {
@@ -68,7 +68,7 @@ public static class GeoFuncs
     }
 
     /// <summary>
-    /// Returns the last point of a circle the line would touch
+    /// Returns the last point of a circle the line would touch. apparently this function doesn't even work
     /// </summary>
     /// <param name="circleCenter"></param>
     /// <param name="circleRadius"></param>
@@ -76,47 +76,93 @@ public static class GeoFuncs
     /// <param name="lineEnd"></param>
     /// <returns></returns>
 
+    //public static Vector2 GetCircleLineIntersection(Vector2 circleCenter, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
+    //{
+    //    if (Vector2.Distance(circleCenter, lineStart) <= circleRadius && Vector2.Distance(circleCenter, lineEnd) <= circleRadius) return lineStart;
+
+    //    // Vector from start to end of the line segment
+    //    Vector2 lineVec = lineEnd - lineStart;
+
+    //    // Vector from circle center to line start
+    //    Vector2 circleToStart = lineStart - circleCenter;
+
+    //    // Calculate the coefficients of the quadratic equation
+    //    float a = lineVec.sqrMagnitude;
+    //    float b = 2f * Vector2.Dot(lineVec, circleToStart);
+    //    float c = circleToStart.sqrMagnitude - circleRadius * circleRadius;
+
+    //    // Calculate the discriminant of the quadratic equation
+    //    float discriminant = b * b - 4 * a * c;
+
+    //    // If the discriminant is negative, there are no intersections
+    //    if (discriminant < 0)
+    //    {
+    //        // Return Vector2.positiveInfinity to indicate no intersection
+    //        return Vector2.positiveInfinity;
+    //    }
+
+    //    // Calculate the two possible intersection points
+    //    float t1 = (-b + Mathf.Sqrt(discriminant)) / (2 * a);
+    //    float t2 = (-b - Mathf.Sqrt(discriminant)) / (2 * a);
+
+    //    // Check if the intersection points are within the line segment bounds
+    //    if (t1 >= 0 && t1 <= 1)
+    //    {
+    //        return lineStart + t1 * lineVec;
+    //    }
+    //    else if (t2 >= 0 && t2 <= 1)
+    //    {
+    //        return lineStart + t2 * lineVec;
+    //    }
+
+    //    // If neither intersection point is within the line segment bounds, return Vector2.positiveInfinity
+    //    return Vector2.positiveInfinity;
+    //}
+
     public static Vector2 GetCircleLineIntersection(Vector2 circleCenter, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
     {
-        if (Vector2.Distance(circleCenter, lineStart) <= circleRadius && Vector2.Distance(circleCenter, lineEnd) <= circleRadius) return lineStart;
+        var defaultOutput = Vector2.positiveInfinity;
 
-        // Vector from start to end of the line segment
-        Vector2 lineVec = lineEnd - lineStart;
+        if ((lineStart - circleCenter).magnitude <= circleRadius) return defaultOutput;
 
-        // Vector from circle center to line start
-        Vector2 circleToStart = lineStart - circleCenter;
+        Vector2 d = lineEnd - lineStart; // Direction vector of the line
+        Vector2 f = lineStart - circleCenter; // Vector from circle center to line start
 
-        // Calculate the coefficients of the quadratic equation
-        float a = lineVec.sqrMagnitude;
-        float b = 2f * Vector2.Dot(lineVec, circleToStart);
-        float c = circleToStart.sqrMagnitude - circleRadius * circleRadius;
+        float a = Vector2.Dot(d, d);
+        float b = 2 * Vector2.Dot(f, d);
+        float c = Vector2.Dot(f, f) - circleRadius * circleRadius;
 
-        // Calculate the discriminant of the quadratic equation
         float discriminant = b * b - 4 * a * c;
 
-        // If the discriminant is negative, there are no intersections
         if (discriminant < 0)
         {
-            // Return Vector2.positiveInfinity to indicate no intersection
-            return Vector2.positiveInfinity;
+            // No intersection
+            return defaultOutput;
         }
-
-        // Calculate the two possible intersection points
-        float t1 = (-b + Mathf.Sqrt(discriminant)) / (2 * a);
-        float t2 = (-b - Mathf.Sqrt(discriminant)) / (2 * a);
-
-        // Check if the intersection points are within the line segment bounds
-        if (t1 >= 0 && t1 <= 1)
+        else
         {
-            return lineStart + t1 * lineVec;
-        }
-        else if (t2 >= 0 && t2 <= 1)
-        {
-            return lineStart + t2 * lineVec;
-        }
+            // Intersection exists
+            discriminant = Mathf.Sqrt(discriminant);
 
-        // If neither intersection point is within the line segment bounds, return Vector2.positiveInfinity
-        return Vector2.positiveInfinity;
+            float t1 = (-b - discriminant) / (2 * a);
+            float t2 = (-b + discriminant) / (2 * a);
+
+            // If you need only one intersection point, you can choose the smaller or larger t value
+            // Here we are returning the first intersection point (t1)
+            // You may need to add checks to ensure t1 and t2 are within the segment bounds (0 <= t <= 1)
+            if (t1 >= 0 && t1 <= 1)
+            {
+                return lineStart + t1 * d;
+            }
+
+            if (t2 >= 0 && t2 <= 1)
+            {
+                return lineStart + t2 * d;
+            }
+
+            // If neither t1 nor t2 is within the segment, there's no intersection on the segment
+            return defaultOutput;
+        }
     }
 
     public static bool DoLinesIntersect(Vector2 pointA, Vector2 pointB, Vector2 pointC, Vector2 pointD, bool debugLines = false)

@@ -19,8 +19,8 @@ public class BotController1 : MonoBehaviour
         {
             if (chunk == null) continue;
 
-            LogicAndMath.GetValuesList(chunk.items, forBot.items, item => DataManager.GetItemData(item), item => GeoFuncs.TestBoxPosSize(transform.position,visionBox,item.transform.position));
-            LogicAndMath.GetValuesList(chunk.characters, forBot.characters, character => DataManager.GetPublicCharacterData(character), character => GeoFuncs.TestBoxPosSize(transform.position, visionBox, character.transform.position));
+            LogicAndMath.GetValuesList(chunk.items, forBot.items, item => DataManager.GetItemData(item), item => GeoUtils.TestBoxPosSize(transform.position,visionBox,item.transform.position));
+            LogicAndMath.GetValuesList(chunk.characters, forBot.characters, character => DataManager.GetPublicCharacterData(character), character => GeoUtils.TestBoxPosSize(transform.position, visionBox, character.transform.position));
             //LogicAndMath.GetValuesList(chunk.Bullets, forBot.bullets, bullet => )
 
             //should implement bullets but whatever

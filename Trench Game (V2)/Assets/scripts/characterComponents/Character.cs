@@ -14,6 +14,7 @@ public class Character : MonoBehaviour
     public Color dangerColor = Color.white;
     Color startColor;
     public float baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1, hp = 10, maxHp = 10;
+
     public float MoveSpeed
     {
         get
@@ -124,7 +125,14 @@ public class Character : MonoBehaviour
     {
         if (constantlyUpdateChunk)
             SetPos(transform.position);
+
+        //lastPos = tran
     }
+
+    //private void LateUpdate()
+    //{
+    //    lastPos = transform.position;
+    //}
 
     public void MoveInDirection(Vector2 direction)
     {

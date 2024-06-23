@@ -68,7 +68,10 @@ MonoBehaviour:
   amoPools:
   - type: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
     rounds: 0
-    maxRounds: 200
+    maxRounds: 240
+  - type: {fileID: 11400000, guid: e00f29eaed6cdfe4d88a2f7e27c40203, type: 2}
+    rounds: 0
+    maxRounds: 500
 --- !u!1 &8796109463886426131
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,7 +193,7 @@ MonoBehaviour:
   digging: 0
   filling: 0
   constantDig: 0
-  constantDetect: 0
+  constantlyUpdateChunk: 0
   shooting: 0
   controlType: 0
 --- !u!114 &8968939273650880824

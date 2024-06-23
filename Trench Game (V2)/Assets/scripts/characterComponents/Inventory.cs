@@ -83,8 +83,8 @@ public class Inventory : MonoBehaviour
                 if (!item.gameObject.activeSelf)
                 {
                     Debug.DrawLine(item.transform.position, transform.position, Color.red);
-                    GeoFuncs.MarkPoint(item.transform.position, 1, Color.red);
-                    GeoFuncs.MarkPoint(transform.position, 1, Color.red);
+                    GeoUtils.MarkPoint(item.transform.position, 1, Color.red);
+                    GeoUtils.MarkPoint(transform.position, 1, Color.red);
                     //Debug.LogError($"Item {item} isn't active but is refferenced by chunk {chunk.adress}");
                 }
 
@@ -262,8 +262,8 @@ public class Inventory : MonoBehaviour
     {
         if (debugLines)
         {
-            GeoFuncs.DrawCircle(transform.position, passivePickupRad, Color.green);
-            GeoFuncs.DrawCircle(transform.position, activePickupRad, Color.blue);
+            GeoUtils.DrawCircle(transform.position, passivePickupRad, Color.green);
+            GeoUtils.DrawCircle(transform.position, activePickupRad, Color.blue);
 
             foreach (var item in withinRadius)
             {
@@ -272,7 +272,7 @@ public class Inventory : MonoBehaviour
                 if (item == SelectedItem) color = Color.magenta;
                 else color = Color.cyan;
 
-                GeoFuncs.MarkPoint(item.transform.position, .5f, color);
+                GeoUtils.MarkPoint(item.transform.position, .5f, color);
             }
         }
     }

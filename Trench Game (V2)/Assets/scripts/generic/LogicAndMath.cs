@@ -225,14 +225,14 @@ public static class LogicAndMath
 
     static void OnPosSelected<T> (T item, Func<T, Vector2> getPos)
     {
-        GeoFuncs.MarkPoint(getPos(item), .5f, Color.green);
+        GeoUtils.MarkPoint(getPos(item), .5f, Color.green);
     }
 
     public static T GetClosest<T>(Vector2 pos, T[] array, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxDist = Mathf.Infinity, bool debugLines = false)
     {
         static void MarkPos<T> (T item, Func<T,Vector2> getPos, Color color)
         {
-            GeoFuncs.MarkPoint(getPos(item), .5f, color);
+            GeoUtils.MarkPoint(getPos(item), .5f, color);
         }
 
         //Func<T, float> getDistance = item => Vector2.Distance(pos, getPos(item));
@@ -353,5 +353,44 @@ public static class LogicAndMath
         }
 
         return valueList;
+    }
+
+
+    public static List<T> SortHighestToLowest<T>(List<T> list, Func<T,float> getValue)
+    {
+        for (int i = 1; i < list.Count; i++)
+        {
+            var current = list[i];
+            int j = i - 1;
+
+            while (j >= 0 && getValue(current) > getValue( list[j]))
+            {
+                list[j + 1] = list[j];
+                j--;
+            }
+
+            list[j + 1] = current;
+        }
+
+        return list;
+    }
+
+    public static List<T> SortLowestToHighest<T>(List<T> list, Func<T, float> getValue)
+    {
+        for (int i = 1; i < list.Count; i++)
+        {
+            var current = list[i];
+            int j = i - 1;
+
+            while (j <= 0 && getValue(current) > getValue(list[j]))
+            {
+                list[j + 1] = list[j];
+                j--;
+            }
+
+            list[j + 1] = current;
+        }
+
+        return list;
     }
 }

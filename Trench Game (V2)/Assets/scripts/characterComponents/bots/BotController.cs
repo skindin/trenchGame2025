@@ -109,7 +109,7 @@ public class BotController : MonoBehaviour
 
         if (character.gun) //if you picked up a gun...
         {
-            if (!targetCollider && closestEnemy && GeoFuncs.TestBoxPosSize(transform.position, visionBox, closestEnemy.transform.position)) //and you have no target collider, but you do have a close enemy...
+            if (!targetCollider && closestEnemy && GeoUtils.TestBoxPosSize(transform.position, visionBox, closestEnemy.transform.position)) //and you have no target collider, but you do have a close enemy...
             {
                 targetCollider = closestEnemy.collider; //target the closest enemy
             }
@@ -121,7 +121,7 @@ public class BotController : MonoBehaviour
             }
             else //and your gun has amo...
             {
-                if (targetCollider && GeoFuncs.TestBoxPosSize(transform.position, visionBox, targetCollider.transform.position)) //and collider target is within view...
+                if (targetCollider && GeoUtils.TestBoxPosSize(transform.position, visionBox, targetCollider.transform.position)) //and collider target is within view...
                 {
                     var direction = pointerPos;
 
@@ -130,11 +130,11 @@ public class BotController : MonoBehaviour
                     var range = character.gun.GunModel.range;
 
                     if (debugLines)
-                        GeoFuncs.DrawCircle(character.gun.BarrelPos, range, UnityEngine.Color.red, 8);
+                        GeoUtils.DrawCircle(character.gun.BarrelPos, range, UnityEngine.Color.red, 8);
 
                     if (dist <= range) //if within range..
                     {
-                        if (GeoFuncs.DoesLineIntersectCircle(
+                        if (GeoUtils.DoesLineIntersectCircle(
                             targetCollider.transform.position, 
                             targetCollider.WorldSize / 2, 
                             transform.position, 
@@ -172,7 +172,7 @@ public class BotController : MonoBehaviour
             else //if you couldn't find a gun...
             {
                 if (debugLines)
-                    GeoFuncs.DrawCircle(transform.position, dangerRadius, UnityEngine.Color.red, 8);
+                    GeoUtils.DrawCircle(transform.position, dangerRadius, UnityEngine.Color.red, 8);
 
                 if (closestEnemy && Vector2.Distance(closestEnemy.transform.position,transform.position) <= dangerRadius) //and you are too close to an enemy...
                 {
@@ -266,7 +266,7 @@ public class BotController : MonoBehaviour
         //}
 
         if (debugLines)
-            GeoFuncs.MarkPoint(TargetPos, .5f, UnityEngine.Color.magenta);
+            GeoUtils.MarkPoint(TargetPos, .5f, UnityEngine.Color.magenta);
 
         //var moveDirection = TargetPos - (Vector2)transform.position;
 
@@ -279,10 +279,10 @@ public class BotController : MonoBehaviour
 
         if (debugLines)
         {
-            GeoFuncs.MarkPoint(targetPointerPos + (Vector2)transform.position, 1, UnityEngine.Color.red);
-            GeoFuncs.MarkPoint(pointerPos + (Vector2)transform.position, 1, UnityEngine.Color.blue);
+            GeoUtils.MarkPoint(targetPointerPos + (Vector2)transform.position, 1, UnityEngine.Color.red);
+            GeoUtils.MarkPoint(pointerPos + (Vector2)transform.position, 1, UnityEngine.Color.blue);
 
-            GeoFuncs.DrawLine(path, UnityEngine.Color.black);
+            GeoUtils.DrawLine(path, UnityEngine.Color.black);
         }
 
         for (int i = 0; i < unexploredPoints.Count; i++)
@@ -293,7 +293,7 @@ public class BotController : MonoBehaviour
             var arrayIndex = unexploredPoints[i];
             var point = wanderPoints[arrayIndex.x, arrayIndex.y];
 
-            if (GeoFuncs.TestBoxPosSize(transform.position, visionBox, point, debugLines))
+            if (GeoUtils.TestBoxPosSize(transform.position, visionBox, point, debugLines))
             {
                 unexploredPoints.RemoveAt(i);
                 exploredPoints.Add(arrayIndex);
@@ -382,7 +382,7 @@ public class BotController : MonoBehaviour
                     TargetPos = (Vector2)transform.position + delta + UnityEngine.Random.insideUnitCircle * maxWanderOffset;
 
                     if (debugLines)
-                        GeoFuncs.MarkPoint(closestVisiblePoint, 1, UnityEngine.Color.yellow);
+                        GeoUtils.MarkPoint(closestVisiblePoint, 1, UnityEngine.Color.yellow);
                 }
 
             }
@@ -421,7 +421,7 @@ public class BotController : MonoBehaviour
                     else
                         color = UnityEngine.Color.blue;
 
-                    GeoFuncs.MarkPoint(wanderPoints[x,y], 1, color);
+                    GeoUtils.MarkPoint(wanderPoints[x,y], 1, color);
                 }
             }
         }
@@ -480,7 +480,7 @@ public class BotController : MonoBehaviour
     {
         if (debugLines)
         {
-            GeoFuncs.DrawBoxPosSize(transform.position, visionBox, UnityEngine.Color.magenta);
+            GeoUtils.DrawBoxPosSize(transform.position, visionBox, UnityEngine.Color.magenta);
         }
     }
 }

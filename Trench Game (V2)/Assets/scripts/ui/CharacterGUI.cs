@@ -120,13 +120,17 @@ public class CharacterGUI : MonoBehaviour
 
         foreach (var item in character.inventory.withinRadius)
         {
-            if (item == character.inventory.SelectedItem) continue;
+            if (!item || item == character.inventory.SelectedItem) continue;
 
             if (item.Chunk == null)
-                throw new Exception($"{(transform.parent? $"{transform.parent.gameObject} ":"unheld ")}{item.name} is not in a chunk");
+            {
+                Debug.LogError($"{(transform.parent ? $"{transform.parent.gameObject} " : "unheld ")}{item.name} is not in a chunk");
+            }
 
             if (!item.gameObject.activeSelf)
-                throw new Exception($"{item.name} is disabled");
+            {
+                Debug.LogError($"{item.name} is disabled");
+            }
 
                 DrawTextBox(item.model.name, item.transform.position, style, itemBoxOffset * scaleFactor);
         }

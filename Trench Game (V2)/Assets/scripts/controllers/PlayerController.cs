@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     public Character character;
     public static PlayerController active;
     public bool enableFill = false, drawEdgeDetection = false;
+    //public TouchController touchController;
 
     // Start is called before the first frame update
     void Awake()
@@ -20,7 +21,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //if (Time.timeScale > 0)
-            Controls();
+            KeyboardControls();
+        TouchControls();
 
         //if (Input.GestringDown(KeyCode.Space))
         //{
@@ -48,7 +50,7 @@ public class PlayerController : MonoBehaviour
         if (character.gun) character.gun.Aim(mouseDir);
     }
 
-    public void Controls ()
+    public void KeyboardControls ()
     {
         Vector2 moveDir;
 
@@ -83,7 +85,7 @@ public class PlayerController : MonoBehaviour
         //}
 
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        var mouseDir = mousePos - transform.position;
+        Vector2 mouseDir = mousePos - transform.position;
 
         if (Input.GetMouseButton(0) && character.gun)
         {
@@ -127,10 +129,33 @@ public class PlayerController : MonoBehaviour
             character.inventory.DropPrevItem();
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Debug.Log(DataManager.GetPrivateCharacterData(character).ToJson());
+        //}
+
+#if server
+        Debug.LogError("cool it works");
+#endif
+    }
+
+    public void TouchControls()
+    {
+        var touchController = TouchController.Main;
+
+        var moveInput = touchController.MovementInput;
+
+        if (moveInput.magnitude > 0)
         {
-            Debug.Log(DataManager.GetPrivateCharacterData(character).ToJson());
+            character.MoveInDirection(moveInput);
         }
+
+        //if (character.gun)
+        //{
+        //    var abilityInput = touchController.AbilityInput;
+
+        //    character.gun.Trigger(abilityInput);
+        //}
     }
 
     //List<Chunk> chunks = new();

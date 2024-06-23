@@ -6,11 +6,14 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class Projectile
 {
     //public int id; //not implemented
-    public Vector2 pos, startPos, velocity;
+    public Vector2 pos, 
+        //lastPos, 
+        startPos, velocity;
     public float range;
     public Character source;
     public bool
         //withinTrench, 
+        hit = false,
         destroy = false;
     public float damage = 1;
 
@@ -22,21 +25,21 @@ public class Projectile
     //    }
     //}
 
-    public DataDict<object> Data
-    {
-        get
-        {
-            var data = new DataDict<object>
-                (
-                    "startPos", new DataDict<float>
-                    (
-                        ("x", startPos.x),
-                        ("y", startPos.y)
-                    )
+    //public DataDict<object> Data
+    //{
+    //    get
+    //    {
+    //        var data = new DataDict<object>
+    //            (
+    //                "startPos", new DataDict<float>
+    //                (
+    //                    ("x", startPos.x),
+    //                    ("y", startPos.y)
+    //                )
 
-                );
+    //            );
 
-            return data;
-        }
-    }
+    //        return data;
+    //    }
+    //}
 }

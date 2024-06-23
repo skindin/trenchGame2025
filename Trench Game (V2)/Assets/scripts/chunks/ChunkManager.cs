@@ -213,12 +213,12 @@ public class ChunkManager : MonoBehaviour
     public bool IsPointInWorld (Vector2 point, bool debugLines = false)
     {
         //GetWorldBox(out var min, out var max);
-        return GeoFuncs.TestBoxPosSize(Vector2.zero, Vector2.one * worldSize, point, debugLines);
+        return GeoUtils.TestBoxPosSize(Vector2.zero, Vector2.one * worldSize, point, debugLines);
     }
 
     public Vector2[,] DistributePoints (Vector2 distributionBox)
     {
-        return GeoFuncs.DistributePointsInBoxPosSize(Vector2.zero, Vector2.one * worldSize, distributionBox);
+        return GeoUtils.DistributePointsInBoxPosSize(Vector2.zero, Vector2.one * worldSize, distributionBox);
     }
 
     public Vector2Int[,] AdressesFromBox (Vector2 min, Vector2 max)
@@ -292,7 +292,7 @@ public class ChunkManager : MonoBehaviour
         foreach (var adress in adresses)
         {
             GetChunkBox(adress, out var chunkMin, out var chunkMax);
-            if (GeoFuncs.DoesLineIntersectBox(pointA,pointB,chunkMin,chunkMax,debugLines))
+            if (GeoUtils.DoesLineIntersectBox(pointA,pointB,chunkMin,chunkMax,debugLines))
             {
                 var chunk = ChunkFromAdress(adress, newIfNone);
                 if (chunk != null && !chunkList.Contains(chunk))
@@ -318,7 +318,7 @@ public class ChunkManager : MonoBehaviour
     {
         var min = AdressToPos(adress);
         var max = AdressToPos(adress + Vector2Int.one);
-        GeoFuncs.DrawBoxMinMax(min, max, color);
+        GeoUtils.DrawBoxMinMax(min, max, color);
     }
 
     public T FindClosestCharacterWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : Character
@@ -361,7 +361,7 @@ public class ChunkManager : MonoBehaviour
 
         T[] allObjects = LogicAndMath.FlattenArray(jaggedArray);
 
-        Func<T, bool> objCondition = obj => (condition == null || condition(obj)) && GeoFuncs.TestBoxPosSize(pos, size, obj.transform.position, debugLines);
+        Func<T, bool> objCondition = obj => (condition == null || condition(obj)) && GeoUtils.TestBoxPosSize(pos, size, obj.transform.position, debugLines);
 
         return LogicAndMath.GetClosest(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, Mathf.Infinity, debugLines);
         //return closestBehavior;

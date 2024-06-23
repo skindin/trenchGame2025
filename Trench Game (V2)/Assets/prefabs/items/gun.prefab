@@ -45,14 +45,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b9a3c47948680f4c88770e3eea24543, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   defaultContainer: {fileID: 0}
   model: {fileID: 11400000, guid: 06016e4aa7d1214418b0540caeab9b97, type: 2}
   wielder: {fileID: 0}
   passivePickup: 0
   reserve: {fileID: 0}
   rounds: 1
+  reloadAnimRots: 3
   direction: {x: 1, y: 0}
-  barrelPos: {x: 0, y: 1.1}
+  barrelPos: {x: 0, y: 0.75}
   safetyOff: 1
   holdingTrigger: 0
   reloading: 0

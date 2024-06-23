@@ -27,9 +27,8 @@ public class ProjectileManager : MonoBehaviour
     public readonly List<Bullet> activeBullets = new();//, pooledBullets = new();
     //public int maxPooled = 100, activeCount, pooledCount, total;
     public bool debugLines = false;
-    public Mesh bulletMesh;
-    public float meshScale = .1f;
     public ObjectPool<Bullet> bulletPool;
+    public float destroyDelay = .2f, updateScale = 1.0f;
 
     private void Awake()
     {
@@ -49,6 +48,7 @@ public class ProjectileManager : MonoBehaviour
         newBullet.velocity = velocity;
         newBullet.range = range;
         newBullet.source = source;
+        newBullet.hit = false;
 
         activeBullets.Add(newBullet);
         //activeCount = activeBullets.Count;
@@ -81,7 +81,7 @@ public class ProjectileManager : MonoBehaviour
 
     private void Update()
     {
-        UpdateBullets(Time.deltaTime);
+        UpdateBullets(Time.deltaTime * updateScale);
     }
 
     List<Chunk> chunkList = new();
@@ -92,18 +92,19 @@ public class ProjectileManager : MonoBehaviour
         {
             var bullet = activeBullets[i];
 
-            if (bullet.destroy)
+            if ((bullet.pos - bullet.startPos).magnitude >= bullet.range * destroyDelay)
             {
                 DestroyBullet(bullet);
                 i--;
                 continue;
             }
 
-            var delta = bullet.pos - bullet.startPos;
+            //var delta = bullet.pos - bullet.startPos;
 
-            var nextDelta = delta + (bullet.velocity * seconds);
-            bullet.destroy = nextDelta.magnitude >= bullet.range;
-            var nextPos = Vector2.ClampMagnitude(nextDelta, bullet.range) + bullet.startPos;
+            //var nextDelta = delta + (bullet.velocity * seconds);
+            //bullet.destroy = (bullet.pos - bullet.startPos).magnitude >= bullet.range * destructRangeFactor;
+            var nextPos = bullet.pos + bullet.velocity * seconds;
+            //var closestPoint = nextPos;
             Collider closestCollider = null;
 
             //float furthestTrenchDist = nextDelta.magnitude;
@@ -118,29 +119,38 @@ public class ProjectileManager : MonoBehaviour
             //    }
             //}
 
-            var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, chunkList, false, debugLines);
-
-            foreach (var chunk in chunks)
+            if (!bullet.hit)
             {
-                foreach (var collider in chunk.colliders)
+
+                var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, chunkList, false, debugLines);
+
+                foreach (var chunk in chunks)
                 {
-                    if (bullet.source && bullet.source.collider == collider) continue;
-                    if (!collider.vulnerable) continue;
-
-                    var radius = collider.WorldSize/2;
-                    var point = GeoFuncs.GetCircleLineIntersection(collider.transform.position, radius, nextPos, bullet.pos);
-                    if (point.x == Mathf.Infinity) continue;
-                    var pointDist = (point - bullet.pos).magnitude;
-                    //if (bullet.withinTrench && !collider.vulnerable)
-                    //{
-                    //    if (pointDist > furthestTrenchDist) continue;
-                    //}
-                    var nextDist = (nextPos - bullet.pos).magnitude;
-
-                    if (nextDist > pointDist)
+                    foreach (var collider in chunk.colliders)
                     {
-                        nextPos = point;
-                        closestCollider = collider;
+                        if (bullet.source && bullet.source.collider == collider) continue;
+                        if (!collider.vulnerable) continue;
+
+                        var radius = collider.WorldSize / 2;
+                        var point = GeoUtils.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
+                        if (point.x == Mathf.Infinity) continue;
+                        var pointDist = (point - bullet.startPos).magnitude;
+                        //if (bullet.withinTrench && !collider.vulnerable)
+                        //{
+                        //    if (pointDist > furthestTrenchDist) continue;
+                        //}
+                        var startToNext = bullet.startPos - nextPos;
+                        var clampedNext = Vector2.ClampMagnitude(startToNext, bullet.range);
+                        //var nextDist = (nextPos - bullet.pos).magnitude;
+
+                        if (clampedNext.magnitude > pointDist)
+                        {
+                            bullet.hit = true;
+                            //nextPos = point;
+                            bullet.range = (point - bullet.startPos).magnitude;
+                            closestCollider = collider;
+                            //closestPoint = point;
+                        }
                     }
                 }
             }
@@ -152,16 +162,17 @@ public class ProjectileManager : MonoBehaviour
 
             if (debugLines)
             {
-                GeoFuncs.DrawCircle(bullet.startPos, bullet.range, Color.red,10);
+                GeoUtils.DrawCircle(bullet.startPos, bullet.range, Color.red,10);
                 Debug.DrawLine(bullet.pos, nextPos, Color.red);
             }
 
+            //bullet.lastPos = bullet.pos;
             bullet.pos = nextPos;
 
             if (closestCollider != null)
             {
                 closestCollider.HitCollider(bullet);
-                bullet.destroy = true;
+                //bullet.destroy = true;
                 //Debug.Log($"Hit {closestCollider.gameObject.name}");
             }
         }

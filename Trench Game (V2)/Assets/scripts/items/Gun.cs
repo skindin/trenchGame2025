@@ -6,7 +6,7 @@ using System.Linq;
 public class Gun : Item
 {
     public AmoReserve reserve;
-    public int rounds = 10;
+    public int rounds = 10, reloadAnimRots = 3;
     float lastFireStamp = 0, reloadStartStamp = 0;
     public Vector2 direction = Vector2.right, barrelPos;
     public bool safetyOff = true,
@@ -42,6 +42,8 @@ public class Gun : Item
         }
     }
 
+    Vector2 lastPos, velocity;
+
     public override void ResetItem()
     {
         base.ResetItem();
@@ -66,7 +68,7 @@ public class Gun : Item
             rounds = 0;
     }
 
-    bool GunLogic(Vector2 direction = default)
+    bool GunLogic(Vector2 velocity = default)
     {
         if (!safetyOff || reloading || (!GunModel.autoFire) && fired) return false;
 
@@ -79,7 +81,7 @@ public class Gun : Item
             return false;
         }
 
-        Aim((direction == default) ? Vector2.up : direction);
+        Aim((velocity == default) ? Vector2.up : velocity);
 
         var fireDeltaTime = Time.time - lastFireStamp;
 
@@ -156,9 +158,12 @@ public class Gun : Item
                 reloading = false;
             }
                 
-            var angle = ((GunModel.reloadTime - reloadClock) / GunModel.reloadTime) * GunModel.reloadAnimRots * 360;
+            var angle = ((GunModel.reloadTime - reloadClock) / GunModel.reloadTime) * reloadAnimRots * 360;
             transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
         }
+
+        velocity = ((Vector2)transform.position - lastPos) / Time.deltaTime;
+        lastPos = transform.position;
     }
 
     void Reload ()
@@ -188,9 +193,9 @@ public class Gun : Item
 
     public void Aim (Vector2 direction)
     {
-        if (reloading) return;
-
         this.direction = direction;
+
+        if (reloading) return;
 
         var angle = Vector2.SignedAngle(Vector2.up, direction);
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -198,13 +203,17 @@ public class Gun : Item
 
     public Bullet Fire ()
     {
-        return ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos, direction.normalized * GunModel.bulletSpeed, GunModel.range, GunModel.DamagePerBullet, wielder);
+        return ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos,
+            (direction.normalized * GunModel.bulletSpeed) + velocity,
+            GunModel.range,
+            GunModel.DamagePerBullet,
+            wielder);
     }
 
     private void OnDrawGizmos()
     {
         if (drawBerrelPos)    
-            GeoFuncs.MarkPoint(transform.position + transform.rotation * barrelPos,.2f,Color.blue);
+            GeoUtils.MarkPoint(transform.position + transform.rotation * barrelPos,.2f,Color.blue);
     }
 
     public override string InfoString(string separator = " ")

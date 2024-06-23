@@ -10,6 +10,8 @@ public class Collider : MonoBehaviour
     public Action<Bullet> onHit;
 
     public float localSize = 1;
+
+    public bool draw = false;
     public float WorldSize
     {
         get
@@ -45,4 +47,12 @@ public class Collider : MonoBehaviour
     //{
     //    all.Remove(this);
     //}
+
+    private void OnDrawGizmos()
+    {
+        if (draw)
+        {
+            GeoUtils.DrawCircle(transform.position, WorldSize/2, Color.green);
+        }
+    }
 }

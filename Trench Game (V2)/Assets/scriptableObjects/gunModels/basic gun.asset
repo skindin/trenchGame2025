@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b3d2a070673b394ea6372a5309a501e, type: 3}
   m_Name: basic gun
   m_EditorClassIdentifier: 
+  Tags: 
   bulletSpeed: 100
   range: 20
   firingRate: 5
@@ -19,7 +20,6 @@ MonoBehaviour:
   damageRate: 5
   maxPerFrame: 5
   maxRounds: 20
-  reloadAnimRots: 3
   amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
   autoFire: 1
   autoReload: 1
