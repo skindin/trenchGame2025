@@ -211,17 +211,21 @@ public class Inventory : MonoBehaviour
 
     public void DropItem (Item item)
     {
+        DropItem(item, transform.position);
+        //withinRadius.Add(item); //its already being added by the chunk event dipshit
+    }
+
+    public void DropItem (Item item, Vector2 pos)
+    {
         if (item is Gun)
         {
             character.gun = null;
         }
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;
-        var pos = character.transform.position;
         item.Drop(pos);
 
         items.Remove(item);
-        //withinRadius.Add(item); //its already being added by the chunk event dipshit
     }
 
     public void DropAllItems()
@@ -240,6 +244,15 @@ public class Inventory : MonoBehaviour
         {
             var item = items[^1];
             DropItem(item);
+        }
+    }
+
+    public void DropPrevItem(Vector2 pos)
+    {
+        if (items.Count > 0)
+        {
+            var item = items[^1];
+            DropItem(item, pos);
         }
     }
 

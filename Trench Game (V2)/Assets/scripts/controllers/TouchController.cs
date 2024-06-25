@@ -24,6 +24,16 @@ public class TouchController : MonoBehaviour
         }
     }
 
+    public MultiuseJoystick multiuseJoystick;
+
+    public Vector2 MultiuseInput
+    {
+        get
+        {
+            return multiuseJoystick.Position;
+        }
+    }
+
     //public Joystick abilityJoystick;
     //public Vector2 AbilityInput
     //{

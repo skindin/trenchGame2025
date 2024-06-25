@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
     public Character character;
     public static PlayerController active;
     public bool enableFill = false, drawEdgeDetection = false;
+    public ControllerType type = ControllerType.keyboard;
+    public GameObject touchCursor;
+    public bool overrideToTouchControls = false;
     //public TouchController touchController;
 
     // Start is called before the first frame update
@@ -20,34 +23,47 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Time.timeScale > 0)
+        DetermineController();
+
+
+        if (type == ControllerType.keyboard)
+        {
             KeyboardControls();
-        TouchControls();
-
-        //if (Input.GestringDown(KeyCode.Space))
-        //{
-        //    if (Time.timeScale == 0) Time.timeScale = 1;
-        //    else Time.timeScale = 0;
-        //}
-
-        //if (step)
-        //{
-        //    Time.timeScale = 0;
-        //    step = false;
-        //}
-
-        //if (Input.GestringDown(KeyCode.Q))
-        //{
-        //    Time.timeScale = 10;
-        //    step = true;
-        //}
+        }
+        else if (type == ControllerType.touchscreen)
+        {
+            //KeyboardControls();
+            TouchControls();
+        }
     }
 
-    private void LateUpdate()
+    //private void LateUpdate()
+    //{
+    //    //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    //    //var mouseDir = mousePos - transform.position;
+    //    //if (character.gun) character.gun.Aim(mouseDir);
+    //}
+
+    public ControllerType DetermineController ()
     {
-        var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        var mouseDir = mousePos - transform.position;
-        if (character.gun) character.gun.Aim(mouseDir);
+        if (
+            Input.anyKeyDown)
+        {
+            type = ControllerType.keyboard;
+        }
+        else if (Input.touchCount > 0)
+        {
+            type = ControllerType.touchscreen;
+        }
+
+        if (overrideToTouchControls)
+            type = ControllerType.touchscreen;
+
+        //type = ControllerType.touchscreen;
+
+        TouchController.Main.gameObject.SetActive(type == ControllerType.touchscreen);
+
+        return type;
     }
 
     public void KeyboardControls ()
@@ -64,26 +80,6 @@ public class PlayerController : MonoBehaviour
             character.MoveInDirection(moveDir);
         }
 
-        //if (Input.GetMouseButton(0))
-        //{
-        //    //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    character.Dig(transform.position);
-        //}
-        //else if (Input.GetMouseButtonUp(0))
-        //{
-        //    character.Dig(default, true);
-        //}
-        //else if (Input.GetMouseButton(1) && enableFill)
-        //{
-        //    character.Fill(transform.position);
-        //}
-
-        //if (Input.GetMouseButtonUp(1))
-        //{
-        //    character.Fill(default, true);
-        //    Time.timeScale = 1;
-        //}
-
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mouseDir = mousePos - transform.position;
 
@@ -91,18 +87,11 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                //if (character.gun.rounds <= 0)
-                //{
-                //    character.gun.StartReload();
-                //}
             }
             else
             {
                 character.gun.Trigger(mouseDir);
             }
-            //if (drawEdgeDetection) Trench.manager.FindTrenchEdgeFromInside(transform.position, mousePos,true);
-            //chunks.Clear();
-            //Chunk.manager.ChunksFromLine(transform.position, transform.position + mouseDir, chunks, true, true);
         }
 
         character.inventory.SelectClosest(mousePos);
@@ -129,14 +118,9 @@ public class PlayerController : MonoBehaviour
             character.inventory.DropPrevItem();
         }
 
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    Debug.Log(DataManager.GetPrivateCharacterData(character).ToJson());
-        //}
-
-#if server
-        Debug.LogError("cool it works");
-#endif
+        //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //var mouseDir = mousePos - transform.position;
+        if (character.gun) character.gun.Aim(mouseDir); //this had been in late update...
     }
 
     public void TouchControls()
@@ -156,7 +140,57 @@ public class PlayerController : MonoBehaviour
 
         //    character.gun.Trigger(abilityInput);
         //}
+
+        var multiuseJoystick = touchController.multiuseJoystick;
+
+        if (!multiuseJoystick.holding && !multiuseJoystick.released)
+        {
+            touchCursor.SetActive(false);
+            return;
+        }
+
+        touchCursor.SetActive(true);
+
+        var multiuseInput = multiuseJoystick.Position;
+
+        var inputType = multiuseJoystick.currentUseType;
+
+        var cursorPos = touchCursor.transform.position = (Vector2)transform.position + multiuseInput * character.inventory.activePickupRad;
+
+        if (character.gun && inputType == MultiuseJoystick.UseType.itemAbility)
+        {
+            if (multiuseJoystick.tapped)
+            {
+                character.gun.StartReload();
+            }
+            else if (multiuseJoystick.dragged)
+            {
+                character.gun.Trigger(multiuseInput);
+            }
+        }
+        else if (inputType == MultiuseJoystick.UseType.interactWithObject)
+        {
+            character.inventory.SelectClosest(cursorPos);
+            if (multiuseJoystick.released)
+                character.inventory.PickupClosest();
+        }
+        else if (inputType == MultiuseJoystick.UseType.placeObject && multiuseJoystick.released)
+        {
+            character.inventory.DropPrevItem(cursorPos);
+        }
+
+        if (character.gun)
+        {
+            character.gun.Aim(multiuseInput);
+        }
     }
 
     //List<Chunk> chunks = new();
+}
+
+public enum ControllerType
+{
+    keyboard,
+    touchscreen,
+    remote
 }
