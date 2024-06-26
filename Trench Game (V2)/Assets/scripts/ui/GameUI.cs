@@ -48,8 +48,13 @@ public class GameUI : MonoBehaviour
         style.padding = new(padding, padding, padding, padding);
 
         var fps = Mathf.RoundToInt(1 / deltaTime);
+        var bulletCount = ProjectileManager.Manager.activeBullets.Count;
+        //var secsPerBullet = 1/deltaTime/ bulletCount; //didn't really help
 
-        var text = $"FPS {fps}";
+        //if (secsPerBullet == Mathf.Infinity)
+        //    secsPerBullet = 0;
+
+        var text = $"FPS {fps} \nbullets {bulletCount}";
 
         GUI.Label(rect, text, style);
     }

@@ -235,6 +235,7 @@ public class Inventory : MonoBehaviour
             var item = items[0];
 
             DropItem(item);
+            i--;
         }
     }
 

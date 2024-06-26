@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class Gun : Item
 {
     public AmoReserve reserve;
     public int rounds = 10, reloadAnimRots = 3;
-    float lastFireStamp = 0, reloadStartStamp = 0;
+    public Coroutine reloadRoutine, fireRoutine;
     public Vector2 direction = Vector2.right, barrelPos;
     public bool safetyOff = true,
         holdingTrigger = false,
@@ -15,6 +16,7 @@ public class Gun : Item
         startFull = true, //temporary, until i make the actual spawning script
         fired = false,
         drawBerrelPos = false;
+    bool isFiring = false;
 
     public Vector2 BarrelPos
     {
@@ -53,7 +55,7 @@ public class Gun : Item
 
         direction = Vector2.right;
 
-        lastFireStamp = reloadStartStamp = 0;
+        reloadRoutine = fireRoutine = null;
 
         reserve = null;
     }
@@ -68,127 +70,162 @@ public class Gun : Item
             rounds = 0;
     }
 
-    bool GunLogic(Vector2 velocity = default)
-    {
-        if (!safetyOff || reloading || (!GunModel.autoFire) && fired) return false;
-
-        if (rounds <= 0)
-        {
-            if (GunModel.autoReload)
-            {
-                StartReload();
-            }
-            return false;
-        }
-
-        Aim((velocity == default) ? Vector2.up : velocity);
-
-        var fireDeltaTime = Time.time - lastFireStamp;
-
-        var secsPerBullet = 1 / GunModel.firingRate;
-
-        if ((lastFireStamp == 0 && Time.time <= secsPerBullet) || fireDeltaTime > secsPerBullet)
-        {
-            int bulletCount;
-
-            if (GunModel.autoFire)
-            {
-                bulletCount = Mathf.FloorToInt(GunModel.firingRate * Time.deltaTime);
-
-                bulletCount = Mathf.Max(bulletCount, 1);
-
-                bulletCount = Mathf.Min(bulletCount, GunModel.maxPerFrame, rounds);
-            }
-            else
-            {
-                bulletCount = 1;
-                fired = true;
-            }
-
-            for (int i = 0; i < bulletCount; i++)
-            {
-                Fire();
-            }
-
-            rounds -= bulletCount;
-
-            lastFireStamp = Time.time;
-
-            if (rounds <= 0 && GunModel.autoReload)
-            {
-                StartReload();
-            }
-        }
-
-        return true;
-    }
-
-    public bool Trigger (Vector2 direction = default) //direction parameter to ensure the bullet fires in the right direction across all connections
-    {
-        holdingTrigger = true;//not sure how this gonna work on server?
-
-        return GunLogic(direction);
-    }
-
-    //networking procedure
-    //1. client runs fire logic, which can only spawn ghost bullets (bullets that can't actually damage anything, though they are destroyed when they hit something)
-    //2. client sends rpc to server containing direction and time stamp
-    //3. server runs trigger logic, spawning real bullets
-    //4. server sends rpc to all other clients containing direction and time stamp
-    //5. clients run trigger logic and spawn ghost bullets
-
-    public override void ItemUpdate()
-    {
-        base.ItemUpdate();
-
-        if (!holdingTrigger)
-        {
-            fired = false;
-        }
-        holdingTrigger = false;
-
-        if (reloading)
-        {
-            var reloadClock = Mathf.Min(Time.time - reloadStartStamp, GunModel.reloadTime);
-
-            if (reloadClock >= GunModel.reloadTime)
-            {
-                Reload();
-                reloadStartStamp = Time.time;
-                reloading = false;
-            }
-                
-            var angle = ((GunModel.reloadTime - reloadClock) / GunModel.reloadTime) * reloadAnimRots * 360;
-            transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
-        }
-
-        velocity = ((Vector2)transform.position - lastPos) / Time.deltaTime;
-        lastPos = transform.position;
-    }
-
-    void Reload ()
-    {
-        rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
-    }
-
-    //void TakeAllAmoFromThis (AmoReserve recievingReserve)
+    //bool GunLogic(Vector2 velocity = default)
     //{
-    //    var amoPool = recievingReserve.GetPool(GunModel.amoType);
-    //    var space = amoPool.maxRounds - amoPool.rounds;
-    //    var addend = Mathf.Min(space, rounds);
-    //    rounds -= addend;
-    //    amoPool.AddAmo(addend); //need to make this TakeAmoFromThis, and put amo in reserve
+    //    if (!safetyOff || reloading || (!GunModel.autoFire) && fired) return false;
+
+    //    if (rounds <= 0)
+    //    {
+    //        if (GunModel.autoReload)
+    //        {
+    //            StartReload();
+    //        }
+    //        return false;
+    //    }
+
+    //    Aim((velocity == default) ? Vector2.up : velocity);
+
+    //    var fireDeltaTime = Time.time - lastFireStamp;
+
+    //    var secsPerBullet = 1 / GunModel.firingRate;
+
+    //    if ((lastFireStamp == 0 && Time.time <= secsPerBullet) || fireDeltaTime > secsPerBullet)
+    //    {
+    //        int bulletCount;
+
+    //        if (GunModel.autoFire)
+    //        {
+    //            bulletCount = Mathf.FloorToInt(GunModel.firingRate * Time.deltaTime);
+
+    //            bulletCount = Mathf.Max(bulletCount, 1);
+
+    //            bulletCount = Mathf.Min(bulletCount, rounds);
+    //        }
+    //        else
+    //        {
+    //            bulletCount = 1;
+    //            fired = true;
+    //        }
+
+    //        for (int i = 0; i < bulletCount; i++)
+    //        {
+    //            Fire();
+    //        }
+
+    //        rounds -= bulletCount;
+
+    //        //lastFireStamp = Time.time;
+
+    //        if (rounds <= 0 && GunModel.autoReload)
+    //        {
+    //            StartReload();
+    //        }
+    //    }
+
+    //    return true;
     //}
 
-    public void StartReload()
+
+
+    public void Trigger (Vector2 direction = default) //direction parameter to ensure the bullet fires in the right direction across all connections
     {
-        if (reloading || reserve == null) return;
+        //holdingTrigger = true;//not sure how this gonna work on server?
+        //Aim(direction);
+
+        Aim(direction);
+
+        holdingTrigger = true;
+
+        if (fireRoutine == null)
+        {
+            fireRoutine = StartCoroutine(Shoot());
+        }
+
+
+        //GunLogic(direction);
+    }
+
+    IEnumerator Shoot ()
+    {
+        var secsPerBullet = 1 / GunModel.firingRate;
+
+        while (true)
+        {
+            if (!holdingTrigger)
+            {
+                fireRoutine = null;
+                yield break;
+            }
+
+            if (!reloading)
+            {
+                if (rounds > 0)
+                {
+
+                    var bulletCount = Mathf.FloorToInt(GunModel.firingRate * Time.deltaTime);
+
+                    bulletCount = Mathf.Max(bulletCount, 1);
+
+                    bulletCount = Mathf.Min(bulletCount, rounds);
+
+                    for (int i = 0; i < bulletCount; i++)
+                    {
+                        Fire();
+                    }
+
+                    rounds -= bulletCount;
+                }
+                else
+                {
+                    if (!reloading && GunModel.autoReload)
+                        StartReload();
+
+                    fireRoutine = null;
+                    yield break;
+                }
+            }
+
+            if (!GunModel.autoFire) break;
+
+            holdingTrigger = false; //makes sure that something else says it's pulling the trigger before it repeats
+
+            yield return new WaitForSeconds(secsPerBullet);
+        }
+
+    }
+
+    public void StartReload ()
+    {
+        if (reloadRoutine == null)
+        {
+            reloadRoutine = StartCoroutine(Reload());
+        }
+    }
+
+    IEnumerator Reload()
+    {
+        if (reloading || reserve == null) yield break;
 
         if (rounds < GunModel.maxRounds && reserve.GetAmoAmount(GunModel.amoType) > 0)
         {
+            float elapsedTime = 0;
+
             reloading = true;
-            reloadStartStamp = Time.time;
+
+            while (elapsedTime < GunModel.reloadTime)
+            {
+                yield return null;
+
+                elapsedTime += Time.deltaTime;
+                var angle = ((GunModel.reloadTime - elapsedTime) / GunModel.reloadTime) * reloadAnimRots * 360;
+                transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
+            }
+
+            reloading = false;
+            rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
         }
+
+        reloadRoutine = null;
     }
 
     public void Aim (Vector2 direction)
@@ -208,6 +245,25 @@ public class Gun : Item
             GunModel.range,
             GunModel.DamagePerBullet,
             wielder);
+    }
+
+    public override void ItemUpdate()
+    {
+        base.ItemUpdate();
+
+        if (!holdingTrigger)
+        {
+            fired = false;
+        }
+        holdingTrigger = false;
+
+        //if (reloading)
+        //{           
+
+        //}
+
+        velocity = ((Vector2)transform.position - lastPos) / Time.deltaTime;
+        lastPos = transform.position;
     }
 
     private void OnDrawGizmos()
@@ -263,5 +319,17 @@ public class Gun : Item
 
         reserve = null;
         reloading = false;
+
+        if (fireRoutine != null)
+        {
+            StopCoroutine(fireRoutine);
+            fireRoutine = null;
+        }
+
+        if (reloadRoutine != null)
+        {
+            StopCoroutine(reloadRoutine);
+            reloadRoutine = null; //idk if setting reload routine to null is neccessary shrugging emoji
+        }
     }
 }
