@@ -635,4 +635,18 @@ public static class GeoUtils
 
         return total;
     }
+
+    public static Vector2 ClampToBoxMinMax(Vector2 point, Vector2 min, Vector2 max)
+    {
+        return Vector2.Max(min, Vector2.Min(max, point));
+    }
+
+    public static Vector2 ClampToBoxPosSize (Vector2 point, Vector2 pos, Vector2 size)
+    {
+        var delta = size / 2;
+        var min = pos - delta;
+        var max = pos + delta;
+
+        return ClampToBoxMinMax (point, min, max);
+    }
 }

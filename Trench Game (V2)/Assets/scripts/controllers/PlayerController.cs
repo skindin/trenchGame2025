@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     public static PlayerController active;
     public bool enableFill = false, drawEdgeDetection = false;
     public ControllerType type = ControllerType.keyboard;
-    public GameObject touchCursor;
+    //public GameObject touchCursor;
     public bool overrideToTouchControls = false;
     //public TouchController touchController;
 
@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour
     public ControllerType DetermineController ()
     {
         if (
-            Input.anyKeyDown)
+            IsAnyKeyDown())
         {
             type = ControllerType.keyboard;
         }
@@ -143,49 +143,71 @@ public class PlayerController : MonoBehaviour
 
         var multiuseJoystick = touchController.multiuseJoystick;
 
-        if (!multiuseJoystick.holding && !multiuseJoystick.released)
-        {
-            touchCursor.SetActive(false);
-            return;
-        }
+        var cursorWorldPos =
+        //touchCursor.transform.position = 
+        Camera.main.ScreenToWorldPoint(multiuseJoystick.ScreenPosition);
 
-        touchCursor.SetActive(true);
-
-        var multiuseInput = multiuseJoystick.Position;
-
+        //touchCursor.SetActive(true);
         var inputType = multiuseJoystick.currentUseType;
 
-        var cursorPos = touchCursor.transform.position = (Vector2)transform.position + multiuseInput * character.inventory.activePickupRad;
+        var directionToCursor = cursorWorldPos - transform.position;
 
-        if (character.gun && inputType == MultiuseJoystick.UseType.itemAbility)
+        if (multiuseJoystick.holding || multiuseJoystick.released)
         {
-            if (multiuseJoystick.tapped)
+            if (character.gun && inputType == MultiuseTouchCursor.UseType.itemAbility)
             {
-                character.gun.StartReload();
+                if (multiuseJoystick.tapped)
+                {
+                    character.gun.StartReload();
+                }
+                else if (multiuseJoystick.dragged)
+                {
+                    character.gun.Trigger(directionToCursor);
+                }
             }
-            else if (multiuseJoystick.dragged)
+            else if (inputType == MultiuseTouchCursor.UseType.interactWithObject)
             {
-                character.gun.Trigger(multiuseInput);
+                if (multiuseJoystick.tapped)
+                    character.inventory.PickupClosest();
             }
-        }
-        else if (inputType == MultiuseJoystick.UseType.interactWithObject)
-        {
-            character.inventory.SelectClosest(cursorPos);
-            if (multiuseJoystick.released)
-                character.inventory.PickupClosest();
-        }
-        else if (inputType == MultiuseJoystick.UseType.placeObject && multiuseJoystick.released)
-        {
-            character.inventory.DropPrevItem(cursorPos);
+            else if (inputType == MultiuseTouchCursor.UseType.placeObject && multiuseJoystick.released)
+            {
+                character.inventory.DropPrevItem(cursorWorldPos);
+            }
+
+            if (character.gun)
+            {
+                character.gun.Aim(directionToCursor);
+            }
         }
 
-        if (character.gun)
-        {
-            character.gun.Aim(multiuseInput);
-        }
+        character.inventory.SelectClosest(cursorWorldPos);
     }
 
     //List<Chunk> chunks = new();
+
+    private static bool IsAnyKeyDown()
+    {
+        foreach (KeyCode keyCode in System.Enum.GetValues(typeof(KeyCode)))
+        {
+            if (Input.GetKeyDown(keyCode) && !IsMouseButton(keyCode))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static bool IsMouseButton(KeyCode keyCode)
+    {
+        return keyCode == KeyCode.Mouse0 ||
+               keyCode == KeyCode.Mouse1 ||
+               keyCode == KeyCode.Mouse2 ||
+               keyCode == KeyCode.Mouse3 ||
+               keyCode == KeyCode.Mouse4 ||
+               keyCode == KeyCode.Mouse5 ||
+               keyCode == KeyCode.Mouse6;
+    }
 }
 
 public enum ControllerType

@@ -24,7 +24,7 @@ public class JoystickEditor : Editor
         snapX = serializedObject.FindProperty("snapX");
         snapY = serializedObject.FindProperty("snapY");
         background = serializedObject.FindProperty("background");
-        handle = serializedObject.FindProperty("handle");
+        handle = serializedObject.FindProperty("button");
     }
 
     public override void OnInspectorGUI()
@@ -49,7 +49,7 @@ public class JoystickEditor : Editor
 
     protected virtual void DrawValues()
     {
-        EditorGUILayout.PropertyField(handleRange, new GUIContent("Handle Range", "The distance the visual handle can move from the center of the joystick."));
+        EditorGUILayout.PropertyField(handleRange, new GUIContent("Handle Range", "The distance the visual button can move from the center of the joystick."));
         EditorGUILayout.PropertyField(deadZone, new GUIContent("Dead Zone", "The distance away from the center input has to be before registering."));
         EditorGUILayout.PropertyField(axisOptions, new GUIContent("Axis Options", "Which axes the joystick uses."));
         EditorGUILayout.PropertyField(snapX, new GUIContent("Snap X", "Snap the horizontal input to a whole value."));
@@ -59,6 +59,6 @@ public class JoystickEditor : Editor
     protected virtual void DrawComponents()
     {
         EditorGUILayout.ObjectField(background, new GUIContent("Background", "The background's RectTransform component."));
-        EditorGUILayout.ObjectField(handle, new GUIContent("Handle", "The handle's RectTransform component."));
+        EditorGUILayout.ObjectField(handle, new GUIContent("Handle", "The button's RectTransform component."));
     }
 }

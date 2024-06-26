@@ -230,7 +230,7 @@ public static class LogicAndMath
 
     public static T GetClosest<T>(Vector2 pos, T[] array, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxDist = Mathf.Infinity, bool debugLines = false)
     {
-        static void MarkPos<T> (T item, Func<T,Vector2> getPos, Color color)
+        static void MarkPos<Item> (Item item, Func<Item,Vector2> getPos, Color color)
         {
             GeoUtils.MarkPoint(getPos(item), .5f, color);
         }

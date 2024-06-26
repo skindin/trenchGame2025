@@ -24,13 +24,13 @@ public class TouchController : MonoBehaviour
         }
     }
 
-    public MultiuseJoystick multiuseJoystick;
+    public MultiuseTouchCursor multiuseJoystick;
 
     public Vector2 MultiuseInput
     {
         get
         {
-            return multiuseJoystick.Position;
+            return multiuseJoystick.ScreenPosition;
         }
     }
 
