@@ -176,7 +176,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void PickupItem (Item item)
+    public void PickupItem (Item item, Vector2 dropPos)
     {
         if (item.wielder)
         {
@@ -202,7 +202,7 @@ public class Inventory : MonoBehaviour
                 //put unload logic here
                 //}
                 //else
-                if (character.gun) DropItem(character.gun); //we only want to drop the gun when they already have the gun
+                if (character.gun) DropItem(character.gun, dropPos); //we only want to drop the gun when they already have the gun
 
                 character.gun = gun;
             }
@@ -217,6 +217,8 @@ public class Inventory : MonoBehaviour
 
     public void DropItem (Item item, Vector2 pos)
     {
+        pos = Vector2.ClampMagnitude(pos - (Vector2)transform.position, activePickupRad) + (Vector2)transform.position;
+
         if (item is Gun)
         {
             character.gun = null;
@@ -263,11 +265,11 @@ public class Inventory : MonoBehaviour
         return SelectedItem;
     }
 
-    public void PickupClosest ()
+    public void PickupClosest (Vector2 dropPos)
     {
         if (SelectedItem)
         {
-            PickupItem(SelectedItem);
+            PickupItem(SelectedItem, dropPos);
             SelectedItem = null;
         }
     }

@@ -6,7 +6,7 @@ using UnityEngine.TextCore.Text;
 public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
-    public int id;
+    public int id, rank;
     public string Name;
     public PlayerController userController;
     public BotController aiController;
@@ -14,6 +14,18 @@ public class Character : MonoBehaviour
     public Color dangerColor = Color.white;
     Color startColor;
     public float baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1, hp = 10, maxHp = 10;
+
+    int killCount;
+
+    public int KillCount
+    {
+        get { return killCount; }
+
+        set
+        {
+            killCount = value;
+        }
+    }
 
     public float MoveSpeed
     {
@@ -81,7 +93,7 @@ public class Character : MonoBehaviour
         //    //Debug.Log(gameObject.name + " was hit");
         //});
 
-        collider.onHit = bullet => Damage(bullet.damage);
+        collider.onHit = bullet => Damage(bullet.damage,bullet.source);
     }
 
     //private void Update()
@@ -95,7 +107,7 @@ public class Character : MonoBehaviour
     //    }
     //}
 
-    public void Damage (float hp)
+    public void Damage (float hp, Character killer)
     {
         this.hp -= hp;
 
@@ -103,7 +115,9 @@ public class Character : MonoBehaviour
         {
             this.hp = 0;
 
-            Kill();
+            KillThis();
+
+            killer.killCount++;
         }
     }
 
@@ -199,7 +213,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    public void Kill ()
+    public void KillThis ()
     {
         if (reserve)
             reserve.DropEverything(deathDropRadius);
@@ -208,7 +222,7 @@ public class Character : MonoBehaviour
             inventory.DropAllItems();
 
 
-        if (Type != CharacterType.localPlayer)
+        if (false && Type != CharacterType.localPlayer) //put the false && so all npcs respawn
             RemoveSelf();
         else
             CharacterManager.Manager.StartRespawn(this);
@@ -241,12 +255,15 @@ public class Character : MonoBehaviour
 
         hp = maxHp;
 
+        killCount = 0;
+        //CharacterManager.Manager.UpdateScoreBoard();
+
         Type = CharacterType.none;
     }
 
     public virtual string InfoString (string separator = " ")
     {
-        return $"{hp:F1}/{maxHp:F1} hp";
+        return $"{Name}\n{hp:F1}/{maxHp:F1} hp";
     }
 
     //public virtual DataDict<object> Data

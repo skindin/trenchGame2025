@@ -42,7 +42,7 @@ public class GameUI : MonoBehaviour
     public void DrawFPS (Rect rect, int fontSize, int padding)
     {
         GUIStyle style = new();
-        style.alignment = TextAnchor.UpperLeft;
+        style.alignment = TextAnchor.UpperCenter;
         style.fontSize = fontSize;
         style.normal.textColor = textColor;
         style.padding = new(padding, padding, padding, padding);
@@ -54,7 +54,7 @@ public class GameUI : MonoBehaviour
         //if (secsPerBullet == Mathf.Infinity)
         //    secsPerBullet = 0;
 
-        var text = $"FPS {fps} \nbullets {bulletCount}";
+        var text = $"FPS({fps}) bullets({bulletCount})";
 
         GUI.Label(rect, text, style);
     }
@@ -72,12 +72,13 @@ public class GameUI : MonoBehaviour
         var timeLeft = ItemManager.Manager.TimeToNextDrop;
 
         string itemDropTimeText = GetTimeText(ItemManager.Manager.TimeToNextDrop) + " to item drop";
-        string squadSpawnTimeText = GetTimeText(CharacterManager.Manager.TimeToSquadSpawn) + " to squad spawn";
-        //Console.WriteLine(formattedTime);  // Output: 01:01:01
+        GUI.Label(rect,itemDropTimeText,style);
+        //string squadSpawnTimeText = GetTimeText(CharacterManager.Manager.TimeToSquadSpawn) + " to squad spawn";
 
-        var text = itemDropTimeText + "\n" + squadSpawnTimeText;
+        //var text = itemDropTimeText + "\n" + squadSpawnTimeText;
 
-        GUI.Label(rect, text, style);
+        //GUI.Label(rect, text, style);
+
     }
 
     public string GetTimeText (float seconds)

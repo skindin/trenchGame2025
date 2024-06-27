@@ -1,23 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CharacterManager : MonoBehaviour
 {
-    public bool spawnSquads = true, spawnSquadOnStart = true;
+    public bool spawnSquads = true;
     public ObjectPool<Character> pool;
     public List<Character> active = new();
     public Character prefab;
     public Transform container;
     public float squadRadius = 5, squadSpawnInterval = 20, respawnWait = .5f;
     public int botsPerSquad = 5, spawnCap = 10;
-    float lastSquadStamp = 0;
+    float squadSpawnTimer = 0;
+    Coroutine squadSpawnRoutine;
+    bool sortCharactersThisFrame = false;
+    int nextBotId = 0;
 
     public float TimeToSquadSpawn
     {
         get
         {
-            return squadSpawnInterval - (Time.time - lastSquadStamp);
+            return squadSpawnInterval - squadSpawnTimer;
         }
     }
 
@@ -43,6 +47,7 @@ public class CharacterManager : MonoBehaviour
     private void Awake()
     {
         SetupPool();
+        squadSpawnRoutine = StartCoroutine(BotSpawn());
     }
 
     //private void Start()
@@ -68,15 +73,56 @@ public class CharacterManager : MonoBehaviour
             );
     }
 
-    private void Update()
+    void SortByScore ()
     {
-        if (spawnSquads)
+        LogicAndMath.SortHighestToLowest(active, character => character.KillCount);
+        LogicAndMath.AssignIndexes(active, (character, index) => character.rank = index + 1);
+    }
+
+    public void UpdateScoreBoard ()
+    {
+        sortCharactersThisFrame = true;
+    }
+
+    private void Update()
+    { 
+        if (sortCharactersThisFrame)
         {
-            if (Time.time - lastSquadStamp > squadSpawnInterval || (Time.time == 0 && spawnSquadOnStart))
+            SortByScore();
+        }
+    }
+
+    //private void Update()
+    //{
+    //    if (spawnSquads)
+    //    {
+    //        if (Time.time - lastSquadStamp > squadSpawnInterval || (Time.time == 0 && spawnSquadOnStart))
+    //        {
+    //            var pos = ChunkManager.Manager.GetRandomPos(squadRadius);
+    //            SpawnBotSquad(pos);
+    //            lastSquadStamp = Time.time;
+    //        }
+    //    }
+    //}
+
+    IEnumerator BotSpawn ()
+    {
+        while (true)
+        {
+            if (spawnSquads)
             {
                 var pos = ChunkManager.Manager.GetRandomPos(squadRadius);
                 SpawnBotSquad(pos);
-                lastSquadStamp = Time.time;
+
+                if (active.Count >= spawnCap) yield break;
+            }
+
+            squadSpawnTimer = 0;
+
+            while (squadSpawnTimer < squadSpawnInterval)
+            {
+                yield return null;
+                squadSpawnTimer += Time.deltaTime;
             }
         }
     }
@@ -89,7 +135,8 @@ public class CharacterManager : MonoBehaviour
         {
             var botPos = Random.insideUnitCircle * squadRadius + pos;
 
-            NewBot(botPos);
+            NewBot(botPos).Name = $"bot{nextBotId}";
+            nextBotId++;
         }
     }
 
@@ -114,6 +161,8 @@ public class CharacterManager : MonoBehaviour
 
         active.Add(newCharacter);
 
+        UpdateScoreBoard();
+
         return newCharacter;
     }
 
@@ -123,6 +172,10 @@ public class CharacterManager : MonoBehaviour
 
         pool.AddToPool(character);
         character.Chunk = null;
+
+        squadSpawnRoutine = StartCoroutine(BotSpawn());
+
+        UpdateScoreBoard();
     }
 
     public void StartRespawn (Character character)
@@ -134,10 +187,20 @@ public class CharacterManager : MonoBehaviour
     {
         var type = character.Type;
 
+        //active.Remove(character);
+
         character.gameObject.SetActive(false);
         character.ResetSelf();
 
+        UpdateScoreBoard();
+
+        character.Chunk = null;
+
         yield return new WaitForSeconds(respawnWait);
+
+        //active.Add(character);
+
+        UpdateScoreBoard();
 
         character.gameObject.SetActive(true);
         character.SetPos(ChunkManager.Manager.GetRandomPos());

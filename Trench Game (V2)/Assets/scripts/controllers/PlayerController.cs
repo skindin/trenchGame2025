@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(1))
             {
-                character.inventory.PickupClosest();
+                character.inventory.PickupClosest(mousePos);
             }
             else
             {
@@ -115,7 +115,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            character.inventory.DropPrevItem();
+            character.inventory.DropPrevItem(mousePos);
         }
 
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -168,7 +168,7 @@ public class PlayerController : MonoBehaviour
             else if (inputType == MultiuseTouchCursor.UseType.interactWithObject)
             {
                 if (multiuseJoystick.tapped)
-                    character.inventory.PickupClosest();
+                    character.inventory.PickupClosest(cursorWorldPos);
             }
             else if (inputType == MultiuseTouchCursor.UseType.placeObject && multiuseJoystick.released)
             {

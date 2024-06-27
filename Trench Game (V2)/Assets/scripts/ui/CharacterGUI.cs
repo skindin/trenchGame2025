@@ -30,6 +30,7 @@ public class CharacterGUI : MonoBehaviour
     public Color plainTextColor = Color.white, backgroundColor = Color.white, importantColor = Color.white;
     public Vector2 itemBoxOffset, characterBoxOffset;
     public float scale = 100, infoBoxPadding = 10, screenPadding = 10;
+    public int maxVisibleCharacters = 5;
     Texture2D infoBoxTexture;
 
     private void Awake()
@@ -47,6 +48,7 @@ public class CharacterGUI : MonoBehaviour
         DrawAllCharacterUI(boxStyle,scaleFactor);
 
         DrawAssignedCharacterUI(scaleFactor);
+        DrawScoreboard(scaleFactor);
     }
 
     public GUIStyle GetBoxStyle ()
@@ -112,6 +114,55 @@ public class CharacterGUI : MonoBehaviour
         style.alignment = TextAnchor.LowerCenter;
 
         GUI.Label(rect, character.InfoString(), style);
+    }
+
+    public void DrawScoreboard (float scaleFactor)
+    {
+        string text = "Scoreboard";
+
+        var visibleCharacterCount = Mathf.Min(CharacterManager.Manager.active.Count, maxVisibleCharacters);
+
+        bool includedMain = false;
+
+        string GetScoreboardLine (Character character)
+        {
+            return $"\n#{character.rank} -{character.Name}- {character.KillCount} kills";
+        }
+
+        for (int i = 0; i < visibleCharacterCount; i++)
+        {
+            var character = CharacterManager.Manager.active[i];
+
+            text += GetScoreboardLine(character);
+
+            if (character == this.character) includedMain = true;
+        }
+
+        if (!includedMain)
+            text += GetScoreboardLine(character);
+
+        GUIStyle style = new();
+
+        style.normal.textColor = plainTextColor;
+
+        style.fontSize = Mathf.RoundToInt(amoTextSize * scaleFactor);
+        style.alignment = TextAnchor.UpperLeft;
+
+        var padding = Mathf.RoundToInt(screenPadding * scaleFactor);
+
+        style.padding = new(padding, padding, padding, padding);
+
+        int width = Screen.width;
+        int height = Screen.height;
+
+        // Calculate the size of the text area
+        //int rectWidth = width / 4;
+        //int rectHeight = height * 2 / 100;
+
+        // Position the rect in the lower right corner
+        Rect rect = new(0, 0, width, height);
+
+        GUI.Label(rect, text, style);
     }
 
     public void DrawNearbyItemsUI (GUIStyle style, float scaleFactor)

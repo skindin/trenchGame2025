@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using JetBrains.Annotations;
 
 public class ItemManager : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class ItemManager : MonoBehaviour
     public float itemDropRadius = 5, dropInterval = 60, dropTimer = 0;
     public int dropCount = 10;
     public bool dropOnStart = false, replaceCappedItems = false;
+    public Coroutine dropRoutine;
 
     public float TimeToNextDrop => dropInterval - dropTimer;
 
@@ -37,33 +39,55 @@ public class ItemManager : MonoBehaviour
                 b.Setup(b.prefab);
             }
         }
+
+        dropRoutine = StartCoroutine(ItemDrop());
     }
 
-    public void RunDropInterval(float seconds)
-    {
-        dropTimer += seconds;
+    //public void RunDropInterval(float seconds)
+    //{
+    //    dropTimer += seconds;
 
-        if (dropTimer >= dropInterval)
+    //    if (dropTimer >= dropInterval)
+    //    {
+    //        var spawnPoint = ChunkManager.Manager.GetRandomPos(itemDropRadius);
+    //        SpawnDrop(spawnPoint);
+    //        dropTimer = 0;
+    //    }
+    //}
+
+    System.Collections.IEnumerator ItemDrop()
+    {
+        while (true)
         {
-            var spawnPoint = ChunkManager.Manager.GetRandomPos(itemDropRadius);
-            SpawnDrop(spawnPoint);
+            if (spawnDrops)
+            {
+                var spawnPoint = ChunkManager.Manager.GetRandomPos(itemDropRadius);
+                SpawnDrop(spawnPoint);
+            }
+
             dropTimer = 0;
+
+            while (dropTimer < dropInterval)
+            {
+                yield return null;
+                dropTimer += Time.deltaTime;
+            }
         }
     }
 
-    private void Start()
-    {
-        if (dropOnStart && spawnDrops)
-        {
-            RunDropInterval(dropInterval);
-        }
-    }
+    //private void Start()
+    //{
+    //    if (dropOnStart && spawnDrops)
+    //    {
+    //        RunDropInterval(dropInterval);
+    //    }
+    //}
 
-    private void Update()
-    {
-        if (spawnDrops)
-            RunDropInterval(Time.deltaTime);
-    }
+    //private void Update()
+    //{
+    //    if (spawnDrops)
+    //        RunDropInterval(Time.deltaTime);
+    //}
 
     Item NewItem(Item prefab)
     {

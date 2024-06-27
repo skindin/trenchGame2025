@@ -393,4 +393,14 @@ public static class LogicAndMath
 
         return list;
     }
+
+    public static List<T> AssignIndexes<T> (List<T> list, Action<T, int> setIndex) where T : class
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            setIndex(list[i], i);
+        }
+
+        return list;
+    }
 }

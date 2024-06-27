@@ -19,6 +19,8 @@ public class BotController : MonoBehaviour
     Vector2 targetPos, targetPosOffset, pointerPos, targetPointerPos; //pointer pos and target pointer pos are in LOCAL space
     Chunk[,] chunks = default;
 
+    //CURRENTLY NOT RESSETING ANY OF THIS WHEN BOTS DIE
+
     Vector2 TargetPointerPos
     {
         get
@@ -462,7 +464,8 @@ public class BotController : MonoBehaviour
 
         if (closestItem)
         {
-            character.inventory.PickupItem(closestItem);
+            var dropPos = UnityEngine.Random.insideUnitCircle * character.inventory.selectionRad + (Vector2)closestItem.transform.position;
+            character.inventory.PickupItem(closestItem,dropPos);
         }
     }
 

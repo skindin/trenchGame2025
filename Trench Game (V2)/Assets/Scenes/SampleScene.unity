@@ -1156,6 +1156,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1735167459}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &607746250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1942,13 +1954,14 @@ MonoBehaviour:
   pool:
     minPooled: 0
     maxPooled: 20
-  active: []
+  active:
+  - {fileID: 1253392265}
   prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
   container: {fileID: 1284647723}
-  squadRadius: 5
+  squadRadius: 20
   squadSpawnInterval: 20
   respawnWait: 0.5
-  botsPerSquad: 5
+  botsPerSquad: 10
   spawnCap: 10
 --- !u!1 &1054766971
 GameObject:
@@ -2839,7 +2852,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1735167460
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3316,10 +3329,11 @@ MonoBehaviour:
   backgroundColor: {r: 0, g: 0, b: 0, a: 0.8}
   importantColor: {r: 0.33296537, g: 1, b: 0, a: 1}
   itemBoxOffset: {x: 0, y: -5}
-  characterBoxOffset: {x: 0, y: 8}
+  characterBoxOffset: {x: 0, y: 10}
   scale: 0.015
   infoBoxPadding: 0.5
   screenPadding: 1
+  maxVisibleCharacters: 5
 --- !u!4 &2113553811
 Transform:
   m_ObjectHideFlags: 0
@@ -3420,6 +3434,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
+      propertyPath: Name
+      value: player
+      objectReference: {fileID: 0}
     - target: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: controlType
       value: 1
