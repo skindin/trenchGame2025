@@ -1843,7 +1843,7 @@ MonoBehaviour:
     minPooled: 0
     maxPooled: 10
   logOutOfBounds: 0
-  drawChunks: 0
+  drawChunks: 1
 --- !u!4 &893604346
 Transform:
   m_ObjectHideFlags: 0
@@ -3413,9 +3413,9 @@ PrefabInstance:
       propertyPath: constantDetect
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
-      propertyPath: constantlyUpdateChunk
-      value: 0
+    - target: {fileID: 606239545023204029, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
+      propertyPath: debugLines
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1209951706319063104, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: debugLines

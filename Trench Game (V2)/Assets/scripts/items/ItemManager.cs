@@ -142,7 +142,7 @@ public class ItemManager : MonoBehaviour
 
                 var newAmo = NewItem(itemGroup.prefab) as Amo;
                 newAmo.amount = amount;
-                newAmo.Drop(pos);
+                newAmo.Drop(pos, out _);
             }
         }
     }
@@ -198,7 +198,7 @@ public class ItemManager : MonoBehaviour
             var itemPos = Random.insideUnitCircle * itemDropRadius + spawnPos;
             var newItem = NewItem(item);
             //Debug.Log($"{newItem} chunk was {(newItem.Chunk != null ? $"chunk {newItem.Chunk.adress}" : "null")} before it was dropped");
-            newItem.Drop(itemPos);
+            newItem.Drop(itemPos, out _);
             //Debug.Log($"{newItem} chunk was {(newItem.Chunk != null ? $"chunk {newItem.Chunk.adress}" : "null")} after it was dropped");
         }
     }

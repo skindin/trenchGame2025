@@ -48,7 +48,7 @@ public class Character : MonoBehaviour
     public Inventory inventory;
     public bool 
         digging = false, filling = false, constantDig = false, //too much trouble to comment these out atm
-        constantlyUpdateChunk = false, shooting = false; //most of these will probably be moved once i design shovels
+        constantlyUpdateChunk = false, shooting = false, moving = false; //most of these will probably be moved once i design shovels
 
     public CharacterType controlType = CharacterType.none;
     CharacterType type;
@@ -144,8 +144,12 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (constantlyUpdateChunk)
-            SetPos(transform.position);
+        {
+            UpdateChunk();
+            inventory.DetectItems();
+        }
 
         //lastPos = tran
     }
@@ -169,15 +173,39 @@ public class Character : MonoBehaviour
         //transform.position += d * Time.deltaTime;
     }
 
+    //bool posWasSetThisFrame = false;
+    //Coroutine waitForPosRoutine;
+
     public void SetPos (Vector2 pos) //this would be the rpc
     {
         //if ((Vector2)transform.position == pos) return;
 
         transform.position = pos;
 
-        UpdateChunk();
-        inventory.DetectItems();
+        if (!constantlyUpdateChunk)
+        {
+            UpdateChunk();
+            inventory.DetectItems();
+        }
+
+        //posWasSetThisFrame = true;
+
+        //if (waitForPosRoutine != null)
+        //    StopCoroutine(waitForPosRoutine);
+        
+        //waitForPosRoutine = StartCoroutine(WaitForPosSet());
     }
+
+    //IEnumerator WaitForPosSet ()
+    //{
+    //    yield return null;
+
+    //    if (!posWasSetThisFrame)
+    //    {
+    //        moving = false;
+    //        inventory.UpdateChunks();
+    //    }
+    //}
 
     public Chunk Chunk
     {

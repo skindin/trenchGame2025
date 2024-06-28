@@ -121,7 +121,7 @@ public class Item : MonoBehaviour
     /// <summary>
     /// Returns true if the item has been removed from the world
     /// </summary>
-    public virtual void DropLogic (Vector2 pos, out bool wasDestroyed)
+    public virtual void DropLogic (Vector2 pos, out bool destroyedSelf)
     {
         wielder = null;
 
@@ -129,14 +129,14 @@ public class Item : MonoBehaviour
         transform.position = pos;
         transform.rotation = Quaternion.identity;
         //UpdateChunk();
-        wasDestroyed = false;
+        destroyedSelf = false;
 
         //Debug.Log($"Item {this} {this.gameObject.GetInstanceID()} was dropped");
     }
 
-    public void Drop(Vector2 pos)
+    public void Drop(Vector2 pos, out bool destroyedSelf)
     {
-        DropLogic(pos, out var destroyedSelf);
+        DropLogic(pos, out destroyedSelf);
         if (!destroyedSelf && gameObject.activeSelf)
             UpdateChunk();
     }

@@ -175,6 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
+  rank: 0
   Name: 
   userController: {fileID: 8968939273650880824}
   aiController: {fileID: 9129561575884848698}
@@ -187,14 +188,14 @@ MonoBehaviour:
   hp: 10
   maxHp: 10
   collider: {fileID: 6768170971662278183}
-  gun: {fileID: 0}
   reserve: {fileID: 5931548437021222437}
   inventory: {fileID: 7354906971072003271}
   digging: 0
   filling: 0
   constantDig: 0
-  constantlyUpdateChunk: 0
+  constantlyUpdateChunk: 1
   shooting: 0
+  moving: 0
   controlType: 0
 --- !u!114 &8968939273650880824
 MonoBehaviour:
@@ -211,6 +212,8 @@ MonoBehaviour:
   character: {fileID: 7562934035425285329}
   enableFill: 0
   drawEdgeDetection: 0
+  type: 0
+  overrideToTouchControls: 0
 --- !u!114 &9129561575884848698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +255,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   localSize: 1
+  draw: 0
   vulnerable: 1
 --- !u!1001 &2149341669520741861
 PrefabInstance:

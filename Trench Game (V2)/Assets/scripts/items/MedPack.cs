@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MedPack : Item
 {
-    float healingTimer = 0;
+    public float animRots = 3;
     bool healing = false;
     Coroutine healRoutine;
 
@@ -49,7 +49,7 @@ public class MedPack : Item
     {
         if (!wielder || wielder.hp >= wielder.maxHp) yield break;
 
-        healingTimer = 0;
+        float healingTimer = 0;
 
         healing = true;
 
@@ -57,6 +57,8 @@ public class MedPack : Item
         {
             yield return null;
             healingTimer += Time.deltaTime;
+            var angle = ((MedPackModel.healingTime - healingTimer) / MedPackModel.healingTime) * animRots * 360;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
 
         wielder?.Heal(MedPackModel.hp);

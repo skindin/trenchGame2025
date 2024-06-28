@@ -64,6 +64,20 @@ public class Inventory : MonoBehaviour
     //    set => onNewItem = value ?? (_ => { }); // Ensure the value is not null
     //}
 
+    private void Update()
+    {
+        if (debugLines)
+        {
+            foreach (var chunk in chunks)
+            {
+                if (chunk == null)
+                    continue;
+
+                ChunkManager.Manager.DrawChunk(chunk, Color.magenta);
+            }
+        }
+    }
+
     public Item SelectedItem
     {
         get
@@ -110,7 +124,7 @@ public class Inventory : MonoBehaviour
     {
         withinRadius.Clear();
 
-        UpdateChunks();
+        UpdateChunks(false);
 
         foreach (var chunk in chunks)
         {
@@ -134,14 +148,15 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void UpdateChunks ()
+    public void UpdateChunks (bool updateListeners = false)
     {
         var radius = activePickupRad;
 
         var min = (Vector2)transform.position - Vector2.one * radius;
         var max = (Vector2)transform.position + Vector2.one * radius;
         var newChunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
-        AddChunkListeners(chunks, newChunks);
+        if (updateListeners)
+            AddChunkListeners(chunks, newChunks);
         chunks = newChunks;
     }
 
@@ -209,6 +224,7 @@ public class Inventory : MonoBehaviour
         }
 
         items.Remove(item);
+        //withinRadius.Add(item);
     }
 
     public void DetectItem(Item item)
@@ -217,7 +233,8 @@ public class Inventory : MonoBehaviour
 
         var dist = Vector2.Distance(transform.position, item.transform.position);
 
-        if (dist > activePickupRad) return;
+        if (dist > activePickupRad) //bruh the first time i've ever had to do ipsilon addition
+            return;
 
         if (item.passivePickup && dist <= passivePickupRad)
         {
@@ -282,12 +299,15 @@ public class Inventory : MonoBehaviour
 
     public void DropItem (Item item, Vector2 pos)
     {
-        pos = Vector2.ClampMagnitude(pos - (Vector2)transform.position, activePickupRad) + (Vector2)transform.position;
+        var delta = pos - (Vector2)transform.position;
+        var clampedDelta = Vector2.ClampMagnitude(delta, activePickupRad- .001f);
+        var clampedPos = clampedDelta + (Vector2)transform.position;
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;
-        item.Drop(pos);
+        item.Drop(clampedPos, out _);
 
         RemoveItem(item);
+
     }
 
     public void DropAllItems()
