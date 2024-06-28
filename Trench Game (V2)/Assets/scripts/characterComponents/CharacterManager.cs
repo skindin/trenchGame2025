@@ -218,6 +218,8 @@ public class CharacterManager : MonoBehaviour
         {
             RemoveCharacter(character);
         }
+
+        UpdateScoreBoard();
     }
 
     void StartRespawn (Character character)
@@ -231,8 +233,6 @@ public class CharacterManager : MonoBehaviour
 
         character.gameObject.SetActive(false);
         active.Remove(character);
-
-        UpdateScoreBoard();
 
         character.Chunk = null;
 
