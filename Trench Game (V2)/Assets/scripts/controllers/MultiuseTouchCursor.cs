@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
 using UnityEngine.UI;
+using TMPro;
 
 public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IBeginDragHandler
 {
@@ -55,6 +56,17 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
     //    get
     //    {
     //        return background.sizeDelta.x / 2;
+    //    }
+    //}
+
+    //private void Update()
+    //{
+    //    foreach (var use in uses)
+    //    {
+    //        if (use.type == UseType.itemAbility)
+    //        {
+    //            use.button.GetComponentInChildren<Text>().text = ;
+    //        }
     //    }
     //}
 
@@ -158,12 +170,40 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
         currentUseType = UseType.none;
     }
 
+    public void ChangeUseTest (UseType type, string text)
+    {
+        foreach (var use in uses)
+        {
+            if (use.type == type)
+            {
+                use.ChangeText(text);
+                return;
+            }
+        }
+    }
+
+    public void ToggleButtons (bool toggle)
+    {
+        foreach (var use in uses)
+        {
+            use.button.gameObject.SetActive(toggle);
+        }
+    }
+
     [System.Serializable]
     public class Use
     {
         public UnityEngine.UI.Image button;
         public UseType type;
+        //public System.Action<Use> action;
         //public Vector2 prevPos { get; set; }
+
+        public void ChangeText (string newText)
+        {
+            var textObj = button.GetComponentInChildren<TextMeshProUGUI>();
+            if (textObj) 
+                textObj.text = newText;
+        }
     }
 
     public enum UseType

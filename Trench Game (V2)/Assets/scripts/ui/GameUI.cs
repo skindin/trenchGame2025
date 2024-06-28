@@ -69,7 +69,7 @@ public class GameUI : MonoBehaviour
         style.normal.textColor = textColor;
         style.padding = new(padding, padding, padding, padding);
 
-        var timeLeft = ItemManager.Manager.TimeToNextDrop;
+        //var timeLeft = ItemManager.Manager.TimeToNextDrop;
 
         string itemDropTimeText = GetTimeText(ItemManager.Manager.TimeToNextDrop) + " to item drop";
         GUI.Label(rect,itemDropTimeText,style);
@@ -81,7 +81,7 @@ public class GameUI : MonoBehaviour
 
     }
 
-    public string GetTimeText (float seconds)
+    public static string GetTimeText (float seconds)
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
 

@@ -77,6 +77,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: ef23d245d6bb1714980e3e85b9a33bc3, type: 2}
     - target: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
+      propertyPath: itemModel
+      value: 
+      objectReference: {fileID: 11400000, guid: ef23d245d6bb1714980e3e85b9a33bc3, type: 2}
+    - target: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: drawBerrelPos
       value: 0
       objectReference: {fileID: 0}

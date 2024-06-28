@@ -250,7 +250,7 @@ public class ItemManager : MonoBehaviour
 
         public void Setup(Item prefab)
         {
-            container = new GameObject(prefab?prefab.model.name:"").transform;
+            container = new GameObject((prefab&& prefab.itemModel)?prefab.itemModel.name:"").transform;
             container.parent = Manager.container;
 
             pool = new ObjectPool<Item>(

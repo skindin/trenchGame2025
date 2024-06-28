@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 using Unity.VisualScripting;
 
-public class Gun : Item
+public class Gun : Weapon
 {
     public AmoReserve reserve;
     public int rounds = 10, reloadAnimRots = 3;
@@ -17,6 +17,8 @@ public class Gun : Item
         fired = false,
         drawBerrelPos = false;
     bool isFiring = false;
+
+    public override string Verb { get; } = "shoot";
 
     public Vector2 BarrelPos
     {
@@ -31,15 +33,15 @@ public class Gun : Item
     {
         get
         {
-            if (cachedGunModel == null || cachedGunModel != model)
+            if (cachedGunModel == null || cachedGunModel != itemModel)
             {
-                cachedGunModel = (GunModel)model;
+                cachedGunModel = (GunModel)itemModel;
             }
             return cachedGunModel;
         }
         set
         {
-            model = value;
+            itemModel = value;
             cachedGunModel = value; // Update the cache when the model changes
         }
     }
@@ -125,9 +127,7 @@ public class Gun : Item
     //    return true;
     //}
 
-
-
-    public void Trigger (Vector2 direction = default) //direction parameter to ensure the bullet fires in the right direction across all connections
+    public override void Attack (Vector2 direction = default)
     {
         //holdingTrigger = true;//not sure how this gonna work on server?
         //Aim(direction);
@@ -136,10 +136,7 @@ public class Gun : Item
 
         holdingTrigger = true;
 
-        if (fireRoutine == null)
-        {
-            fireRoutine = StartCoroutine(Shoot());
-        }
+        fireRoutine ??= StartCoroutine(Shoot());
 
 
         //GunLogic(direction);
@@ -178,7 +175,7 @@ public class Gun : Item
                 else
                 {
                     if (!reloading && GunModel.autoReload)
-                        StartReload();
+                        Action();
 
                     fireRoutine = null;
                     yield break;
@@ -194,7 +191,7 @@ public class Gun : Item
 
     }
 
-    public void StartReload ()
+    public override void Action ()
     {
         if (reloadRoutine == null)
         {
@@ -228,7 +225,7 @@ public class Gun : Item
         reloadRoutine = null;
     }
 
-    public void Aim (Vector2 direction)
+    public override void Aim (Vector2 direction)
     {
         this.direction = direction;
 
@@ -274,7 +271,7 @@ public class Gun : Item
 
     public override string InfoString(string separator = " ")
     {
-        var itemInfo = base.InfoString();
+        var itemInfo = $"{(reloading ? "reloading..." + separator : "")}" + base.InfoString();
 
         var roundRatio = $"{rounds}/{GunModel.maxRounds}";
         var range = $"{GunModel.range:F1} m range";

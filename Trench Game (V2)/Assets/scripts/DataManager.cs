@@ -20,10 +20,10 @@ public static class DataManager //might be better for all these data types to be
         public BaseItemData(Item item)
         {
             id = item.id;
-            modelName = item.model.name;
+            modelName = item.itemModel.name;
             wielderId = item.wielder.id;
 
-            tags = LogicAndMath.GetValuesList(item.model.Tags, tags, tag => tag.ToString());
+            tags = LogicAndMath.GetValuesList(item.itemModel.Tags, tags, tag => tag.ToString());
 
             pos = new(item.transform.position);
             //modelData = new ItemModelData(item.model);
@@ -50,6 +50,15 @@ public static class DataManager //might be better for all these data types to be
         public AmoData(Amo amo) : base(amo)
         {
             type = amo.AmoModel.type.name;
+        }
+    }
+
+    [System.Serializable]
+    public class WeaponData : BaseItemData
+    {
+        public WeaponData (Weapon weapon) : base(weapon)
+        {
+
         }
     }
 
@@ -119,13 +128,13 @@ public static class DataManager //might be better for all these data types to be
     //    return (TData)Activator.CreateInstance(dataType, item);
     //}
 
-    public abstract class BaseCharacterData<TGunData> : JsonAble<BaseCharacterData<TGunData>> where TGunData : BaseItemData
+    public abstract class BaseCharacterData<TItemData> : JsonAble<BaseCharacterData<TItemData>> where TItemData : BaseItemData
     {
         public int id;
         public string name;
         public float hp, maxHp;
         public Vector2Data pos;
-        public TGunData gun = null;
+        public TItemData gun = null;
         //public bool reloading;
 
         public BaseCharacterData(Character character)
@@ -139,14 +148,14 @@ public static class DataManager //might be better for all these data types to be
         }
     }
 
-    public class PrivateCharacterData : BaseCharacterData<GunData>
+    public class PrivateCharacterData : BaseCharacterData<WeaponData>
     {
         public Dictionary<string,AmoReserveData> amoReserve = new();
 
         public PrivateCharacterData (Character character) : base(character)
         {
-            if (character.gun)
-                gun = GetItemData<Gun, GunData>(character.gun);
+            if (character.inventory.ActiveWeapon)
+                gun = GetItemData<Weapon, WeaponData>(character.inventory.ActiveWeapon);
 
             if (character.reserve)
             {
@@ -180,8 +189,8 @@ public static class DataManager //might be better for all these data types to be
     {
         public PublicCharacterData(Character character) : base(character)
         {
-            if (character.gun)
-                gun = GetItemData<Gun, BaseItemData>(character.gun);
+            if (character.inventory.ActiveWeapon)
+                gun = GetItemData<Item, BaseItemData>(character.inventory.ActiveItem);
         }
     }
 

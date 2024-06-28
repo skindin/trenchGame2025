@@ -95,11 +95,9 @@ public class CharacterGUI : MonoBehaviour
         Rect rect = new (0, 0, width, height);
 
         string text = "";
-        if (character.gun)
+        if (character.inventory.ActiveItem)
         {
-            if (character.gun.reloading)
-                text += "(Reloading)\n";
-            text += character.gun.InfoString("\n");
+            text += character.inventory.ActiveItem.InfoString("\n");
         }
 
         if (character.reserve)
@@ -122,7 +120,7 @@ public class CharacterGUI : MonoBehaviour
 
         var visibleCharacterCount = Mathf.Min(CharacterManager.Manager.active.Count, maxVisibleCharacters);
 
-        bool includedMain = false;
+        bool mainInTopGroup = false;
 
         string GetScoreboardLine (Character character)
         {
@@ -135,10 +133,13 @@ public class CharacterGUI : MonoBehaviour
 
             text += GetScoreboardLine(character);
 
-            if (character == this.character) includedMain = true;
+            if (i == 0)
+                text += $" ({GameUI.GetTimeText(CharacterManager.Manager.stopWatchTime)})";
+
+            if (character == this.character) mainInTopGroup = true;
         }
 
-        if (!includedMain)
+        if (!mainInTopGroup)
             text += GetScoreboardLine(character);
 
         GUIStyle style = new();
@@ -183,7 +184,7 @@ public class CharacterGUI : MonoBehaviour
                 Debug.LogError($"{item.name} is disabled");
             }
 
-                DrawTextBox(item.model.name, item.transform.position, style, itemBoxOffset * scaleFactor);
+                DrawTextBox(item.itemModel.name, item.transform.position, style, itemBoxOffset * scaleFactor);
         }
 
         if (character.inventory.SelectedItem != null)

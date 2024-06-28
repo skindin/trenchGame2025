@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   defaultContainer: {fileID: 0}
-  model: {fileID: 11400000, guid: 06016e4aa7d1214418b0540caeab9b97, type: 2}
+  itemModel: {fileID: 11400000, guid: 06016e4aa7d1214418b0540caeab9b97, type: 2}
   wielder: {fileID: 0}
   passivePickup: 0
   reserve: {fileID: 0}

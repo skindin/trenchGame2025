@@ -10,10 +10,10 @@ public class CharacterManager : MonoBehaviour
     public List<Character> active = new();
     public Character prefab;
     public Transform container;
-    public float squadRadius = 5, squadSpawnInterval = 20, respawnWait = .5f;
+    public float squadRadius = 5, squadSpawnInterval = 20, respawnWait = .5f, stopWatchTime = 0;
     public int botsPerSquad = 5, spawnCap = 10;
     float squadSpawnTimer = 0;
-    Coroutine squadSpawnRoutine;
+    Coroutine squadSpawnRoutine, stopWatchRoutine;
     bool sortCharactersThisFrame = false;
     int nextBotId = 0;
 
@@ -48,8 +48,27 @@ public class CharacterManager : MonoBehaviour
     {
         SetupPool();
         squadSpawnRoutine = StartCoroutine(BotSpawn());
+
+        StartStopWatch();
     }
 
+    void StartStopWatch ()
+    {
+        if (stopWatchRoutine != null)
+            StopCoroutine(stopWatchRoutine);
+        stopWatchRoutine = StartCoroutine(StopWatch());
+    }
+
+    IEnumerator StopWatch ()
+    {
+        stopWatchTime = 0;
+
+        while (true)
+        {
+            yield return null;
+            stopWatchTime += Time.deltaTime;
+        }
+    }
     //private void Start()
     //{
     //}
@@ -75,8 +94,18 @@ public class CharacterManager : MonoBehaviour
 
     void SortByScore ()
     {
+        if (active.Count < 1)
+            return;
+
+        var prevTop = active[0];
+
         LogicAndMath.SortHighestToLowest(active, character => character.KillCount);
         LogicAndMath.AssignIndexes(active, (character, index) => character.rank = index + 1);
+
+        if (active[0] != prevTop)
+        {
+            StartStopWatch();
+        }
     }
 
     public void UpdateScoreBoard ()
@@ -178,19 +207,30 @@ public class CharacterManager : MonoBehaviour
         UpdateScoreBoard();
     }
 
-    public void StartRespawn (Character character)
+    public void KillCharacter(Character character)
+    {
+        if (character.controlType != Character.CharacterType.localBot || active.Count <= spawnCap)
+            //if this character is not a bot, or the spawn cap is unmet...
+        {
+            StartRespawn(character);
+        }
+        else
+        {
+            RemoveCharacter(character);
+        }
+    }
+
+    void StartRespawn (Character character)
     {
         StartCoroutine(RespawnCharacter(character));
     }
 
     IEnumerator RespawnCharacter (Character character)
     {
-        var type = character.Type;
-
         //active.Remove(character);
 
         character.gameObject.SetActive(false);
-        character.ResetSelf();
+        active.Remove(character);
 
         UpdateScoreBoard();
 
@@ -198,14 +238,19 @@ public class CharacterManager : MonoBehaviour
 
         yield return new WaitForSeconds(respawnWait);
 
-        //active.Add(character);
+        var type = character.Type;
+        character.ResetSelf();
 
-        UpdateScoreBoard();
+        //active.Add(character);
 
         character.gameObject.SetActive(true);
         character.SetPos(ChunkManager.Manager.GetRandomPos());
         character.Type = type;
 
         character.UpdateChunk();
+
+        active.Add(character);
+
+        UpdateScoreBoard();
     }
 }

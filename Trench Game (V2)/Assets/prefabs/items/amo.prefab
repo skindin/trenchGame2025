@@ -129,8 +129,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   defaultContainer: {fileID: 0}
-  model: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
+  itemModel: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
   amount: 50

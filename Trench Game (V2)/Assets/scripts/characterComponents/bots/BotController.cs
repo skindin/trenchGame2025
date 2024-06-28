@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BotController : MonoBehaviour
@@ -91,7 +92,8 @@ public class BotController : MonoBehaviour
     public void SoldierLogic ()
     {
         //closestEnemy = FindClosestCharacterWithinChunks<Character>(chunks);
-        closestEnemy = FindClosestCharacter<Character>(character => character != this.character && (character.gun || this.character.gun));
+        closestEnemy = FindClosestCharacter<Character>(character => character != this.character && 
+        (character.inventory.ActiveWeapon || this.character.inventory.ActiveWeapon));
 
         if (targetCollider && !targetCollider.gameObject.activeInHierarchy) 
             targetCollider = null;
@@ -104,22 +106,24 @@ public class BotController : MonoBehaviour
             closestEnemy = null;
         }
 
-        if (!character.gun) //pickup a gun if you don't have one
+        if (!character.inventory.ActiveWeapon) //pickup a gun if you don't have one
         {
-            PickupClosestItem<Gun>();
+            var item = PickupClosestItem<Weapon>();
         }
 
-        if (character.gun) //if you picked up a gun...
+        Gun gun = (character.inventory.ActiveWeapon is Gun a ? a : null);
+
+        if (gun) //if you picked up a gun...
         {
             if (!targetCollider && closestEnemy && GeoUtils.TestBoxPosSize(transform.position, visionBox, closestEnemy.transform.position)) //and you have no target collider, but you do have a close enemy...
             {
                 targetCollider = closestEnemy.collider; //target the closest enemy
             }
 
-            if (character.gun.rounds <= 0) //and your gun is out of amo...
+            if (gun.rounds <= 0) //and your gun is out of amo...
             {
-                if (!character.gun.reloading && character.reserve.GetAmoAmount(character.gun.GunModel.amoType) > 0) //and you didn't arlready start reloading and you have amo in the reserve...
-                    character.gun.StartReload(); //start reloading the gun
+                if (!gun.reloading && character.reserve.GetAmoAmount(gun.GunModel.amoType) > 0) //and you didn't arlready start reloading and you have amo in the reserve...
+                    gun.Action(); //start reloading the gun
             }
             else //and your gun has amo...
             {
@@ -127,12 +131,12 @@ public class BotController : MonoBehaviour
                 {
                     var direction = pointerPos;
 
-                    var dist = Vector2.Distance(character.gun.BarrelPos, targetCollider.transform.position) + targetCollider.WorldSize/2;
+                    var dist = Vector2.Distance(gun.BarrelPos, targetCollider.transform.position) + targetCollider.WorldSize/2;
 
-                    var range = character.gun.GunModel.range;
+                    var range = gun.GunModel.range;
 
                     if (debugLines)
-                        GeoUtils.DrawCircle(character.gun.BarrelPos, range, UnityEngine.Color.red, 8);
+                        GeoUtils.DrawCircle(gun.BarrelPos, range, UnityEngine.Color.red, 8);
 
                     if (dist <= range) //if within range..
                     {
@@ -145,7 +149,7 @@ public class BotController : MonoBehaviour
                             false
                             )) //and within trajectory
                         {
-                            character.gun.Trigger(direction); //shoot at the collider
+                            gun.Attack(direction); //shoot at the collider
                         }
 
 
@@ -185,7 +189,7 @@ public class BotController : MonoBehaviour
             }
         }
 
-        if (character.gun && character.gun.rounds > 0 && targetCollider)
+        if (gun && gun.rounds > 0 && targetCollider)
         {
             //var colliderDelta = targetCollider.transform.position - transform.position;
             TargetPointerPos = targetCollider.transform.position - transform.position; //aim towards collider
@@ -218,13 +222,13 @@ public class BotController : MonoBehaviour
                     pickupAmo = true;
             }
 
-            if (character.gun && character.reserve)
+            if (gun && character.reserve)
             {
-                var deficit = character.gun.GunModel.maxRounds - character.gun.rounds;
+                var deficit = gun.GunModel.maxRounds - gun.rounds;
 
-                if (deficit > 0 && character.reserve.GetAmoAmount(character.gun.GunModel.amoType) > 0)
+                if (deficit > 0 && character.reserve.GetAmoAmount(gun.GunModel.amoType) > 0)
                 {
-                    character.gun.StartReload();
+                    gun.Action();
                 }
             }
 
@@ -305,8 +309,8 @@ public class BotController : MonoBehaviour
             }
         }
 
-        if (character.gun)
-            character.gun.Aim(pointerPos);
+        if (gun)
+            gun.Aim(pointerPos);
     }
 
     Vector2[,] wanderPoints = new Vector2[0,0];
@@ -452,11 +456,11 @@ public class BotController : MonoBehaviour
     //{
     //}
 
-    public void PickupClosestItem<T>(Func<Item, bool> condition = null) where T : Item
+    public Item PickupClosestItem<T>(Func<T, bool> condition = null) where T : Item
     {
         var closestItem = LogicAndMath.GetClosest(
             transform.position,
-            character.inventory.withinRadius.ToArray(),
+            character.inventory.withinRadius.OfType<T>().ToArray(),
             item => item.transform.position,
             out _,
             condition
@@ -467,6 +471,8 @@ public class BotController : MonoBehaviour
             var dropPos = UnityEngine.Random.insideUnitCircle * character.inventory.selectionRad + (Vector2)closestItem.transform.position;
             character.inventory.PickupItem(closestItem,dropPos);
         }
+
+        return closestItem;
     }
 
     public T FindClosestCharacter<T>(Func<T,bool> condition = null) where T : Character

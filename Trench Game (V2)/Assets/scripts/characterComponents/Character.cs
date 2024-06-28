@@ -43,10 +43,12 @@ public class Character : MonoBehaviour
     public Collider collider;
     //public TrenchDetector detector;
     //public TrenchDigger digger; //eventually this will be attached to the shovel...?
-    public Gun gun;
+    //public Gun gun;
     public AmoReserve reserve;
     public Inventory inventory;
-    public bool digging = false, filling = false, constantDig = false, constantlyUpdateChunk = false, shooting = false; //most of these will probably be moved once i design shovels
+    public bool 
+        digging = false, filling = false, constantDig = false, //too much trouble to comment these out atm
+        constantlyUpdateChunk = false, shooting = false; //most of these will probably be moved once i design shovels
 
     public CharacterType controlType = CharacterType.none;
     CharacterType type;
@@ -119,6 +121,11 @@ public class Character : MonoBehaviour
 
             killer.killCount++;
         }
+    }
+
+    public void Heal (float hp)
+    {
+        this.hp = Mathf.Min(maxHp, this.hp + hp);
     }
 
     //private void OnEnable()
@@ -221,11 +228,7 @@ public class Character : MonoBehaviour
         if (inventory)
             inventory.DropAllItems();
 
-
-        if (false && Type != CharacterType.localPlayer) //put the false && so all npcs respawn
-            RemoveSelf();
-        else
-            CharacterManager.Manager.StartRespawn(this);
+        CharacterManager.Manager.KillCharacter(this);
     }
 
 

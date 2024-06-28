@@ -529,12 +529,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 57.6
+  m_fontSize: 50
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 50
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1546,7 +1546,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 793914956}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1555,11 +1555,11 @@ RectTransform:
   - {fileID: 530118183}
   - {fileID: 1861470503}
   - {fileID: 626255693}
-  m_Father: {fileID: 1430281417}
+  m_Father: {fileID: 1459131766}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -256.47668, y: 0}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &820955971
@@ -1950,7 +1950,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnSquads: 1
-  spawnSquadOnStart: 1
   pool:
     minPooled: 0
     maxPooled: 20
@@ -1960,7 +1959,8 @@ MonoBehaviour:
   container: {fileID: 1284647723}
   squadRadius: 20
   squadSpawnInterval: 20
-  respawnWait: 0.5
+  respawnWait: 1
+  stopWatchTime: 0
   botsPerSquad: 10
   spawnCap: 10
 --- !u!1 &1054766971
@@ -2047,6 +2047,15 @@ MonoBehaviour:
         maxPooled: 100
       container: {fileID: 0}
       spawnCap: 3
+      exceedsCap: 0
+    - prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
+      chance: 1
+      active: []
+      pool:
+        minPooled: 0
+        maxPooled: 100
+      container: {fileID: 0}
+      spawnCap: 5
       exceedsCap: 0
     chance: 1
   container: {fileID: 1526754501}
@@ -2145,7 +2154,7 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 50
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2437,9 +2446,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 1459131766}
   - {fileID: 893500985}
-  - {fileID: 793914959}
+  - {fileID: 1459131766}
   - {fileID: 1735167460}
   m_Father: {fileID: 746558444}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2480,6 +2488,7 @@ RectTransform:
   m_Children:
   - {fileID: 277537551}
   - {fileID: 1933638717}
+  - {fileID: 793914959}
   m_Father: {fileID: 1430281417}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
@@ -2784,7 +2793,7 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 50
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -3437,6 +3446,10 @@ PrefabInstance:
     - target: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: Name
       value: player
+      objectReference: {fileID: 0}
+    - target: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
+      propertyPath: constantDig
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: controlType

@@ -14,6 +14,43 @@ public class Inventory : MonoBehaviour
     public Chunk[,] chunks = new Chunk[0,0];
     Item selectedItem;
     public Action<Item> onItemAdded, onItemRemoved;
+    Item cachedActiveItem;
+    Weapon cachedActiveWeapon;
+
+    public Weapon ActiveWeapon
+    {
+        get
+        {
+            return cachedActiveWeapon;
+        }
+
+        private set
+        {
+            cachedActiveWeapon = value;
+        }
+    }
+
+    public Item ActiveItem
+    {
+        set
+        {
+            if (value is Weapon weapon)
+            {
+                ActiveWeapon = weapon;
+            }
+            else
+            {
+                ActiveWeapon = null;
+            }
+
+            cachedActiveItem = value;
+        }
+
+        get
+        {
+            return cachedActiveItem;
+        }
+    }
 
     private void Awake()
     {
@@ -65,6 +102,8 @@ public class Inventory : MonoBehaviour
         }
 
         withinRadius.Clear();
+
+        ActiveItem = null;
     }
 
     public void DetectItems()
@@ -154,6 +193,24 @@ public class Inventory : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Only to be used when an item is to be destroyed while a character is holding it
+    /// </summary>
+    /// <param name="item"></param>
+    public void RemoveItem (Item item)
+    {
+        if (!items.Contains(item)) //if the item is not in the inventory, do nothing
+            return;
+
+        if (item == ActiveItem)
+        {
+            ActiveItem = null;
+        }
+
+        items.Remove(item);
+    }
+
     public void DetectItem(Item item)
     {
         if (item.wielder) return; //this should never be true if on the ground
@@ -192,20 +249,28 @@ public class Inventory : MonoBehaviour
                 withinRadius.Remove(item);
 
             if (pickedUp && !destroyed)
-                items.Add(item);
-
-
-            if (item is Gun gun)
             {
-                //if (character.gun != null && character.gun.model == item.model)
-                //{
-                //put unload logic here
-                //}
-                //else
-                if (character.gun) DropItem(character.gun, dropPos); //we only want to drop the gun when they already have the gun
+                if (ActiveItem)
+                    DropItem(ActiveItem, dropPos);
 
-                character.gun = gun;
+                items.Add(item);
+                ActiveItem = item;
             }
+
+            //if (item is Gun
+            //    //|| item is MedPack
+            //    ) //temporary, idk if ill like this
+            //{
+            //    //if (character.gun != null && character.gun.model == item.model)
+            //    //{
+            //    //put unload logic here
+            //    //}
+            //    //else
+            //    if (character.gun) DropItem(character.gun, dropPos); //we only want to drop the gun when they already have the gun
+
+            //    if (item is Gun gun)
+            //        character.gun = gun;
+            //}
         }
     }
 
@@ -219,15 +284,10 @@ public class Inventory : MonoBehaviour
     {
         pos = Vector2.ClampMagnitude(pos - (Vector2)transform.position, activePickupRad) + (Vector2)transform.position;
 
-        if (item is Gun)
-        {
-            character.gun = null;
-        }
-
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;
         item.Drop(pos);
 
-        items.Remove(item);
+        RemoveItem(item);
     }
 
     public void DropAllItems()
@@ -241,7 +301,12 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void DropPrevItem ()
+    public void DropActiveItem ()
+    {
+        DropItem(ActiveItem);
+    }
+
+    public void DropPrevItem()
     {
         if (items.Count > 0)
         {

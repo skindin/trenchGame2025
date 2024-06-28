@@ -9,7 +9,7 @@ public class StackableItem : Item
     {
         get
         {
-            if (cachedModel == null && model is StackableItemModel stackableModel)
+            if (cachedModel == null && itemModel is StackableItemModel stackableModel)
             {
                 cachedModel = stackableModel;
             }

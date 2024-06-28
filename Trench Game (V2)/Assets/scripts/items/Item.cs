@@ -8,7 +8,7 @@ public class Item : MonoBehaviour
 {
     public int id;
     public Transform defaultContainer;
-    public ItemModel model;
+    public ItemModel itemModel;
     public Character wielder;
     //public bool currentlyHeld = false;
     public static List<Item> all = new();
@@ -37,6 +37,8 @@ public class Item : MonoBehaviour
             //Debug.Log($"Item {this}{gameObject.GetInstanceID()} chunk was set to {(value == null ? "null" : $"Chunk {chunk.adress}")}");
         }
     }
+
+    public virtual string Verb { get; } = "use";
 
     public bool passivePickup = false;
 
@@ -84,6 +86,11 @@ public class Item : MonoBehaviour
     public virtual void ItemUpdate ()
     {
         //shrugging emoji
+    }
+
+    public virtual void Action()
+    {
+
     }
 
     public void UpdateChunk()
@@ -134,7 +141,7 @@ public class Item : MonoBehaviour
             UpdateChunk();
     }
 
-    public virtual void DestroyItem ()
+    public void DestroyItem ()
     {
         //destroy logic here shruggin emoji
         ItemManager.Manager.RemoveItem(this);
@@ -153,7 +160,7 @@ public class Item : MonoBehaviour
 
     public virtual string InfoString(string separator = " ")
     {
-        return model.name;// { $"Tier {model.tier}" };
+        return itemModel.name;// { $"Tier {model.tier}" };
     }
 
     //public virtual DataDict<object> PublicData //to be used when observing an item that another character is holding

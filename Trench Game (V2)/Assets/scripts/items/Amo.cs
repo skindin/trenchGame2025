@@ -12,7 +12,7 @@ public class Amo : StackableItem
         {
             if (amoModel == null)
             {
-                amoModel = (AmoModel)model;
+                amoModel = (AmoModel)itemModel;
             }
             return amoModel;
         }

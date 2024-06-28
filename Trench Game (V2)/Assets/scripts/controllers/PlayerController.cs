@@ -83,14 +83,17 @@ public class PlayerController : MonoBehaviour
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mouseDir = mousePos - transform.position;
 
-        if (Input.GetMouseButton(0) && character.gun)
+        if (Input.GetMouseButton(0))
         {
             if (Input.GetMouseButtonDown(0))
             {
             }
             else
             {
-                character.gun.Trigger(mouseDir);
+                if (character.inventory.ActiveWeapon)
+                    character.inventory.ActiveWeapon.Attack(mouseDir);
+                else if (character.inventory.ActiveItem)
+                    character.inventory.ActiveItem.Action();
             }
         }
 
@@ -108,9 +111,9 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (character.gun && Input.GetKeyDown(KeyCode.E))
+        if (character.inventory.ActiveWeapon && Input.GetKeyDown(KeyCode.E))
         {
-            character.gun.StartReload();
+            character.inventory.ActiveWeapon.Action();
         }
 
         if (Input.GetKeyDown(KeyCode.Q))
@@ -120,7 +123,7 @@ public class PlayerController : MonoBehaviour
 
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //var mouseDir = mousePos - transform.position;
-        if (character.gun) character.gun.Aim(mouseDir); //this had been in late update...
+        if (character.inventory.ActiveWeapon) character.inventory.ActiveWeapon.Aim(mouseDir); //this had been in late update...
     }
 
     public void TouchControls()
@@ -141,45 +144,63 @@ public class PlayerController : MonoBehaviour
         //    character.gun.Trigger(abilityInput);
         //}
 
-        var multiuseJoystick = touchController.multiuseJoystick;
+        var touchCursor = touchController.multiuseJoystick;
 
         var cursorWorldPos =
         //touchCursor.transform.position = 
-        Camera.main.ScreenToWorldPoint(multiuseJoystick.ScreenPosition);
+        Camera.main.ScreenToWorldPoint(touchCursor.ScreenPosition);
 
         //touchCursor.SetActive(true);
-        var inputType = multiuseJoystick.currentUseType;
+        var inputType = touchCursor.currentUseType;
 
         var directionToCursor = cursorWorldPos - transform.position;
 
-        if (multiuseJoystick.holding || multiuseJoystick.released)
+        if (touchCursor.holding || touchCursor.released)
         {
-            if (character.gun && inputType == MultiuseTouchCursor.UseType.itemAbility)
+            if (character.inventory.ActiveItem && inputType == MultiuseTouchCursor.UseType.itemAbility)
             {
-                if (multiuseJoystick.tapped)
+                if (character.inventory.ActiveWeapon)
                 {
-                    character.gun.StartReload();
+                    if (touchCursor.tapped)
+                    {
+                        character.inventory.ActiveWeapon.Action();
+                    }
+                    else if (touchCursor.dragged)
+                    {
+                        character.inventory.ActiveWeapon.Attack(directionToCursor);
+                    }
                 }
-                else if (multiuseJoystick.dragged)
+                else
                 {
-                    character.gun.Trigger(directionToCursor);
+                    character.inventory.ActiveItem.Action();
                 }
             }
             else if (inputType == MultiuseTouchCursor.UseType.interactWithObject)
             {
-                if (multiuseJoystick.tapped)
+                if (touchCursor.tapped)
                     character.inventory.PickupClosest(cursorWorldPos);
             }
-            else if (inputType == MultiuseTouchCursor.UseType.placeObject && multiuseJoystick.released)
+            else if (inputType == MultiuseTouchCursor.UseType.placeObject && touchCursor.released)
             {
                 character.inventory.DropPrevItem(cursorWorldPos);
             }
 
-            if (character.gun)
+            if (character.inventory.ActiveItem &&
+                (
+                inputType == MultiuseTouchCursor.UseType.placeObject ||
+                inputType == MultiuseTouchCursor.UseType.interactWithObject)
+                )
             {
-                character.gun.Aim(directionToCursor);
+                touchCursor.ChangeUseTest(MultiuseTouchCursor.UseType.itemAbility, character.inventory.ActiveItem.Verb);
+            }
+
+            if (character.inventory.ActiveWeapon)
+            {
+                character.inventory.ActiveWeapon.Aim(directionToCursor);
             }
         }
+
+        touchCursor.ToggleButtons(character.inventory.ActiveItem);
 
         character.inventory.SelectClosest(cursorWorldPos);
     }
