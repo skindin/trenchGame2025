@@ -641,7 +641,9 @@ MonoBehaviour:
     drag finger on the left side of the screen to
     move, drag finger on the right side of the screen to move cursor, drag from shoot
     button to shoot while moving cursor, tap shoot button to reload, and drag from
-    drop button and let go to drop current item'
+    drop button and let go to drop current item
+
+    tap anywhere to hide this text'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1843,7 +1845,7 @@ MonoBehaviour:
     minPooled: 0
     maxPooled: 10
   logOutOfBounds: 0
-  drawChunks: 1
+  drawChunks: 0
 --- !u!4 &893604346
 Transform:
   m_ObjectHideFlags: 0
@@ -3415,7 +3417,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 606239545023204029, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: debugLines
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1209951706319063104, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: debugLines

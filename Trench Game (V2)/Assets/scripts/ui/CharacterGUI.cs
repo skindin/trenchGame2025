@@ -176,15 +176,17 @@ public class CharacterGUI : MonoBehaviour
 
             if (item.Chunk == null)
             {
-                Debug.LogError($"{(transform.parent ? $"{transform.parent.gameObject} " : "unheld ")}{item.name} is not in a chunk");
+                //Debug.LogError($"{(transform.parent ? $"{transform.parent.gameObject} " : "unheld ")}{item.name} is not in a chunk");
+                return;
             }
 
             if (!item.gameObject.activeSelf)
             {
-                Debug.LogError($"{item.name} is disabled");
+                //Debug.LogError($"{item.name} is disabled");
+                return;
             }
-
-                DrawTextBox(item.itemModel.name, item.transform.position, style, itemBoxOffset * scaleFactor);
+            
+            DrawTextBox(item.itemModel.name, item.transform.position, style, itemBoxOffset * scaleFactor);
         }
 
         if (character.inventory.SelectedItem != null)
