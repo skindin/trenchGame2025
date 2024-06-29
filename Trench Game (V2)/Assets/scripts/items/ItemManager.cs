@@ -89,7 +89,7 @@ public class ItemManager : MonoBehaviour
     //        RunDropInterval(Time.deltaTime);
     //}
 
-    Item NewItem(Item prefab)
+    public Item NewItem(Item prefab)
     {
         ItemGroup group = null;
 

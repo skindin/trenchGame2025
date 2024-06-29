@@ -179,7 +179,7 @@ public class CharacterManager : MonoBehaviour
         return NewCharacter(pos, Character.CharacterType.localPlayer);
     }
 
-    Character NewCharacter (Vector2 pos, Character.CharacterType type)
+    public Character NewCharacter (Vector2 pos, Character.CharacterType type)
     {
         var newCharacter = pool.GetFromPool();
 
