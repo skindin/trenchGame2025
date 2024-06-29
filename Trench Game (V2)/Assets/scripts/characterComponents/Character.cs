@@ -6,7 +6,7 @@ using UnityEngine.TextCore.Text;
 public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
-    public int id, rank;
+    public int id, rank, life = 0;
     public string Name;
     public PlayerController userController;
     public BotController aiController;

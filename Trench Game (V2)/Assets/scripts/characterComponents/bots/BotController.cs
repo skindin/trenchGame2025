@@ -149,7 +149,7 @@ public class BotController : MonoBehaviour
                             false
                             )) //and within trajectory
                         {
-                            gun.Attack(direction); //shoot at the collider
+                            gun.DirectionalAction(direction); //shoot at the collider
                         }
 
 

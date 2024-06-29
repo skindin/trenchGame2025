@@ -10,11 +10,11 @@ public class CharacterManager : MonoBehaviour
     public List<Character> active = new();
     public Character prefab;
     public Transform container;
-    public float squadRadius = 5, squadSpawnInterval = 20, respawnWait = .5f, stopWatchTime = 0;
+    public float squadRadius = 5, squadSpawnInterval = 20, respawnWait = .5f, scoreStopWatch = 0, highScore = 0;
     public int botsPerSquad = 5, spawnCap = 10;
     float squadSpawnTimer = 0;
-    Coroutine squadSpawnRoutine, stopWatchRoutine;
-    bool sortCharactersThisFrame = false;
+    Coroutine squadSpawnRoutine, stopWatchRoutine, scoreboardRoutine;
+    //bool sortCharactersThisFrame = false;
     int nextBotId = 0;
 
     public float TimeToSquadSpawn
@@ -57,16 +57,16 @@ public class CharacterManager : MonoBehaviour
         if (stopWatchRoutine != null)
             StopCoroutine(stopWatchRoutine);
         stopWatchRoutine = StartCoroutine(StopWatch());
-    }
 
-    IEnumerator StopWatch ()
-    {
-        stopWatchTime = 0;
-
-        while (true)
+        IEnumerator StopWatch()
         {
-            yield return null;
-            stopWatchTime += Time.deltaTime;
+            scoreStopWatch = 0;
+
+            while (true)
+            {
+                yield return null;
+                scoreStopWatch += Time.deltaTime;
+            }
         }
     }
     //private void Start()
@@ -92,34 +92,54 @@ public class CharacterManager : MonoBehaviour
             );
     }
 
-    void SortByScore ()
-    {
-        if (active.Count < 1)
-            return;
 
-        var prevTop = active[0];
-
-        LogicAndMath.SortHighestToLowest(active, character => character.KillCount);
-        LogicAndMath.AssignIndexes(active, (character, index) => character.rank = index + 1);
-
-        if (active[0] != prevTop)
-        {
-            StartStopWatch();
-        }
-    }
-
+    Character prevTop;
     public void UpdateScoreBoard ()
     {
-        sortCharactersThisFrame = true;
-    }
+        //sortCharactersThisFrame = true;
+        scoreboardRoutine ??= StartCoroutine(UpdateScoreNextFrame());
 
-    private void Update()
-    { 
-        if (sortCharactersThisFrame)
+        IEnumerator UpdateScoreNextFrame ()
         {
-            SortByScore();
+            yield return null;
+
+            if (active.Count < 1)
+            {
+                scoreboardRoutine = null;
+                yield break;
+            }
+
+            LogicAndMath.SortHighestToLowest(active, character => character.KillCount);
+            LogicAndMath.AssignIndexes(active, (character, index) => character.rank = index + 1);
+
+            var currentTop = active[0];
+
+            if (currentTop != prevTop)
+            {
+                if (
+                    prevTop && prevTop.controlType == Character.CharacterType.localPlayer &&
+                    scoreStopWatch > highScore
+                    )
+                {
+                    highScore = scoreStopWatch;
+                }
+
+                StartStopWatch();
+            }
+
+            prevTop = currentTop;
+
+            scoreboardRoutine = null;
         }
     }
+
+    //private void LateUpdate()
+    //{ 
+    //    if (sortCharactersThisFrame)
+    //    {
+    //        SortByScore();
+    //    }
+    //}
 
     //private void Update()
     //{
@@ -219,38 +239,40 @@ public class CharacterManager : MonoBehaviour
             RemoveCharacter(character);
         }
 
+        character.life++;
         UpdateScoreBoard();
     }
 
     void StartRespawn (Character character)
     {
         StartCoroutine(RespawnCharacter(character));
-    }
 
-    IEnumerator RespawnCharacter (Character character)
-    {
-        //active.Remove(character);
+        IEnumerator RespawnCharacter (Character character)
+        {
+            //active.Remove(character);
+            var type = character.Type;
 
-        character.gameObject.SetActive(false);
-        active.Remove(character);
+            character.gameObject.SetActive(false);
+            character.ResetSelf();
 
-        character.Chunk = null;
+            active.Remove(character);
+            active.Add(character);
 
-        yield return new WaitForSeconds(respawnWait);
+            character.Chunk = null;
 
-        var type = character.Type;
-        character.ResetSelf();
+            yield return new WaitForSeconds(respawnWait);
 
-        //active.Add(character);
+            //active.Add(character);
 
-        character.gameObject.SetActive(true);
-        character.SetPos(ChunkManager.Manager.GetRandomPos());
-        character.Type = type;
+            character.gameObject.SetActive(true);
+            character.SetPos(ChunkManager.Manager.GetRandomPos());
+            character.Type = type;
 
-        character.UpdateChunk();
+            character.UpdateChunk();
 
-        active.Add(character);
 
-        UpdateScoreBoard();
+            UpdateScoreBoard();
+            //UpdateScoreBoard();
+        }
     }
 }

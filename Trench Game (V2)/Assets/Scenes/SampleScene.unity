@@ -1916,7 +1916,8 @@ MonoBehaviour:
   squadRadius: 20
   squadSpawnInterval: 20
   respawnWait: 1
-  stopWatchTime: 0
+  scoreStopWatch: 0
+  highScore: 0
   botsPerSquad: 10
   spawnCap: 10
 --- !u!1 &1054766971

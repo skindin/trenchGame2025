@@ -91,7 +91,7 @@ public class PlayerController : MonoBehaviour
             else
             {
                 if (character.inventory.ActiveWeapon)
-                    character.inventory.ActiveWeapon.Attack(mouseDir);
+                    character.inventory.ActiveWeapon.DirectionalAction(mouseDir);
                 else if (character.inventory.ActiveItem)
                     character.inventory.ActiveItem.Action();
             }
@@ -167,7 +167,7 @@ public class PlayerController : MonoBehaviour
                     }
                     else if (touchCursor.dragged)
                     {
-                        character.inventory.ActiveWeapon.Attack(directionToCursor);
+                        character.inventory.ActiveWeapon.DirectionalAction(directionToCursor);
                     }
                 }
                 else

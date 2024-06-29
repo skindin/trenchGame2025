@@ -127,7 +127,7 @@ public class Gun : Weapon
     //    return true;
     //}
 
-    public override void Attack (Vector2 direction = default)
+    public override void DirectionalAction(Vector2 direction = default)
     {
         //holdingTrigger = true;//not sure how this gonna work on server?
         //Aim(direction);
@@ -138,94 +138,57 @@ public class Gun : Weapon
 
         fireRoutine ??= StartCoroutine(Shoot());
 
-
-        //GunLogic(direction);
-    }
-
-    IEnumerator Shoot ()
-    {
-        var secsPerBullet = 1 / GunModel.firingRate;
-
-        while (true)
+        IEnumerator Shoot()
         {
-            if (!holdingTrigger)
+            var secsPerBullet = 1 / GunModel.firingRate;
+
+            while (true)
             {
-                fireRoutine = null;
-                yield break;
-            }
-
-            if (!reloading)
-            {
-                if (rounds > 0)
+                if (!holdingTrigger)
                 {
-
-                    var bulletCount = Mathf.FloorToInt(GunModel.firingRate * Time.deltaTime);
-
-                    bulletCount = Mathf.Max(bulletCount, 1);
-
-                    bulletCount = Mathf.Min(bulletCount, rounds);
-
-                    for (int i = 0; i < bulletCount; i++)
-                    {
-                        Fire();
-                    }
-
-                    rounds -= bulletCount;
-                }
-                else
-                {
-                    if (!reloading && GunModel.autoReload)
-                        Action();
-
                     fireRoutine = null;
                     yield break;
                 }
+
+                if (!reloading)
+                {
+                    if (rounds > 0)
+                    {
+
+                        var bulletCount = Mathf.FloorToInt(GunModel.firingRate * Time.deltaTime);
+
+                        bulletCount = Mathf.Max(bulletCount, 1);
+
+                        bulletCount = Mathf.Min(bulletCount, rounds);
+
+                        for (int i = 0; i < bulletCount; i++)
+                        {
+                            Fire();
+                        }
+
+                        rounds -= bulletCount;
+                    }
+                    else
+                    {
+                        if (!reloading && GunModel.autoReload)
+                            Action();
+
+                        fireRoutine = null;
+                        yield break;
+                    }
+                }
+
+                if (!GunModel.autoFire) break;
+
+                holdingTrigger = false; //makes sure that something else says it's pulling the trigger before it repeats
+
+                yield return new WaitForSeconds(secsPerBullet);
             }
 
-            if (!GunModel.autoFire) break;
-
-            holdingTrigger = false; //makes sure that something else says it's pulling the trigger before it repeats
-
-            yield return new WaitForSeconds(secsPerBullet);
-        }
-
-    }
-
-    public override void Action ()
-    {
-        if (reloadRoutine == null)
-        {
-            reloadRoutine = StartCoroutine(Reload());
         }
     }
 
-    IEnumerator Reload()
-    {
-        if (reloading || reserve == null) yield break;
-
-        if (rounds < GunModel.maxRounds && reserve.GetAmoAmount(GunModel.amoType) > 0)
-        {
-            float elapsedTime = 0;
-
-            reloading = true;
-
-            while (elapsedTime < GunModel.reloadTime)
-            {
-                yield return null;
-
-                elapsedTime += Time.deltaTime;
-                var angle = ((GunModel.reloadTime - elapsedTime) / GunModel.reloadTime) * reloadAnimRots * 360;
-                transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
-            }
-
-            reloading = false;
-            rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
-        }
-
-        reloadRoutine = null;
-    }
-
-    public override void Aim (Vector2 direction)
+    public override void Aim(Vector2 direction)
     {
         this.direction = direction;
 
@@ -233,6 +196,37 @@ public class Gun : Weapon
 
         var angle = Vector2.SignedAngle(Vector2.up, direction);
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+    }
+
+    public override void Action()
+    {
+        reloadRoutine ??= StartCoroutine(Reload());
+
+        IEnumerator Reload()
+        {
+            if (reloading || reserve == null) yield break;
+
+            if (rounds < GunModel.maxRounds && reserve.GetAmoAmount(GunModel.amoType) > 0)
+            {
+                float elapsedTime = 0;
+
+                reloading = true;
+
+                while (elapsedTime < GunModel.reloadTime)
+                {
+                    yield return null;
+
+                    elapsedTime += Time.deltaTime;
+                    var angle = ((GunModel.reloadTime - elapsedTime) / GunModel.reloadTime) * reloadAnimRots * 360;
+                    transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
+                }
+
+                reloading = false;
+                rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
+            }
+
+            reloadRoutine = null;
+        }
     }
 
     public Bullet Fire ()
@@ -271,7 +265,7 @@ public class Gun : Weapon
 
     public override string InfoString(string separator = " ")
     {
-        var itemInfo = $"{(reloading ? "reloading..." + separator : "")}" + base.InfoString();
+        var itemInfo = $"{(reloading ? "(reloading...)" + separator : "")}" + base.InfoString();
 
         var roundRatio = $"{rounds}/{GunModel.maxRounds}";
         var range = $"{GunModel.range:F1} m range";

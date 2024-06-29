@@ -116,9 +116,11 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawScoreboard (float scaleFactor)
     {
-        string text = "Scoreboard";
+        var charManager = CharacterManager.Manager;
 
-        var visibleCharacterCount = Mathf.Min(CharacterManager.Manager.active.Count, maxVisibleCharacters);
+        string text = "-scoreboard-";
+
+        var visibleCharacterCount = Mathf.Min(charManager.active.Count, maxVisibleCharacters);
 
         bool mainInTopGroup = false;
 
@@ -129,18 +131,23 @@ public class CharacterGUI : MonoBehaviour
 
         for (int i = 0; i < visibleCharacterCount; i++)
         {
-            var character = CharacterManager.Manager.active[i];
+            var character = charManager.active[i];
 
             text += GetScoreboardLine(character);
 
             if (i == 0)
-                text += $" ({GameUI.GetTimeText(CharacterManager.Manager.stopWatchTime)})";
+                text += $" ({GameUI.GetTimeText(charManager.scoreStopWatch)})";
 
             if (character == this.character) mainInTopGroup = true;
         }
 
-        if (!mainInTopGroup)
+        if (!mainInTopGroup && (true || character.gameObject.activeSelf))
             text += GetScoreboardLine(character);
+        else
+            text += "\n";
+
+        if (charManager.highScore > 0)
+            text += $"\nhigh score ({GameUI.GetTimeText(charManager.highScore)})";
 
         GUIStyle style = new();
 

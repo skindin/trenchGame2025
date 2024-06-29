@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Weapon : Item , IDirectionalAction
+public interface IDirectionalAction
 {
     public abstract void DirectionalAction(Vector2 direction);
 
