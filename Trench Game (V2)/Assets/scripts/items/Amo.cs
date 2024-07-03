@@ -75,11 +75,13 @@ public class Amo : StackableItem
                 var pickupRoutine = base.Pickup(character, out _, out _, out _
                     //, shrinkToZero
                     );
+
                 if (pickupRoutine != null)
                     yield return pickupRoutine;
 
                 if (charLife != character.life)
                     yield break;
+
 
                 //var spaceLeft = character.reserve.GetAmoSpace(AmoModel.type);
 
@@ -87,7 +89,7 @@ public class Amo : StackableItem
 
                 if (true || surplus <= 0) //tbh seeng them drop just looks bad
                 {
-                    DestroySelf();
+                    yield return DestroySelf();
                 }
                 else
                 {

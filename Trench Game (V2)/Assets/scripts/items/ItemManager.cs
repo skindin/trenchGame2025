@@ -220,9 +220,9 @@ public class ItemManager : MonoBehaviour
                 disableAction: item =>
                 {
                     //var chunk = item.Chunk;
-                    item.gameObject.SetActive(false); 
+                    item.gameObject.SetActive(false);
                     //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was disabled");
-                    item.transform.parent = container;
+                    item.transform.SetParent(container);
                 },
                 resetAction: item =>
                 {

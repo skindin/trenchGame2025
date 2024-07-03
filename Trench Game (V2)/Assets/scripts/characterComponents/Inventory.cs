@@ -76,6 +76,17 @@ public class Inventory : MonoBehaviour
 
                 ChunkManager.Manager.DrawChunk(chunk, Color.magenta);
             }
+
+            if (ActiveItem)
+            {
+                Debug.DrawLine(transform.position, ActiveItem.transform.position, Color.green);
+                if (ActiveItem.wielder)
+                {
+                    Debug.DrawLine(ActiveItem.transform.position, ActiveItem.wielder.transform.position, Color.green);
+                }
+                else
+                    GeoUtils.MarkPoint(ActiveItem.wielder.transform.position, 1f, Color.red);
+            }
         }
     }
 

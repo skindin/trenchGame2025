@@ -16,7 +16,7 @@ public class Gun : Weapon
         startFull = true, //temporary, until i make the actual spawning script
         fired = false,
         drawBerrelPos = false;
-    bool isFiring = false;
+    //bool isFiring = false;
 
     public override string Verb { get; } = "shoot";
 

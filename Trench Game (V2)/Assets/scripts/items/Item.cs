@@ -118,6 +118,8 @@ public class Item : MonoBehaviour
 
         inCharInventory = true;
 
+        Debug.Log($"{character.Name} queued {this}, scale was {transform.localScale}");
+
         return StartCoroutine(MoveToCharacter());
 
         IEnumerator MoveToCharacter ()
@@ -138,7 +140,10 @@ public class Item : MonoBehaviour
                 transform.position = Vector2.Lerp(startPos, character.transform.position, ratio);
             }
 
-            transform.parent = character.transform;
+            transform.SetParent(character.transform);
+
+            character.inventory.RemoveItem(this);
+            DestroySelf();//just to test some stuff
         }
     }
 
@@ -154,7 +159,7 @@ public class Item : MonoBehaviour
 
         var worldPos = transform.position;
         var preDropScale = transform.localScale;
-        transform.parent = defaultContainer;
+        transform.SetParent(defaultContainer);
         transform.position = worldPos;
         //transform.position = pos;
         var postDropScale = transform.localScale;
@@ -168,6 +173,8 @@ public class Item : MonoBehaviour
     public void Drop(Vector2 pos, out bool destroyedSelf)
     {
         DropLogic(pos, out destroyedSelf);
+
+        Debug.Log($"{this} was dropped, scale was {transform.localScale}");
 
         bool localDestroyed = destroyedSelf;
 
@@ -205,6 +212,9 @@ public class Item : MonoBehaviour
 
     public void Spawn(Vector2 pos, float delay, float scaleDuration)
     {
+        if (destroying)
+            throw new System.Exception("ran spawn while being destroyed!");
+
         if (spawnRoutine != null)
         {
             StopCoroutine(spawnRoutine);
@@ -253,12 +263,14 @@ public class Item : MonoBehaviour
 
         System.Collections.IEnumerator Shrink()
         {
+            Debug.Log($"{this} started destroy animation, scale was {transform.localScale}, parent was {transform.parent.localScale}");
+
             var ratio = 0f;
 
             //transform.parent = defaultContainer;
             var prevParent = transform.parent;
             //transform.parent = null;
-            Vector3 startScale = transform.lossyScale;
+            Vector3 startScale = transform.localScale;
             //transform.parent = prevParent;
 
             while (ratio <= 1)
@@ -273,7 +285,7 @@ public class Item : MonoBehaviour
                 //prevParent = transform.parent;
                 //transform.parent = null;
                 transform.localScale = newScale;
-                transform.parent = prevParent;
+                //transform.parent = prevParent;
             }
 
             yield return null;
@@ -286,6 +298,10 @@ public class Item : MonoBehaviour
             //transform.parent = prevParent;
 
             SpawnManager.Manager.RemoveItem(this);
+
+            destroying = false;
+
+            Debug.Log($"{this} destroyed itself, scale was {transform.localScale}, parent was {transform.parent.localScale}");
         }
     }
 
@@ -293,7 +309,6 @@ public class Item : MonoBehaviour
     {
         ItemAwake();
         wielder = null;
-        destroying = false;
     }
 
     public virtual string InfoString(string separator = " ")
