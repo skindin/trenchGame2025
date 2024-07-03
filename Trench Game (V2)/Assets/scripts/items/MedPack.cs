@@ -21,12 +21,16 @@ public class MedPack : Item
         }
     }
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
-    {
-        base.Pickup(character, out wasPickedUp, out wasDestroyed);
+    //public override Coroutine Pickup(Character character, out bool wasRemovedFromGround, out bool wasDestroyed, out bool inCharInventory
+    //    //, bool shrinkToZero = false
+    //    )
+    //{
+    //    return base.Pickup(character, out wasRemovedFromGround, out wasDestroyed, out inCharInventory
+    //        //, shrinkToZero
+    //        );
 
-        //Action();
-    }
+    //    //Action();
+    //}
 
     //public override void ItemUpdate()
     //{
@@ -63,7 +67,7 @@ public class MedPack : Item
 
         wielder?.Heal(MedPackModel.hp);
         wielder?.inventory?.RemoveItem(this);
-        DestroyItem();
+        DestroySelf();
     }
 
     public override void DropLogic(Vector2 pos, out bool wasDestroyed)

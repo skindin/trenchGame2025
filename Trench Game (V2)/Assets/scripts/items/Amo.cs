@@ -5,16 +5,16 @@ using System.Linq;
 
 public class Amo : StackableItem
 {
-    AmoModel amoModel;
+    AmoModel cachedAmoModel;
     public AmoModel AmoModel
     {
         get
         {
-            if (amoModel == null)
+            if (cachedAmoModel == null)
             {
-                amoModel = (AmoModel)itemModel;
+                cachedAmoModel = (AmoModel)itemModel;
             }
-            return amoModel;
+            return cachedAmoModel;
         }
     }
 
@@ -23,36 +23,91 @@ public class Amo : StackableItem
     //    base.ItemAwake();
     //}
 
+    //readonly List<Character> dispatchedTo = new();
 
     /// <summary>
-    /// Picked up means was removed from ground
+    /// Picked up means accessed
     /// </summary>
     /// <param name="character"></param>
-    /// <param name="wasPickedup"></param>
+    /// <param name="wasDispatched"></param>
     /// <param name="wasDestroyed"></param>
-    public override void Pickup (Character character, out bool wasPickedup, out bool wasDestroyed)
+    public override Coroutine Pickup (Character character, out bool wasDispatched, out bool wasDestroyed, out bool inCharInventory
+        //, bool shrinkToZero = true
+        )
     {
-        //base.Pickup(character, out wasPickedup, out wasDestroyed);
+        inCharInventory = false;
 
-        wasPickedup = wasDestroyed = false;
-
-        if (character.reserve)
+        if (amount == 0 || character.reserve.GetAmoMax(AmoModel.type) == 0
+            //|| dispatchedTo.Contains(character)
+            )
         {
-            //var prevAmount = amount;
-            amount = character.reserve.AddAmo(AmoModel.type, amount);
+            wasDispatched = wasDestroyed = false;
+            return null;
+        }
 
-            //if (prevAmount != amount)
-            //    wasPickedup = true;
+        var spaceInReserve = character.reserve.GetAmoSpace(AmoModel.type);
 
-            if (amount <= 0)//shouldn't be less then, but just a percaution
+        wasDestroyed = spaceInReserve >= amount;
+
+        wasDispatched = spaceInReserve > 0;
+
+        //if (character.reserve)
+        //{
+        //    //amount = character.reserve.AddAmo(AmoModel.type, amount);
+
+        //    //if (amount <= 0)
+        //    //{
+        //    //    DestroyItem();
+        //    //    wasPickedup = wasDestroyed = true;
+        //    //}
+        //}
+
+        return StartCoroutine(PickupAmo());
+
+        IEnumerator PickupAmo ()
+        {
+            //var amount = this.amount;
+
+            if (spaceInReserve >= amount)
             {
-                DestroyItem();
-                wasPickedup = wasDestroyed = true;
+                var charLife = character.life;
+
+                var pickupRoutine = base.Pickup(character, out _, out _, out _
+                    //, shrinkToZero
+                    );
+                if (pickupRoutine != null)
+                    yield return pickupRoutine;
+
+                if (charLife != character.life)
+                    yield break;
+
+                //var spaceLeft = character.reserve.GetAmoSpace(AmoModel.type);
+
+                var surplus = character.reserve.AddAmo(AmoModel.type, amount);
+
+                if (true || surplus <= 0) //tbh seeng them drop just looks bad
+                {
+                    DestroySelf();
+                }
+                else
+                {
+                    Drop(transform.position);
+                }
+                //if (Chunk != null)
+            }
+            else if (spaceInReserve > 0)
+            {
+                var newAmo = SpawnManager.Manager.GetAmo(AmoModel.type, spaceInReserve, transform.position);
+                //newAmo.gameObject.name = "created by splitting";
+                this.amount -= spaceInReserve;
+                //spaceInReserve = 0;
+                //dispatchedTo.Add(character);
+                yield return newAmo.Pickup(character, out _ , out _, out _);
+                //dispatchedTo.Remove(character);
             }
             //else
             //{
-
-            //    CombineAll(); //man idk why this not working
+            //    dispatchedTo.Remove(character);
             //}
         }
     }

@@ -42,11 +42,21 @@ public class StackableItem : Item
             amount = Mathf.Clamp(amount, 0, StackableModel.maxAmount);
     }
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
+    public override Coroutine Pickup(Character character, out bool wasDispatched, out bool wasDestroyed, out bool inCharInventory
+        //, bool shrinkToZero = false
+        )
     {
-        wasPickedUp = false;
-        CombineWithItems(character.inventory.items, out wasDestroyed, false);
-        if (!wasDestroyed) base.Pickup(character, out wasPickedUp, out wasDestroyed);
+        //wasPickedUp = 
+            wasDestroyed = false;
+        CombineWithItems(character.inventory.items, out var wasCombined, false);
+        var coroutine = base.Pickup(character, out wasDispatched, out var wasDestroyedWhenPickedUp, out inCharInventory
+            //, shrinkToZero
+            );
+
+        if (wasCombined)
+            wasDestroyed = wasDestroyedWhenPickedUp;
+
+        return coroutine;
     }
 
     public override void DropLogic(Vector2 pos, out bool destroyedSelf)
@@ -110,7 +120,7 @@ public class StackableItem : Item
             if (amount == 0)
             {
                 //Debug.Log($"Destroying item: {this.name}");
-                DestroyItem();
+                DestroySelf();
                 destroyedSelf = true;
             }
 

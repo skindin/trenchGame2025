@@ -144,7 +144,7 @@ public class Gun : Weapon
 
             while (true)
             {
-                if (!holdingTrigger)
+                if (!holdingTrigger || !wielder)
                 {
                     fireRoutine = null;
                     yield break;
@@ -196,6 +196,11 @@ public class Gun : Weapon
 
         var angle = Vector2.SignedAngle(Vector2.up, direction);
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        //wielder.inventory.RemoveItem(this);
+
+        //Drop(transform.position);
+        //DestroySelf();
     }
 
     public override void Action()
@@ -227,6 +232,10 @@ public class Gun : Weapon
 
             reloadRoutine = null;
         }
+
+        //wielder.inventory.RemoveItem(this);
+
+        //DestroySelf();
     }
 
     public Bullet Fire ()
@@ -297,11 +306,15 @@ public class Gun : Weapon
     //    }
     //}
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
+    public override Coroutine Pickup(Character character, out bool wasDispatched, out bool wasDestroyed, out bool inCharInventory
+        //, bool shrinkToZero = false
+        )
     {
-        base.Pickup(character,out wasPickedUp, out wasDestroyed);
-
         reserve = character.reserve;
+
+        return base.Pickup(character, out wasDispatched, out wasDestroyed, out inCharInventory
+            //, shrinkToZero
+            );
     }
 
     public override void DropLogic(Vector2 pos, out bool wasDestroyed)

@@ -365,6 +365,7 @@ Transform:
   - {fileID: 1320002077}
   - {fileID: 1054766972}
   - {fileID: 896552507}
+  - {fileID: 2032309668}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &277537550
@@ -1838,7 +1839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkSize: 10
-  maxWorldSize: 50
+  maxWorldSize: 10
   worldSize: 0
   chunkArraySize: 0
   chunkPool:
@@ -1913,13 +1914,10 @@ MonoBehaviour:
   - {fileID: 1253392265}
   prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
   container: {fileID: 1284647723}
-  squadRadius: 20
-  squadSpawnInterval: 20
   respawnWait: 1
   scoreStopWatch: 0
   highScore: 0
-  botsPerSquad: 10
-  spawnCap: 10
+  deathAnimDur: 0.2
 --- !u!1 &1054766971
 GameObject:
   m_ObjectHideFlags: 0
@@ -1965,63 +1963,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnDrops: 1
-  itemsGroups:
-  - itemGroups:
-    - prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
-      chance: 3
-      active: []
-      pool:
-        minPooled: 0
-        maxPooled: 100
-      container: {fileID: 0}
-      spawnCap: 20
-      exceedsCap: 0
-    - prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
-      chance: 1
-      active: []
-      pool:
-        minPooled: 0
-        maxPooled: 0
-      container: {fileID: 0}
-      spawnCap: 10
-      exceedsCap: 0
-    chance: 3
-  - itemGroups:
-    - prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
-      chance: 1
-      active: []
-      pool:
-        minPooled: 0
-        maxPooled: 100
-      container: {fileID: 0}
-      spawnCap: 3
-      exceedsCap: 0
-    - prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
-      chance: 1
-      active: []
-      pool:
-        minPooled: 0
-        maxPooled: 100
-      container: {fileID: 0}
-      spawnCap: 3
-      exceedsCap: 0
-    - prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
-      chance: 1
-      active: []
-      pool:
-        minPooled: 0
-        maxPooled: 100
-      container: {fileID: 0}
-      spawnCap: 5
-      exceedsCap: 0
-    chance: 1
+  itemPools:
+  - prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+    pool:
+      minPooled: 0
+      maxPooled: 5
+    container: {fileID: 0}
+  - prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
+    pool:
+      minPooled: 0
+      maxPooled: 5
+    container: {fileID: 0}
+  - prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
+    pool:
+      minPooled: 0
+      maxPooled: 5
+    container: {fileID: 0}
+  - prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
+    pool:
+      minPooled: 0
+      maxPooled: 5
+    container: {fileID: 0}
+  - prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
+    pool:
+      minPooled: 0
+      maxPooled: 5
+    container: {fileID: 0}
   container: {fileID: 1526754501}
-  itemDropRadius: 5
-  dropInterval: 15
-  dropTimer: 0
-  dropCount: 10
-  dropOnStart: 1
-  replaceCappedItems: 1
+  grabDur: 0.1
+  deleteDur: 0.1
 --- !u!1 &1088128561
 GameObject:
   m_ObjectHideFlags: 0
@@ -3182,6 +3152,104 @@ RectTransform:
   m_AnchoredPosition: {x: -350, y: 125}
   m_SizeDelta: {x: 300, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2032309667
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2032309668}
+  - component: {fileID: 2032309669}
+  m_Layer: 0
+  m_Name: spawnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2032309668
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032309667}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 62624779}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2032309669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032309667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2194a8dca4f6e2440948b7307355af01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemGroups:
+  - Name: tier 1
+    spawnItems:
+    - name: basic amo
+      prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      currentAmount: 0
+      spawnCap: 10
+      chance: 3
+    - name: basic gun
+      prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
+      currentAmount: 0
+      spawnCap: 10
+      chance: 1
+    chance: 3
+  - Name: tier 2
+    spawnItems:
+    - name: auto gun
+      prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
+      currentAmount: 0
+      spawnCap: 3
+      chance: 1
+    - name: auto amo
+      prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
+      currentAmount: 0
+      spawnCap: 3
+      chance: 1
+    - name: med pack
+      prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
+      currentAmount: 0
+      spawnCap: 5
+      chance: 1
+    chance: 1
+  - Name: test
+    spawnItems:
+    - name: test obj
+      prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      currentAmount: 0
+      spawnCap: 1
+      chance: 1
+    chance: 0
+  itemsPerDrop: 10
+  itemDropRadius: 5
+  itemDropInterval: 1
+  itemDropTimer: 0
+  minSpawnDelay: 0
+  maxSpawnDelay: 0.5
+  spawnScaleDuration: 0.1
+  spawnItemDrops: 1
+  spawnCharacter:
+    name: 
+    prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
+    currentAmount: 0
+    spawnCap: 10
+  spawnBots: 1
 --- !u!1 &2097466711
 GameObject:
   m_ObjectHideFlags: 0

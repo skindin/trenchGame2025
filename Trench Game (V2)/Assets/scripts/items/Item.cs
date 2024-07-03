@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
+using static UnityEditor.Progress;
 //using UnityEngine.Events;
 //using static UnityEditor.Progress;
 
@@ -98,35 +100,64 @@ public class Item : MonoBehaviour
         Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
     }
 
-    public virtual void Pickup (Character character, out bool wasPickedUp, out bool wasDestroyed)
+    public virtual Coroutine Pickup (Character character, out bool wasDispatched, out bool wasDestroyed, out bool inCharInventory
+        //, bool shrinToZero = false
+        )
     {
         if (wielder != character)
         {
             wielder = character;
-            transform.parent = character.transform;
-            transform.localPosition = Vector3.zero;
+
+            //transform.localPosition = Vector3.zero;
         }
 
         Chunk = null;
         wasDestroyed = false;
-        wasPickedUp = true;
+        wasDispatched = true;
+        var characterLife = character.life;
+
+        inCharInventory = true;
+
+        return StartCoroutine(MoveToCharacter());
+
+        IEnumerator MoveToCharacter ()
+        {
+            var ratio = 0f;
+            Vector2 startPos = transform.position;
+
+            while (ratio <= 1)
+            {
+                yield return null;
+                if (characterLife != character.life)
+                {
+                    //DestroySelf();
+                    Drop(transform.position);
+                    yield break;
+                }
+                ratio += Time.deltaTime / ItemManager.Manager.grabDur;
+                transform.position = Vector2.Lerp(startPos, character.transform.position, ratio);
+            }
+
+            transform.parent = character.transform;
+        }
     }
 
     public void Pickup (Character character) //not overidable, becase it's just a shorthand
     {
-        Pickup(character, out _, out _);
+        Pickup(character, out _, out _, out _);
     }
 
 
-    /// <summary>
-    /// Returns true if the item has been removed from the world
-    /// </summary>
     public virtual void DropLogic (Vector2 pos, out bool destroyedSelf)
     {
         wielder = null;
 
-        transform.SetParent(defaultContainer);
-        transform.position = pos;
+        var worldPos = transform.position;
+        var preDropScale = transform.localScale;
+        transform.parent = defaultContainer;
+        transform.position = worldPos;
+        //transform.position = pos;
+        var postDropScale = transform.localScale;
         transform.rotation = Quaternion.identity;
         //UpdateChunk();
         destroyedSelf = false;
@@ -137,25 +168,132 @@ public class Item : MonoBehaviour
     public void Drop(Vector2 pos, out bool destroyedSelf)
     {
         DropLogic(pos, out destroyedSelf);
-        if (!destroyedSelf && gameObject.activeSelf)
-            UpdateChunk();
+
+        bool localDestroyed = destroyedSelf;
+
+        if (!destroyedSelf)
+        {
+            StartCoroutine(MoveToDropPos());
+        }
+
+        IEnumerator MoveToDropPos ()
+        {
+            //transform.SetParent(defaultContainer);
+
+            var ratio = 0f;
+
+            Vector2 startPos = transform.position;
+
+            while (ratio <= 1)
+            {
+                yield return null;
+                ratio += Time.deltaTime / ItemManager.Manager.grabDur;
+                transform.position = Vector2.Lerp(startPos, pos, Mathf.Min(ratio,1));
+            }
+
+            if (!localDestroyed && gameObject.activeSelf)
+                UpdateChunk();
+        }
     }
 
-    public void DestroyItem ()
+    public void Drop(Vector2 pos)
     {
+        Drop(pos, out _);
+    }
+
+    Coroutine spawnRoutine;
+
+    public void Spawn(Vector2 pos, float delay, float scaleDuration)
+    {
+        if (spawnRoutine != null)
+        {
+            StopCoroutine(spawnRoutine);
+        }
+
+        spawnRoutine = StartCoroutine(DelayedSpawn());
+
+        IEnumerator DelayedSpawn()
+        {
+            Vector3 endScale = transform.localScale;
+            //Debug.Log($"Initial endScale: {endScale}");
+
+            transform.localScale = Vector3.zero;
+
+            yield return new WaitForSeconds(delay);
+
+            var ratio = 0f;
+
+            while (ratio < 1)
+            {
+                yield return null;
+                ratio += Time.deltaTime / scaleDuration;
+                transform.localScale = Vector3.Lerp(Vector3.zero, endScale, ratio);
+                //Debug.Log($"Current ratio: {ratio}, Current scale: {transform.localScale}");
+            }
+
+            // Ensure final scale is set correctly
+            transform.localScale = endScale;
+            //Debug.Log($"Final scale set to: {transform.localScale}");
+
+            Drop(pos);
+        }
+    }
+
+    bool destroying = false;
+    public Coroutine DestroySelf ()
+    {
+        if (destroying)
+            return null;
+
         //destroy logic here shruggin emoji
-        ItemManager.Manager.RemoveItem(this);
+        //StopAllCoroutines();
+        destroying = true;
+
+        return StartCoroutine(Shrink());
+
+        System.Collections.IEnumerator Shrink()
+        {
+            var ratio = 0f;
+
+            //transform.parent = defaultContainer;
+            var prevParent = transform.parent;
+            //transform.parent = null;
+            Vector3 startScale = transform.lossyScale;
+            //transform.parent = prevParent;
+
+            while (ratio <= 1)
+            {
+                yield return null;
+                ratio += Time.deltaTime / ItemManager.Manager.deleteDur;
+
+                var newScale = Vector3.Lerp(startScale, Vector3.zero, ratio);
+
+                if (prevParent != transform.parent)
+                    throw new System.Exception($"Something changed {gameObject}'s parent!");
+                //prevParent = transform.parent;
+                //transform.parent = null;
+                transform.localScale = newScale;
+                transform.parent = prevParent;
+            }
+
+            yield return null;
+
+            if (prevParent != transform.parent)
+                throw new System.Exception($"Something changed {gameObject}'s parent!");
+            //prevParent = transform.parent;
+            //transform.parent = null;
+            transform.localScale = startScale;
+            //transform.parent = prevParent;
+
+            SpawnManager.Manager.RemoveItem(this);
+        }
     }
 
     public virtual void ResetItem ()
     {
         ItemAwake();
         wielder = null;
-    }
-
-    public void DeParent()
-    {
-        transform.SetParent(defaultContainer);
+        destroying = false;
     }
 
     public virtual string InfoString(string separator = " ")

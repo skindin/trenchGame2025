@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class CharacterManager : MonoBehaviour
 {
@@ -10,20 +11,24 @@ public class CharacterManager : MonoBehaviour
     public List<Character> active = new();
     public Character prefab;
     public Transform container;
-    public float squadRadius = 5, squadSpawnInterval = 20, respawnWait = .5f, scoreStopWatch = 0, highScore = 0;
-    public int botsPerSquad = 5, spawnCap = 10;
-    float squadSpawnTimer = 0;
-    Coroutine squadSpawnRoutine, stopWatchRoutine, scoreboardRoutine;
+    public float
+        //squadRadius = 5, squadSpawnInterval = 20, 
+        respawnWait = .5f, scoreStopWatch = 0, highScore = 0, deathAnimDur = .5f;
+    //public int botsPerSquad = 5, spawnCap = 10;
+    //float squadSpawnTimer = 0;
+    Coroutine
+        //squadSpawnRoutine, 
+        stopWatchRoutine, scoreboardRoutine;
     //bool sortCharactersThisFrame = false;
     int nextBotId = 0;
 
-    public float TimeToSquadSpawn
-    {
-        get
-        {
-            return squadSpawnInterval - squadSpawnTimer;
-        }
-    }
+    //public float TimeToSquadSpawn
+    //{
+    //    get
+    //    {
+    //        return squadSpawnInterval - squadSpawnTimer;
+    //    }
+    //}
 
     static CharacterManager manager;
     public static CharacterManager Manager
@@ -47,7 +52,7 @@ public class CharacterManager : MonoBehaviour
     private void Awake()
     {
         SetupPool();
-        squadSpawnRoutine = StartCoroutine(BotSpawn());
+        //squadSpawnRoutine = StartCoroutine(BotSpawn());
 
         StartStopWatch();
     }
@@ -154,40 +159,40 @@ public class CharacterManager : MonoBehaviour
     //    }
     //}
 
-    IEnumerator BotSpawn ()
-    {
-        while (true)
-        {
-            if (spawnSquads)
-            {
-                var pos = ChunkManager.Manager.GetRandomPos(squadRadius);
-                SpawnBotSquad(pos);
+    //IEnumerator BotSpawn ()
+    //{
+    //    while (true)
+    //    {
+    //        if (spawnSquads)
+    //        {
+    //            var pos = ChunkManager.Manager.GetRandomPos(squadRadius);
+    //            SpawnBotSquad(pos);
 
-                if (active.Count >= spawnCap) yield break;
-            }
+    //            if (active.Count >= spawnCap) yield break;
+    //        }
 
-            squadSpawnTimer = 0;
+    //        squadSpawnTimer = 0;
 
-            while (squadSpawnTimer < squadSpawnInterval)
-            {
-                yield return null;
-                squadSpawnTimer += Time.deltaTime;
-            }
-        }
-    }
+    //        while (squadSpawnTimer < squadSpawnInterval)
+    //        {
+    //            yield return null;
+    //            squadSpawnTimer += Time.deltaTime;
+    //        }
+    //    }
+    //}
 
-    public void SpawnBotSquad (Vector2 pos)
-    {
-        var amount = Mathf.Min(spawnCap - active.Count, botsPerSquad);
+    //public void SpawnBotSquad (Vector2 pos)
+    //{
+    //    var amount = Mathf.Min(spawnCap - active.Count, botsPerSquad);
 
-        for (int i = 0; i < amount; i++)
-        {
-            var botPos = Random.insideUnitCircle * squadRadius + pos;
+    //    for (int i = 0; i < amount; i++)
+    //    {
+    //        var botPos = Random.insideUnitCircle * squadRadius + pos;
 
-            NewBot(botPos).Name = $"bot{nextBotId}";
-            nextBotId++;
-        }
-    }
+    //        NewBot(botPos).Name = $"bot{nextBotId}";
+    //        nextBotId++;
+    //    }
+    //}
 
     public Character NewBot (Vector2 pos)
     {
@@ -204,15 +209,30 @@ public class CharacterManager : MonoBehaviour
         var newCharacter = pool.GetFromPool();
 
         newCharacter.transform.position = pos;
-        newCharacter.UpdateChunk();
-
-        newCharacter.Type = type;
 
         active.Add(newCharacter);
 
         UpdateScoreBoard();
 
+        newCharacter.Type = Character.CharacterType.none;
+
+        StartCoroutine(WaitForSpawnAnim());
+
         return newCharacter;
+
+        IEnumerator WaitForSpawnAnim ()
+        {
+            yield return SpawnAnimation(newCharacter);
+
+            newCharacter.Type = type;
+            if (type == Character.CharacterType.localBot)
+            {
+                newCharacter.Name = $"bot{nextBotId}";
+                nextBotId++;
+            }
+
+            newCharacter.UpdateChunk();
+        }
     }
 
     public void RemoveCharacter(Character character)
@@ -222,25 +242,33 @@ public class CharacterManager : MonoBehaviour
         pool.AddToPool(character);
         character.Chunk = null;
 
-        squadSpawnRoutine = StartCoroutine(BotSpawn());
+        //squadSpawnRoutine = StartCoroutine(BotSpawn());
 
-        UpdateScoreBoard();
+        //UpdateScoreBoard();
     }
 
     public void KillCharacter(Character character)
     {
-        if (character.controlType != Character.CharacterType.localBot || active.Count <= spawnCap)
+        if (character.controlType != Character.CharacterType.localBot || SpawnManager.Manager.spawnCharacter.CapDiff >= 0)
             //if this character is not a bot, or the spawn cap is unmet...
         {
             StartRespawn(character);
+            StartCoroutine(DeathAnimation(character));
         }
         else
         {
-            RemoveCharacter(character);
+            StartCoroutine(RemoveAfterAnim());
         }
 
         character.life++;
         UpdateScoreBoard();
+
+        IEnumerator RemoveAfterAnim ()
+        {
+            yield return StartCoroutine(DeathAnimation(character));
+
+            RemoveCharacter(character);
+        }
     }
 
     void StartRespawn (Character character)
@@ -252,7 +280,6 @@ public class CharacterManager : MonoBehaviour
             //active.Remove(character);
             var type = character.Type;
 
-            character.gameObject.SetActive(false);
             character.ResetSelf();
 
             active.Remove(character);
@@ -263,9 +290,11 @@ public class CharacterManager : MonoBehaviour
             yield return new WaitForSeconds(respawnWait);
 
             //active.Add(character);
-
             character.gameObject.SetActive(true);
             character.SetPos(ChunkManager.Manager.GetRandomPos());
+
+            yield return StartCoroutine(SpawnAnimation(character));
+
             character.Type = type;
 
             character.UpdateChunk();
@@ -274,5 +303,52 @@ public class CharacterManager : MonoBehaviour
             UpdateScoreBoard();
             //UpdateScoreBoard();
         }
+    }
+
+    IEnumerator DeathAnimation(Character character)
+    {
+        var ratio = 0f;
+
+        Vector3 startScale = character.transform.localScale;
+        //var type = character.Type;
+        character.Type = Character.CharacterType.none;
+        character.enabled = false;
+
+        while (ratio <= 1)
+        {
+            yield return null;
+
+            ratio += Time.deltaTime / deathAnimDur;
+
+            character.transform.localScale = Vector2.Lerp(startScale, Vector3.zero, ratio);
+        }
+
+        character.enabled = true;
+        //character.Type = type;
+        character.gameObject.SetActive(false);
+        character.transform.localScale = startScale;
+    }
+
+
+    IEnumerator SpawnAnimation(Character character)
+    {
+        var ratio = 0f;
+
+        Vector3 endScale = character.transform.localScale;
+        character.transform.localScale = Vector3.zero;
+        //character.gameObject.SetActive(true);
+
+        //character.Type = Character.CharacterType.none;
+
+        while (ratio <= 1)
+        {
+            yield return null;
+
+            ratio += Time.deltaTime / deathAnimDur;
+
+            character.transform.localScale = Vector2.Lerp(Vector3.zero, endScale, ratio);
+        }
+
+        //character.gameObject.SetActive(true);
     }
 }

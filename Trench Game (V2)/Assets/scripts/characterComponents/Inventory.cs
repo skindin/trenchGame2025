@@ -11,11 +11,12 @@ public class Inventory : MonoBehaviour
     public float passivePickupRad = 1, activePickupRad = 2, selectionRad = .5f; //passive should be smaller than active
     public List<Item> items = new();
     public List<Item> withinRadius = new();
-    public Chunk[,] chunks = new Chunk[0,0];
+    public Chunk[,] chunks = new Chunk[0, 0];
     Item selectedItem;
     public Action<Item> onItemAdded, onItemRemoved;
     Item cachedActiveItem;
     Weapon cachedActiveWeapon;
+    readonly List<Item> dispatched = new();
 
     public Weapon ActiveWeapon
     {
@@ -103,10 +104,10 @@ public class Inventory : MonoBehaviour
     //    DetectItems();
     //}
 
-    public void ResetInventory (bool dropAllItems = false)
+    public void ResetInventory(bool dropAllItems = false)
     {
         SelectedItem = null;
-        var emptyChunkArray = new Chunk[0,0];
+        var emptyChunkArray = new Chunk[0, 0];
         AddChunkListeners(chunks, emptyChunkArray);
         chunks = emptyChunkArray;
 
@@ -148,7 +149,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void UpdateChunks (bool updateListeners = false)
+    public void UpdateChunks(bool updateListeners = false)
     {
         var radius = activePickupRad;
 
@@ -160,7 +161,7 @@ public class Inventory : MonoBehaviour
         chunks = newChunks;
     }
 
-    public void AddChunkListeners (Chunk[,] oldChunks, Chunk[,] newChunks)
+    public void AddChunkListeners(Chunk[,] oldChunks, Chunk[,] newChunks)
     {
         if (oldChunks == newChunks) return;
 
@@ -184,8 +185,8 @@ public class Inventory : MonoBehaviour
             {
                 newChunk.listeningInventories.Add(this);
             }
-        }        
-        
+        }
+
         foreach (var oldChunk in oldChunks)
         {
             if (oldChunk == null) continue;
@@ -213,7 +214,7 @@ public class Inventory : MonoBehaviour
     /// Only to be used when an item is to be destroyed while a character is holding it
     /// </summary>
     /// <param name="item"></param>
-    public void RemoveItem (Item item)
+    public void RemoveItem(Item item)
     {
         if (!items.Contains(item)) //if the item is not in the inventory, do nothing
             return;
@@ -236,36 +237,67 @@ public class Inventory : MonoBehaviour
         if (dist > activePickupRad) //bruh the first time i've ever had to do ipsilon addition
             return;
 
+        if (dispatched.Contains(item))
+            return;
+
+        withinRadius.Add(item);
+
         if (item.passivePickup && dist <= passivePickupRad)
         {
-            item.Pickup(character, out var pickedUp, out _);
-            if (!pickedUp)
-            {
-                withinRadius.Add(item);
-            }
+            var otherDropPos = UnityEngine.Random.insideUnitCircle * selectionRad + (Vector2)item.transform.position;
+            PickupItem(item, otherDropPos);
+            //if (!pickedUp)
+            //{
+            //    withinRadius.Add(item);
+            //}
         }
-        else
-        {
-            withinRadius.Add(item);
-        }
+        //else
+        //{
+        //    withinRadius.Add(item);
+        //}
     }
 
-    public void PickupItem (Item item, Vector2 dropPos)
+    public void PickupItem(Item item, Vector2 dropPos)
     {
         if (item.wielder)
-        {
-            withinRadius.Remove(item);
             return;
-        }//actually, I do have to run this, because sometimes items are picked up by other characters, and the chunk won't alert them of that
+        //if (item.wielder)
+        //{
+        //    withinRadius.Remove(item);
+        //    return;
+        //}
+        //actually, I do have to run this, because sometimes items are picked up by other characters, and the chunk won't alert them of that
         //would probably better for the chunk to manage all this...
 
-        if (withinRadius.Contains(item))
-        {
-            item.Pickup(character, out var pickedUp, out var destroyed);
-            if (pickedUp)
-                withinRadius.Remove(item);
+        //if (withinRadius.Contains(item))
+        //{
+        StartCoroutine(Pickup());
+        //}
+        //else
+        //    pickedUp = false;
 
-            if (pickedUp && !destroyed)
+        IEnumerator Pickup()
+        {
+            Coroutine itemRoutine = item.Pickup(character, out var wasDispatched, out _, out var movedToInventory);
+
+            //if (pickedUp)
+            //if (pickedUp)
+            //{
+            //    withinRadius.Remove(item);
+            //}
+
+            if (wasDispatched)
+                dispatched.Add(item);
+
+            yield return itemRoutine;
+
+            if (wasDispatched)
+                dispatched.Remove(item);
+
+            if (item.wielder != character)
+                yield break;
+
+            if (movedToInventory)
             {
                 if (ActiveItem)
                     DropItem(ActiveItem, dropPos);
@@ -274,33 +306,26 @@ public class Inventory : MonoBehaviour
                 ActiveItem = item;
             }
 
-            //if (item is Gun
-            //    //|| item is MedPack
-            //    ) //temporary, idk if ill like this
-            //{
-            //    //if (character.gun != null && character.gun.model == item.model)
-            //    //{
-            //    //put unload logic here
-            //    //}
-            //    //else
-            //    if (character.gun) DropItem(character.gun, dropPos); //we only want to drop the gun when they already have the gun
-
-            //    if (item is Gun gun)
-            //        character.gun = gun;
-            //}
+            //if (!pickedUp)
+            //    withinRadius.Add(item);
         }
     }
 
-    public void DropItem (Item item)
+    //public void PickupItem (Item item, Vector2 dropPos)
+    //{
+    //    PickupItem(item, dropPos, out _);
+    //}
+
+    public void DropItem(Item item)
     {
         DropItem(item, transform.position);
         //withinRadius.Add(item); //its already being added by the chunk event dipshit
     }
 
-    public void DropItem (Item item, Vector2 pos)
+    public void DropItem(Item item, Vector2 pos)
     {
         var delta = pos - (Vector2)transform.position;
-        var clampedDelta = Vector2.ClampMagnitude(delta, activePickupRad- .001f);
+        var clampedDelta = Vector2.ClampMagnitude(delta, activePickupRad - .001f);
         var clampedPos = clampedDelta + (Vector2)transform.position;
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;
@@ -321,7 +346,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void DropActiveItem ()
+    public void DropActiveItem()
     {
         DropItem(ActiveItem);
     }
@@ -344,13 +369,13 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public Item SelectClosest (Vector2 pos)
+    public Item SelectClosest(Vector2 pos)
     {
         SelectedItem = LogicAndMath.GetClosest(pos, withinRadius.ToArray(), item => item.transform.position, out _, null, null, selectionRad, debugLines);
         return SelectedItem;
     }
 
-    public void PickupClosest (Vector2 dropPos)
+    public void PickupClosest(Vector2 dropPos)
     {
         if (SelectedItem)
         {
@@ -378,7 +403,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void OnRemoved ()
+    public void OnRemoved()
     {
         foreach (var chunk in chunks)
         {

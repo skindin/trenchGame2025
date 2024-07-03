@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using JetBrains.Annotations;
+//using System.Linq;
+//using JetBrains.Annotations;
+using System;
 
 public class ItemManager : MonoBehaviour
 {
@@ -20,27 +21,19 @@ public class ItemManager : MonoBehaviour
     }
 
     public bool spawnDrops = true;
-    public List<ItemsGroup> itemsGroups = new();
+    public List<ItemPool> itemPools = new();
     public Transform container;
-
-    public float itemDropRadius = 5, dropInterval = 60, dropTimer = 0;
-    public int dropCount = 10;
-    public bool dropOnStart = false, replaceCappedItems = false;
-    public Coroutine dropRoutine;
-
-    public float TimeToNextDrop => dropInterval - dropTimer;
+    public float grabDur = .1f;
+    public float deleteDur = .1f;
 
     private void Awake()
     {
-        foreach (var a in itemsGroups)
+        foreach (var pool in itemPools)
         {
-            foreach (var b in a.itemGroups)
-            {
-                b.Setup(b.prefab);
-            }
+            pool.Setup(pool.prefab);
         }
 
-        dropRoutine = StartCoroutine(ItemDrop());
+        //dropRoutine = StartCoroutine(ItemDrop());
     }
 
     //public void RunDropInterval(float seconds)
@@ -55,25 +48,25 @@ public class ItemManager : MonoBehaviour
     //    }
     //}
 
-    System.Collections.IEnumerator ItemDrop()
-    {
-        while (true)
-        {
-            if (spawnDrops)
-            {
-                var spawnPoint = ChunkManager.Manager.GetRandomPos(itemDropRadius);
-                SpawnDrop(spawnPoint);
-            }
+    //System.Collections.IEnumerator ItemDrop()
+    //{
+    //    while (true)
+    //    {
+    //        if (spawnDrops)
+    //        {
+    //            var spawnPoint = ChunkManager.Manager.GetRandomPos(itemDropRadius);
+    //            SpawnDrop(spawnPoint);
+    //        }
 
-            dropTimer = 0;
+    //        dropTimer = 0;
 
-            while (dropTimer < dropInterval)
-            {
-                yield return null;
-                dropTimer += Time.deltaTime;
-            }
-        }
-    }
+    //        while (dropTimer < dropInterval)
+    //        {
+    //            yield return null;
+    //            dropTimer += Time.deltaTime;
+    //        }
+    //    }
+    //}
 
     //private void Start()
     //{
@@ -91,159 +84,121 @@ public class ItemManager : MonoBehaviour
 
     public Item NewItem(Item prefab)
     {
-        ItemGroup group = null;
+        var itemPool = itemPools.Find(x => x.prefab == prefab);
 
-        foreach (var g in itemsGroups)
+        if (itemPool != null)
         {
-            var itemGroup = g.itemGroups.Find(x => x.prefab == prefab);
-            if (itemGroup != null)
-            {
-                group = itemGroup;
-                break;
-            }
-        }
-
-        if (group != null)
-        {
-            var item = group.NewItem();
+            var item = itemPool.NewItem();
             return item;
         }
 
-        return null;
+        throw new Exception($"Item Manager does not have a pool setup for {prefab}");
     }
 
-    public void RemoveItem(Item item)
+    public void RemoveItem(Item item, Item prefab)
     {
-        foreach (var a in itemsGroups)
+        var itemPool = itemPools.Find(pool => pool.prefab == prefab);
+
+        if (itemPool != null)
         {
-            foreach (var b in a.itemGroups)
-            {
-                if (b.active.Contains(item))
-                {
-                    //Debug.Log($"Removing item: {item.name}");
-                    //Debug.Log($"{item} chunk was {(item.Chunk != null ? $"chunk {item.Chunk.adress}" : "null")} before it was removed");
-                    b.Remove(item);
-                    //Debug.Log($"{item} chunk was {(item.Chunk != null ? $"chunk {item.Chunk.adress}" : "null")} after it was removed");
-                    //Debug.Log($"... and {(item.gameObject.activeSelf ? "was " : "wasn't")} active...");
-                    return;
-                }
-            }
+            itemPool.MoveTo(item);
         }
+        else
+            throw new Exception($"Item Manager does not have a pool setup for {prefab}");
     }
 
-    public void DropAmo(AmoType type, int amount, Vector2 pos)
-    {
-        foreach (var itemsGroup in itemsGroups)
-        {
-            foreach (var itemGroup in itemsGroup.itemGroups)
-            {
-                if (itemGroup.prefab is not Amo amo || amo.AmoModel.type != type)
-                    continue;
+    //public List<Item> GenerateItemList(List<Item> list, int count, bool clearList = true) //repeating the same item throughout groups causes lots of problems lol
+    //{
+    //    if (clearList) list.Clear();
 
-                var newAmo = NewItem(itemGroup.prefab) as Amo;
-                newAmo.amount = amount;
-                newAmo.Drop(pos, out _);
-            }
-        }
-    }
+    //    var itemsGroupPairs = LogicAndMath.GetOccurancePairs(itemsGroups, count, x =>
+    //    {
+    //        return x.chance;
+    //    });
 
-    public List<Item> GenerateItemList(List<Item> list, int count, bool clearList = true) //repeating the same item throughout groups causes lots of problems lol
-    {
-        if (clearList) list.Clear();
+    //    foreach (var itemsGroupPair in itemsGroupPairs)
+    //    {
+    //        var groups = itemsGroupPair.Item1.itemGroups;
+    //        var groupsCount = itemsGroupPair.Item2;
 
-        var itemsGroupPairs = LogicAndMath.GetOccurancePairs(itemsGroups, count, x =>
-        {
-            return x.chance;
-        });
+    //        if (groupsCount == 0)
+    //            continue;
 
-        foreach (var itemsGroupPair in itemsGroupPairs)
-        {
-            var groups = itemsGroupPair.Item1.itemGroups;
-            var groupsCount = itemsGroupPair.Item2;
+    //        var itemGroupPairs = LogicAndMath.GetOccurancePairs(
+    //            groups,
+    //            groupsCount,
+    //            x => {
+    //                return x.chance; },
+    //            x => {
+    //                return x.MaxNew; },
+    //            true,
+    //            replaceCappedItems
+    //        );
 
-            if (groupsCount == 0)
-                continue;
+    //        foreach (var itemGroupPair in itemGroupPairs)
+    //        {
+    //            for (int i = 0; i < itemGroupPair.Item2; i++)
+    //            {
+    //                list.Add(itemGroupPair.Item1.prefab);
+    //            }
+    //        }
+    //    }
 
-            var itemGroupPairs = LogicAndMath.GetOccurancePairs(
-                groups,
-                groupsCount,
-                x => {
-                    return x.chance; },
-                x => {
-                    return x.MaxNew; },
-                true,
-                replaceCappedItems
-            );
+    //    return list;
+    //}
 
-            foreach (var itemGroupPair in itemGroupPairs)
-            {
-                for (int i = 0; i < itemGroupPair.Item2; i++)
-                {
-                    list.Add(itemGroupPair.Item1.prefab);
-                }
-            }
-        }
+    //readonly List<Item> reusableItemList = new();
 
-        return list;
-    }
+    //public void SpawnDrop(Vector2 spawnPos)
+    //{
+    //    GenerateItemList(reusableItemList, dropCount);
 
-    readonly List<Item> reusableItemList = new();
-
-    public void SpawnDrop(Vector2 spawnPos)
-    {
-        GenerateItemList(reusableItemList, dropCount);
-
-        foreach (var item in reusableItemList)
-        {
-            var itemPos = Random.insideUnitCircle * itemDropRadius + spawnPos;
-            var newItem = NewItem(item);
-            //Debug.Log($"{newItem} chunk was {(newItem.Chunk != null ? $"chunk {newItem.Chunk.adress}" : "null")} before it was dropped");
-            newItem.Drop(itemPos, out _);
-            //Debug.Log($"{newItem} chunk was {(newItem.Chunk != null ? $"chunk {newItem.Chunk.adress}" : "null")} after it was dropped");
-        }
-    }
+    //    foreach (var item in reusableItemList)
+    //    {
+    //        var itemPos = Random.insideUnitCircle * itemDropRadius + spawnPos;
+    //        var newItem = NewItem(item);
+    //        //Debug.Log($"{newItem} chunk was {(newItem.Chunk != null ? $"chunk {newItem.Chunk.adress}" : "null")} before it was dropped");
+    //        newItem.Drop(itemPos, out _);
+    //        //Debug.Log($"{newItem} chunk was {(newItem.Chunk != null ? $"chunk {newItem.Chunk.adress}" : "null")} after it was dropped");
+    //    }
+    //}
 
     [System.Serializable]
     public class ItemsGroup
     {
-        public List<ItemGroup> itemGroups;
-        public float chance = 1;
+        public List<ItemPool> itemGroups;
+        //public float chance = 1;
 
-        public float Chance
-        {
-            get
-            {
-                if (itemGroups.Find(x => x.Chance > 0) == null) return 0;
-                else return chance;
-            }
-        }
+        //public float Chance
+        //{
+        //    get
+        //    {
+        //        if (itemGroups.Find(x => x.Chance > 0) == null) return 0;
+        //        else return chance;
+        //    }
+        //}
     }
 
     [System.Serializable]
-    public class ItemGroup
+    public class ItemPool
     {
         public Item prefab;
-        public float chance = 1;
 
-        public float Chance => active.Count >= spawnCap ? 0 : chance;
-        public int MaxNew => spawnCap - active.Count;
-
-        public List<Item> active = new();
         public ObjectPool<Item> pool;
         public Transform container;
-        public int spawnCap;
-        public bool exceedsCap = false;
 
-        public void Remove(Item item)
+        int nextId = 0;
+
+        public void MoveTo(Item item)
         {
             if (item == null) return;
 
             item.Chunk = null;
 
-            if (!active.Contains(item)) return;
+            //if (!active.Contains(item)) return;
 
-            //Debug.Log($"Item removed: {item.name}");
-            active.Remove(item);
+            ////Debug.Log($"Item removed: {item.name}");
+            //active.Remove(item);
             pool.AddToPool(item);
 
         }
@@ -256,7 +211,12 @@ public class ItemManager : MonoBehaviour
             pool = new ObjectPool<Item>(
                 minPooled: pool?.minPooled ?? 5,
                 maxPooled: pool?.maxPooled ?? 100,
-                newFunc: () => Instantiate(prefab, container).GetComponent<Item>(),
+                newFunc: () => {
+                    var item = Instantiate(prefab, container).GetComponent<Item>();
+                    item.gameObject.name += $"{nextId}";
+                    nextId++;
+                    return item;
+                },
                 disableAction: item =>
                 {
                     //var chunk = item.Chunk;
@@ -278,7 +238,7 @@ public class ItemManager : MonoBehaviour
         public Item NewItem()
         {
             var item = pool.GetFromPool();
-            active.Add(item);
+            //active.Add(item);
             item.defaultContainer = container;
             //item.Drop(pos);
             return item;

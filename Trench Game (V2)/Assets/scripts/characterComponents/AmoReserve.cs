@@ -9,6 +9,12 @@ public class AmoReserve : MonoBehaviour
 
     public List<AmoPool> amoPools = new();
 
+/// <summary>
+/// Returns surplus (If the amount added was more than enough)
+/// </summary>
+/// <param name="type"></param>
+/// <param name="amount"></param>
+/// <returns></returns>
     public int AddAmo(AmoType type, int amount)
     {
         var typeReserve = amoPools.Find(x => x.type == type);
@@ -20,6 +26,13 @@ public class AmoReserve : MonoBehaviour
         Debug.Log("Reserve doesn't store amo type " + type.name);
         return amount;
     }
+
+    /// <summary>
+    /// Returns amount left in reserve
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
 
     public int RemoveAmo(AmoType type, int amount)
     {
@@ -44,6 +57,28 @@ public class AmoReserve : MonoBehaviour
         if (typeReserve != null)
         {
             return typeReserve.rounds;
+        }
+
+        return 0;
+    }
+
+    public int GetAmoMax (AmoType type)
+    {
+        var typeReserve = amoPools.Find(x => x.type == type);
+        if (typeReserve != null)
+        {
+            return typeReserve.maxRounds;
+        }
+
+        return 0;
+    }
+
+    public int GetAmoSpace (AmoType type)
+    {
+        var typeReserve = amoPools.Find(x => x.type == type);
+        if (typeReserve != null)
+        {
+            return typeReserve.maxRounds - typeReserve.rounds;
         }
 
         return 0;
@@ -80,7 +115,7 @@ public class AmoReserve : MonoBehaviour
         {
             if (pool.rounds <= 0) continue;
             var pos = Random.insideUnitCircle * dropRadius + (Vector2)transform.position;
-            ItemManager.Manager.DropAmo(pool.type, pool.rounds, pos );
+            SpawnManager.Manager.DropAmo(pool.type, pool.rounds, transform.position,pos );
             pool.rounds = 0;
         }
     }
