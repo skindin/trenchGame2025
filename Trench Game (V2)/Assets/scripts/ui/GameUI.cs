@@ -71,7 +71,7 @@ public class GameUI : MonoBehaviour
 
         //var timeLeft = ItemManager.Manager.TimeToNextDrop;
 
-        string itemDropTimeText = GetTimeText(ItemManager.Manager.TimeToNextDrop) + " to item drop";
+        string itemDropTimeText = GetTimeText(SpawnManager.Manager.TimeToNextDrop) + " to item drop";
         GUI.Label(rect,itemDropTimeText,style);
         //string squadSpawnTimeText = GetTimeText(CharacterManager.Manager.TimeToSquadSpawn) + " to squad spawn";
 

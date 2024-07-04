@@ -80,7 +80,7 @@ public class AmoReserve : MonoBehaviour
         {
             if (pool.rounds <= 0) continue;
             var pos = Random.insideUnitCircle * dropRadius + (Vector2)transform.position;
-            ItemManager.Manager.DropAmo(pool.type, pool.rounds, pos );
+            SpawnManager.Manager.DropAmo(pool.type, pool.rounds, pos );
             pool.rounds = 0;
         }
     }

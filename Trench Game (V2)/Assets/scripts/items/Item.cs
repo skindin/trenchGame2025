@@ -141,10 +141,15 @@ public class Item : MonoBehaviour
             UpdateChunk();
     }
 
+    public void Drop (Vector2 pos)
+    {
+        Drop(pos, out _);
+    }
+
     public void DestroyItem ()
     {
         //destroy logic here shruggin emoji
-        ItemManager.Manager.RemoveItem(this);
+        SpawnManager.Manager.RemoveItem(this);
     }
 
     public virtual void ResetItem ()

@@ -10,20 +10,19 @@ public class CharacterManager : MonoBehaviour
     public List<Character> active = new();
     public Character prefab;
     public Transform container;
-    public float squadRadius = 5, squadSpawnInterval = 20, respawnWait = .5f, scoreStopWatch = 0, highScore = 0;
-    public int botsPerSquad = 5, spawnCap = 10;
+    public float scoreStopWatch = 0, highScore = 0, respawnWait = 1;
+    //public int botsPerSquad = 5, spawnCap = 10;
     float squadSpawnTimer = 0;
-    Coroutine squadSpawnRoutine, stopWatchRoutine, scoreboardRoutine;
+    Coroutine stopWatchRoutine, scoreboardRoutine;
     //bool sortCharactersThisFrame = false;
-    int nextBotId = 0;
 
-    public float TimeToSquadSpawn
-    {
-        get
-        {
-            return squadSpawnInterval - squadSpawnTimer;
-        }
-    }
+    //public float TimeToSquadSpawn
+    //{
+    //    get
+    //    {
+    //        return squadSpawnInterval - squadSpawnTimer;
+    //    }
+    //}
 
     static CharacterManager manager;
     public static CharacterManager Manager
@@ -47,7 +46,7 @@ public class CharacterManager : MonoBehaviour
     private void Awake()
     {
         SetupPool();
-        squadSpawnRoutine = StartCoroutine(BotSpawn());
+        //squadSpawnRoutine = StartCoroutine(BotSpawn());
 
         StartStopWatch();
     }
@@ -154,41 +153,6 @@ public class CharacterManager : MonoBehaviour
     //    }
     //}
 
-    IEnumerator BotSpawn ()
-    {
-        while (true)
-        {
-            if (spawnSquads)
-            {
-                var pos = ChunkManager.Manager.GetRandomPos(squadRadius);
-                SpawnBotSquad(pos);
-
-                if (active.Count >= spawnCap) yield break;
-            }
-
-            squadSpawnTimer = 0;
-
-            while (squadSpawnTimer < squadSpawnInterval)
-            {
-                yield return null;
-                squadSpawnTimer += Time.deltaTime;
-            }
-        }
-    }
-
-    public void SpawnBotSquad (Vector2 pos)
-    {
-        var amount = Mathf.Min(spawnCap - active.Count, botsPerSquad);
-
-        for (int i = 0; i < amount; i++)
-        {
-            var botPos = Random.insideUnitCircle * squadRadius + pos;
-
-            NewBot(botPos).Name = $"bot{nextBotId}";
-            nextBotId++;
-        }
-    }
-
     public Character NewBot (Vector2 pos)
     {
         return NewCharacter(pos, Character.CharacterType.localBot);
@@ -222,14 +186,14 @@ public class CharacterManager : MonoBehaviour
         pool.AddToPool(character);
         character.Chunk = null;
 
-        squadSpawnRoutine = StartCoroutine(BotSpawn());
+        //squadSpawnRoutine = StartCoroutine(BotSpawn());
 
         UpdateScoreBoard();
     }
 
     public void KillCharacter(Character character)
     {
-        if (character.controlType != Character.CharacterType.localBot || active.Count <= spawnCap)
+        if (character.controlType != Character.CharacterType.localBot || SpawnManager.Manager.spawnCharacter.CapDiff >= 0)
             //if this character is not a bot, or the spawn cap is unmet...
         {
             StartRespawn(character);
