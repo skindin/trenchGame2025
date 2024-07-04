@@ -1,18 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class ShovelModel : MonoBehaviour
+[CreateAssetMenu]
+public class ShovelModel : ItemModel
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public float
+        //maxIntegrity = 10, 
+        digRadius = 1, digSpeedFactor = .8f;
 }

@@ -1120,6 +1120,11 @@ MonoBehaviour:
       currentAmount: 0
       spawnCap: 10
       chance: 1
+    - name: basic shovel
+      prefab: {fileID: 4392698207926738930, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
+      currentAmount: 0
+      spawnCap: 10
+      chance: 0.5
     chance: 3
   - Name: tier 2
     spawnItems:
@@ -2074,6 +2079,11 @@ MonoBehaviour:
       maxPooled: 10
     container: {fileID: 0}
   - prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
+    pool:
+      minPooled: 0
+      maxPooled: 10
+    container: {fileID: 0}
+  - prefab: {fileID: 4392698207926738930, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
     pool:
       minPooled: 0
       maxPooled: 10

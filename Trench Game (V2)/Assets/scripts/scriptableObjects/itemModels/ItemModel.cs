@@ -17,5 +17,6 @@ public abstract class ItemModel : ScriptableObject
         projectile,
         gun,
         amo,
+        tool,
     }
 }

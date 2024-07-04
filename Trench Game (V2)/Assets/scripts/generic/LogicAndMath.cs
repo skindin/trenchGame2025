@@ -199,13 +199,13 @@ public static class LogicAndMath
         for (int i = 0; i < list.Count; i++)
         {
             var item = list[i];
-            var itemRatio = (predicate(item) +idk)/ total;
+            var itemRatio = predicate(item)/ total + idk;
             if (itemRatio >= ratio)
             {
                 return i;
             }
 
-            idk += itemRatio;
+            idk = itemRatio;
         }
 
         return list.Count - 1;
