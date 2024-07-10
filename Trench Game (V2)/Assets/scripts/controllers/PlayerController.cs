@@ -123,7 +123,8 @@ public class PlayerController : MonoBehaviour
 
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //var mouseDir = mousePos - transform.position;
-        if (character.inventory.ActiveWeapon) character.inventory.ActiveWeapon.Aim(mouseDir); //this had been in late update...
+        if (character.inventory.ActiveWeapon) 
+            character.inventory.ActiveWeapon.Aim(mouseDir); //this had been in late update...
     }
 
     public void TouchControls()

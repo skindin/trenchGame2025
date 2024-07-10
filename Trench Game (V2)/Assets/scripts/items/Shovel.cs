@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
 
-public class Shovel : Item, ISecondaryAction
+public class Shovel : Weapon, ISecondaryAction
 {
     public float integrity;
     float elapsedRadius = 0;
@@ -34,6 +34,18 @@ public class Shovel : Item, ISecondaryAction
     public void SecondaryAction()
     {
 
+    }
+
+    public override void DirectionalAction(Vector2 direction)
+    {
+        //throw new System.NotImplementedException();
+
+    }
+
+    public override void Aim(Vector2 direction)
+    {
+        //throw new System.NotImplementedException();
+        transform.rotation = Quaternion.FromToRotation(Vector2.up, direction);
     }
 
     public override void ResetItem()
