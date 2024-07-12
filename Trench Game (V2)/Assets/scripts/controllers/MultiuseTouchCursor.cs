@@ -20,11 +20,11 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
     //public bool dynamic = true;
     //public float maxDynamicRadius = 2;
     public Color defaultButtonColor = Color.white, useButtonColor = Color.white;
-    public float sensitivity = 2;
-    public bool holding = false, tapped = false, released = false, dragged = false;
+    public float sensitivity = 2, clampRadius = .5f;
+    public bool holding = false, tapped = false, released = false, dragged = false, clampOnRelease = true;
 
     Vector2 position;
-    public Vector2 ScreenPosition
+    public Vector2 CursorPosition
     {
         get
         {
@@ -33,7 +33,8 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
 
         private set
         {
-            position = value;
+            cursor.transform.position = position = value;
+ //= value;
         }
     }
 
@@ -72,7 +73,7 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private void Awake()
     {
-        ScreenPosition = cursor.transform.position;
+        CursorPosition = cursor.transform.position;
     }
 
     public void OnPointerDown (PointerEventData data)
@@ -122,9 +123,7 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
     public void OnDrag(PointerEventData data)
     {
         var screenVector = new Vector2(Screen.width, Screen.height);
-        ScreenPosition = GeoUtils.ClampToBoxMinMax(ScreenPosition + data.delta * sensitivity, Vector2.zero, screenVector);
-
-        cursor.transform.position = ScreenPosition;
+        CursorPosition = GeoUtils.ClampToBoxMinMax(CursorPosition + data.delta * sensitivity, Vector2.zero, screenVector);
 
         dragged = true;
     }
@@ -152,6 +151,21 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
 
         resetRoutine = StartCoroutine(ResetTappedAfterFrame());
 
+        if (clampOnRelease)
+        {
+            var center =
+                //CursorPosition =
+                new Vector2(Screen.width, Screen.height)/2;
+
+            var cursorDelta = CursorPosition - center;
+
+            var clampedDelta = Vector2.ClampMagnitude(cursorDelta, clampRadius * Screen.height);
+
+            CursorPosition = clampedDelta + center;
+
+            //Debug.Log("clamped cursor");
+        }
+
         //background.gameObject.SetActive(false);
     }
 
@@ -170,7 +184,7 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
         currentUseType = UseType.none;
     }
 
-    public void ChangeUseTest (UseType type, string text)
+    public void SetUseLabel (UseType type, string text)
     {
         foreach (var use in uses)
         {

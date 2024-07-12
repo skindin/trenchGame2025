@@ -47,7 +47,7 @@ public static class DataManager //might be better for all these data types to be
 
         public string type;
 
-        public AmoData(Amo amo) : base(amo)
+        public AmoData(Ammo amo) : base(amo)
         {
             type = amo.AmoModel.type.name;
         }
@@ -112,7 +112,7 @@ public static class DataManager //might be better for all these data types to be
         {
             return new GunData(gun);
         }
-        else if (item is Amo amo)
+        else if (item is Ammo amo)
         {
             return new AmoData(amo);
         }
@@ -159,7 +159,7 @@ public static class DataManager //might be better for all these data types to be
 
             if (character.reserve)
             {
-                foreach (var pool in character.reserve.amoPools)
+                foreach (var pool in character.reserve.ammoPools)
                 {
                     amoReserve.Add(pool.type.name, new(pool));
                 }
@@ -201,11 +201,11 @@ public static class DataManager //might be better for all these data types to be
 
     public class TestScript
     {
-        Amo amo;
+        Ammo amo;
 
         void Test ()
         {
-            var amoItemData = GetItemData<Amo,BaseItemData>(amo);
+            var amoItemData = GetItemData<Ammo,BaseItemData>(amo);
         }
     }
 }

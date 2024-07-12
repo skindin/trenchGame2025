@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 
 public class Gun : Weapon
 {
-    public AmoReserve reserve;
+    public AmmoReserve reserve;
     public int rounds = 10, reloadAnimRots = 3;
     public Coroutine reloadRoutine, fireRoutine;
     public Vector2 direction = Vector2.right, barrelPos;
@@ -16,7 +16,7 @@ public class Gun : Weapon
         startFull = true, //temporary, until i make the actual spawning script
         fired = false,
         drawBerrelPos = false;
-    bool isFiring = false;
+    //bool isFiring = false;
 
     public override string Verb { get; } = "shoot";
 

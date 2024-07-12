@@ -61,11 +61,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 72871213280639810}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c5c760d7b7e3e64fbfd72cd04d72a2a, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b393d187c6a110448a3eff4d201871f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 7562934035425285329}
-  amoPools:
+  ammoPools:
   - type: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
     rounds: 0
     maxRounds: 240
@@ -176,6 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   rank: 0
+  life: 0
   Name: 
   userController: {fileID: 8968939273650880824}
   aiController: {fileID: 9129561575884848698}

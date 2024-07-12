@@ -3,6 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class AmoType : ScriptableObject
+public class AmmoType : ScriptableObject
 {
 }

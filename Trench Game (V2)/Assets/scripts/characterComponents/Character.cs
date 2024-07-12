@@ -44,7 +44,7 @@ public class Character : MonoBehaviour
     //public TrenchDetector detector;
     //public TrenchDigger digger; //eventually this will be attached to the shovel...?
     //public Gun gun;
-    public AmoReserve reserve;
+    public AmmoReserve reserve;
     public Inventory inventory;
     public bool 
         digging = false, filling = false, constantDig = false, //too much trouble to comment these out atm

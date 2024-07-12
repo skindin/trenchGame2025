@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class AmoModel : StackableItemModel
+public class AmmoModel : StackableItemModel
 {
-    public AmoType type;
+    public AmmoType type;
 }

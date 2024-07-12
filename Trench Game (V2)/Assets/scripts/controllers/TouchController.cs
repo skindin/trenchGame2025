@@ -30,7 +30,7 @@ public class TouchController : MonoBehaviour
     {
         get
         {
-            return multiuseJoystick.ScreenPosition;
+            return multiuseJoystick.CursorPosition;
         }
     }
 

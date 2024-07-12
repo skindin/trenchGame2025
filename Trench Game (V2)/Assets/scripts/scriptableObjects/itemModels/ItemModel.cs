@@ -8,7 +8,7 @@ public abstract class ItemModel : ScriptableObject
     //public int tier = 1;
     //public Item prefab;
 
-    public List<ItemTags> Tags = new List<ItemTags>();
+    public List<ItemTags> Tags = new ();
 
     public enum ItemTags
     {
@@ -16,7 +16,7 @@ public abstract class ItemModel : ScriptableObject
         weapon,
         projectile,
         gun,
-        amo,
+        ammo,
         tool,
     }
 }

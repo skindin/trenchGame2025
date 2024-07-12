@@ -211,7 +211,7 @@ public class BotController : MonoBehaviour
             //var closestAmo = FindClosestItem<StackableItem>();
             //bool pickupAmo = closestAmo;
 
-            var closestAmo = FindClosestItem<Amo>();
+            var closestAmo = FindClosestItem<Ammo>();
 
             bool pickupAmo = false;
 

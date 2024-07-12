@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 4946430134737771784}
   - component: {fileID: 8959939770543743887}
   m_Layer: 0
-  m_Name: amo
+  m_Name: ammo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7900382087798075005}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70e17b7e9ccbf3149bcab0b2ee4e18b9, type: 3}
+  m_Script: {fileID: 11500000, guid: 4aabd46b6c7b35242b595d4dc89fa63a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
@@ -134,5 +134,5 @@ MonoBehaviour:
   itemModel: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
-  amount: 50
+  amount: 1
   startFull: 1

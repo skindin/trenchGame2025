@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Amo : StackableItem
+public class Ammo : StackableItem
 {
-    AmoModel amoModel;
-    public AmoModel AmoModel
+    AmmoModel cachedAmmoModel;
+    public AmmoModel AmoModel
     {
         get
         {
-            if (amoModel == null)
+            if (cachedAmmoModel == null)
             {
-                amoModel = (AmoModel)itemModel;
+                cachedAmmoModel = (AmmoModel)itemModel;
             }
-            return amoModel;
+            return cachedAmmoModel;
         }
     }
 

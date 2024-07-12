@@ -2561,10 +2561,12 @@ MonoBehaviour:
   defaultButtonColor: {r: 1, g: 1, b: 1, a: 0.5019608}
   useButtonColor: {r: 0.7028302, g: 0.91110307, b: 1, a: 0.5019608}
   sensitivity: 2
+  clampRadius: 0.2
   holding: 0
   tapped: 0
   released: 0
   dragged: 0
+  clampOnRelease: 0
 --- !u!1 &1460331221
 GameObject:
   m_ObjectHideFlags: 0

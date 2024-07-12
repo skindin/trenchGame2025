@@ -12,7 +12,7 @@ public class CharacterManager : MonoBehaviour
     public Transform container;
     public float scoreStopWatch = 0, highScore = 0, respawnWait = 1;
     //public int botsPerSquad = 5, spawnCap = 10;
-    float squadSpawnTimer = 0;
+    //float squadSpawnTimer = 0;
     Coroutine stopWatchRoutine, scoreboardRoutine;
     //bool sortCharactersThisFrame = false;
 

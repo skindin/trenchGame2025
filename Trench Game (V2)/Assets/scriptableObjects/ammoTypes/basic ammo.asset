@@ -9,11 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe00c31931bd6c64cb89db1a34915041, type: 3}
-  m_Name: basic amo
+  m_Script: {fileID: 11500000, guid: ee8692de60261ef4e8a9e0e2d264fb8f, type: 3}
+  m_Name: basic ammo
   m_EditorClassIdentifier: 
-  Tags: 0000000004000000
-  limitAmount: 0
-  maxAmount: 60
-  combineRadius: 1
-  type: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}

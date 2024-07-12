@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class AmoReserve : MonoBehaviour
+public class AmmoReserve : MonoBehaviour
 {
     public Character character;
 
-    public List<AmoPool> amoPools = new();
+    public List<AmoPool> ammoPools = new();
 
-    public int AddAmo(AmoType type, int amount)
+    public int AddAmo(AmmoType type, int amount)
     {
-        var typeReserve = amoPools.Find(x => x.type == type);
+        var typeReserve = ammoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
             return typeReserve.AddAmo(amount);
         }
         
-        Debug.Log("Reserve doesn't store amo type " + type.name);
+        Debug.Log("Reserve doesn't store ammo type " + type.name);
         return amount;
     }
 
-    public int RemoveAmo(AmoType type, int amount)
+    public int RemoveAmo(AmmoType type, int amount)
     {
-        var typeReserve = amoPools.Find(x => x.type == type);
+        var typeReserve = ammoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
             var leftOver = typeReserve.RemoveAmo(amount);
@@ -34,13 +34,13 @@ public class AmoReserve : MonoBehaviour
             return leftOver;
         }
 
-        Debug.Log("Reserve doesn't contain amo of type " + type.name);
+        Debug.Log("Reserve doesn't contain ammo of type " + type.name);
         return 0;
     }
 
-    public int GetAmoAmount (AmoType type)
+    public int GetAmoAmount (AmmoType type)
     {
-        var typeReserve = amoPools.Find(x => x.type == type);
+        var typeReserve = ammoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
             return typeReserve.rounds;
@@ -49,9 +49,9 @@ public class AmoReserve : MonoBehaviour
         return 0;
     }
 
-    public AmoPool GetPool (AmoType type)
+    public AmoPool GetPool (AmmoType type)
     {
-        var typeReserve = amoPools.Find(x => x.type == type);
+        var typeReserve = ammoPools.Find(x => x.type == type);
         if (typeReserve != null)
         {
             return typeReserve;
@@ -62,11 +62,11 @@ public class AmoReserve : MonoBehaviour
 
     public string GetInfo (string separator = " ")
     {
-        var array = new string[amoPools.Count];
+        var array = new string[ammoPools.Count];
 
-        for (int i = 0; i < amoPools.Count; i++)
+        for (int i = 0; i < ammoPools.Count; i++)
         {
-            var pool = amoPools[i];
+            var pool = ammoPools[i];
 
             array[i] = $"{pool.rounds}/{pool.maxRounds} {pool.type.name}";
         }
@@ -76,7 +76,7 @@ public class AmoReserve : MonoBehaviour
 
     public void DropEverything (float dropRadius)
     {
-        foreach (var pool in amoPools)
+        foreach (var pool in ammoPools)
         {
             if (pool.rounds <= 0) continue;
             var pos = Random.insideUnitCircle * dropRadius + (Vector2)transform.position;
@@ -87,7 +87,7 @@ public class AmoReserve : MonoBehaviour
 
     public void Clear ()
     {
-        foreach (var pool in amoPools)
+        foreach (var pool in ammoPools)
         {
             pool.rounds = 0;
         }
@@ -116,7 +116,7 @@ public class AmoReserve : MonoBehaviour
 [System.Serializable]
 public class AmoPool
 {
-    public AmoType type;
+    public AmmoType type;
     public int rounds = 0, maxRounds = 100;
 
     public int AddAmo (int count)

@@ -6,7 +6,7 @@ using UnityEngine;
 public class Shovel : Weapon, ISecondaryAction
 {
     public float integrity;
-    float elapsedRadius = 0;
+    //float elapsedRadius = 0;
 
     ShovelModel cachedModel;
 

@@ -149,7 +149,7 @@ public class PlayerController : MonoBehaviour
 
         var cursorWorldPos =
         //touchCursor.transform.position = 
-        Camera.main.ScreenToWorldPoint(touchCursor.ScreenPosition);
+        Camera.main.ScreenToWorldPoint(touchCursor.CursorPosition);
 
         //touchCursor.SetActive(true);
         var inputType = touchCursor.currentUseType;
@@ -192,7 +192,7 @@ public class PlayerController : MonoBehaviour
                 inputType == MultiuseTouchCursor.UseType.interactWithObject)
                 )
             {
-                touchCursor.ChangeUseTest(MultiuseTouchCursor.UseType.itemAbility, character.inventory.ActiveItem.Verb);
+                touchCursor.SetUseLabel(MultiuseTouchCursor.UseType.itemAbility, character.inventory.ActiveItem.Verb);
             }
 
             if (character.inventory.ActiveWeapon)

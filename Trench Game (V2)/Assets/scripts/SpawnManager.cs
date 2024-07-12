@@ -175,17 +175,17 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    public Amo GetAmo(AmoType type, int amount, Vector2 pos = default)
+    public Ammo GetAmo(AmmoType type, int amount, Vector2 pos = default)
     {
         foreach (var group in itemGroups)
         {
             foreach (var spawnItem in group.spawnItems)
             {
-                if (spawnItem.prefab is Amo amoPrefab)
+                if (spawnItem.prefab is Ammo amoPrefab)
                 {
                     if (amoPrefab.AmoModel.type == type)
                     {
-                        var newAmo = spawnItem.Get(pos) as Amo;
+                        var newAmo = spawnItem.Get(pos) as Ammo;
                         newAmo.amount = amount;
                         return newAmo;
                     }
@@ -196,7 +196,7 @@ public class SpawnManager : MonoBehaviour
         return null;
     }
 
-    public Amo DropAmo(AmoType type, int amount, Vector2 pos)
+    public Ammo DropAmo(AmmoType type, int amount, Vector2 pos)
     {
         //startPos = endPos = Vector2.zero;
 
