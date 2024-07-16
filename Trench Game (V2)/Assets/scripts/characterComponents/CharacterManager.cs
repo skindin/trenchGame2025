@@ -220,11 +220,12 @@ public class CharacterManager : MonoBehaviour
             character.ResetSelf();
 
             active.Remove(character);
-            active.Add(character);
 
             character.Chunk = null;
 
             yield return new WaitForSeconds(respawnWait);
+
+            active.Add(character);
 
             //active.Add(character);
 

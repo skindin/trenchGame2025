@@ -366,4 +366,11 @@ public class ChunkManager : MonoBehaviour
         return LogicAndMath.GetClosest(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, Mathf.Infinity, debugLines);
         //return closestBehavior;
     }
+
+    public Vector2 GetPosRatio(Vector2 pos)
+    {
+        GetWorldBox(out var min, out _);
+
+        return (pos - min) / worldSize;
+    }
 }

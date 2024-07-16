@@ -124,7 +124,7 @@ public class CharacterGUI : MonoBehaviour
 
         bool mainInTopGroup = false;
 
-        string GetScoreboardLine (Character character)
+        static string GetScoreboardLine (Character character)
         {
             return $"\n#{character.rank} -{character.Name}- {character.KillCount} kills";
         }
@@ -141,7 +141,7 @@ public class CharacterGUI : MonoBehaviour
             if (character == this.character) mainInTopGroup = true;
         }
 
-        if (!mainInTopGroup && (true || character.gameObject.activeSelf))
+        if (!mainInTopGroup && charManager.active.Contains(character))
             text += GetScoreboardLine(character);
         else
             text += "\n";

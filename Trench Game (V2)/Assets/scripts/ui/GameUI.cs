@@ -35,11 +35,11 @@ public class GameUI : MonoBehaviour
         var fontSize = Mathf.RoundToInt(textSize * height * scale);
         var padding = Mathf.RoundToInt(this.padding * height * scale);
 
-        DrawFPS(rect,fontSize, padding);
-        DrawTimers(rect, fontSize, padding);
+        DrawPerformance(rect,fontSize, padding);
+        //DrawTimers(rect, fontSize, padding);
     }
 
-    public void DrawFPS (Rect rect, int fontSize, int padding)
+    public void DrawPerformance (Rect rect, int fontSize, int padding)
     {
         GUIStyle style = new();
         style.alignment = TextAnchor.UpperCenter;

@@ -26,8 +26,8 @@ public class SpawnManager : MonoBehaviour
 
     public List<SpawnItemGroup> itemGroups = new();
     public int itemsPerDrop = 5;
-    public float itemDropRadius = 5, itemDropInterval = 20, itemDropTimer = 0, minSpawnDelay, maxSpawnDelay, spawnScaleDuration;
-    public bool spawnItemDrops = true;
+    public float itemDropRadius = 5, itemDropInterval = 20, itemDropTimer = 0, startDropAreaRadius = 50, dropAreaOffsetSpeed = 10, dropAreaJitter = 10;
+    public bool spawnItemDrops = true, debugLines = false;
     Coroutine itemDropRoutine;
     public float TimeToNextDrop
     {
@@ -112,20 +112,61 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    Vector2 nextItemDropPos;
+    public Vector2 dropAreaCenter;
+    public float dropAreaRadius;
+
     public void StartItemDropRoutine()
     {
         itemDropRoutine ??= StartCoroutine(DropRoutine());
 
         IEnumerator DropRoutine()
         {
+            nextItemDropPos = ChunkManager.Manager.GetRandomPos(itemDropRadius);
+
             while (true)
             {
-                SpawnItemDrop();
+                SpawnItemDrop(nextItemDropPos); //lol idk probably should randomize this
+
+                nextItemDropPos = ChunkManager.Manager.GetRandomPos(itemDropRadius);
+                var offset = Random.insideUnitCircle * (startDropAreaRadius - itemDropRadius);
+                dropAreaCenter = nextItemDropPos + offset;
+                var initialDist = offset.magnitude;
+                dropAreaRadius = startDropAreaRadius;
+
+                Vector2 targetCenterPos = Vector2.zero;
+
+                //var timeSinceRedraw = 0f;
 
                 while (itemDropTimer < itemDropInterval)
                 {
                     yield return null;
                     itemDropTimer += Time.deltaTime;
+                    //timeSinceRedraw += Time.deltaTime;
+
+                    //if (timeSinceRedraw > itemDropInterval / areaRedraws)
+                    //{
+                    //    //timeSinceRedraw = 0;
+                    //    dropAreaRadius = Mathf.Lerp(startDropAreaRadius, itemDropRadius, itemDropTimer / itemDropInterval);
+                    //    dropAreaCenter = Vector2.MoveTowards(dropAreaCenter, nextItemDropPos + Random.insideUnitCircle * dropAreaRadius, dropAreaOffsetSpeed * Time.deltaTime);
+                    //}
+
+                    var timeRatio = itemDropTimer / itemDropInterval;
+
+                    dropAreaRadius = Mathf.Lerp(startDropAreaRadius, itemDropRadius, timeRatio);
+                    targetCenterPos = Vector2.ClampMagnitude(targetCenterPos + Random.insideUnitCircle * dropAreaJitter * Time.deltaTime - nextItemDropPos, dropAreaRadius - itemDropRadius) + nextItemDropPos;
+                    var movedCenterPos = Vector2.MoveTowards(dropAreaCenter, targetCenterPos, dropAreaOffsetSpeed * Time.deltaTime);
+                    var movedDelta = movedCenterPos - nextItemDropPos;
+                    var clampedMovedDelta = Vector2.ClampMagnitude(movedDelta, Mathf.Lerp(startDropAreaRadius - itemDropRadius, 0, timeRatio));
+                    dropAreaCenter = clampedMovedDelta + nextItemDropPos;
+
+                    if (debugLines)
+                    {
+                        GeoUtils.DrawCircle(dropAreaCenter, dropAreaRadius, Color.blue, 16);
+                        GeoUtils.MarkPoint(dropAreaCenter, 1, Color.blue);
+                        GeoUtils.MarkPoint(nextItemDropPos, 1, Color.red);
+                        GeoUtils.MarkPoint(targetCenterPos, 1, Color.green);
+                    }
                 }
 
                 itemDropTimer = 0;
@@ -156,9 +197,8 @@ public class SpawnManager : MonoBehaviour
 
         return allItemPairs;
     }
-    public void SpawnItemDrop()
+    public void SpawnItemDrop(Vector2 dropPos)
     {
-        var dropPos = ChunkManager.Manager.GetRandomPos(itemDropRadius);
         var itemPairs = GenerateItemPairs();
 
         foreach (var pair in itemPairs)
