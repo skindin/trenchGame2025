@@ -13,7 +13,7 @@ public class Minimap : MonoBehaviour
     public Color defaultColor = Color.white, playerColor = Color.white;
     public RectTransform mapImage;
     public ObjectPool<Image> characterIconPool;
-    public bool debugLines = false;
+    public bool debugLines = false;//, logPosRatios = false;
 
     private void Awake()
     {
@@ -34,7 +34,7 @@ public class Minimap : MonoBehaviour
             charIcons[0].gameObject.SetActive(false);
             charIcons.RemoveAt(0);
 
-            goto SkipNewIcons;
+            //goto SkipNewIcons;
         }
 
         while (charIcons.Count < CharacterManager.Manager.active.Count)
@@ -44,15 +44,15 @@ public class Minimap : MonoBehaviour
             charIcons.Add(newIcon);
         }
 
-        SkipNewIcons:
+        //SkipNewIcons:
+
+        var mapMin = (Vector2)mapImage.position + (mapImage.rect.min * mapImage.lossyScale);
+        var scaleFactor = new Vector2(mapImage.rect.width, mapImage.rect.height) * mapImage.lossyScale;
 
         if (debugLines)
         {
-            GeoUtils.DrawBoxPosSize(mapImage.position, mapImage.localScale, Color.red);
+            GeoUtils.DrawBoxPosSize(mapImage.position, scaleFactor, Color.red);
         }
-
-        var mapMin = (Vector2)mapImage.position + mapImage.rect.min;
-        var scaleFactor = new Vector2(mapImage.rect.width, mapImage.rect.height);
 
         for (int i = 0; i < charIcons.Count; i++)
         {
@@ -62,6 +62,11 @@ public class Minimap : MonoBehaviour
             icon.transform.position = posRatio * scaleFactor + mapMin;
 
             icon.color = (character.Type == Character.CharacterType.localPlayer) ? playerColor : defaultColor;
+
+            //if (logPosRatios && character.Type == Character.CharacterType.localPlayer)
+            //{
+            //    Debug.Log(posRatio);
+            //}
         }
     }
 
