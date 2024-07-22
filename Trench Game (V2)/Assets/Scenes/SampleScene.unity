@@ -2338,6 +2338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824bd15d91dc7d546948a2a3d2ee72c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  symbolTest: papa johns
   spawnSquads: 1
   pool:
     minPooled: 0

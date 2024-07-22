@@ -34,12 +34,13 @@ public class ProjectileRenderer : MonoBehaviour
         bulletMaterial = new Material(bulletMaterial);
     }
 
+#if !DEDICATED_SERVER
+
     public void LateUpdate()
     {
         RenderTrenches();
         RenderBullets();
     }
-
     public void RenderBullets ()
     {
         bulletMaterial.enableInstancing = true;
@@ -72,6 +73,8 @@ public class ProjectileRenderer : MonoBehaviour
 
         Graphics.DrawMeshInstanced(bulletMesh, 0, bulletMaterial, transforms);
     }
+
+#endif
 
     public void RenderTrenches ()
     {

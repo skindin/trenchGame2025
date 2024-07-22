@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using System;
 
 public class CharacterManager : MonoBehaviour
 {
+//#if !DEDICATED_SERVER
+//    public string symbolTest = "suck a co**";
+//#endif
     public bool spawnSquads = true;
     public ObjectPool<Character> pool;
     public List<Character> active = new();
@@ -49,6 +53,12 @@ public class CharacterManager : MonoBehaviour
         //squadSpawnRoutine = StartCoroutine(BotSpawn());
 
         StartStopWatch();
+
+//#if !DEDICATED_SERVER
+//        Console.WriteLine("This program is not a dedicated server... " + symbolTest);
+//#else
+//        Console.WriteLine("This program is a dedicated server");
+//#endif
     }
 
     void StartStopWatch ()
