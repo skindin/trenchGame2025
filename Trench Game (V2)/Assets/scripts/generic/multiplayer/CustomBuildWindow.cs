@@ -20,7 +20,7 @@ public class CustomBuildWindow : EditorWindow
     private bool buildServer;
     private bool buildClient;
 
-    public static string serverSymbol = "DEDICATED_SERVER";
+    //public static string serverSymbol = "DEDICATED_SERVER";
 
     [MenuItem("Build/Open Custom Build Window")]
     public static void OpenWindow()
@@ -45,7 +45,7 @@ public class CustomBuildWindow : EditorWindow
         GUILayout.Label("Specify Custom Build Paths", EditorStyles.boldLabel);
 
         // Display and update server build path
-        string newServerBuildPath = EditorGUILayout.TextField("Server Build Path:", serverBuildPath);
+        serverBuildPath = EditorGUILayout.TextField("Server Build Path:", serverBuildPath);
         if (GUILayout.Button("Browse Server Build Path"))
         {
             string selectedPath = OpenFolderPanel("Select Server Build Path", serverBuildPath);
@@ -60,7 +60,7 @@ public class CustomBuildWindow : EditorWindow
         serverBuildName = EditorGUILayout.TextField("Server Build Name:", serverBuildName);
 
         // Display and update client build path
-        string newClientBuildPath = EditorGUILayout.TextField("Client Build Path:", clientBuildPath);
+        clientBuildPath = EditorGUILayout.TextField("Client Build Path:", clientBuildPath);
         if (GUILayout.Button("Browse Client Build Path"))
         {
             string selectedPath = OpenFolderPanel("Select Client Build Path", clientBuildPath);
@@ -89,8 +89,6 @@ public class CustomBuildWindow : EditorWindow
                 BuildClient();
             }
         }
-
-        //GUILayout.end
     }
 
     private void BuildClient()
@@ -102,18 +100,35 @@ public class CustomBuildWindow : EditorWindow
         BuildPipeline.BuildPlayer(buildOptions);
     }
 
-    private void BuildDedicatedServer()
+    public void BuildDedicatedServer()
     {
+        // Save the current build target and group
+        var originalBuildTarget = EditorUserBuildSettings.activeBuildTarget;
+        var originalTargetGroup = BuildPipeline.GetBuildTargetGroup(originalBuildTarget);
+
+        // Set the build target to StandaloneWindows
+        EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows);
+
+        // Define build options
+        //BuildPlayerOptions buildOptions = new BuildPlayerOptions
+        //{
+        //    scenes = new[] { "Assets/Scenes/MainScene.unity" }, // Update to your scenes
+        //    locationPathName = "Builds/ServerBuild.exe",
+        //    target = BuildTarget.StandaloneWindows,
+        //    options = BuildOptions.AllowDebugging | BuildOptions.Development,
+        //};
+
         var buildOptions = GetCurrentBuildPlayerOptions();
-        buildOptions.subtarget = (int)StandaloneBuildSubtarget.Server;
-        buildOptions.target = BuildTarget.StandaloneWindows;
         buildOptions.locationPathName = Path.Combine(serverBuildPath, serverBuildName + ".exe");
+        buildOptions.target = BuildTarget.StandaloneWindows;
+        buildOptions.options = BuildOptions.AllowDebugging | BuildOptions.Development;
+        buildOptions.subtarget = (int)StandaloneBuildSubtarget.Server;
 
-        AddDefineSymbol(serverSymbol);
-
+        // Perform the build
         BuildPipeline.BuildPlayer(buildOptions);
 
-        RemoveDefineSymbol(serverSymbol);
+        // Restore the original build target and group
+        //EditorUserBuildSettings.switchac(originalTargetGroup, originalBuildTarget);
     }
 
     private string OpenFolderPanel(string title, string defaultPath)
@@ -150,37 +165,6 @@ public class CustomBuildWindow : EditorWindow
             target = EditorUserBuildSettings.activeBuildTarget,
             options = BuildOptions.None
         };
-    }
-
-    public static void AddDefineSymbol(string symbol)
-    {
-        // Get the current define symbols for the Standalone target group (for example)
-        string currentSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
-
-        // Add the new symbol if it doesn't already exist
-        if (!currentSymbols.Contains(symbol))
-        {
-            string newSymbols = currentSymbols + ";" + symbol;
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, newSymbols);
-            Debug.Log($"Added define symbol: {symbol}");
-        }
-        else
-        {
-            Debug.Log($"Define symbol already exists: {symbol}");
-        }
-    }
-
-    // Remove define symbols for a specific build target group
-    public static void RemoveDefineSymbol(string symbol)
-    {
-        // Get the current define symbols
-        string currentSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
-
-        // Remove the symbol
-        string[] symbols = currentSymbols.Split(';');
-        string newSymbols = string.Join(";", symbols.Where(s => s != symbol));
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, newSymbols);
-        Debug.Log($"Removed define symbol: {symbol}");
     }
 }
 #endif

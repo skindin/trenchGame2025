@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,9 +33,13 @@ public class ProjectileRenderer : MonoBehaviour
         //var headRes = Mathf.CeilToInt(headSize * ppu);
 
         bulletMaterial = new Material(bulletMaterial);
+
+#if UNITY_SERVER
+        Console.WriteLine("this is a dedicated server");
+#endif
     }
 
-#if !DEDICATED_SERVER
+#if !UNITY_SERVER
 
     public void LateUpdate()
     {
