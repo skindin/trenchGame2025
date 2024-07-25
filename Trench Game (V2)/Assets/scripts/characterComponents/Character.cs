@@ -188,8 +188,8 @@ public class Character : MonoBehaviour
             inventory.DetectItems();
         }
 
-        if (sync)
-            NetworkManager.Manager?.SetPos(pos);
+        //if (sync)
+        //    NetworkManager.Manager?.SetPos(pos);
 
         //posWasSetThisFrame = true;
 
