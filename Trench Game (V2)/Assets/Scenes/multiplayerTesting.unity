@@ -944,6 +944,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 430202880}
+  - component: {fileID: 430202881}
   m_Layer: 0
   m_Name: networking
   m_TagString: Untagged
@@ -960,7 +961,7 @@ Transform:
   m_GameObject: {fileID: 430202879}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 867.0591, y: 515.02496, z: -0.9400959}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -968,6 +969,20 @@ Transform:
   - {fileID: 1377846332}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &430202881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 430202879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2b7c0cd1d138304b96f459a46c2701d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  client: {fileID: 1377846333}
+  server: {fileID: 950176246}
 --- !u!1 &478373407
 GameObject:
   m_ObjectHideFlags: 0
@@ -1146,7 +1161,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cf0609914af9d74594097bb3677929e, type: 3}
   m_Name: 
@@ -1402,7 +1417,7 @@ MonoBehaviour:
     prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
     currentAmount: 0
     spawnCap: 10
-  spawnBots: 1
+  spawnBots: 0
 --- !u!1 &607746247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1854,9 +1869,9 @@ RectTransform:
   - {fileID: 626255693}
   m_Father: {fileID: 1459131766}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -256.47668, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &797495610
@@ -2371,6 +2386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824bd15d91dc7d546948a2a3d2ee72c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainPlayerCharacter: {fileID: 1253392265}
   spawnSquads: 1
   pool:
     minPooled: 0
@@ -2887,6 +2903,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ab5a5e8b5028a46b3f785a3ab48203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ID: 
 --- !u!1 &1430281415
 GameObject:
   m_ObjectHideFlags: 0
@@ -2903,7 +2920,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1430281416
 MonoBehaviour:
   m_ObjectHideFlags: 0

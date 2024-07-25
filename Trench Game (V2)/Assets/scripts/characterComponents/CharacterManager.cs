@@ -6,9 +6,10 @@ using System;
 
 public class CharacterManager : MonoBehaviour
 {
-//#if !DEDICATED_SERVER
-//    public string symbolTest = "suck a co**";
-//#endif
+    //#if !DEDICATED_SERVER
+    //    public string symbolTest = "suck a co**";
+    //#endif
+    public Character mainPlayerCharacter;
     public bool spawnSquads = true;
     public ObjectPool<Character> pool;
     public List<Character> active = new();
@@ -49,6 +50,8 @@ public class CharacterManager : MonoBehaviour
 
     private void Awake()
     {
+        manager = this;
+
         SetupPool();
         //squadSpawnRoutine = StartCoroutine(BotSpawn());
 

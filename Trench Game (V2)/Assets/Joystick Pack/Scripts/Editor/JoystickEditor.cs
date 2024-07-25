@@ -52,8 +52,8 @@ public class JoystickEditor : Editor
         EditorGUILayout.PropertyField(handleRange, new GUIContent("Handle Range", "The distance the visual button can move from the center of the joystick."));
         EditorGUILayout.PropertyField(deadZone, new GUIContent("Dead Zone", "The distance away from the center input has to be before registering."));
         EditorGUILayout.PropertyField(axisOptions, new GUIContent("Axis Options", "Which axes the joystick uses."));
-        EditorGUILayout.PropertyField(snapX, new GUIContent("Snap X", "Snap the horizontal input to a whole value."));
-        EditorGUILayout.PropertyField(snapY, new GUIContent("Snap Y", "Snap the vertical input to a whole value."));
+        EditorGUILayout.PropertyField(snapX, new GUIContent("Snap X", "Snap the horizontal input to server whole value."));
+        EditorGUILayout.PropertyField(snapY, new GUIContent("Snap Y", "Snap the vertical input to server whole value."));
     }
 
     protected virtual void DrawComponents()

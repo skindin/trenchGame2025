@@ -176,7 +176,7 @@ public class Character : MonoBehaviour
     //bool posWasSetThisFrame = false;
     //Coroutine waitForPosRoutine;
 
-    public void SetPos (Vector2 pos) //this would be the rpc
+    public void SetPos (Vector2 pos, bool sync = true) //this would be the rpc
     {
         //if ((Vector2)transform.position == pos) return;
 
@@ -187,6 +187,9 @@ public class Character : MonoBehaviour
             UpdateChunk();
             inventory.DetectItems();
         }
+
+        if (sync)
+            NetworkManager.Manager?.SetPos(pos);
 
         //posWasSetThisFrame = true;
 

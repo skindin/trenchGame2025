@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
 
         //type = ControllerType.touchscreen;
 
-        TouchController.Main.gameObject.SetActive(type == ControllerType.touchscreen);
+        TouchController.Main?.gameObject.SetActive(type == ControllerType.touchscreen);
 
         return type;
     }

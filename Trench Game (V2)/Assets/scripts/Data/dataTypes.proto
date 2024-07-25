@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message ConnectionId
+{
+    string ID = 1;
+}
+
+message Vector2Data
+{
+    float x = 1;
+    float y = 2;
+}

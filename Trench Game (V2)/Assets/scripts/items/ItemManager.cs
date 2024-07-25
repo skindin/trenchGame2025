@@ -92,7 +92,7 @@ public class ItemManager : MonoBehaviour
             return item;
         }
 
-        throw new Exception($"Item Manager does not have a pool setup for {prefab}");
+        throw new Exception($"Item ManagerBase does not have server pool setup for {prefab}");
     }
 
     public void RemoveItem(Item item, Item prefab)
@@ -104,7 +104,7 @@ public class ItemManager : MonoBehaviour
             itemPool.MoveTo(item);
         }
         else
-            throw new Exception($"Item Manager does not have a pool setup for {prefab}");
+            throw new Exception($"Item ManagerBase does not have server pool setup for {prefab}");
     }
 
     //public List<Item> GenerateItemList(List<Item> list, int count, bool clearList = true) //repeating the same item throughout groups causes lots of problems lol

@@ -73,7 +73,7 @@ public class MultiuseTouchCursor : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private void Awake()
     {
-        CursorPosition = cursor.transform.position;
+        position = cursor.transform.position;
     }
 
     public void OnPointerDown (PointerEventData data)
