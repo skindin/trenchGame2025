@@ -2442,6 +2442,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aab6ef9fc5c68544b627cc616d1bb85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isServer: 1
 --- !u!1 &1054766971
 GameObject:
   m_ObjectHideFlags: 0
@@ -2903,7 +2904,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ab5a5e8b5028a46b3f785a3ab48203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 
+  isClient: 0
 --- !u!1 &1430281415
 GameObject:
   m_ObjectHideFlags: 0

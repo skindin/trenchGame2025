@@ -22,7 +22,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
         {
             var posBinary = DataManager.VectorToBinary(pos);
 
-            client.SendData(posBinary);
+            //client.SendDataToServer(posBinary);
         }
 
 #endif

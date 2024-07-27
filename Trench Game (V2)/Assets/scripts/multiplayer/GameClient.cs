@@ -1,115 +1,111 @@
-using Google.Protobuf;
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Text;
+using ENet;
 using UnityEngine;
-using WebSocketSharp;
 
 public class GameClient : MonoBehaviour
 {
-#if !UNITY_SERVER || UNITY_EDITOR
+    private Host client;
+    private Peer server;
+    private bool isConnected = false;
 
-    private WebSocket ws;
-    public string ID;
-
-    Queue<Action> actionQueue = new Queue<Action>();
+    public bool isClient = true;
 
     private void Start()
     {
-        RunWebSocketClient();
-        //ID = 
+#if UNITY_SERVER && !UNITY_EDITOR
+        isClient = false;
+#endif
+
+        if (!isClient)
+            return;
+
+        Logger.Log("Initializing ENet Library...");
+        Library.Initialize();
+        client = new Host();
+        Address address = new Address();
+        address.SetHost("localhost");
+        address.Port = 1234;
+        Logger.Log("Creating client host...");
+        client.Create();
+
+        Logger.Log("Attempting to connect to server at localhost:1234...");
+        server = client.Connect(address);
+        Logger.Log("Client started and attempting to connect to server...");
     }
 
     private void Update()
     {
-        while (actionQueue.Count > 0)
+        if (!isClient)
+            return;
+
+        ENet.Event netEvent;
+
+        while (client.Service(15, out netEvent) > 0)
         {
-            Action action;
-            lock (actionQueue)
+            switch (netEvent.Type)
             {
-                action = actionQueue.Dequeue();
+                case ENet.EventType.Connect:
+                    Logger.Log("Connected to server - ID: " + netEvent.Peer.ID);
+                    isConnected = true;
+                    SendMessageToServer("Hello, server!");
+                    break;
+
+                case ENet.EventType.Disconnect:
+                    Logger.Log("Disconnected from server - ID: " + netEvent.Peer.ID);
+                    isConnected = false;
+                    break;
+
+                case ENet.EventType.Receive:
+                    Logger.Log("Packet received from server - ID: " + netEvent.Peer.ID);
+                    HandlePacket(netEvent.Packet);
+                    netEvent.Packet.Dispose();
+                    break;
             }
-            action?.Invoke();
+        }
+
+        // Additional logging to confirm Update is running
+        if (!isConnected)
+        {
+            Logger.Log("Client not connected yet.");
         }
     }
-
-    private void RunWebSocketClient()
-    {
-        // Initialize WebSocket
-        ws = new WebSocket("ws://localhost:8080/ClientBehavior");
-
-        // Set up message received handler
-        ws.OnMessage += OnMessage;
-
-        //ws.OnOpen += (sender, e) => {
-        //    var idData = new ConnectionId() { ID = Guid.NewGuid().ToString() };
-        //    var binary = DataManager.MessageToBinary(idData);
-        //    SendData(binary);
-        //    };
-
-        // Connect to WebSocket server
-        ws.Connect();
-    }
-
-    void OnMessage(object sender, MessageEventArgs e)
-    {
-        actionQueue.Enqueue(() => OnData(e.RawData));
-
-        void OnData(byte[] rawData)
-        {
-            if (DataManager.IfGetVector(rawData, out var pos))
-            {
-                Debug.Log("Client received pos: " + pos);
-
-                // Ensure this call is made on the main thread
-                //yield return new WaitForEndOfFrame();
-                CharacterManager.Manager.mainPlayerCharacter.SetPos(pos, false);
-            }
-
-            //try
-            //{
-            //    // Assuming BinaryToVector is a method to convert raw data to a Vector2 or similar
-            //    var pos = DataManager.BinaryToVector(rawData);
-
-            //    Debug.Log("Client received pos: " + pos);
-
-            //    // Ensure this call is made on the main thread
-            //    //yield return new WaitForEndOfFrame();
-            //    CharacterManager.Manager.mainPlayerCharacter.SetPos(pos, false);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Debug.LogError("Error in OnMessage client: " + ex.Message);
-            //}
-        }
-    }
-
-
-
-
-    //private void Update()
-    //{
-    //    // Send a message when the space bar is pressed
-    //    if (Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        ws.Send("Space bar pressed!");
-    //        Debug.Log("Message sent to server");
-    //    }
-    //}
 
     private void OnDestroy()
     {
-        // Clean up WebSocket connection
-        if (ws != null)
-        {
-            ws.Close();
-            ws = null;
-        }
+        if (!isClient)
+            return;
+
+        client.Dispose();
+        Library.Deinitialize();
+        Logger.Log("Client and ENet library deinitialized.");
     }
 
-    public void SendData (byte[] data)
+    private void HandlePacket(Packet packet)
     {
-        ws?.Send(data);
+        byte[] data = new byte[packet.Length];
+        packet.CopyTo(data);
+
+        // Handle the data (e.g., convert to protobuf, etc.)
+        // For now, just log the data as a string
+        string message = Encoding.UTF8.GetString(data);
+        Logger.Log("Client Received message: " + message);
     }
-#endif
+
+    public void SendMessageToServer(string message)
+    {
+        byte[] binary = Encoding.UTF8.GetBytes(message);
+        SendDataToServer(binary);
+    }
+
+    public void SendDataToServer(byte[] binary)
+    {
+        if (!isClient)
+            return;
+
+        Packet packet = default;
+        packet.Create(binary, PacketFlags.Reliable);
+        server.Send(0, ref packet);
+        Logger.Log("Sent message to server: " + Encoding.UTF8.GetString(binary));
+    }
 }

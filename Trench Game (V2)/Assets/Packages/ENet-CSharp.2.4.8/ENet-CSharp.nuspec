@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>ENet-CSharp</id>
+    <version>2.4.8</version>
+    <title>ENet-CSharp</title>
+    <authors>Stanislav Denisov</authors>
+    <owners>nxrighthere</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">license\license.txt</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <projectUrl>https://github.com/nxrighthere/ENet-CSharp</projectUrl>
+    <description>Reliable UDP networking library extended for the .NET environment</description>
+    <summary></summary>
+    <releaseNotes></releaseNotes>
+    <copyright>(c) 2019 Stanislav Denisov</copyright>
+    <tags>networking udp protocol ipv4 ipv6 gamedev</tags>
+  </metadata>
+</package>

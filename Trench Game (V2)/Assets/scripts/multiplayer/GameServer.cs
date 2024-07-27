@@ -1,167 +1,136 @@
+using ENet;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using UnityEngine;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 
 public class GameServer : MonoBehaviour
 {
-    private WebSocketServer wssv;
-    public Dictionary<string, ClientBehavior> clients = new();
+    private Host server;
+    private Address address;
+    Dictionary<uint, Peer> clients = new();
 
-    public Queue<Action> actionQueue = new();
+    public bool isServer = false;
 
     private void Awake()
     {
-#if UNITY_SERVER && !UNITY_EDITOR// || true
-        //|| true
-        ClientBehavior.server = this;
-
-        try
-        {
-            // Initialize the WebSocket server
-            wssv = new WebSocketServer("ws://localhost:8080");
-            wssv.AddWebSocketService<ClientBehavior>("/ClientBehavior");
-            wssv.Start();
-
-            if (wssv.IsListening)
-            {
-                Debug.Log("WebSocket Server listening on port " + wssv.Port + ", and providing WebSocket services:");
-                foreach (var path in wssv.WebSocketServices.Paths)
-                {
-                    Debug.Log("- " + path);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("Error starting WebSocket server: " + ex.Message);
-        }
-#else
-        Debug.Log("This is either not a server or is the Unity editor...");
+#if UNITY_SERVER && !UNITY_EDITOR
+        isServer = true;
+        //return;
 #endif
+
+        if (!isServer)
+            return;
+
+        Logger.Log("Initializing ENet Library...");
+        Library.Initialize();
+        server = new Host();
+
+        address = new Address();
+        address.Port = 1234;
+        Logger.Log("Creating server host...");
+        server.Create(address, 10); // Maximum 10 connections
+
+        Logger.Log("Server started...");
     }
 
     private void Update()
     {
-        while (actionQueue.Count > 0)
+        if (!isServer)
+            return;
+
+        ENet.Event netEvent;
+        bool polled = false;
+
+        while (!polled)
         {
-            Action action;
-            lock (actionQueue)
+            if (server.CheckEvents(out netEvent) <= 0)
             {
-                action = actionQueue.Dequeue();
+                if (server.Service(15, out netEvent) <= 0)
+                    break;
+
+                polled = true;
             }
-            action?.Invoke();
-        }
-    }
 
-    void BroadCast (string message)
-    {
-        //foreach (var session in wssv.WebSocketServices["/Echo"].Sessions) ;
-
-        var sessions = wssv.WebSocketServices["/ClientBehavior"].Sessions;
-
-        sessions.Broadcast(message);
-
-        //for (var i = 0; i < sessions.Count; i++)
-        //{
-
-        //}
-    }
-
-    public void SendDataDisclude(byte[] binary, params string[] discludeIDs)
-    {
-        //Console.WriteLine($"began send data disclude. clients: {clients} discludedIds: {discludeIDs}");
-        foreach (var clientBehavior in clients)
-        {
-            if (!discludeIDs.Contains(clientBehavior.Key))
+            switch (netEvent.Type)
             {
-                clientBehavior.Value.SendData(binary);
+                case ENet.EventType.Connect:
+                    Logger.Log("Client connected - ID: " + netEvent.Peer.ID);
+                    clients.Add(netEvent.Peer.ID, netEvent.Peer);
+                    break;
+
+                case ENet.EventType.Disconnect:
+                    Logger.Log("Client disconnected - ID: " + netEvent.Peer.ID);
+                    clients.Remove(netEvent.Peer.ID);
+                    break;
+
+                case ENet.EventType.Receive:
+                    Logger.Log("Packet received from - ID: " + netEvent.Peer.ID);
+                    HandlePacket(netEvent.Packet, netEvent.Peer); // Handle the received packet
+                    netEvent.Packet.Dispose();
+                    break;
             }
         }
+
+        // Additional logging to confirm Update is running
+        //Logger.Log("Server update running...");
     }
-
-//    private void Update()
-//    {
-//#if UNITY_SERVER && !UNITY_EDITOR 
-////||true
-//        BroadCast("server spamming client");
-//#endif
-//    }
-
-
 
     private void OnDestroy()
     {
-        if (wssv != null)
+        if (!isServer)
+            return;
+
+        server.Dispose();
+        Library.Deinitialize();
+        Logger.Log("Server and ENet library deinitialized.");
+    }
+
+    private void HandlePacket(Packet packet, Peer client)
+    {
+        byte[] data = new byte[packet.Length];
+        packet.CopyTo(data);
+
+        // Handle the data (e.g., convert to protobuf, etc.)
+        // For now, just log the data as a string
+        string message = Encoding.UTF8.GetString(data);
+        Logger.Log("Server Received message: " + message);
+
+        // Example: Echo the message back to the client
+        SendMessageToClient("Echo: " + message, client);
+    }
+
+    public void SendMessageToClient(string message, uint ID)
+    {
+        byte[] binary = Encoding.UTF8.GetBytes(message);
+        SendDataToClient(binary, ID);
+    }
+
+    public void SendMessageToClient(string message, Peer client)
+    {
+        byte[] binary = Encoding.UTF8.GetBytes(message);
+        SendDataToClient(binary, client);
+    }
+
+    public void SendDataToClient(byte[] binary, uint ID)
+    {
+        if (!isServer)
+            return;
+
+        if (clients.TryGetValue(ID, out var client))
         {
-            wssv.Stop();
-            wssv = null;
+            SendDataToClient(binary, client);
+            return;
         }
-    }
-}
 
-public class ClientBehavior : WebSocketBehavior
-{
-    public static GameServer server;
-
-    //public ClientBehavior (GameServer server)
-    //{
-    //    ClientBehavior.server = server;
-    //}
-
-    protected override void OnOpen()
-    {
-        //Debug.Log("New clientBehavior connected.");
-        server.clients.Add(ID, this);
+        Logger.Log($"Server did not have record for id {ID}");
     }
 
-    protected override void OnMessage(MessageEventArgs e)
+    public void SendDataToClient(byte[] binary, Peer client)
     {
-
-
-        // Use Coroutine on the main thread
-        //Console.WriteLine("onmessage started on server");
-        server.actionQueue.Enqueue(() => UseData(e.RawData));
-        //Console.WriteLine("started coroutine on server");
-
-        void UseData(byte[] rawData)
-        {
-            if (e.IsText)
-            {
-                Console.WriteLine("Server received message: " + e.Data);
-                //return;
-            }
-
-            else if (DataManager.IfGetVector(rawData, out var pos))
-            {
-                Console.WriteLine("Server received pos: " + pos);
-
-                // Ensure this call is made on the main thread
-                //yield return new WaitForEndOfFrame();
-                CharacterManager.Manager.mainPlayerCharacter.SetPos(pos, false);
-
-                server.SendDataDisclude(rawData, ID);
-            }
-        }
-    }
-
-
-    protected override void OnClose(CloseEventArgs e)
-    {
-        Console.WriteLine("Client disconnected. Reason: " + e.Reason);
-        server.clients.Remove(ID);
-    }
-
-    protected override void OnError(ErrorEventArgs e)
-    {
-        Console.WriteLine("penis WebSocket error: " + e.Message);
-    }
-
-    public void SendData(byte[] binary)
-    {
-        Send(binary);
+        Packet packet = default;
+        packet.Create(binary, PacketFlags.Reliable);
+        client.Send(0, ref packet);
+        Logger.Log("Sent message to client: " + Encoding.UTF8.GetString(binary));
     }
 }
