@@ -11,23 +11,34 @@ using Google.Protobuf;
 
 public static class DataManager
 {
-    public static byte[] MessageToBinary (IMessage message)
-    {
-        byte[] binaryData;
-        using (var stream = new MemoryStream())
-        {
-            message.WriteTo(stream);
-            binaryData = stream.ToArray();
-        }
+    //public static byte[] MessageToBinary (IMessage message)
+    //{
+    //    return message.ToByteArray();
 
-        return binaryData;
+    //    //byte[] binaryData;
+    //    //using (var stream = new MemoryStream())
+    //    //{
+    //    //    message.WriteTo(stream);
+    //    //    binaryData = stream.ToArray();
+    //    //}
+
+    //    //return binaryData;
+    //}
+
+
+    //public static byte[] VectorToBinary(Vector2 pos)
+    //{
+    //    return MessageToBinary(VectorToData(pos));
+    //}
+
+    public static Vector2Data VectorToData (Vector2 pos)
+    {
+        return new() { X = pos.x, Y = pos.y };
     }
 
-    public static byte[] VectorToBinary(Vector2 pos)
+    public static Vector2 ConvertDataToVector(Vector2Data data)
     {
-        Vector2Data posData = new() { X = pos.x, Y = pos.y };
-
-        return MessageToBinary(posData);
+        return new Vector2(data.X,data.Y);
     }
 
     public static bool IfGetVector(byte[] bytes, out Vector2 pos)

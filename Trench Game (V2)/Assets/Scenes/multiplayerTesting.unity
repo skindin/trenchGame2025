@@ -1161,7 +1161,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cf0609914af9d74594097bb3677929e, type: 3}
   m_Name: 
@@ -2386,13 +2386,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824bd15d91dc7d546948a2a3d2ee72c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainPlayerCharacter: {fileID: 1253392265}
+  localPlayerCharacter: {fileID: 0}
   spawnSquads: 1
   pool:
     minPooled: 0
     maxPooled: 20
-  active:
-  - {fileID: 1253392265}
+  active: []
   prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
   container: {fileID: 1284647723}
   scoreStopWatch: 0
@@ -3869,7 +3868,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113553809}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5bcfdade5615b2e4c98b8474f4b4f3f9, type: 3}
   m_Name: 
@@ -4028,7 +4027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1471029731889219177, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3717005610972555357, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
       propertyPath: vulnerable

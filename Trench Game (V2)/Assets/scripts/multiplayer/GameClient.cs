@@ -2,7 +2,10 @@ using Google.Protobuf;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+//using Unity.VisualScripting.FullSerializer;
+//using UnityEditor.U2D.Animation;
 using UnityEngine;
+//using UnityEngine.Rendering.PostProcessing;
 using WebSocketSharp;
 
 public class GameClient : MonoBehaviour
@@ -41,6 +44,16 @@ public class GameClient : MonoBehaviour
         // Set up message received handler
         ws.OnMessage += OnMessage;
 
+        ws.OnOpen += (sender, e) =>
+        {
+            var baseMessage = new BaseMessage() { NewPlayerRequest = true };
+
+            //var binary = DataManager.MessageToBinary(baseMessage);
+
+            ws.Send(baseMessage.ToByteArray());
+            //Debug.Log("connected to server");
+        };
+
         //ws.OnOpen += (sender, e) => {
         //    var idData = new ConnectionId() { ID = Guid.NewGuid().ToString() };
         //    var binary = DataManager.MessageToBinary(idData);
@@ -57,13 +70,79 @@ public class GameClient : MonoBehaviour
 
         void OnData(byte[] rawData)
         {
-            if (DataManager.IfGetVector(rawData, out var pos))
-            {
-                Debug.Log("Client received pos: " + pos);
+            //bool uhoh = false;
 
-                // Ensure this call is made on the main thread
-                //yield return new WaitForEndOfFrame();
-                CharacterManager.Manager.mainPlayerCharacter.SetPos(pos, false);
+            if (DataManager.IfGet<BaseMessage>(rawData, out var baseMessage))
+            {
+                switch (baseMessage.TypeCase)
+                {
+                    case BaseMessage.TypeOneofCase.NewPlayerGrant:
+                        {
+                            var grant = baseMessage.NewPlayerGrant;
+
+                            if (!CharacterManager.Manager.localPlayerCharacter)
+                            {
+                                var id = grant.CharacterID;
+                                var pos = DataManager.ConvertDataToVector(grant.Pos);
+                                CharacterManager.Manager.NewLocalPlayer(pos, id);
+
+                                Debug.Log($"spawned local player {id} at {pos}");
+                            }
+                        }
+                        break;
+
+                    case BaseMessage.TypeOneofCase.NewRemoteChar:
+                        {
+                            var newRemoteData = baseMessage.NewRemoteChar;
+
+                            var id = newRemoteData.CharacterID;
+                            var pos = DataManager.ConvertDataToVector(newRemoteData.Pos);
+
+                            CharacterManager.Manager.NewRemoteCharacter(pos, id);
+
+                            Debug.Log($"spawned remote character {id} at {pos}");
+                        }
+                        break;
+
+                    case BaseMessage.TypeOneofCase.UpdateCharData:
+                        {
+                            var updateData = baseMessage.UpdateCharData;
+
+                            var id = updateData.CharacterID;
+                            var pos = DataManager.ConvertDataToVector(updateData.Pos);
+
+                            // Ensure this call is made on the main thread
+                            //yield return new WaitForEndOfFrame();
+                            var character = CharacterManager.Manager.active.Find(character => character.id == id);
+
+                            if (character)
+                            {
+                                character.SetPos(pos, false);
+                                Debug.Log($"updated pos of character {updateData.CharacterID} to {pos}");
+                            }
+                            else
+                            {
+                                Debug.Log($"this client doesn't have a character with id {id}");
+                            }
+                        }
+                        break;
+
+                    case BaseMessage.TypeOneofCase.RemoveCharOfID:
+                        {
+                            var removeId = baseMessage.RemoveCharOfID;
+
+                            var removeChar = CharacterManager.Manager.active.Find(character => character.id == removeId);
+
+                            if (removeChar)
+                            {
+                                CharacterManager.Manager.RemoveCharacter(removeChar);
+                            }
+
+                            Debug.Log($"character {removeId} was removed");
+                        }
+                        break;
+                }
+
             }
 
             //try

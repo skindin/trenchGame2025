@@ -20,9 +20,15 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         void SetPosClientToServer(Vector2 pos) //sets local pos, then sends data to clients
         {
-            var posBinary = DataManager.VectorToBinary(pos);
+            Debug.Log($"sent pos {pos} to server");
 
-            client.SendData(posBinary);
+            var posData = DataManager.VectorToData(pos);
+
+            var baseMessage = new BaseMessage() { Pos = posData};
+
+            //var binary = DataManager.MessageToBinary(baseMessage);
+
+            client.SendData(baseMessage.ToByteArray());
         }
 
 #endif

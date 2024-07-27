@@ -9,7 +9,7 @@ public class CharacterManager : MonoBehaviour
     //#if !DEDICATED_SERVER
     //    public string symbolTest = "suck a co**";
     //#endif
-    public Character mainPlayerCharacter;
+    public Character localPlayerCharacter;
     public bool spawnSquads = true;
     public ObjectPool<Character> pool;
     public List<Character> active = new();
@@ -20,6 +20,16 @@ public class CharacterManager : MonoBehaviour
     //float squadSpawnTimer = 0;
     Coroutine stopWatchRoutine, scoreboardRoutine;
     //bool sortCharactersThisFrame = false;
+
+    int nextId = 0;
+
+    public int NewId
+    {
+        get
+        {
+            return nextId++;
+        }
+    }
 
     //public float TimeToSquadSpawn
     //{
@@ -166,17 +176,25 @@ public class CharacterManager : MonoBehaviour
     //    }
     //}
 
-    public Character NewBot (Vector2 pos)
+    public Character NewBot (Vector2 pos, int id)
     {
-        return NewCharacter(pos, Character.CharacterType.localBot);
+        return NewCharacter(pos, Character.CharacterType.localBot, id);
     }
 
-    public Character NewLocalPlayer(Vector2 pos)
+    public Character NewLocalPlayer(Vector2 pos, int id)
     {
-        return NewCharacter(pos, Character.CharacterType.localPlayer);
+        var pc = NewCharacter(pos, Character.CharacterType.localPlayer, id);
+        localPlayerCharacter = pc;
+        CamFollow.main.AssignTarget(pc.transform);
+        return pc;
     }
 
-    public Character NewCharacter (Vector2 pos, Character.CharacterType type)
+    public Character NewRemoteCharacter (Vector2 pos, int id)
+    {
+        return NewCharacter(pos, Character.CharacterType.remote, id);
+    }
+
+    public Character NewCharacter (Vector2 pos, Character.CharacterType type, int id)
     {
         var newCharacter = pool.GetFromPool();
 
@@ -184,6 +202,8 @@ public class CharacterManager : MonoBehaviour
         newCharacter.UpdateChunk();
 
         newCharacter.Type = type;
+
+        newCharacter.id = id;
 
         active.Add(newCharacter);
 

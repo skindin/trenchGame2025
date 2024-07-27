@@ -20,7 +20,7 @@ public class CamFollow : MonoBehaviour
 
     public void AssignTarget (Transform target)
     {
-        delta = transform.position - target.position;
+        delta = transform.position - Vector3.zero;
         this.target = target;
     }
 

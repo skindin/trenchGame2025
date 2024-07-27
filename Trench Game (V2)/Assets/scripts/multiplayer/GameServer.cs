@@ -1,8 +1,10 @@
+using Google.Protobuf;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+//using UnityEngine.Android;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -10,6 +12,7 @@ public class GameServer : MonoBehaviour
 {
     private WebSocketServer wssv;
     public Dictionary<string, ClientBehavior> clients = new();
+    public Dictionary<string, Character> playerCharacters = new();
 
     public Queue<Action> actionQueue = new();
 
@@ -28,16 +31,16 @@ public class GameServer : MonoBehaviour
 
             if (wssv.IsListening)
             {
-                Debug.Log("WebSocket Server listening on port " + wssv.Port + ", and providing WebSocket services:");
+                Console.WriteLine("WebSocket Server listening on port " + wssv.Port + ", and providing WebSocket services:");
                 foreach (var path in wssv.WebSocketServices.Paths)
                 {
-                    Debug.Log("- " + path);
+                    Console.WriteLine("- " + path);
                 }
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError("Error starting WebSocket server: " + ex.Message);
+            Console.WriteLine("Error starting WebSocket server: " + ex.Message);
         }
 #else
         Debug.Log("This is either not a server or is the Unity editor...");
@@ -83,6 +86,14 @@ public class GameServer : MonoBehaviour
         }
     }
 
+    public void SendDataToClient(byte[] binary, string id)
+    {
+        if (clients.TryGetValue(id, out var client))
+        {
+            client.SendData(binary);
+        }
+    }
+
 //    private void Update()
 //    {
 //#if UNITY_SERVER && !UNITY_EDITOR 
@@ -114,7 +125,7 @@ public class ClientBehavior : WebSocketBehavior
 
     protected override void OnOpen()
     {
-        //Debug.Log("New clientBehavior connected.");
+        //Console.WriteLine("New clientBehavior connected.");
         server.clients.Add(ID, this);
     }
 
@@ -134,16 +145,73 @@ public class ClientBehavior : WebSocketBehavior
                 Console.WriteLine("Server received message: " + e.Data);
                 //return;
             }
-
-            else if (DataManager.IfGetVector(rawData, out var pos))
+            else if (DataManager.IfGet<BaseMessage>(rawData, out var baseMessage))
             {
-                Console.WriteLine("Server received pos: " + pos);
+                switch (baseMessage.TypeCase)
+                {
+                    case BaseMessage.TypeOneofCase.NewPlayerRequest:
+                        {
+                            if (!server.playerCharacters.ContainsKey(ID))
+                            {
 
-                // Ensure this call is made on the main thread
-                //yield return new WaitForEndOfFrame();
-                CharacterManager.Manager.mainPlayerCharacter.SetPos(pos, false);
+                                var id = CharacterManager.Manager.NewId;
+                                var pos = ChunkManager.Manager.GetRandomPos();
 
-                server.SendDataDisclude(rawData, ID);
+                                var character = CharacterManager.Manager.NewRemoteCharacter(pos, id);
+
+                                Console.WriteLine($"spawned remote character {id} at {pos}");
+
+                                server.playerCharacters.Add(ID, character);
+
+                                var posData = DataManager.VectorToData(pos);
+
+                                var charData = new CharacterData() { Pos = posData, CharacterID = id };
+
+                                //var permission = new SpawnLocalPlayerPermission() { CharacterData = charData };
+
+                                var grantMessage = new BaseMessage() { NewPlayerGrant = charData };
+
+                                //var grantData = DataManager.MessageToBinary(grantMessage);
+
+                                SendData(grantMessage.ToByteArray());
+
+                                var remoteChar = new BaseMessage() { NewRemoteChar = charData };
+
+                                //var remoteCharData = DataManager.MessageToBinary(remoteChar);
+
+                                server.SendDataDisclude(remoteChar.ToByteArray(), ID);
+                            }
+                        }
+                        break;
+
+                    case BaseMessage.TypeOneofCase.Pos:
+                        {
+                            var posData = baseMessage.Pos;
+
+                            if (server.playerCharacters.TryGetValue(ID, out var character))
+                            {
+                                //var id = characterData.CharacterID;
+
+                                var pos = DataManager.ConvertDataToVector(posData);
+
+                                character.SetPos(pos, false);
+                                Console.WriteLine($"updated pos of character {character.id} to {pos}");
+
+                                var characterData = new CharacterData() { Pos = posData, CharacterID = character.id };
+
+                                var updateMessage = new BaseMessage() { UpdateCharData = characterData };
+
+                                //var updateData = DataManager.MessageToBinary(updateMessage);
+
+                                server.SendDataDisclude(updateMessage.ToByteArray(), ID);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"server doesn't have a character associated with client {ID}");
+                            }
+                        }
+                        break;
+                }
             }
         }
     }
@@ -152,7 +220,26 @@ public class ClientBehavior : WebSocketBehavior
     protected override void OnClose(CloseEventArgs e)
     {
         Console.WriteLine("Client disconnected. Reason: " + e.Reason);
-        server.clients.Remove(ID);
+
+        server.actionQueue.Enqueue(() => RemoveCharacter(ID));
+
+        void RemoveCharacter (string ID)
+        {
+            server.clients.Remove(ID);
+
+            if (server.playerCharacters.TryGetValue(ID, out var character))
+            {
+                server.playerCharacters.Remove(ID);
+
+                CharacterManager.Manager.RemoveCharacter(character);
+            }
+
+            var removeMessage = new BaseMessage() { RemoveCharOfID = character.id };
+
+            server.SendDataDisclude(removeMessage.ToByteArray(), ID);
+
+            Console.WriteLine($"Removed character {character.id}");
+        }
     }
 
     protected override void OnError(ErrorEventArgs e)

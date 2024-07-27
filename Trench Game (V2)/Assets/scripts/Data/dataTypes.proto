@@ -1,12 +1,26 @@
 syntax = "proto3";
 
-message ConnectionId
+message BaseMessage
 {
-    string ID = 1;
+    oneof Type
+    {
+        Vector2Data pos = 1;
+        bool newPlayerRequest = 2;
+        CharacterData updateCharData = 3;
+        CharacterData newPlayerGrant = 4;
+        CharacterData newRemoteChar = 5;
+        int32 removeCharOfID = 6;
+    }
 }
 
 message Vector2Data
 {
     float x = 1;
     float y = 2;
+}
+
+message CharacterData
+{
+    int32 characterID = 1;
+    Vector2Data pos = 2;
 }

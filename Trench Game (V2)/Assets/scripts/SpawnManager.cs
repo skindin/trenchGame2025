@@ -307,7 +307,7 @@ public class SpawnManager : MonoBehaviour
 
         public override Character SpawnLogic(Vector2 pos)
         {
-            return CharacterManager.Manager.NewCharacter(pos, characterType);
+            return CharacterManager.Manager.NewCharacter(pos, characterType, 0);//id should be updated elsewhere lol
         }
 
         public override void RemoveLogic(Character character)
