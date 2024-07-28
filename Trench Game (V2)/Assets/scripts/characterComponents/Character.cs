@@ -84,7 +84,7 @@ public class Character : MonoBehaviour
 
     private void Start()
     {
-        SetPos(transform.position);
+        SetPos(transform.position,false);
         //collider.onHit.AddListener(
         //delegate
         //{

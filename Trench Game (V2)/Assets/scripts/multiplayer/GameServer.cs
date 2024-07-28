@@ -43,7 +43,7 @@ public class GameServer : MonoBehaviour
             Console.WriteLine("Error starting WebSocket server: " + ex.Message);
         }
 #else
-        Debug.Log("This is either not a server or is the Unity editor...");
+        //Debug.Log("This is either not a server or is the Unity editor...");
 #endif
     }
 
@@ -153,6 +153,19 @@ public class ClientBehavior : WebSocketBehavior
                         {
                             if (!server.playerCharacters.ContainsKey(ID))
                             {
+                                foreach (var otherCharacter in CharacterManager.Manager.active)
+                                {
+                                    var otherCharPosData = DataManager.VectorToData(otherCharacter.transform.position);
+
+                                    var spawnData = new CharacterData() { Pos = otherCharPosData, CharacterID = otherCharacter.id };
+
+                                    var newRemote = new BaseMessage() { NewRemoteChar = spawnData };
+
+                                    SendData(newRemote.ToByteArray());
+
+                                    Console.WriteLine(
+                                        $"told client {ID} to spawn character {otherCharacter.id} at {(Vector2)otherCharacter.transform.position}");
+                                }
 
                                 var id = CharacterManager.Manager.NewId;
                                 var pos = ChunkManager.Manager.GetRandomPos();
@@ -209,6 +222,8 @@ public class ClientBehavior : WebSocketBehavior
                             {
                                 Console.WriteLine($"server doesn't have a character associated with client {ID}");
                             }
+
+                            
                         }
                         break;
                 }

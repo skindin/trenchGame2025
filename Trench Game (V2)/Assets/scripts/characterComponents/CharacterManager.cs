@@ -95,6 +95,14 @@ public class CharacterManager : MonoBehaviour
     //{
     //}
 
+    public void RemoveAllCharacters ()
+    {
+        foreach (Character character in active)
+        {
+            RemoveCharacter(character);
+        }
+    }
+
     void SetupPool ()
     {
         pool = new ObjectPool<Character>(pool.minPooled, pool.maxPooled,

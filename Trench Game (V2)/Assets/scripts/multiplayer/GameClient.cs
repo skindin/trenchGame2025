@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using UnityEngine;
 //using UnityEngine.Rendering.PostProcessing;
 using WebSocketSharp;
+using UnityEngine.Events;
+//using UnityEditor.SearchService;
 
 public class GameClient : MonoBehaviour
 {
@@ -14,14 +16,15 @@ public class GameClient : MonoBehaviour
 
     private WebSocket ws;
     public string ID;
+    public UnityEvent onConnect, onDisconnect;
 
-    Queue<Action> actionQueue = new Queue<Action>();
+    readonly Queue<Action> actionQueue = new Queue<Action>();
 
-    private void Start()
-    {
-        RunWebSocketClient();
-        //ID = 
-    }
+    //private void Start()
+    //{
+    //    Connect();
+    //    //ID = 
+    //}
 
     private void Update()
     {
@@ -36,7 +39,7 @@ public class GameClient : MonoBehaviour
         }
     }
 
-    private void RunWebSocketClient()
+    public void Connect()
     {
         // Initialize WebSocket
         ws = new WebSocket("ws://localhost:8080/ClientBehavior");
@@ -51,8 +54,20 @@ public class GameClient : MonoBehaviour
             //var binary = DataManager.MessageToBinary(baseMessage);
 
             ws.Send(baseMessage.ToByteArray());
+
+            actionQueue.Enqueue(() => {
+                Debug.Log("Connected to server");
+                onConnect.Invoke();
+                });
             //Debug.Log("connected to server");
         };
+
+        ws.OnClose += (sender, e) => actionQueue.Enqueue(() => {
+            Debug.Log("Disconnected from server");
+            UIUtils.ResetScene();
+            //CharacterManager.Manager.RemoveAllCharacters();
+            onDisconnect.Invoke();
+        });
 
         //ws.OnOpen += (sender, e) => {
         //    var idData = new ConnectionId() { ID = Guid.NewGuid().ToString() };
@@ -61,7 +76,7 @@ public class GameClient : MonoBehaviour
         //    };
 
         // Connect to WebSocket server
-        ws.Connect();
+        ws.ConnectAsync();
     }
 
     void OnMessage(object sender, MessageEventArgs e)
@@ -163,8 +178,14 @@ public class GameClient : MonoBehaviour
         }
     }
 
-
-
+    public void Disconnect ()
+    {
+        if (ws != null)
+        {
+            ws.Close();
+            ws = null;
+        }
+    }
 
     //private void Update()
     //{
@@ -179,11 +200,7 @@ public class GameClient : MonoBehaviour
     private void OnDestroy()
     {
         // Clean up WebSocket connection
-        if (ws != null)
-        {
-            ws.Close();
-            ws = null;
-        }
+        Disconnect();
     }
 
     public void SendData (byte[] data)
