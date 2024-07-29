@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -68,7 +69,13 @@ public class PlayerController : MonoBehaviour
 
     public void KeyboardControls ()
     {
-        Vector2 moveDir;
+        if (
+            EventSystem.current.currentSelectedGameObject &&
+            EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>()
+            )
+            return;
+
+            Vector2 moveDir;
 
         moveDir.x = Input.GetAxisRaw("Horizontal");
         moveDir.y = Input.GetAxisRaw("Vertical");

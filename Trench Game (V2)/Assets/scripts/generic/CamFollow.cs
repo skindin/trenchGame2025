@@ -31,4 +31,10 @@ public class CamFollow : MonoBehaviour
         if (target)
             transform.position = target.position + delta;
     }
+
+    public void Reset()
+    {
+        transform.position = Vector3.zero + delta;
+        target = null;
+    }
 }

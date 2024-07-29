@@ -16,6 +16,13 @@ public class GameServer : MonoBehaviour
 
     public Queue<Action> actionQueue = new();
 
+    public bool logBitRate = false;
+    public int averageBitRateFrames = 20, averageBitRate = 0;
+
+    public int bytesThisFrame { get; set; }
+    List<int> pastByteRecords = new();
+
+
     private void Awake()
     {
 #if UNITY_SERVER && !UNITY_EDITOR// || true
@@ -49,6 +56,8 @@ public class GameServer : MonoBehaviour
 
     private void Update()
     {
+        //bool sentSomeData = actionQueue.Count > 0;
+
         while (actionQueue.Count > 0)
         {
             Action action;
@@ -57,6 +66,24 @@ public class GameServer : MonoBehaviour
                 action = actionQueue.Dequeue();
             }
             action?.Invoke();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (logBitRate)
+        {
+            pastByteRecords.Add(bytesThisFrame);
+
+            if (pastByteRecords.Count > averageBitRateFrames)
+                pastByteRecords.RemoveAt(0);
+
+            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / averageBitRateFrames);
+
+            if (bytesThisFrame > 0)
+                Console.WriteLine($"average bit rate: {averageBitRate}");
+
+            bytesThisFrame = 0;
         }
     }
 
@@ -157,28 +184,34 @@ public class ClientBehavior : WebSocketBehavior
                                 {
                                     var otherCharPosData = DataManager.VectorToData(otherCharacter.transform.position);
 
-                                    var spawnData = new CharacterData() { Pos = otherCharPosData, CharacterID = otherCharacter.id };
+                                    var spawnData = new CharacterData() {
+                                        Pos = otherCharPosData, 
+                                        CharacterID = otherCharacter.id , 
+                                        Name = otherCharacter.characterName
+                                    };
 
                                     var newRemote = new BaseMessage() { NewRemoteChar = spawnData };
 
                                     SendData(newRemote.ToByteArray());
 
                                     Console.WriteLine(
-                                        $"told client {ID} to spawn character {otherCharacter.id} at {(Vector2)otherCharacter.transform.position}");
+                                        $"told new client to spawn character {otherCharacter.id} named {otherCharacter.characterName} at {(Vector2)otherCharacter.transform.position}");
                                 }
 
                                 var id = CharacterManager.Manager.NewId;
                                 var pos = ChunkManager.Manager.GetRandomPos();
+                                var name = baseMessage.NewPlayerRequest;
 
                                 var character = CharacterManager.Manager.NewRemoteCharacter(pos, id);
+                                character.characterName = name;
 
-                                Console.WriteLine($"spawned remote character {id} at {pos}");
+                                Console.WriteLine($"spawned remote character {id} named {name} at {pos}");
 
                                 server.playerCharacters.Add(ID, character);
 
                                 var posData = DataManager.VectorToData(pos);
 
-                                var charData = new CharacterData() { Pos = posData, CharacterID = id };
+                                var charData = new CharacterData() { Pos = posData, CharacterID = id , Name = character.characterName};
 
                                 //var permission = new SpawnLocalPlayerPermission() { CharacterData = charData };
 
@@ -221,9 +254,37 @@ public class ClientBehavior : WebSocketBehavior
                             else
                             {
                                 Console.WriteLine($"server doesn't have a character associated with client {ID}");
-                            }
+                            }                            
+                        }
+                        break;
 
-                            
+                    case BaseMessage.TypeOneofCase.Name:
+                        {
+                            var newName = baseMessage.Name;
+
+                            if (server.playerCharacters.TryGetValue(ID, out var character))
+                            {
+                                //var id = characterData.CharacterID;
+
+                                //var pos = DataManager.ConvertDataToVector(posData);
+
+                                //character.SetPos(pos, false);
+                                character.characterName = newName;
+
+                                Console.WriteLine($"updated characterName of character {character.id} to {newName}");
+
+                                var characterData = new CharacterData() { Name = newName, CharacterID = character.id };
+
+                                var updateMessage = new BaseMessage() { UpdateCharData = characterData };
+
+                                //var updateData = DataManager.MessageToBinary(updateMessage);
+
+                                server.SendDataDisclude(updateMessage.ToByteArray(), ID);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"server doesn't have a character associated with client {ID}");
+                            }
                         }
                         break;
                 }
@@ -259,11 +320,13 @@ public class ClientBehavior : WebSocketBehavior
 
     protected override void OnError(ErrorEventArgs e)
     {
-        Console.WriteLine("penis WebSocket error: " + e.Message);
+        Console.WriteLine("WebSocket error: " + e.Message);
     }
 
     public void SendData(byte[] binary)
     {
         Send(binary);
+
+        server.bytesThisFrame += binary.Length;
     }
 }

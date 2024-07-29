@@ -5,11 +5,12 @@ message BaseMessage
     oneof Type
     {
         Vector2Data pos = 1;
-        bool newPlayerRequest = 2;
+        string newPlayerRequest = 2;
         CharacterData updateCharData = 3;
         CharacterData newPlayerGrant = 4;
         CharacterData newRemoteChar = 5;
         int32 removeCharOfID = 6;
+        string name = 7;
     }
 }
 
@@ -22,5 +23,6 @@ message Vector2Data
 message CharacterData
 {
     int32 characterID = 1;
-    Vector2Data pos = 2;
+    optional Vector2Data pos = 2;
+    optional string name = 3;
 }

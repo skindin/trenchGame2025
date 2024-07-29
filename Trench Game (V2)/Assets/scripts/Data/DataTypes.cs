@@ -22,20 +22,22 @@ public static partial class DataTypesReflection {
   static DataTypesReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg9kYXRhVHlwZXMucHJvdG8i5QEKC0Jhc2VNZXNzYWdlEhsKA3BvcxgBIAEo",
-          "CzIMLlZlY3RvcjJEYXRhSAASGgoQbmV3UGxheWVyUmVxdWVzdBgCIAEoCEgA",
+          "Cg9kYXRhVHlwZXMucHJvdG8i9QEKC0Jhc2VNZXNzYWdlEhsKA3BvcxgBIAEo",
+          "CzIMLlZlY3RvcjJEYXRhSAASGgoQbmV3UGxheWVyUmVxdWVzdBgCIAEoCUgA",
           "EigKDnVwZGF0ZUNoYXJEYXRhGAMgASgLMg4uQ2hhcmFjdGVyRGF0YUgAEigK",
           "Dm5ld1BsYXllckdyYW50GAQgASgLMg4uQ2hhcmFjdGVyRGF0YUgAEicKDW5l",
           "d1JlbW90ZUNoYXIYBSABKAsyDi5DaGFyYWN0ZXJEYXRhSAASGAoOcmVtb3Zl",
-          "Q2hhck9mSUQYBiABKAVIAEIGCgRUeXBlIiMKC1ZlY3RvcjJEYXRhEgkKAXgY",
-          "ASABKAISCQoBeRgCIAEoAiI/Cg1DaGFyYWN0ZXJEYXRhEhMKC2NoYXJhY3Rl",
-          "cklEGAEgASgFEhkKA3BvcxgCIAEoCzIMLlZlY3RvcjJEYXRhYgZwcm90bzM="));
+          "Q2hhck9mSUQYBiABKAVIABIOCgRuYW1lGAcgASgJSABCBgoEVHlwZSIjCgtW",
+          "ZWN0b3IyRGF0YRIJCgF4GAEgASgCEgkKAXkYAiABKAIiaAoNQ2hhcmFjdGVy",
+          "RGF0YRITCgtjaGFyYWN0ZXJJRBgBIAEoBRIeCgNwb3MYAiABKAsyDC5WZWN0",
+          "b3IyRGF0YUgAiAEBEhEKBG5hbWUYAyABKAlIAYgBAUIGCgRfcG9zQgcKBV9u",
+          "YW1lYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::BaseMessage), global::BaseMessage.Parser, new[]{ "Pos", "NewPlayerRequest", "UpdateCharData", "NewPlayerGrant", "NewRemoteChar", "RemoveCharOfID" }, new[]{ "Type" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::BaseMessage), global::BaseMessage.Parser, new[]{ "Pos", "NewPlayerRequest", "UpdateCharData", "NewPlayerGrant", "NewRemoteChar", "RemoveCharOfID", "Name" }, new[]{ "Type" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Vector2Data), global::Vector2Data.Parser, new[]{ "X", "Y" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::CharacterData), global::CharacterData.Parser, new[]{ "CharacterID", "Pos" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::CharacterData), global::CharacterData.Parser, new[]{ "CharacterID", "Pos", "Name" }, new[]{ "Pos", "Name" }, null, null, null)
         }));
   }
   #endregion
@@ -95,6 +97,9 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
       case TypeOneofCase.RemoveCharOfID:
         RemoveCharOfID = other.RemoveCharOfID;
         break;
+      case TypeOneofCase.Name:
+        Name = other.Name;
+        break;
     }
 
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -122,10 +127,10 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
   public const int NewPlayerRequestFieldNumber = 2;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool NewPlayerRequest {
-    get { return typeCase_ == TypeOneofCase.NewPlayerRequest ? (bool) type_ : false; }
+  public string NewPlayerRequest {
+    get { return typeCase_ == TypeOneofCase.NewPlayerRequest ? (string) type_ : ""; }
     set {
-      type_ = value;
+      type_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       typeCase_ = TypeOneofCase.NewPlayerRequest;
     }
   }
@@ -178,6 +183,18 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
     }
   }
 
+  /// <summary>Field number for the "name" field.</summary>
+  public const int NameFieldNumber = 7;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Name {
+    get { return typeCase_ == TypeOneofCase.Name ? (string) type_ : ""; }
+    set {
+      type_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      typeCase_ = TypeOneofCase.Name;
+    }
+  }
+
   private object type_;
   /// <summary>Enum of possible cases for the "Type" oneof.</summary>
   public enum TypeOneofCase {
@@ -188,6 +205,7 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
     NewPlayerGrant = 4,
     NewRemoteChar = 5,
     RemoveCharOfID = 6,
+    Name = 7,
   }
   private TypeOneofCase typeCase_ = TypeOneofCase.None;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -224,6 +242,7 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
     if (!object.Equals(NewPlayerGrant, other.NewPlayerGrant)) return false;
     if (!object.Equals(NewRemoteChar, other.NewRemoteChar)) return false;
     if (RemoveCharOfID != other.RemoveCharOfID) return false;
+    if (Name != other.Name) return false;
     if (TypeCase != other.TypeCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -238,6 +257,7 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
     if (typeCase_ == TypeOneofCase.NewPlayerGrant) hash ^= NewPlayerGrant.GetHashCode();
     if (typeCase_ == TypeOneofCase.NewRemoteChar) hash ^= NewRemoteChar.GetHashCode();
     if (typeCase_ == TypeOneofCase.RemoveCharOfID) hash ^= RemoveCharOfID.GetHashCode();
+    if (typeCase_ == TypeOneofCase.Name) hash ^= Name.GetHashCode();
     hash ^= (int) typeCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -262,8 +282,8 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
       output.WriteMessage(Pos);
     }
     if (typeCase_ == TypeOneofCase.NewPlayerRequest) {
-      output.WriteRawTag(16);
-      output.WriteBool(NewPlayerRequest);
+      output.WriteRawTag(18);
+      output.WriteString(NewPlayerRequest);
     }
     if (typeCase_ == TypeOneofCase.UpdateCharData) {
       output.WriteRawTag(26);
@@ -280,6 +300,10 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
     if (typeCase_ == TypeOneofCase.RemoveCharOfID) {
       output.WriteRawTag(48);
       output.WriteInt32(RemoveCharOfID);
+    }
+    if (typeCase_ == TypeOneofCase.Name) {
+      output.WriteRawTag(58);
+      output.WriteString(Name);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -296,8 +320,8 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
       output.WriteMessage(Pos);
     }
     if (typeCase_ == TypeOneofCase.NewPlayerRequest) {
-      output.WriteRawTag(16);
-      output.WriteBool(NewPlayerRequest);
+      output.WriteRawTag(18);
+      output.WriteString(NewPlayerRequest);
     }
     if (typeCase_ == TypeOneofCase.UpdateCharData) {
       output.WriteRawTag(26);
@@ -315,6 +339,10 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
       output.WriteRawTag(48);
       output.WriteInt32(RemoveCharOfID);
     }
+    if (typeCase_ == TypeOneofCase.Name) {
+      output.WriteRawTag(58);
+      output.WriteString(Name);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -329,7 +357,7 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Pos);
     }
     if (typeCase_ == TypeOneofCase.NewPlayerRequest) {
-      size += 1 + 1;
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(NewPlayerRequest);
     }
     if (typeCase_ == TypeOneofCase.UpdateCharData) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(UpdateCharData);
@@ -342,6 +370,9 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
     }
     if (typeCase_ == TypeOneofCase.RemoveCharOfID) {
       size += 1 + pb::CodedOutputStream.ComputeInt32Size(RemoveCharOfID);
+    }
+    if (typeCase_ == TypeOneofCase.Name) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -386,6 +417,9 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
       case TypeOneofCase.RemoveCharOfID:
         RemoveCharOfID = other.RemoveCharOfID;
         break;
+      case TypeOneofCase.Name:
+        Name = other.Name;
+        break;
     }
 
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -412,8 +446,8 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
           Pos = subBuilder;
           break;
         }
-        case 16: {
-          NewPlayerRequest = input.ReadBool();
+        case 18: {
+          NewPlayerRequest = input.ReadString();
           break;
         }
         case 26: {
@@ -445,6 +479,10 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
         }
         case 48: {
           RemoveCharOfID = input.ReadInt32();
+          break;
+        }
+        case 58: {
+          Name = input.ReadString();
           break;
         }
       }
@@ -471,8 +509,8 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
           Pos = subBuilder;
           break;
         }
-        case 16: {
-          NewPlayerRequest = input.ReadBool();
+        case 18: {
+          NewPlayerRequest = input.ReadString();
           break;
         }
         case 26: {
@@ -504,6 +542,10 @@ public sealed partial class BaseMessage : pb::IMessage<BaseMessage>
         }
         case 48: {
           RemoveCharOfID = input.ReadInt32();
+          break;
+        }
+        case 58: {
+          Name = input.ReadString();
           break;
         }
       }
@@ -775,6 +817,7 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
   public CharacterData(CharacterData other) : this() {
     characterID_ = other.characterID_;
     pos_ = other.pos_ != null ? other.pos_.Clone() : null;
+    name_ = other.name_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -808,6 +851,30 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
     }
   }
 
+  /// <summary>Field number for the "name" field.</summary>
+  public const int NameFieldNumber = 3;
+  private string name_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Name {
+    get { return name_ ?? ""; }
+    set {
+      name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+  /// <summary>Gets whether the "name" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasName {
+    get { return name_ != null; }
+  }
+  /// <summary>Clears the value of the "name" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearName() {
+    name_ = null;
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -825,6 +892,7 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
     }
     if (CharacterID != other.CharacterID) return false;
     if (!object.Equals(Pos, other.Pos)) return false;
+    if (Name != other.Name) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -834,6 +902,7 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
     int hash = 1;
     if (CharacterID != 0) hash ^= CharacterID.GetHashCode();
     if (pos_ != null) hash ^= Pos.GetHashCode();
+    if (HasName) hash ^= Name.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -860,6 +929,10 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
       output.WriteRawTag(18);
       output.WriteMessage(Pos);
     }
+    if (HasName) {
+      output.WriteRawTag(26);
+      output.WriteString(Name);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -878,6 +951,10 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
       output.WriteRawTag(18);
       output.WriteMessage(Pos);
     }
+    if (HasName) {
+      output.WriteRawTag(26);
+      output.WriteString(Name);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -893,6 +970,9 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
     }
     if (pos_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Pos);
+    }
+    if (HasName) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -914,6 +994,9 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
         Pos = new global::Vector2Data();
       }
       Pos.MergeFrom(other.Pos);
+    }
+    if (other.HasName) {
+      Name = other.Name;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -941,6 +1024,10 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
           input.ReadMessage(Pos);
           break;
         }
+        case 26: {
+          Name = input.ReadString();
+          break;
+        }
       }
     }
   #endif
@@ -965,6 +1052,10 @@ public sealed partial class CharacterData : pb::IMessage<CharacterData>
             Pos = new global::Vector2Data();
           }
           input.ReadMessage(Pos);
+          break;
+        }
+        case 26: {
+          Name = input.ReadString();
           break;
         }
       }

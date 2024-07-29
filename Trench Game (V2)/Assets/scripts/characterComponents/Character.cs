@@ -7,7 +7,7 @@ public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
     public int id, rank, life = 0;
-    public string Name;
+    public string characterName;
     public PlayerController userController;
     public BotController aiController;
     public SpriteRenderer sprite;
@@ -297,7 +297,7 @@ public class Character : MonoBehaviour
 
     public virtual string InfoString (string separator = " ")
     {
-        return $"{Name}\n{hp:F1}/{maxHp:F1} hp";
+        return $"{characterName}\n{hp:F1}/{maxHp:F1} hp";
     }
 
     //public virtual DataDict<object> Data

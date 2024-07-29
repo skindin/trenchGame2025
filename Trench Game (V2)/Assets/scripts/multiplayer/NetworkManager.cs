@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System;
+//using System.Collections;
+//using System.Collections.Generic;
+//using System.IO;
+//using System;
 using UnityEngine;
 using Google.Protobuf;
+//using static UnityEditor.PlayerSettings;
 
 public class NetworkManager : ManagerBase<NetworkManager>
 {
@@ -20,8 +21,6 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         void SetPosClientToServer(Vector2 pos) //sets local pos, then sends data to clients
         {
-            Debug.Log($"sent pos {pos} to server");
-
             var posData = DataManager.VectorToData(pos);
 
             var baseMessage = new BaseMessage() { Pos = posData};
@@ -29,8 +28,26 @@ public class NetworkManager : ManagerBase<NetworkManager>
             //var binary = DataManager.MessageToBinary(baseMessage);
 
             client.SendData(baseMessage.ToByteArray());
+
+            Debug.Log($"sent pos {pos} to server");
+
         }
 
 #endif
+    }
+
+    public void SetName (string newName)
+    {
+
+#if !UNITY_SERVER || UNITY_EDITOR
+        var baseMessage = new BaseMessage() { Name = newName };
+
+        client.SendData(baseMessage.ToByteArray());
+
+        Debug.Log($"sent characterName {newName} to server");
+
+        //CharacterManager.Manager.localPlayerCharacter.name = newName;
+#endif
+
     }
 }

@@ -2699,11 +2699,12 @@ MonoBehaviour:
     minPooled: 0
     maxPooled: 20
   active: []
-  prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
+  prefab: {fileID: 7562934035425285329, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
   container: {fileID: 1284647723}
   scoreStopWatch: 0
   highScore: 0
   respawnWait: 1
+  playerName: player
 --- !u!1 &950176244
 GameObject:
   m_ObjectHideFlags: 0
@@ -2748,6 +2749,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aab6ef9fc5c68544b627cc616d1bb85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  logBitRate: 0
+  averageBitRateFrames: 20
+  averageBitRate: 0
 --- !u!1 &1054766971
 GameObject:
   m_ObjectHideFlags: 0
@@ -3261,7 +3265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ab5a5e8b5028a46b3f785a3ab48203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 
+  serverAdress: localhost
   onConnect:
     m_PersistentCalls:
       m_Calls:
@@ -3316,6 +3320,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  logBitRate: 1
+  averageBitRateFrames: 20
+  averageBitRate: 0
 --- !u!1 &1430281415
 GameObject:
   m_ObjectHideFlags: 0
@@ -4620,7 +4627,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2088640518
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4720,7 +4727,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 896552508}
+        m_TargetAssemblyTypeName: CharacterManager, Assembly-CSharp
+        m_MethodName: SetPlayerName
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4878,7 +4897,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113553809}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5bcfdade5615b2e4c98b8474f4b4f3f9, type: 3}
   m_Name: 
@@ -4895,6 +4914,10 @@ MonoBehaviour:
   infoBoxPadding: 0.5
   screenPadding: 1
   maxVisibleCharacters: 5
+  drawItemsUI: 0
+  drawCharactersUI: 1
+  drawPlayerUI: 0
+  drawScoreboardUI: 0
 --- !u!4 &2113553811
 Transform:
   m_ObjectHideFlags: 0

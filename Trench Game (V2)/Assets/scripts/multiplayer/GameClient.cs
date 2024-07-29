@@ -15,10 +15,17 @@ public class GameClient : MonoBehaviour
 #if !UNITY_SERVER || UNITY_EDITOR
 
     private WebSocket ws;
-    public string ID;
+    public string serverAdress = "localhost";
+    //public string ID;
     public UnityEvent onConnect, onDisconnect;
 
     readonly Queue<Action> actionQueue = new Queue<Action>();
+
+    public bool logBitRate = false;
+    public int averageBitRateFrames = 20, averageBitRate = 0;
+
+    int bytesThisFrame { get; set; }
+    List<int> pastByteRecords = new();
 
     //private void Start()
     //{
@@ -28,6 +35,8 @@ public class GameClient : MonoBehaviour
 
     private void Update()
     {
+        //bool sentSomeData = actionQueue.Count > 0;
+
         while (actionQueue.Count > 0)
         {
             Action action;
@@ -39,21 +48,41 @@ public class GameClient : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        if (logBitRate)
+        {
+            //Debug.Log($"Sent {bytesThisFrame} bytes this frame");
+
+            pastByteRecords.Add(bytesThisFrame);
+
+            if (pastByteRecords.Count > averageBitRateFrames)
+                pastByteRecords.RemoveAt(0);
+
+            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / averageBitRateFrames);
+
+            if (bytesThisFrame > 0)
+                Debug.Log($"average bit rate: {averageBitRate}");
+
+            bytesThisFrame = 0;
+        }
+    }
+
     public void Connect()
     {
         // Initialize WebSocket
-        ws = new WebSocket("ws://localhost:8080/ClientBehavior");
+        ws = new WebSocket($"ws://{serverAdress}:8080/ClientBehavior");
 
         // Set up message received handler
         ws.OnMessage += OnMessage;
 
         ws.OnOpen += (sender, e) =>
         {
-            var baseMessage = new BaseMessage() { NewPlayerRequest = true };
+            var baseMessage = new BaseMessage() { NewPlayerRequest = CharacterManager.Manager.playerName };
 
             //var binary = DataManager.MessageToBinary(baseMessage);
 
-            ws.Send(baseMessage.ToByteArray());
+            SendData(baseMessage.ToByteArray());
 
             actionQueue.Enqueue(() => {
                 Debug.Log("Connected to server");
@@ -64,7 +93,8 @@ public class GameClient : MonoBehaviour
 
         ws.OnClose += (sender, e) => actionQueue.Enqueue(() => {
             Debug.Log("Disconnected from server");
-            UIUtils.ResetScene();
+            //UIUtils.ResetScene();
+            CharacterManager.Manager.RemoveAllCharacters();
             //CharacterManager.Manager.RemoveAllCharacters();
             onDisconnect.Invoke();
         });
@@ -112,10 +142,11 @@ public class GameClient : MonoBehaviour
 
                             var id = newRemoteData.CharacterID;
                             var pos = DataManager.ConvertDataToVector(newRemoteData.Pos);
+                            var name = newRemoteData.Name;
 
-                            CharacterManager.Manager.NewRemoteCharacter(pos, id);
+                            CharacterManager.Manager.NewRemoteCharacter(pos, id).characterName = name;
 
-                            Debug.Log($"spawned remote character {id} at {pos}");
+                            Debug.Log($"spawned remote character {id} named {name} at {pos}");
                         }
                         break;
 
@@ -124,7 +155,6 @@ public class GameClient : MonoBehaviour
                             var updateData = baseMessage.UpdateCharData;
 
                             var id = updateData.CharacterID;
-                            var pos = DataManager.ConvertDataToVector(updateData.Pos);
 
                             // Ensure this call is made on the main thread
                             //yield return new WaitForEndOfFrame();
@@ -132,8 +162,19 @@ public class GameClient : MonoBehaviour
 
                             if (character)
                             {
-                                character.SetPos(pos, false);
-                                Debug.Log($"updated pos of character {updateData.CharacterID} to {pos}");
+                                if (updateData.Pos != null)
+                                {
+                                    var pos = DataManager.ConvertDataToVector(updateData.Pos);
+                                    character.SetPos(pos, false);
+                                    Debug.Log($"updated pos of character {updateData.CharacterID} to {pos}");
+                                }
+
+                                if (updateData.HasName)
+                                {
+                                    character.characterName = updateData.Name;
+
+                                    Debug.Log($"updated characterName of character {updateData.CharacterID} to {character.characterName}");
+                                }
                             }
                             else
                             {
@@ -206,6 +247,7 @@ public class GameClient : MonoBehaviour
     public void SendData (byte[] data)
     {
         ws?.Send(data);
+        bytesThisFrame += data.Length;
     }
 #endif
 }

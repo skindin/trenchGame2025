@@ -12,6 +12,7 @@ public class CustomBuildWindow : EditorWindow
     private const string ClientBuildNameKey = "CustomBuildWindow_ClientBuildName";
     private const string BuildServerKey = "CustomBuildWindow_BuildServer";
     private const string BuildClientKey = "CustomBuildWindow_BuildClient";
+    private const string BuildTargetKey = "CustomBuildWindow_BuildTarget"; // Key for build target
 
     private string serverBuildPath;
     private string clientBuildPath;
@@ -19,8 +20,7 @@ public class CustomBuildWindow : EditorWindow
     private string clientBuildName = "ClientBuild";
     private bool buildServer;
     private bool buildClient;
-
-    //public static string serverSymbol = "DEDICATED_SERVER";
+    private BuildTarget buildTarget = BuildTarget.StandaloneWindows; // Default build target
 
     [MenuItem("Build/Open Custom Build Window")]
     public static void OpenWindow()
@@ -73,9 +73,12 @@ public class CustomBuildWindow : EditorWindow
 
         // Display and update client build name
         clientBuildName = EditorGUILayout.TextField("Client Build Name:", clientBuildName);
+        buildTarget = (BuildTarget)EditorGUILayout.EnumPopup("Client Build Target:", buildTarget);
 
         buildServer = GUILayout.Toggle(buildServer, "Server Build");
         buildClient = GUILayout.Toggle(buildClient, "Client Build");
+
+        // Display and update build target
 
         if (GUILayout.Button("Build"))
         {
@@ -95,40 +98,20 @@ public class CustomBuildWindow : EditorWindow
     {
         var buildOptions = GetCurrentBuildPlayerOptions();
         buildOptions.locationPathName = Path.Combine(clientBuildPath, clientBuildName + ".exe");
-        buildOptions.target = BuildTarget.StandaloneWindows;
+        buildOptions.target = buildTarget; // Use the stored build target
 
         BuildPipeline.BuildPlayer(buildOptions);
     }
 
-    public void BuildDedicatedServer()
+    private void BuildDedicatedServer()
     {
-        // Save the current build target and group
-        var originalBuildTarget = EditorUserBuildSettings.activeBuildTarget;
-        var originalTargetGroup = BuildPipeline.GetBuildTargetGroup(originalBuildTarget);
-
-        // Set the build target to StandaloneWindows
-        EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows);
-
-        // Define build options
-        //BuildPlayerOptions buildOptions = new BuildPlayerOptions
-        //{
-        //    scenes = new[] { "Assets/Scenes/MainScene.unity" }, // Update to your scenes
-        //    locationPathName = "Builds/ServerBuild.exe",
-        //    target = BuildTarget.StandaloneWindows,
-        //    options = BuildOptions.AllowDebugging | BuildOptions.Development,
-        //};
-
         var buildOptions = GetCurrentBuildPlayerOptions();
         buildOptions.locationPathName = Path.Combine(serverBuildPath, serverBuildName + ".exe");
-        buildOptions.target = BuildTarget.StandaloneWindows;
+        buildOptions.target = BuildTarget.StandaloneLinux64; // Always use StandaloneWindows for server
         buildOptions.options = BuildOptions.AllowDebugging | BuildOptions.Development;
         buildOptions.subtarget = (int)StandaloneBuildSubtarget.Server;
 
-        // Perform the build
         BuildPipeline.BuildPlayer(buildOptions);
-
-        // Restore the original build target and group
-        //EditorUserBuildSettings.switchac(originalTargetGroup, originalBuildTarget);
     }
 
     private string OpenFolderPanel(string title, string defaultPath)
@@ -144,6 +127,10 @@ public class CustomBuildWindow : EditorWindow
         clientBuildName = EditorPrefs.GetString(ClientBuildNameKey, "ClientBuild");
         buildServer = EditorPrefs.GetBool(BuildServerKey, true);
         buildClient = EditorPrefs.GetBool(BuildClientKey, true);
+
+        // Load the build target
+        int buildTargetInt = EditorPrefs.GetInt(BuildTargetKey, (int)BuildTarget.StandaloneWindows);
+        buildTarget = (BuildTarget)buildTargetInt;
     }
 
     private void SavePrefs()
@@ -154,6 +141,9 @@ public class CustomBuildWindow : EditorWindow
         EditorPrefs.SetString(ClientBuildNameKey, clientBuildName);
         EditorPrefs.SetBool(BuildServerKey, buildServer);
         EditorPrefs.SetBool(BuildClientKey, buildClient);
+
+        // Save the build target
+        EditorPrefs.SetInt(BuildTargetKey, (int)buildTarget);
     }
 
     private BuildPlayerOptions GetCurrentBuildPlayerOptions()

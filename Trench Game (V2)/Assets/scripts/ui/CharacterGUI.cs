@@ -32,6 +32,7 @@ public class CharacterGUI : MonoBehaviour
     public float scale = 100, infoBoxPadding = 10, screenPadding = 10;
     public int maxVisibleCharacters = 5;
     Texture2D infoBoxTexture;
+    public bool drawItemsUI = true, drawCharactersUI = true, drawPlayerUI = true, drawScoreboardUI = true;
 
     private void Awake()
     {
@@ -44,11 +45,17 @@ public class CharacterGUI : MonoBehaviour
 
         var boxStyle = GetBoxStyle();
 
-        DrawNearbyItemsUI(boxStyle,scaleFactor);
-        DrawAllCharacterUI(boxStyle,scaleFactor);
+        if (drawItemsUI)
+            DrawNearbyItemsUI(boxStyle,scaleFactor);
 
-        DrawAssignedCharacterUI(scaleFactor);
-        DrawScoreboard(scaleFactor);
+        if (drawCharactersUI)
+            DrawAllCharacterUI(boxStyle,scaleFactor);
+
+        if (drawPlayerUI)
+            DrawAssignedCharacterUI(scaleFactor);
+        
+        if (drawScoreboardUI)
+            DrawScoreboard(scaleFactor);
     }
 
     public GUIStyle GetBoxStyle ()
@@ -126,7 +133,7 @@ public class CharacterGUI : MonoBehaviour
 
         static string GetScoreboardLine (Character character)
         {
-            return $"\n#{character.rank} -{character.Name}- {character.KillCount} kills";
+            return $"\n#{character.rank} -{character.characterName}- {character.KillCount} kills";
         }
 
         for (int i = 0; i < visibleCharacterCount; i++)

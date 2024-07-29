@@ -329,8 +329,8 @@ public class SpawnManager : MonoBehaviour
 
             var newBot = spawnCharacter.SpawnWithType(botPos, Character.CharacterType.localBot);
 
-            newBot.name += i;
-            newBot.Name = $"bot{i}";
+            newBot.characterName += i;
+            newBot.characterName = $"bot{i}";
         }
     }
 

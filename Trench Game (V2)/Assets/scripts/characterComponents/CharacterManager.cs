@@ -22,6 +22,7 @@ public class CharacterManager : MonoBehaviour
     //bool sortCharactersThisFrame = false;
 
     int nextId = 0;
+    public string playerName = "";
 
     public int NewId
     {
@@ -95,11 +96,22 @@ public class CharacterManager : MonoBehaviour
     //{
     //}
 
+    public void SetPlayerName (string name)
+    {
+        playerName = name;
+
+        if (localPlayerCharacter)
+        {
+            localPlayerCharacter.characterName = name;
+            NetworkManager.Manager.SetName(name);
+        }
+    }
+
     public void RemoveAllCharacters ()
     {
-        foreach (Character character in active)
+        while (active.Count > 0)
         {
-            RemoveCharacter(character);
+            RemoveCharacter(active[0]);
         }
     }
 
@@ -193,6 +205,7 @@ public class CharacterManager : MonoBehaviour
     {
         var pc = NewCharacter(pos, Character.CharacterType.localPlayer, id);
         localPlayerCharacter = pc;
+        pc.characterName = playerName;
         CamFollow.main.AssignTarget(pc.transform);
         return pc;
     }
@@ -228,6 +241,12 @@ public class CharacterManager : MonoBehaviour
         character.Chunk = null;
 
         //squadSpawnRoutine = StartCoroutine(BotSpawn());
+
+        if (character == localPlayerCharacter)
+        {
+            localPlayerCharacter = null;
+            CamFollow.main.Reset();
+        }
 
         UpdateScoreBoard();
     }
