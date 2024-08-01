@@ -1720,9 +1720,9 @@ MonoBehaviour:
   dropAreaRadius: 0
   spawnCharacter:
     name: 
-    prefab: {fileID: 1204860087021393992, guid: 60fdfe6828c9e624b8e3ca9203a6cb8a, type: 3}
+    prefab: {fileID: 0}
     currentAmount: 0
-    spawnCap: 10
+    spawnCap: 1
   spawnBots: 0
 --- !u!1 &607746247
 GameObject:
@@ -3265,7 +3265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ab5a5e8b5028a46b3f785a3ab48203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverAdress: gnomebuddygames.online
+  serverAdress: localhost
   onConnect:
     m_PersistentCalls:
       m_Calls:

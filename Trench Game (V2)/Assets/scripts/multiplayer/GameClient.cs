@@ -59,7 +59,7 @@ public class GameClient : MonoBehaviour
             if (pastByteRecords.Count > averageBitRateFrames)
                 pastByteRecords.RemoveAt(0);
 
-            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / averageBitRateFrames);
+            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / averageBitRateFrames / Time.deltaTime);
 
             if (bytesThisFrame > 0)
                 Debug.Log($"average bit rate: {averageBitRate}");
@@ -129,7 +129,7 @@ public class GameClient : MonoBehaviour
                             {
                                 var id = grant.CharacterID;
                                 var pos = DataManager.ConvertDataToVector(grant.Pos);
-                                CharacterManager.Manager.NewLocalPlayer(pos, id);
+                                SpawnManager.Manager.SpawnLocalPlayer(pos, id);
 
                                 Debug.Log($"spawned local player {id} at {pos}");
                             }
@@ -144,7 +144,7 @@ public class GameClient : MonoBehaviour
                             var pos = DataManager.ConvertDataToVector(newRemoteData.Pos);
                             var name = newRemoteData.Name;
 
-                            CharacterManager.Manager.NewRemoteCharacter(pos, id).characterName = name;
+                            SpawnManager.Manager.SpawnRemoteCharacter(pos, id).characterName = name;
 
                             Debug.Log($"spawned remote character {id} named {name} at {pos}");
                         }

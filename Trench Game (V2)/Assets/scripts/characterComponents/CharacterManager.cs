@@ -196,25 +196,6 @@ public class CharacterManager : MonoBehaviour
     //    }
     //}
 
-    public Character NewBot (Vector2 pos, int id)
-    {
-        return NewCharacter(pos, Character.CharacterType.localBot, id);
-    }
-
-    public Character NewLocalPlayer(Vector2 pos, int id)
-    {
-        var pc = NewCharacter(pos, Character.CharacterType.localPlayer, id);
-        localPlayerCharacter = pc;
-        pc.characterName = playerName;
-        CamFollow.main.AssignTarget(pc.transform);
-        return pc;
-    }
-
-    public Character NewRemoteCharacter (Vector2 pos, int id)
-    {
-        return NewCharacter(pos, Character.CharacterType.remote, id);
-    }
-
     public Character NewCharacter (Vector2 pos, Character.CharacterType type, int id)
     {
         var newCharacter = pool.GetFromPool();
@@ -227,6 +208,13 @@ public class CharacterManager : MonoBehaviour
         newCharacter.id = id;
 
         active.Add(newCharacter);
+
+        if (type == Character.CharacterType.localPlayer)
+        {
+            localPlayerCharacter = newCharacter;
+            newCharacter.characterName = Manager.playerName;
+            CamFollow.main.AssignTarget(newCharacter.transform);
+        }
 
         UpdateScoreBoard();
 

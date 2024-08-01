@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+#if UNITY_SERVER && !UNITY_EDITOR
     private void Start() //this code relies on other things being set up, so it's best to put in start
     {
         if (spawnItemDrops)
@@ -61,6 +63,7 @@ public class SpawnManager : MonoBehaviour
         if (spawnBots)
             FillCharacterCapWithBots();
     }
+#endif
 
     public abstract class SpawnObject<T>
     {
@@ -298,16 +301,18 @@ public class SpawnManager : MonoBehaviour
     public class SpawnCharacter : SpawnObject<Character>
     {
         Character.CharacterType characterType;
+        int id;
 
-        public Character SpawnWithType(Vector2 pos, Character.CharacterType type)
+        public Character SpawnWithType(Vector2 pos, Character.CharacterType type, int id)
         {
             characterType = type;
+            this.id = id;
             return Get(pos);
         }
 
         public override Character SpawnLogic(Vector2 pos)
         {
-            return CharacterManager.Manager.NewCharacter(pos, characterType, 0);//id should be updated elsewhere lol
+            return CharacterManager.Manager.NewCharacter(pos, characterType, id);//id should be updated elsewhere lol
         }
 
         public override void RemoveLogic(Character character)
@@ -319,6 +324,22 @@ public class SpawnManager : MonoBehaviour
     public SpawnCharacter spawnCharacter;
     public bool spawnBots = true;
 
+    public Character SpawnBot(Vector2 pos, int id)
+    {
+        return spawnCharacter.SpawnWithType(pos, Character.CharacterType.localBot, id);
+    }
+
+    public Character  SpawnLocalPlayer(Vector2 pos, int id)
+    {
+        var pc = spawnCharacter.SpawnWithType(pos, Character.CharacterType.localPlayer, id);
+        return pc;
+    }
+
+    public Character  SpawnRemoteCharacter(Vector2 pos, int id)
+    {
+        return spawnCharacter.SpawnWithType(pos, Character.CharacterType.remote, id);
+    }
+
     public void FillCharacterCapWithBots()
     {
         var botAmount = spawnCharacter.CapDiff;
@@ -327,10 +348,18 @@ public class SpawnManager : MonoBehaviour
         {
             var botPos = ChunkManager.Manager.GetRandomPos();
 
-            var newBot = spawnCharacter.SpawnWithType(botPos, Character.CharacterType.localBot);
+            var newBot = SpawnBot(botPos, CharacterManager.Manager.NewId);
 
-            newBot.characterName += i;
+            //newBot.characterName += i;
             newBot.characterName = $"bot{i}";
+
+            //var posData = DataManager.VectorToData(botPos); //realized this is only going to be run before any players have joined
+
+            //var charData = new CharacterData { CharacterID = newBot.id, Name = newBot.characterName, Pos = posData };
+
+            //var message = new BaseMessage { NewRemoteChar = charData };
+
+            //NetworkManager.Manager.server.Broadcast(message.ToByteArray());
         }
     }
 

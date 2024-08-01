@@ -4,7 +4,7 @@ message BaseMessage
 {
     oneof Type
     {
-        Vector2Data pos = 1;
+        PlayerInput input = 1;
         string newPlayerRequest = 2;
         CharacterData updateCharData = 3;
         CharacterData newPlayerGrant = 4;
@@ -18,6 +18,19 @@ message Vector2Data
 {
     float x = 1;
     float y = 2;
+}
+
+message PlayerInput
+{
+    optional Vector2Data pos = 1;
+    Vector2Data lookPos = 2;
+    oneof Item
+    {
+        int32 PickupItem = 3;
+        int32 ItemAction = 4;
+        bool ItemActionPos = 5;
+        bool DropItem = 6;
+    }
 }
 
 message CharacterData

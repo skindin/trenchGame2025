@@ -13,26 +13,28 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameClient client;
     public GameServer server;
 
-    public void SetPos(Vector2 pos)
+    public void SetPos(Vector2 pos, int id)
     {
-#if !UNITY_SERVER || UNITY_EDITOR
+        var posData = DataManager.VectorToData(pos);
 
-        SetPosClientToServer(pos);
+#if !UNITY_SERVER || UNITY_EDITOR //&& false
 
-        void SetPosClientToServer(Vector2 pos) //sets local pos, then sends data to clients
-        {
-            var posData = DataManager.VectorToData(pos);
+        var input = new PlayerInput {Pos = posData};
 
-            var baseMessage = new BaseMessage() { Pos = posData};
+        var baseMessage = new BaseMessage {Input = input};
 
-            //var binary = DataManager.MessageToBinary(baseMessage);
+        //var binary = DataManager.MessageToBinary(baseMessage);
 
-            client.SendData(baseMessage.ToByteArray());
+        client.SendData(baseMessage.ToByteArray());
 
-            Debug.Log($"sent pos {pos} to server");
+        //Debug.Log($"sent pos {pos} to server");
+#else
 
-        }
+        var charData = new CharacterData { Pos = posData , CharacterID = id};
 
+        var message = new BaseMessage { UpdateCharData = charData };
+
+        server.Broadcast(message.ToByteArray());
 #endif
     }
 

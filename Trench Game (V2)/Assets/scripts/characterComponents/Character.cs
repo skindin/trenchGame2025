@@ -151,6 +151,10 @@ public class Character : MonoBehaviour
             inventory.DetectItems();
         }
 
+#if !UNITY_SERVER || UNITY_EDITOR
+        //SetPos(transform.position); //just for network testing
+
+#endif
         //lastPos = tran
     }
 
@@ -189,7 +193,7 @@ public class Character : MonoBehaviour
         }
 
         if (sync)
-            NetworkManager.Manager?.SetPos(pos);
+            NetworkManager.Manager?.SetPos(pos,id);
 
         //posWasSetThisFrame = true;
 

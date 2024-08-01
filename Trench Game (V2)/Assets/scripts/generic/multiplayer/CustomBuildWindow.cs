@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+using static CustomBuildWindow;
+using Unity.VisualScripting;
 
 public class CustomBuildWindow : EditorWindow
 {
@@ -14,13 +17,69 @@ public class CustomBuildWindow : EditorWindow
     private const string BuildClientKey = "CustomBuildWindow_BuildClient";
     private const string BuildTargetKey = "CustomBuildWindow_BuildTarget"; // Key for build target
 
-    private string serverBuildPath;
-    private string clientBuildPath;
-    private string serverBuildName = "ServerBuild";
-    private string clientBuildName = "ClientBuild";
-    private bool buildServer;
-    private bool buildClient;
-    private BuildTarget buildTarget = BuildTarget.StandaloneWindows; // Default build target
+    const string DefaultPathKey = "CustomBuildWindow_DefaultPathKey", ScrollPosYKey = "CustomBuildWindow_ScrollPosY";
+
+    Vector2 scrollPos = Vector2.zero;
+    public string defaultPath = "";
+
+    [System.Serializable]
+    public class Build
+    {
+        static string nameKeyPrefix = "BuildName", pathKeyPrefix = "BuildPath", targetKeyPrefix = "BuildTarget", subTargetKeyPrefix = "BuildSubTarget", includeKeyPrefix = "IncludeKey";
+
+        public string name, nameKey, path, pathKey, targetKey, subTargetKey, includeKey;
+        public BuildTarget target = BuildTarget.StandaloneWindows;
+        public StandaloneBuildSubtarget subTarget = StandaloneBuildSubtarget.Player;
+        public bool include = true;
+        public int index;
+
+        public Build (string name, string path, BuildTarget target, StandaloneBuildSubtarget subTarget, bool include, int index)
+        {
+            this.name = name;
+            this.path = path;
+            this.target = target;
+            this.subTarget = subTarget;
+            this.include = include;
+            SaveBuild (index);
+        }
+
+        public void BuildMe ()
+        {
+            BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray(),
+                locationPathName = Path.Combine(path,name),
+                target = target,
+                options = BuildOptions.None,
+                subtarget = (int)subTarget
+            }
+            );
+        }
+
+        public void SaveBuild (int index = -1)
+        {
+            if (index < 0)
+                index = this.index;
+
+            EditorPrefs.SetString( nameKey = nameKeyPrefix + index, name);
+            EditorPrefs.SetString(pathKey = pathKeyPrefix + index, path);
+            EditorPrefs.SetInt(targetKey = targetKeyPrefix + index, (int)target);
+            EditorPrefs.SetInt(subTargetKey = subTargetKeyPrefix + index, (int)subTarget);
+            EditorPrefs.SetBool(includeKey = includeKeyPrefix + index, include);
+            this.index = index;
+        }
+
+        public static void DeleteBuild (int index)
+        {
+            EditorPrefs.DeleteKey(nameKeyPrefix + index);
+            EditorPrefs.DeleteKey(pathKeyPrefix + index);
+            EditorPrefs.DeleteKey (targetKeyPrefix + index);
+            EditorPrefs.DeleteKey(subTargetKeyPrefix + index);
+            EditorPrefs.DeleteKey(includeKeyPrefix + index);
+        }
+    }
+
+    public List<Build> builds = new();
 
     [MenuItem("Build/Open Custom Build Window")]
     public static void OpenWindow()
@@ -28,10 +87,12 @@ public class CustomBuildWindow : EditorWindow
         CustomBuildWindow window = GetWindow<CustomBuildWindow>("Custom Build Window");
         window.LoadPrefs();
         window.Show();
+        window.DeletePrefs();
     }
 
     private void OnEnable()
     {
+        //LoadPrefs();
         LoadPrefs();
     }
 
@@ -44,74 +105,72 @@ public class CustomBuildWindow : EditorWindow
     {
         GUILayout.Label("Specify Custom Build Paths", EditorStyles.boldLabel);
 
-        // Display and update server build path
-        serverBuildPath = EditorGUILayout.TextField("Server Build Path:", serverBuildPath);
-        if (GUILayout.Button("Browse Server Build Path"))
+        defaultPath = EditorGUILayout.TextField("Default Path:", defaultPath);
+        if (GUILayout.Button("Browse Default Path"))
         {
-            string selectedPath = OpenFolderPanel("Select Server Build Path", serverBuildPath);
+            string selectedPath = OpenFolderPanel("Select Default Path", defaultPath);
             if (!string.IsNullOrEmpty(selectedPath))
             {
-                serverBuildPath = selectedPath;
+                defaultPath = selectedPath;
                 SavePrefs();
             }
         }
 
-        // Display and update server build name
-        serverBuildName = EditorGUILayout.TextField("Server Build Name:", serverBuildName);
-
-        // Display and update client build path
-        clientBuildPath = EditorGUILayout.TextField("Client Build Path:", clientBuildPath);
-        if (GUILayout.Button("Browse Client Build Path"))
+        if (GUILayout.Button("New Build"))
         {
-            string selectedPath = OpenFolderPanel("Select Client Build Path", clientBuildPath);
-            if (!string.IsNullOrEmpty(selectedPath))
+            NewBuild();
+        }
+
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+
+        foreach (Build build in builds)
+        {
+            build.include = GUILayout.Toggle(build.include, $"{build.name}"
+                + $" {build.target.ToString()} {build.subTarget}"
+                //, EditorStyles.boldLabel
+                );
+
+            if (build.include)
             {
-                clientBuildPath = selectedPath;
-                SavePrefs();
+                EditorGUI.indentLevel++;
+
+                build.path = EditorGUILayout.TextField("Path:", build.path);
+                if (GUILayout.Button("Browse Build Path"))
+                {
+                    string selectedPath = OpenFolderPanel("Select Build Path", build.path);
+                    if (!string.IsNullOrEmpty(selectedPath))
+                    {
+                        build.path = selectedPath;
+                        build.SaveBuild();
+                    }
+                }
+
+                build.name = EditorGUILayout.TextField("Name:", build.name);
+
+                build.target = (BuildTarget)EditorGUILayout.EnumPopup("Target:", build.target);
+                build.subTarget = (StandaloneBuildSubtarget)EditorGUILayout.EnumPopup("Subtarget: ", build.subTarget);
+
+                EditorGUI.indentLevel--;
             }
         }
 
-        // Display and update client build name
-        clientBuildName = EditorGUILayout.TextField("Client Build Name:", clientBuildName);
-        buildTarget = (BuildTarget)EditorGUILayout.EnumPopup("Client Build Target:", buildTarget);
-
-        buildServer = GUILayout.Toggle(buildServer, "Server Build");
-        buildClient = GUILayout.Toggle(buildClient, "Client Build");
-
-        // Display and update build target
+        EditorGUILayout.EndScrollView();
 
         if (GUILayout.Button("Build"))
         {
-            if (buildServer)
+            foreach (var build in builds)
             {
-                BuildDedicatedServer();
-            }
-
-            if (buildClient)
-            {
-                BuildClient();
+                if (build.include)
+                {
+                    build.BuildMe();
+                }
             }
         }
     }
 
-    private void BuildClient()
+    public void NewBuild ()
     {
-        var buildOptions = GetCurrentBuildPlayerOptions();
-        buildOptions.locationPathName = Path.Combine(clientBuildPath, clientBuildName + ".exe");
-        buildOptions.target = buildTarget; // Use the stored build target
-
-        BuildPipeline.BuildPlayer(buildOptions);
-    }
-
-    private void BuildDedicatedServer()
-    {
-        var buildOptions = GetCurrentBuildPlayerOptions();
-        buildOptions.locationPathName = Path.Combine(serverBuildPath, serverBuildName + ".exe");
-        buildOptions.target = BuildTarget.StandaloneLinux64; // Always use StandaloneWindows for server
-        buildOptions.options = BuildOptions.AllowDebugging | BuildOptions.Development;
-        buildOptions.subtarget = (int)StandaloneBuildSubtarget.Server;
-
-        BuildPipeline.BuildPlayer(buildOptions);
+        builds.Add(new("new build", defaultPath, BuildTarget.StandaloneWindows, StandaloneBuildSubtarget.Player, true, builds.Count));
     }
 
     private string OpenFolderPanel(string title, string defaultPath)
@@ -121,29 +180,28 @@ public class CustomBuildWindow : EditorWindow
 
     private void LoadPrefs()
     {
-        serverBuildPath = EditorPrefs.GetString(ServerBuildPathKey, "C:/MyGame/DedicatedServer");
-        clientBuildPath = EditorPrefs.GetString(ClientBuildPathKey, "C:/MyGame/Client");
-        serverBuildName = EditorPrefs.GetString(ServerBuildNameKey, "ServerBuild");
-        clientBuildName = EditorPrefs.GetString(ClientBuildNameKey, "ClientBuild");
-        buildServer = EditorPrefs.GetBool(BuildServerKey, true);
-        buildClient = EditorPrefs.GetBool(BuildClientKey, true);
-
-        // Load the build target
-        int buildTargetInt = EditorPrefs.GetInt(BuildTargetKey, (int)BuildTarget.StandaloneWindows);
-        buildTarget = (BuildTarget)buildTargetInt;
+        defaultPath = EditorPrefs.GetString(DefaultPathKey,defaultPath);
+        scrollPos.y = EditorPrefs.GetFloat(ScrollPosYKey, scrollPos.y);
     }
 
     private void SavePrefs()
     {
-        EditorPrefs.SetString(ServerBuildPathKey, serverBuildPath);
-        EditorPrefs.SetString(ClientBuildPathKey, clientBuildPath);
-        EditorPrefs.SetString(ServerBuildNameKey, serverBuildName);
-        EditorPrefs.SetString(ClientBuildNameKey, clientBuildName);
-        EditorPrefs.SetBool(BuildServerKey, buildServer);
-        EditorPrefs.SetBool(BuildClientKey, buildClient);
+        EditorPrefs.SetString(DefaultPathKey, defaultPath);
+        EditorPrefs.SetFloat(ScrollPosYKey, scrollPos.y);
+    }
 
-        // Save the build target
-        EditorPrefs.SetInt(BuildTargetKey, (int)buildTarget);
+
+    void DeletePrefs ()
+    {
+        EditorPrefs.DeleteKey(ServerBuildPathKey);
+        EditorPrefs.DeleteKey(ClientBuildPathKey);
+        EditorPrefs.DeleteKey (ServerBuildNameKey);
+        EditorPrefs.DeleteKey(ClientBuildNameKey);
+        EditorPrefs.DeleteKey(BuildServerKey);
+        EditorPrefs.DeleteKey(BuildClientKey);
+        EditorPrefs.DeleteKey(BuildTargetKey);
+
+        Debug.Log("deleted old prefs");
     }
 
     private BuildPlayerOptions GetCurrentBuildPlayerOptions()

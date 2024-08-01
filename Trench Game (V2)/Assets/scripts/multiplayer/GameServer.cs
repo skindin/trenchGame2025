@@ -45,9 +45,23 @@ public class GameServer : MonoBehaviour
                 }
             }
         }
+        catch (TypeInitializationException ex)
+        {
+            Console.WriteLine("Type Initialization Exception: " + ex.Message);
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
+                Console.WriteLine("Stack Trace: " + ex.InnerException.StackTrace);
+            }
+            else
+            {
+                Console.WriteLine("No Inner Exception.");
+            }
+        }
         catch (Exception ex)
         {
-            Console.WriteLine("Error starting WebSocket server: " + ex.Message);
+            Console.WriteLine("General Exception: " + ex.Message);
+            Console.WriteLine("Stack Trace: " + ex.StackTrace);
         }
 #else
         //Debug.Log("This is either not a server or is the Unity editor...");
@@ -78,7 +92,7 @@ public class GameServer : MonoBehaviour
             if (pastByteRecords.Count > averageBitRateFrames)
                 pastByteRecords.RemoveAt(0);
 
-            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / averageBitRateFrames);
+            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / averageBitRateFrames / Time.deltaTime);
 
             if (bytesThisFrame > 0)
                 Console.WriteLine($"average bit rate: {averageBitRate}");
@@ -87,7 +101,7 @@ public class GameServer : MonoBehaviour
         }
     }
 
-    void BroadCast (string message)
+    public void Broadcast (byte[] message)
     {
         //foreach (var session in wssv.WebSocketServices["/Echo"].Sessions) ;
 
@@ -202,7 +216,7 @@ public class ClientBehavior : WebSocketBehavior
                                 var pos = ChunkManager.Manager.GetRandomPos();
                                 var name = baseMessage.NewPlayerRequest;
 
-                                var character = CharacterManager.Manager.NewRemoteCharacter(pos, id);
+                                var character = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
                                 character.characterName = name;
 
                                 Console.WriteLine($"spawned remote character {id} named {name} at {pos}");
@@ -230,9 +244,9 @@ public class ClientBehavior : WebSocketBehavior
                         }
                         break;
 
-                    case BaseMessage.TypeOneofCase.Pos:
+                    case BaseMessage.TypeOneofCase.Input:
                         {
-                            var posData = baseMessage.Pos;
+                            var posData = baseMessage.Input.Pos;
 
                             if (server.playerCharacters.TryGetValue(ID, out var character))
                             {
@@ -241,7 +255,7 @@ public class ClientBehavior : WebSocketBehavior
                                 var pos = DataManager.ConvertDataToVector(posData);
 
                                 character.SetPos(pos, false);
-                                Console.WriteLine($"updated pos of character {character.id} to {pos}");
+                                //Console.WriteLine($"updated pos of character {character.id} to {pos}");
 
                                 var characterData = new CharacterData() { Pos = posData, CharacterID = character.id };
 
