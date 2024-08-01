@@ -4,6 +4,7 @@
 //using System;
 using UnityEngine;
 using Google.Protobuf;
+using System;
 //using static UnityEditor.PlayerSettings;
 
 public class NetworkManager : ManagerBase<NetworkManager>
@@ -13,11 +14,13 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameClient client;
     public GameServer server;
 
+    //int PosSyncsPerFrame = 0;
+
     public void SetPos(Vector2 pos, int id)
     {
         var posData = DataManager.VectorToData(pos);
 
-#if !UNITY_SERVER || UNITY_EDITOR //&& false
+#if (!UNITY_SERVER || UNITY_EDITOR)// && false
 
         var input = new PlayerInput {Pos = posData};
 
@@ -34,15 +37,28 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         var message = new BaseMessage { UpdateCharData = charData };
 
-        server.Broadcast(message.ToByteArray());
+        server.SendDataDisclude(message.ToByteArray());
+
+        //PosSyncsPerFrame++;
+
+        //Console.WriteLine($"server character {id} moved to {pos}");
 #endif
     }
+
+    //private void Update()
+    //{
+    //    if (PosSyncsPerFrame > 0)
+    //    {
+    //        Debug.Log($"positions were synced {PosSyncsPerFrame} times this frame");
+    //        PosSyncsPerFrame = 0;
+    //    }
+    //}
 
     public void SetName (string newName)
     {
 
 #if !UNITY_SERVER || UNITY_EDITOR
-        var baseMessage = new BaseMessage() { Name = newName };
+        var baseMessage = new BaseMessage() { Input = new PlayerInput{Name = newName }};
 
         client.SendData(baseMessage.ToByteArray());
 

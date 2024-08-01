@@ -152,7 +152,9 @@ public class Character : MonoBehaviour
         }
 
 #if !UNITY_SERVER || UNITY_EDITOR
-        //SetPos(transform.position); //just for network testing
+
+        //if (type == CharacterType.localPlayer)
+        //    SetPos(transform.position); //just for network testing
 
 #endif
         //lastPos = tran

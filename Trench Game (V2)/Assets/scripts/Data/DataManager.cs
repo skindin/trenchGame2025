@@ -71,6 +71,25 @@ public static class DataManager
             return false;
         }
     }
+    
+
+    /// <summary>
+    /// Modifies a to have any new values from b
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    public static void CombineCharData (CharacterData a, CharacterData b)
+    {
+        if (b.HasName)
+        {
+            a.Name = b.Name;
+        }
+
+        if (b.Pos != null)
+        {
+            a.Pos = b.Pos;
+        }
+    }
 }
 
 //public static class DataManager //might be better for all these data types to be structs...? but idk

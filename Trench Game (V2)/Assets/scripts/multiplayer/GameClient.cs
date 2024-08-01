@@ -59,7 +59,7 @@ public class GameClient : MonoBehaviour
             if (pastByteRecords.Count > averageBitRateFrames)
                 pastByteRecords.RemoveAt(0);
 
-            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / averageBitRateFrames / Time.deltaTime);
+            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / pastByteRecords.Count / Time.deltaTime);
 
             if (bytesThisFrame > 0)
                 Debug.Log($"average bit rate: {averageBitRate}");
@@ -111,112 +111,112 @@ public class GameClient : MonoBehaviour
 
     void OnMessage(object sender, MessageEventArgs e)
     {
-        actionQueue.Enqueue(() => OnData(e.RawData));
+        //actionQueue.Enqueue(() => OnData(e.RawData)); THERE'S ERRORS HERE BUT I GOTTA SLEEP
 
-        void OnData(byte[] rawData)
-        {
-            //bool uhoh = false;
+        //void OnData(byte[] rawData)
+        //{
+        //    //bool uhoh = false;
 
-            if (DataManager.IfGet<BaseMessage>(rawData, out var baseMessage))
-            {
-                switch (baseMessage.TypeCase)
-                {
-                    case BaseMessage.TypeOneofCase.NewPlayerGrant:
-                        {
-                            var grant = baseMessage.NewPlayerGrant;
+        //    if (DataManager.IfGet<BaseMessage>(rawData, out var baseMessage))
+        //    {
+        //        switch (baseMessage.TypeCase)
+        //        {
+        //            case BaseMessage.TypeOneofCase.NewPlayerGrant:
+        //                {
+        //                    var grant = baseMessage.NewPlayerGrant;
 
-                            if (!CharacterManager.Manager.localPlayerCharacter)
-                            {
-                                var id = grant.CharacterID;
-                                var pos = DataManager.ConvertDataToVector(grant.Pos);
-                                SpawnManager.Manager.SpawnLocalPlayer(pos, id);
+        //                    if (!CharacterManager.Manager.localPlayerCharacter)
+        //                    {
+        //                        var id = grant.CharacterID;
+        //                        var pos = DataManager.ConvertDataToVector(grant.Pos);
+        //                        SpawnManager.Manager.SpawnLocalPlayer(pos, id);
 
-                                Debug.Log($"spawned local player {id} at {pos}");
-                            }
-                        }
-                        break;
+        //                        Debug.Log($"spawned local player {id} at {pos}");
+        //                    }
+        //                }
+        //                break;
 
-                    case BaseMessage.TypeOneofCase.NewRemoteChar:
-                        {
-                            var newRemoteData = baseMessage.NewRemoteChar;
+        //            case BaseMessage.TypeOneofCase.NewRemoteChar:
+        //                {
+        //                    var newRemoteData = baseMessage.NewRemoteChar;
 
-                            var id = newRemoteData.CharacterID;
-                            var pos = DataManager.ConvertDataToVector(newRemoteData.Pos);
-                            var name = newRemoteData.Name;
+        //                    var id = newRemoteData.CharacterID;
+        //                    var pos = DataManager.ConvertDataToVector(newRemoteData.Pos);
+        //                    var name = newRemoteData.Name;
 
-                            SpawnManager.Manager.SpawnRemoteCharacter(pos, id).characterName = name;
+        //                    SpawnManager.Manager.SpawnRemoteCharacter(pos, id).characterName = name;
 
-                            Debug.Log($"spawned remote character {id} named {name} at {pos}");
-                        }
-                        break;
+        //                    Debug.Log($"spawned remote character {id} named {name} at {pos}");
+        //                }
+        //                break;
 
-                    case BaseMessage.TypeOneofCase.UpdateCharData:
-                        {
-                            var updateData = baseMessage.UpdateCharData;
+        //            case BaseMessage.TypeOneofCase.UpdateCharData:
+        //                {
+        //                    var updateData = baseMessage.UpdateCharData;
 
-                            var id = updateData.CharacterID;
+        //                    var id = updateData.CharacterID;
 
-                            // Ensure this call is made on the main thread
-                            //yield return new WaitForEndOfFrame();
-                            var character = CharacterManager.Manager.active.Find(character => character.id == id);
+        //                    // Ensure this call is made on the main thread
+        //                    //yield return new WaitForEndOfFrame();
+        //                    var character = CharacterManager.Manager.active.Find(character => character.id == id);
 
-                            if (character)
-                            {
-                                if (updateData.Pos != null)
-                                {
-                                    var pos = DataManager.ConvertDataToVector(updateData.Pos);
-                                    character.SetPos(pos, false);
-                                    Debug.Log($"updated pos of character {updateData.CharacterID} to {pos}");
-                                }
+        //                    if (character)
+        //                    {
+        //                        if (updateData.Pos != null)
+        //                        {
+        //                            var pos = DataManager.ConvertDataToVector(updateData.Pos);
+        //                            character.SetPos(pos, false);
+        //                            //Debug.Log($"updated pos of character {updateData.CharacterID} to {pos}");
+        //                        }
 
-                                if (updateData.HasName)
-                                {
-                                    character.characterName = updateData.Name;
+        //                        if (updateData.HasName)
+        //                        {
+        //                            character.characterName = updateData.Name;
 
-                                    Debug.Log($"updated characterName of character {updateData.CharacterID} to {character.characterName}");
-                                }
-                            }
-                            else
-                            {
-                                Debug.Log($"this client doesn't have a character with id {id}");
-                            }
-                        }
-                        break;
+        //                            Debug.Log($"updated characterName of character {updateData.CharacterID} to {character.characterName}");
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        Debug.Log($"this client doesn't have a character with id {id}");
+        //                    }
+        //                }
+        //                break;
 
-                    case BaseMessage.TypeOneofCase.RemoveCharOfID:
-                        {
-                            var removeId = baseMessage.RemoveCharOfID;
+        //            case BaseMessage.TypeOneofCase.RemoveCharOfID:
+        //                {
+        //                    var removeId = baseMessage.RemoveCharOfID;
 
-                            var removeChar = CharacterManager.Manager.active.Find(character => character.id == removeId);
+        //                    var removeChar = CharacterManager.Manager.active.Find(character => character.id == removeId);
 
-                            if (removeChar)
-                            {
-                                CharacterManager.Manager.RemoveCharacter(removeChar);
-                            }
+        //                    if (removeChar)
+        //                    {
+        //                        CharacterManager.Manager.RemoveCharacter(removeChar);
+        //                    }
 
-                            Debug.Log($"character {removeId} was removed");
-                        }
-                        break;
-                }
+        //                    Debug.Log($"character {removeId} was removed");
+        //                }
+        //                break;
+        //        }
 
-            }
+        //    }
 
-            //try
-            //{
-            //    // Assuming BinaryToVector is a method to convert raw data to a Vector2 or similar
-            //    var pos = DataManager.BinaryToVector(rawData);
+        //    //try
+        //    //{
+        //    //    // Assuming BinaryToVector is a method to convert raw data to a Vector2 or similar
+        //    //    var pos = DataManager.BinaryToVector(rawData);
 
-            //    Debug.Log("Client received pos: " + pos);
+        //    //    Debug.Log("Client received pos: " + pos);
 
-            //    // Ensure this call is made on the main thread
-            //    //yield return new WaitForEndOfFrame();
-            //    CharacterManager.Manager.mainPlayerCharacter.SetPos(pos, false);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Debug.LogError("Error in OnMessage client: " + ex.Message);
-            //}
-        }
+        //    //    // Ensure this call is made on the main thread
+        //    //    //yield return new WaitForEndOfFrame();
+        //    //    CharacterManager.Manager.mainPlayerCharacter.SetPos(pos, false);
+        //    //}
+        //    //catch (Exception ex)
+        //    //{
+        //    //    Debug.LogError("Error in OnMessage client: " + ex.Message);
+        //    //}
+        //}
     }
 
     public void Disconnect ()

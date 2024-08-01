@@ -3320,7 +3320,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  logBitRate: 1
+  logBitRate: 0
   averageBitRateFrames: 20
   averageBitRate: 0
 --- !u!1 &1430281415
@@ -5254,9 +5254,9 @@ SceneRoots:
   - {fileID: 746558444}
   - {fileID: 519420032}
   - {fileID: 62624779}
+  - {fileID: 430202880}
   - {fileID: 717289629}
   - {fileID: 986051951592155817}
   - {fileID: 1526754501}
   - {fileID: 1284647723}
   - {fileID: 820955971}
-  - {fileID: 430202880}

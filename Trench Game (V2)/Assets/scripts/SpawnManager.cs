@@ -329,15 +329,20 @@ public class SpawnManager : MonoBehaviour
         return spawnCharacter.SpawnWithType(pos, Character.CharacterType.localBot, id);
     }
 
-    public Character  SpawnLocalPlayer(Vector2 pos, int id)
+    public Character SpawnLocalPlayer(Vector2 pos, int id)
     {
         var pc = spawnCharacter.SpawnWithType(pos, Character.CharacterType.localPlayer, id);
         return pc;
     }
 
-    public Character  SpawnRemoteCharacter(Vector2 pos, int id)
+    public Character SpawnRemoteCharacter(Vector2 pos, int id)
     {
         return spawnCharacter.SpawnWithType(pos, Character.CharacterType.remote, id);
+    }
+
+    public void RemoveCharacter (Character character)
+    {
+        spawnCharacter.Remove(character);
     }
 
     public void FillCharacterCapWithBots()

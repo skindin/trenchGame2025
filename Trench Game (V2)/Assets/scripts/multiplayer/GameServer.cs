@@ -1,12 +1,16 @@
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
 //using UnityEngine.Android;
 using WebSocketSharp;
 using WebSocketSharp.Server;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class GameServer : MonoBehaviour
 {
@@ -21,7 +25,6 @@ public class GameServer : MonoBehaviour
 
     public int bytesThisFrame { get; set; }
     List<int> pastByteRecords = new();
-
 
     private void Awake()
     {
@@ -68,6 +71,8 @@ public class GameServer : MonoBehaviour
 #endif
     }
 
+    CharDataList currentCharData = new();
+
     private void Update()
     {
         //bool sentSomeData = actionQueue.Count > 0;
@@ -81,6 +86,105 @@ public class GameServer : MonoBehaviour
             }
             action?.Invoke();
         }
+
+        CharDataList newPlayerList = new();
+        CharDataList updateList = new();
+        CharDataList removeList = new();
+
+        foreach (var pair in clients)
+        {
+            var client = pair.Value;
+
+            if (client.newPlayer != null)
+            {
+                newPlayerList.List.Add(client.newPlayer);
+
+                var pos = ChunkManager.Manager.GetRandomPos();
+                var id = CharacterManager.Manager.NewId;
+
+                var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
+
+                playerCharacters.Add(client.ID, newCharacter);
+                currentCharData.List.Add(client.newPlayer);
+
+                var posData = DataManager.VectorToData(pos);
+
+                client.newPlayer.Pos = posData;
+                client.newPlayer.CharacterID = id;
+            }
+            else if (client.update != null)
+            {
+                updateList.List.Add(client.update);
+
+                var character = playerCharacters[client.ID];
+
+                var currentData = currentCharData.List.FirstOrDefault(charData => charData.CharacterID == client.update.CharacterID);
+
+                DataManager.CombineCharData(currentData, client.update); //i hope this part works properly
+
+                if (client.update.HasName)
+                {
+                    character.characterName = client.update.Name;
+                }
+
+                if (client.update.Pos != null)
+                {
+                    var pos = DataManager.ConvertDataToVector(client.update.Pos);
+                    character.SetPos(pos,false);
+                }
+
+            }
+            else if (client.remove != null)
+            {
+                removeList.List.Add(client.remove);
+
+                var character = playerCharacters[client.ID];
+
+                SpawnManager.Manager.RemoveCharacter(character);
+                currentCharData.List.Remove(client.remove);
+            }
+        }
+
+        foreach (var pair in clients)
+        {
+            var client = pair.Value;
+
+            if (client.newPlayer == null && client.update == null && client.remove == null)
+                continue; //doesn't need to reset, because they're all already null
+
+            if (client.newPlayer != null) //if this client just joined, inform them of current characters, then continue to other clients
+            {
+                var currentChars = (currentCharData.List.Count > 0) ? currentCharData : null;
+                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars};
+                var message = new BaseMessage { NewPlayerGrant = grant };
+                client.SendData(message.ToByteArray());
+                client.newPlayer = null;
+                continue;
+            }
+
+            {
+                var gameState = new GameState();
+                var message = new BaseMessage { GameState = gameState };
+
+                if (client.update != null)
+                {
+                    updateList.List.Remove(client.update);
+                }
+
+                gameState.UpdateChars = updateList;
+
+                if (client.update != null)
+                {
+                    updateList.List.Add(client.update);
+                }
+
+                gameState.NewRemoteChars = newPlayerList;
+
+                gameState.RemoveChars = removeList;
+
+                client.SendData(message.ToByteArray() );
+            }
+        }
     }
 
     private void LateUpdate()
@@ -92,7 +196,7 @@ public class GameServer : MonoBehaviour
             if (pastByteRecords.Count > averageBitRateFrames)
                 pastByteRecords.RemoveAt(0);
 
-            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / averageBitRateFrames / Time.deltaTime);
+            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / pastByteRecords.Count / Time.deltaTime);
 
             if (bytesThisFrame > 0)
                 Console.WriteLine($"average bit rate: {averageBitRate}");
@@ -159,6 +263,8 @@ public class ClientBehavior : WebSocketBehavior
 {
     public static GameServer server;
 
+    public CharacterData remove, update, newPlayer;
+
     //public ClientBehavior (GameServer server)
     //{
     //    ClientBehavior.server = server;
@@ -186,119 +292,115 @@ public class ClientBehavior : WebSocketBehavior
                 Console.WriteLine("Server received message: " + e.Data);
                 //return;
             }
-            else if (DataManager.IfGet<BaseMessage>(rawData, out var baseMessage))
+            else if (DataManager.IfGet<BaseMessage>(rawData, out var message))
             {
-                switch (baseMessage.TypeCase)
+                switch (message.TypeCase)
                 {
                     case BaseMessage.TypeOneofCase.NewPlayerRequest:
                         {
-                            if (!server.playerCharacters.ContainsKey(ID))
+                            if (!server.playerCharacters.ContainsKey(ID) && newPlayer == null)
                             {
-                                foreach (var otherCharacter in CharacterManager.Manager.active)
-                                {
-                                    var otherCharPosData = DataManager.VectorToData(otherCharacter.transform.position);
+                                //var pos = ChunkManager.Manager.GetRandomPos();
 
-                                    var spawnData = new CharacterData() {
-                                        Pos = otherCharPosData, 
-                                        CharacterID = otherCharacter.id , 
-                                        Name = otherCharacter.characterName
-                                    };
+                                var name = message.NewPlayerRequest;
 
-                                    var newRemote = new BaseMessage() { NewRemoteChar = spawnData };
+                                newPlayer = new CharacterData { CharacterID = CharacterManager.Manager.NewId, Name = name };
 
-                                    SendData(newRemote.ToByteArray());
+                                //foreach (var otherCharacter in CharacterManager.Manager.active)
+                                //{
+                                //    var otherCharPosData = DataManager.VectorToData(otherCharacter.transform.position);
 
-                                    Console.WriteLine(
-                                        $"told new client to spawn character {otherCharacter.id} named {otherCharacter.characterName} at {(Vector2)otherCharacter.transform.position}");
-                                }
+                                //    var spawnData = new CharacterData() {
+                                //        Pos = otherCharPosData, 
+                                //        CharacterID = otherCharacter.id , 
+                                //        Name = otherCharacter.characterName
+                                //    };
 
-                                var id = CharacterManager.Manager.NewId;
-                                var pos = ChunkManager.Manager.GetRandomPos();
-                                var name = baseMessage.NewPlayerRequest;
+                                //    var newRemote = new BaseMessage() { NewRemoteChar = spawnData };
 
-                                var character = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
-                                character.characterName = name;
+                                //    SendData(newRemote.ToByteArray());
 
-                                Console.WriteLine($"spawned remote character {id} named {name} at {pos}");
+                                //    Console.WriteLine(
+                                //        $"told new client to spawn character {otherCharacter.id} named {otherCharacter.characterName} at {(Vector2)otherCharacter.transform.position}");
+                                //}
 
-                                server.playerCharacters.Add(ID, character);
+                                //var id = CharacterManager.Manager.NewId;
+                                //var pos = ChunkManager.Manager.GetRandomPos();
+                                //var name = baseMessage.NewPlayerRequest;
 
-                                var posData = DataManager.VectorToData(pos);
+                                //var character = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
+                                //character.characterName = name;
 
-                                var charData = new CharacterData() { Pos = posData, CharacterID = id , Name = character.characterName};
+                                //Console.WriteLine($"spawned remote character {id} named {name} at {pos}");
 
-                                //var permission = new SpawnLocalPlayerPermission() { CharacterData = charData };
+                                //server.playerCharacters.Add(ID, character);
 
-                                var grantMessage = new BaseMessage() { NewPlayerGrant = charData };
+                                //var posData = DataManager.VectorToData(pos);
 
-                                //var grantData = DataManager.MessageToBinary(grantMessage);
+                                //var charData = new CharacterData() { Pos = posData, CharacterID = id , Name = character.characterName};
 
-                                SendData(grantMessage.ToByteArray());
+                                ////var permission = new SpawnLocalPlayerPermission() { CharacterData = charData };
 
-                                var remoteChar = new BaseMessage() { NewRemoteChar = charData };
+                                //var grantMessage = new BaseMessage() { NewPlayerGrant = charData };
 
-                                //var remoteCharData = DataManager.MessageToBinary(remoteChar);
+                                ////var grantData = DataManager.MessageToBinary(grantMessage);
 
-                                server.SendDataDisclude(remoteChar.ToByteArray(), ID);
+                                //SendData(grantMessage.ToByteArray());
+
+                                //var remoteChar = new BaseMessage() { NewRemoteChar = charData };
+
+                                ////var remoteCharData = DataManager.MessageToBinary(remoteChar);
+
+                                //server.SendDataDisclude(remoteChar.ToByteArray(), ID);
                             }
                         }
                         break;
 
                     case BaseMessage.TypeOneofCase.Input:
                         {
-                            var posData = baseMessage.Input.Pos;
-
                             if (server.playerCharacters.TryGetValue(ID, out var character))
                             {
-                                //var id = characterData.CharacterID;
+                                var charData = new CharacterData { CharacterID = character.id};
 
-                                var pos = DataManager.ConvertDataToVector(posData);
+                                if (message.Input.Pos != null)
+                                {
+                                    charData.Pos = message.Input.Pos;
+                                }
 
-                                character.SetPos(pos, false);
-                                //Console.WriteLine($"updated pos of character {character.id} to {pos}");
+                                if (message.Input.HasName)
+                                {
+                                    charData.Name = message.Input.Name;
+                                }
 
-                                var characterData = new CharacterData() { Pos = posData, CharacterID = character.id };
+                                //var posData = message.Input.Pos;
 
-                                var updateMessage = new BaseMessage() { UpdateCharData = characterData };
 
-                                //var updateData = DataManager.MessageToBinary(updateMessage);
-
-                                server.SendDataDisclude(updateMessage.ToByteArray(), ID);
-                            }
-                            else
-                            {
-                                Console.WriteLine($"server doesn't have a character associated with client {ID}");
-                            }                            
-                        }
-                        break;
-
-                    case BaseMessage.TypeOneofCase.Name:
-                        {
-                            var newName = baseMessage.Name;
-
-                            if (server.playerCharacters.TryGetValue(ID, out var character))
-                            {
                                 //var id = characterData.CharacterID;
 
                                 //var pos = DataManager.ConvertDataToVector(posData);
 
                                 //character.SetPos(pos, false);
-                                character.characterName = newName;
+                                //Console.WriteLine($"updated pos of character {character.id} to {pos}");
 
-                                Console.WriteLine($"updated characterName of character {character.id} to {newName}");
+                                //var characterData = new CharacterData() { Pos = posData, CharacterID = character.id };
 
-                                var characterData = new CharacterData() { Name = newName, CharacterID = character.id };
+                                if (update != null)
+                                {
+                                    DataManager.CombineCharData(update, charData);
+                                }
+                                else
+                                    update = charData;
 
-                                var updateMessage = new BaseMessage() { UpdateCharData = characterData };
+                                //var updateMessage = new BaseMessage() { UpdateCharData = characterData };
 
-                                //var updateData = DataManager.MessageToBinary(updateMessage);
+                                ////var updateData = DataManager.MessageToBinary(updateMessage);
 
-                                server.SendDataDisclude(updateMessage.ToByteArray(), ID);
+                                //server.SendDataDisclude(updateMessage.ToByteArray(), ID);
                             }
                             else
                             {
                                 Console.WriteLine($"server doesn't have a character associated with client {ID}");
-                            }
+                            }                            
                         }
                         break;
                 }
@@ -315,20 +417,27 @@ public class ClientBehavior : WebSocketBehavior
 
         void RemoveCharacter (string ID)
         {
-            server.clients.Remove(ID);
-
             if (server.playerCharacters.TryGetValue(ID, out var character))
             {
-                server.playerCharacters.Remove(ID);
+                remove = new CharacterData { CharacterID = character.id };
 
-                CharacterManager.Manager.RemoveCharacter(character);
+                newPlayer = update = null;
             }
 
-            var removeMessage = new BaseMessage() { RemoveCharOfID = character.id };
+            //server.clients.Remove(ID);
 
-            server.SendDataDisclude(removeMessage.ToByteArray(), ID);
+            //if (server.playerCharacters.TryGetValue(ID, out var character))
+            //{
+            //    server.playerCharacters.Remove(ID);
 
-            Console.WriteLine($"Removed character {character.id}");
+            //    CharacterManager.Manager.RemoveCharacter(character);
+            //}
+
+            //var removeMessage = new BaseMessage() { RemoveCharOfID = character.id };
+
+            //server.SendDataDisclude(removeMessage.ToByteArray(), ID);
+
+            //Console.WriteLine($"Removed character {character.id}");
         }
     }
 

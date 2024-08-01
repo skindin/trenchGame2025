@@ -6,12 +6,22 @@ message BaseMessage
     {
         PlayerInput input = 1;
         string newPlayerRequest = 2;
-        CharacterData updateCharData = 3;
-        CharacterData newPlayerGrant = 4;
-        CharacterData newRemoteChar = 5;
-        int32 removeCharOfID = 6;
-        string name = 7;
+        NewPlayerGrant newPlayerGrant = 3;
+        GameState gameState = 4;
     }
+}
+
+message NewPlayerGrant
+{
+    CharacterData NewPlayer = 1;
+    CharDataList CurrentChars = 2;
+}
+
+message GameState
+{
+    CharDataList newRemoteChars = 1;
+    CharDataList updateChars = 2;
+    CharDataList removeChars = 3;
 }
 
 message Vector2Data
@@ -31,6 +41,7 @@ message PlayerInput
         bool ItemActionPos = 5;
         bool DropItem = 6;
     }
+    optional string name = 7;
 }
 
 message CharacterData
@@ -38,4 +49,9 @@ message CharacterData
     int32 characterID = 1;
     optional Vector2Data pos = 2;
     optional string name = 3;
+}
+
+message CharDataList
+{
+    repeated CharacterData list = 1;
 }

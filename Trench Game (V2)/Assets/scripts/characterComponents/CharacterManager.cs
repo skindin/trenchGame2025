@@ -248,7 +248,7 @@ public class CharacterManager : MonoBehaviour
         }
         else
         {
-            RemoveCharacter(character);
+            SpawnManager.Manager.RemoveCharacter(character); //kind of cringe that this is removing the character from spawn manager, which then removes it from this...
         }
 
         character.life++;
