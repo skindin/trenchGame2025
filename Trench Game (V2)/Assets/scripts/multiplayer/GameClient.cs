@@ -52,7 +52,7 @@ public class GameClient : MonoBehaviour
         }
 
         //add remote chars for new player
-        if (CharacterManager.Manager.localPlayerCharacter && newPlayer != null)
+        if (!CharacterManager.Manager.localPlayerCharacter && newPlayer != null)
         {
             var pos = DataManager.ConvertDataToVector(newPlayer.Pos);
 
@@ -118,25 +118,25 @@ public class GameClient : MonoBehaviour
         removeChars.List.Clear();
     }
 
-    private void LateUpdate()
-    {
-        if (logBitRate)
-        {
-            //Debug.Log($"Sent {bytesThisFrame} bytes this frame");
+    //private void LateUpdate()
+    //{
+        //if (logBitRate)
+        //{
+        //    //Debug.Log($"Sent {bytesThisFrame} bytes this frame");
 
-            pastByteRecords.Add(bytesThisFrame);
+        //    pastByteRecords.Add(bytesThisFrame);
 
-            if (pastByteRecords.Count > averageBitRateFrames)
-                pastByteRecords.RemoveAt(0);
+        //    if (pastByteRecords.Count > averageBitRateFrames)
+        //        pastByteRecords.RemoveAt(0);
 
-            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / pastByteRecords.Count / Time.deltaTime);
+        //    averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / pastByteRecords.Count / Time.deltaTime);
 
-            if (bytesThisFrame > 0)
-                Debug.Log($"average bit rate: {averageBitRate}");
+        //    if (bytesThisFrame > 0)
+        //        Debug.Log($"average bit rate: {averageBitRate}");
 
-            bytesThisFrame = 0;
-        }
-    }
+        //    bytesThisFrame = 0;
+        //}
+    //}
 
     public void Connect()
     {
@@ -284,7 +284,7 @@ public class GameClient : MonoBehaviour
         bytesThisFrame += data.Length;
 
         if (logBitRate)
-            Console.WriteLine($"send {data.Length} bytes");
+            Console.WriteLine($"sent {data.Length} bytes to server");
     }
 #endif
 }

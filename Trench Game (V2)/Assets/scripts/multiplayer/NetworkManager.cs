@@ -20,7 +20,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
     {
         var posData = DataManager.VectorToData(pos);
 
-#if (!UNITY_SERVER || UNITY_EDITOR) && false
+#if (!UNITY_SERVER || UNITY_EDITOR)// && false
 
         var input = new PlayerInput {Pos = posData};
 
