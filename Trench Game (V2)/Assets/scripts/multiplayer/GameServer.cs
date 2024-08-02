@@ -71,9 +71,9 @@ public class GameServer : MonoBehaviour
 #endif
     }
 
-    CharDataList currentCharData = new();
+    public CharDataList newPlayerList = new(), updateList = new(), removeList = new(), currentCharData = new();
 
-    private void Update()
+    private void LateUpdate()
     {
         //bool sentSomeData = actionQueue.Count > 0;
 
@@ -87,9 +87,7 @@ public class GameServer : MonoBehaviour
             action?.Invoke();
         }
 
-        CharDataList newPlayerList = new();
-        CharDataList updateList = new();
-        CharDataList removeList = new();
+
 
         foreach (var pair in clients)
         {
@@ -185,24 +183,25 @@ public class GameServer : MonoBehaviour
                 client.SendData(message.ToByteArray() );
             }
         }
-    }
 
-    private void LateUpdate()
-    {
-        if (logBitRate)
-        {
-            pastByteRecords.Add(bytesThisFrame);
+        //if (logBitRate)
+        //{
+        //    pastByteRecords.Add(bytesThisFrame);
 
-            if (pastByteRecords.Count > averageBitRateFrames)
-                pastByteRecords.RemoveAt(0);
+        //    if (pastByteRecords.Count > averageBitRateFrames)
+        //        pastByteRecords.RemoveAt(0);
 
-            averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / pastByteRecords.Count / Time.deltaTime);
+        //    averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / pastByteRecords.Count / Time.deltaTime);
 
-            if (bytesThisFrame > 0)
-                Console.WriteLine($"average bit rate: {averageBitRate}");
+        //    if (bytesThisFrame > 0)
+        //        Console.WriteLine($"average bit rate: {averageBitRate}");
 
-            bytesThisFrame = 0;
-        }
+        //    bytesThisFrame = 0;
+        //}
+
+        newPlayerList.List.Clear();
+        updateList.List.Clear();
+        removeList.List.Clear();
     }
 
     public void Broadcast (byte[] message)
@@ -451,5 +450,8 @@ public class ClientBehavior : WebSocketBehavior
         Send(binary);
 
         server.bytesThisFrame += binary.Length;
+
+        if (server.logBitRate)
+            Console.WriteLine($"send {binary.Length} bytes");
     }
 }

@@ -20,7 +20,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
     {
         var posData = DataManager.VectorToData(pos);
 
-#if (!UNITY_SERVER || UNITY_EDITOR)// && false
+#if (!UNITY_SERVER || UNITY_EDITOR) && false
 
         var input = new PlayerInput {Pos = posData};
 
@@ -35,9 +35,9 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         var charData = new CharacterData { Pos = posData , CharacterID = id};
 
-        var message = new BaseMessage { UpdateCharData = charData };
+        server.updateList.List.Add(charData);
 
-        server.SendDataDisclude(message.ToByteArray());
+        //server.SendDataDisclude(message.ToByteArray());
 
         //PosSyncsPerFrame++;
 

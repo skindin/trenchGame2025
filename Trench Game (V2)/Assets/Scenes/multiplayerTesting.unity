@@ -2749,7 +2749,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aab6ef9fc5c68544b627cc616d1bb85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logBitRate: 0
+  logBitRate: 1
   averageBitRateFrames: 20
   averageBitRate: 0
 --- !u!1 &1054766971
@@ -3320,7 +3320,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  logBitRate: 0
+  logBitRate: 1
   averageBitRateFrames: 20
   averageBitRate: 0
 --- !u!1 &1430281415
