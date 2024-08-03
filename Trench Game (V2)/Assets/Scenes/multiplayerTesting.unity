@@ -1722,8 +1722,8 @@ MonoBehaviour:
     name: 
     prefab: {fileID: 0}
     currentAmount: 0
-    spawnCap: 1
-  spawnBots: 0
+    spawnCap: 3
+  spawnBots: 1
 --- !u!1 &607746247
 GameObject:
   m_ObjectHideFlags: 0
@@ -2749,7 +2749,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aab6ef9fc5c68544b627cc616d1bb85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logBitRate: 1
+  logBitRate: 0
   averageBitRateFrames: 20
   averageBitRate: 0
 --- !u!1 &1054766971
@@ -5084,6 +5084,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2011304964}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &2140088294
 MonoBehaviour:

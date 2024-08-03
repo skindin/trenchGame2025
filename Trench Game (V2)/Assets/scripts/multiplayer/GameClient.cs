@@ -8,6 +8,7 @@ using UnityEngine;
 //using UnityEngine.Rendering.PostProcessing;
 using WebSocketSharp;
 using UnityEngine.Events;
+using UnityEngine.Rendering.PostProcessing;
 //using Google.Protobuf.Collections;
 //using UnityEditor.SearchService;
 
@@ -41,6 +42,9 @@ public class GameClient : MonoBehaviour
     {
         //bool sentSomeData = actionQueue.Count > 0;
 
+        if (ws != null && !ws.IsAlive)
+            return;
+
         while (actionQueue.Count > 0)
         {
             Action action;
@@ -56,7 +60,9 @@ public class GameClient : MonoBehaviour
         {
             var pos = DataManager.ConvertDataToVector(newPlayer.Pos);
 
-            SpawnManager.Manager.SpawnLocalPlayer(pos, newPlayer.CharacterID);
+            var id = SpawnManager.Manager.SpawnLocalPlayer(pos, newPlayer.CharacterID).id;
+
+            Debug.Log($"spawned local player, character {id}");
         }
 
         foreach (var remoteChar in newRemoteChars.List)
@@ -76,10 +82,9 @@ public class GameClient : MonoBehaviour
 
             if (character)
             {
-                var pos = DataManager.ConvertDataToVector(updateChar.Pos);
-
                 if (updateChar.Pos != null)
                 {
+                    var pos = DataManager.ConvertDataToVector(updateChar.Pos);
                     character.SetPos(pos, false);
                 }
 
@@ -164,9 +169,7 @@ public class GameClient : MonoBehaviour
         ws.OnClose += (sender, e) => actionQueue.Enqueue(() => {
             Debug.Log("Disconnected from server");
             //UIUtils.ResetScene();
-            CharacterManager.Manager.RemoveAllCharacters();
-            //CharacterManager.Manager.RemoveAllCharacters();
-            onDisconnect.Invoke();
+            Disconnect();
         });
 
         //ws.OnOpen += (sender, e) => {
@@ -259,6 +262,10 @@ public class GameClient : MonoBehaviour
         {
             ws.Close();
             ws = null;
+
+            CharacterManager.Manager.RemoveAllCharacters();
+            //CharacterManager.Manager.RemoveAllCharacters();
+            onDisconnect.Invoke();
         }
     }
 

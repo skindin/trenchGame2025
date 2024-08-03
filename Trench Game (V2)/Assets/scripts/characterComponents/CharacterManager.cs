@@ -28,7 +28,9 @@ public class CharacterManager : MonoBehaviour
     {
         get
         {
-            return nextId++;
+            nextId++;
+            //Debug.Log($"requested id {nextId}");
+            return nextId;
         }
     }
 

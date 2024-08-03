@@ -17,6 +17,7 @@ public class GameServer : MonoBehaviour
     private WebSocketServer wssv;
     public Dictionary<string, ClientBehavior> clients = new();
     public Dictionary<string, Character> playerCharacters = new();
+    public Queue<string> disconnected = new();
 
     public Queue<Action> actionQueue = new();
 
@@ -37,6 +38,7 @@ public class GameServer : MonoBehaviour
             // Initialize the WebSocket server
             wssv = new WebSocketServer("ws://localhost:8080");
             wssv.AddWebSocketService<ClientBehavior>("/ClientBehavior");
+
             wssv.Start();
 
             if (wssv.IsListening)
@@ -87,8 +89,6 @@ public class GameServer : MonoBehaviour
             action?.Invoke();
         }
 
-
-
         foreach (var pair in clients)
         {
             var client = pair.Value;
@@ -102,7 +102,10 @@ public class GameServer : MonoBehaviour
 
                 var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
 
+                Console.WriteLine($"spawned remote character {id} named {client.newPlayer.Name}");
+
                 playerCharacters.Add(client.ID, newCharacter);
+                client.character = newCharacter;
                 currentCharData.List.Add(client.newPlayer);
 
                 var posData = DataManager.VectorToData(pos);
@@ -132,6 +135,8 @@ public class GameServer : MonoBehaviour
                     character.SetPos(pos,false);
                 }
 
+                //Console.WriteLine($"updated character {character.id}");
+                LogLists();
             }
             else if (client.remove != null)
             {
@@ -140,18 +145,18 @@ public class GameServer : MonoBehaviour
                 var character = playerCharacters[client.ID];
 
                 SpawnManager.Manager.RemoveCharacter(character);
-                for (int i = 0; i < currentCharData.List.Count; i++)
+                foreach (var currentChar in currentCharData.List)
                 {
-                    var currentChar = removeList.List[i];
+                    //var currentChar = removeList.List[i];
 
                     if (currentChar.CharacterID == client.remove.CharacterID)
                     {
-                        currentCharData.List.RemoveAt(i);
-                        i--;
+                        currentCharData.List.Remove(currentChar);
+                        break;
                     }
                 }
 
-                currentCharData.List.Remove(client.remove);
+                Console.WriteLine($"removed character {character.id}");
             }
         }
 
@@ -159,8 +164,11 @@ public class GameServer : MonoBehaviour
         {
             var client = pair.Value;
 
-            if (client.newPlayer == null && client.update == null && client.remove == null)
-                continue; //doesn't need to reset, because they're all already null
+            if (client.State != WebSocketState.Open)
+                continue;
+
+            //if (client.newPlayer == null && client.update == null && client.remove == null) //bruh im such an idiot
+            //    continue; //doesn't need to reset, because they're all already null
 
             if (client.newPlayer != null) //if this client just joined, inform them of current characters, then continue to other clients
             {
@@ -168,16 +176,20 @@ public class GameServer : MonoBehaviour
 
                 var currentChar = currentChars.List.FirstOrDefault(charData => charData.CharacterID == client.newPlayer.CharacterID);
 
-                if (currentChar != null) //sloppy af ik
+                if (true || client.character != null) //sloppy af ik, not sure why i was testing if the client already had a character, it should by this point
                 {
                     currentChars.List.Remove(currentChar);
                 }
+
+                //client.newPlayer.Name = null;
 
                 var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars};
                 var message = new BaseMessage { NewPlayerGrant = grant };
                 client.SendData(message.ToByteArray());
 
                 currentChars.List.Add(currentChar);
+
+                Console.WriteLine($"told client to spawn their player, character {client.newPlayer.CharacterID}");
 
                 LogLists();
                 client.update = client.remove = client.newPlayer = null;
@@ -186,34 +198,42 @@ public class GameServer : MonoBehaviour
 
             {
                 var gameState = new GameState();
-                var message = new BaseMessage { GameState = gameState };
+
 
                 if (client.update != null)
                 {
                     updateList.List.Remove(client.update);
                 }
 
-                gameState.UpdateChars = updateList;
+                gameState.UpdateChars = updateList.List.Count > 0 ? updateList : null;
 
-                gameState.NewRemoteChars = newPlayerList;
+                gameState.NewRemoteChars = newPlayerList.List.Count > 0 ? newPlayerList : null;
 
-                gameState.RemoveChars = removeList;
+                gameState.RemoveChars = removeList.List.Count > 0 ? removeList : null;
 
-                client.SendData(message.ToByteArray());
+                if (gameState.UpdateChars != null || gameState.NewRemoteChars != null || gameState.RemoveChars != null)
+                {
+                    var message = new BaseMessage { GameState = gameState };
 
-                if (client.update != null)
+                    client.SendData(message.ToByteArray());
+                    LogLists();
+                }
+                //else
+                //    Console.WriteLine("apparently all the lists are empty shruggin emoji");
+
+                if (client.update != null) //readd this character back
                 {
                     updateList.List.Add(client.update);
                 }
-            }
 
-            LogLists();
-
-            void LogLists ()
-            {
-                //Console.WriteLine($"{newPlayerList.List.Count} new players, {updateList.List.Count} character updates, and {removeList.List.Count} removals");
+                client.update = client.remove = client.newPlayer = null;
             }
+            //LogLists();
         }
+
+        newPlayerList.List.Clear();
+        updateList.List.Clear();
+        removeList.List.Clear();
 
         //if (logBitRate)
         //{
@@ -230,9 +250,24 @@ public class GameServer : MonoBehaviour
         //    bytesThisFrame = 0;
         //}
 
-        newPlayerList.List.Clear();
-        updateList.List.Clear();
-        removeList.List.Clear();
+        while (disconnected.Count > 0)
+        {
+            clients.Remove(disconnected.Dequeue());
+        }
+
+        //LogLists();
+
+        void LogLists()
+        {
+            //Console.WriteLine($"{newPlayerList.List.Count} new players, {updateList.List.Count} character updates, {removeList.List.Count} removals, and {currentCharData.List.Count} current characters");
+        }
+    }
+
+    public void AddCharacter (Character character)
+    {
+        var pos = DataManager.VectorToData(character.transform.position);
+        var data = new CharacterData{CharacterID = character.id, Pos = pos, Name = character.characterName};
+        currentCharData.List.Add(data);
     }
 
     public void Broadcast (byte[] message)
@@ -295,6 +330,8 @@ public class ClientBehavior : WebSocketBehavior
 
     public CharacterData remove, update, newPlayer;
 
+    public Character character;
+
     //public ClientBehavior (GameServer server)
     //{
     //    ClientBehavior.server = server;
@@ -328,62 +365,15 @@ public class ClientBehavior : WebSocketBehavior
                 {
                     case BaseMessage.TypeOneofCase.NewPlayerRequest:
                         {
-                            if (!server.playerCharacters.ContainsKey(ID) && newPlayer == null)
+                            if (!character && newPlayer == null)
                             {
                                 //var pos = ChunkManager.Manager.GetRandomPos();
 
                                 var name = message.NewPlayerRequest;
 
-                                newPlayer = new CharacterData { CharacterID = CharacterManager.Manager.NewId, Name = name };
+                                newPlayer = new CharacterData {Name = name};
 
                                 Console.WriteLine($"recieved new player request");
-
-                                //foreach (var otherCharacter in CharacterManager.Manager.active)
-                                //{
-                                //    var otherCharPosData = DataManager.VectorToData(otherCharacter.transform.position);
-
-                                //    var spawnData = new CharacterData() {
-                                //        Pos = otherCharPosData, 
-                                //        CharacterID = otherCharacter.id , 
-                                //        Name = otherCharacter.characterName
-                                //    };
-
-                                //    var newRemote = new BaseMessage() { NewRemoteChar = spawnData };
-
-                                //    SendData(newRemote.ToByteArray());
-
-                                //    Console.WriteLine(
-                                //        $"told new client to spawn character {otherCharacter.id} named {otherCharacter.characterName} at {(Vector2)otherCharacter.transform.position}");
-                                //}
-
-                                //var id = CharacterManager.Manager.NewId;
-                                //var pos = ChunkManager.Manager.GetRandomPos();
-                                //var name = baseMessage.NewPlayerRequest;
-
-                                //var character = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
-                                //character.characterName = name;
-
-                                //Console.WriteLine($"spawned remote character {id} named {name} at {pos}");
-
-                                //server.playerCharacters.Add(ID, character);
-
-                                //var posData = DataManager.VectorToData(pos);
-
-                                //var charData = new CharacterData() { Pos = posData, CharacterID = id , Name = character.characterName};
-
-                                ////var permission = new SpawnLocalPlayerPermission() { CharacterData = charData };
-
-                                //var grantMessage = new BaseMessage() { NewPlayerGrant = charData };
-
-                                ////var grantData = DataManager.MessageToBinary(grantMessage);
-
-                                //SendData(grantMessage.ToByteArray());
-
-                                //var remoteChar = new BaseMessage() { NewRemoteChar = charData };
-
-                                ////var remoteCharData = DataManager.MessageToBinary(remoteChar);
-
-                                //server.SendDataDisclude(remoteChar.ToByteArray(), ID);
                             }
                         }
                         break;
@@ -392,7 +382,7 @@ public class ClientBehavior : WebSocketBehavior
                         {
                             if (server.playerCharacters.TryGetValue(ID, out var character))
                             {
-                                var charData = new CharacterData { };
+                                var charData = new CharacterData {CharacterID = this.character.id};
 
                                 if (message.Input.Pos != null)
                                 {
@@ -404,20 +394,6 @@ public class ClientBehavior : WebSocketBehavior
                                     charData.Name = message.Input.Name;
                                 }
 
-                                //Console.WriteLine($"server recieved input data")
-
-                                //var posData = message.Input.Pos;
-
-
-                                //var id = characterData.CharacterID;
-
-                                //var pos = DataManager.ConvertDataToVector(posData);
-
-                                //character.SetPos(pos, false);
-                                //Console.WriteLine($"updated pos of character {character.id} to {pos}");
-
-                                //var characterData = new CharacterData() { Pos = posData, CharacterID = character.id };
-
                                 if (update != null)
                                 {
                                     DataManager.CombineCharData(update, charData);
@@ -425,17 +401,11 @@ public class ClientBehavior : WebSocketBehavior
                                 else
                                     update = charData;
 
-                                //var updateMessage = new BaseMessage() { UpdateCharData = characterData };
-
-                                ////var updateData = DataManager.MessageToBinary(updateMessage);
-
-                                //server.SendDataDisclude(updateMessage.ToByteArray(), ID);
-
-                                Console.WriteLine($"server recieved input");
+                                //Console.WriteLine($"server recieved input");
                             }
                             else
                             {
-                                Console.WriteLine($"server doesn't have a charData associated with client {ID}");
+                                Console.WriteLine($"server doesn't have a currentChar associated with client {ID}");
                             }                            
                         }
                         break;
@@ -453,11 +423,13 @@ public class ClientBehavior : WebSocketBehavior
 
         void RemoveCharacter (string ID)
         {
-            if (server.playerCharacters.TryGetValue(ID, out var character))
+            if (character)
             {
                 remove = new CharacterData { CharacterID = character.id };
 
                 newPlayer = update = null;
+
+                server.disconnected.Enqueue(ID);
             }
 
             //server.clients.Remove(ID);

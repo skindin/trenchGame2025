@@ -358,6 +358,8 @@ public class SpawnManager : MonoBehaviour
             //newBot.characterName += i;
             newBot.characterName = $"bot{i}";
 
+            NetworkManager.Manager.server.AddCharacter(newBot);
+
             //var posData = DataManager.VectorToData(botPos); //realized this is only going to be run before any players have joined
 
             //var charData = new CharacterData { CharacterID = newBot.id, Name = newBot.characterName, Pos = posData };
