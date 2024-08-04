@@ -22,6 +22,7 @@ message GameState
     CharDataList newRemoteChars = 1;
     CharDataList updateChars = 2;
     CharDataList removeChars = 3;
+    repeated BulletBunch newBullets = 4;
 }
 
 message Vector2Data
@@ -49,9 +50,23 @@ message CharacterData
     int32 characterID = 1;
     optional Vector2Data pos = 2;
     optional string name = 3;
+    optional float hp = 4;
 }
 
 message CharDataList
 {
     repeated CharacterData list = 1;
+}
+
+message BulletBunch
+{
+    float range = 1;
+    float speed = 2;
+    repeated BulletData bullets = 3;
+}
+
+message BulletData
+{
+    Vector2Data startpos = 1;
+    Vector2Data currentPos = 2;
 }

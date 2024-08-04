@@ -42,7 +42,7 @@ public class GameClient : MonoBehaviour
     {
         //bool sentSomeData = actionQueue.Count > 0;
 
-        if (ws != null && !ws.IsAlive)
+        if (ws == null || !ws.IsAlive)
             return;
 
         while (actionQueue.Count > 0)
@@ -145,6 +145,8 @@ public class GameClient : MonoBehaviour
 
     public void Connect()
     {
+        Disconnect();
+
         // Initialize WebSocket
         ws = new WebSocket($"ws://{serverAdress}:8080/ClientBehavior");
 
@@ -169,6 +171,7 @@ public class GameClient : MonoBehaviour
         ws.OnClose += (sender, e) => actionQueue.Enqueue(() => {
             Debug.Log("Disconnected from server");
             //UIUtils.ResetScene();
+            ws = null;
             Disconnect();
         });
 
@@ -260,13 +263,22 @@ public class GameClient : MonoBehaviour
     {
         if (ws != null)
         {
-            ws.Close();
+            ws.CloseAsync();
             ws = null;
-
-            CharacterManager.Manager.RemoveAllCharacters();
-            //CharacterManager.Manager.RemoveAllCharacters();
-            onDisconnect.Invoke();
         }
+
+        CharacterManager.Manager.RemoveAllCharacters();
+        //CharacterManager.Manager.RemoveAllCharacters();
+        onDisconnect.Invoke();
+
+        newPlayer = null;
+        newRemoteChars.List.Clear();
+        updateChars.List.Clear();
+        removeChars.List.Clear();
+
+        actionQueue.Clear();
+
+        Debug.Log("connection ended by client");
     }
 
     //private void Update()

@@ -36,7 +36,10 @@ public class GameServer : MonoBehaviour
         try
         {
             // Initialize the WebSocket server
-            wssv = new WebSocketServer("ws://localhost:8080");
+            wssv = new WebSocketServer("ws://0.0.0.0:8080");
+            // or for dual-stack (both IPv4 and IPv6)
+            // wssv = new WebSocketServer("ws://[::]:8080");
+
             wssv.AddWebSocketService<ClientBehavior>("/ClientBehavior");
 
             wssv.Start();

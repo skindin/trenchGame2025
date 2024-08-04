@@ -3265,7 +3265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ab5a5e8b5028a46b3f785a3ab48203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverAdress: localhost
+  serverAdress: trenchgamemultiplayerserverv1-0.gnomebuddygames.online
   onConnect:
     m_PersistentCalls:
       m_Calls:
