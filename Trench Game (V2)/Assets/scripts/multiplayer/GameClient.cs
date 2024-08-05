@@ -6,9 +6,12 @@ using System.Collections.Generic;
 //using UnityEditor.U2D.Animation;
 using UnityEngine;
 //using UnityEngine.Rendering.PostProcessing;
-using WebSocketSharp;
+//using WebSocketSharp;
 using UnityEngine.Events;
 using UnityEngine.Rendering.PostProcessing;
+using NativeWebSocket;
+//using System.Net.WebSockets;
+//using WebSocketSharp;
 //using Google.Protobuf.Collections;
 //using UnityEditor.SearchService;
 
@@ -42,7 +45,7 @@ public class GameClient : MonoBehaviour
     {
         //bool sentSomeData = actionQueue.Count > 0;
 
-        if (ws == null || !ws.IsAlive)
+        if (ws == null)
             return;
 
         while (actionQueue.Count > 0)
@@ -151,9 +154,19 @@ public class GameClient : MonoBehaviour
         ws = new WebSocket($"ws://{serverAdress}:8080/ClientBehavior");
 
         // Set up message received handler
-        ws.OnMessage += OnMessage;
+        ws.OnMessage += (bytes) =>
+        {
+            Debug.Log("OnMessage!");
+            //Debug.Log(bytes);
 
-        ws.OnOpen += (sender, e) =>
+            OnMessage(bytes);
+
+            // getting the message as a string
+            // var message = System.Text.Encoding.UTF8.GetString(bytes);
+            // Debug.Log("OnMessage! " + message);
+        };
+
+        ws.OnOpen += () =>
         {
             var baseMessage = new BaseMessage() { NewPlayerRequest = CharacterManager.Manager.playerName };
 
@@ -168,7 +181,7 @@ public class GameClient : MonoBehaviour
             //Debug.Log("connected to server");
         };
 
-        ws.OnClose += (sender, e) => actionQueue.Enqueue(() => {
+        ws.OnClose += (e) => actionQueue.Enqueue(() => {
             Debug.Log("Disconnected from server");
             //UIUtils.ResetScene();
             ws = null;
@@ -182,12 +195,12 @@ public class GameClient : MonoBehaviour
         //    };
 
         // Connect to WebSocket server
-        ws.ConnectAsync();
+        ws.Connect();
     }
 
-    void OnMessage(object sender, MessageEventArgs e)
+    void OnMessage(byte[] data)
     {
-        actionQueue.Enqueue(() => OnData(e.RawData)); //THERE'S ERRORS HERE BUT I GOTTA SLEEP
+        actionQueue.Enqueue(() => OnData(data)); //THERE'S ERRORS HERE BUT I GOTTA SLEEP
 
         void OnData(byte[] rawData)
         {
@@ -263,7 +276,7 @@ public class GameClient : MonoBehaviour
     {
         if (ws != null)
         {
-            ws.CloseAsync();
+            ws.Close();
             ws = null;
         }
 

@@ -29,7 +29,7 @@ public class GameServer : MonoBehaviour
 
     private void Awake()
     {
-#if UNITY_SERVER && !UNITY_EDITOR// || true
+#if UNITY_SERVER && !UNITY_EDITOR || true
         //|| true
         ClientBehavior.server = this;
 
