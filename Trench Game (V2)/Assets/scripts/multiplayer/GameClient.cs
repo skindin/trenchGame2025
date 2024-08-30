@@ -42,7 +42,7 @@ public class GameClient : MonoBehaviour
     {
         //bool sentSomeData = actionQueue.Count > 0;
 
-        if (ws == null || !ws.IsAlive)
+        if (ws == null)// || !ws.IsAlive)
             return;
 
         while (actionQueue.Count > 0)
