@@ -62,7 +62,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         client.SendData(baseMessage.ToByteArray());
 
-        Debug.Log($"sent characterName {newName} to server");
+        //Debug.Log($"sent characterName {newName} to server");
 
         //CharacterManager.Manager.localPlayerCharacter.name = newName;
 #endif

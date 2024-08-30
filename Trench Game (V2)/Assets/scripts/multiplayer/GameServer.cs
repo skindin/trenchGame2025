@@ -21,8 +21,10 @@ public class GameServer : MonoBehaviour
 
     public Queue<Action> actionQueue = new();
 
-    public bool logBitRate = false;
-    public int averageBitRateFrames = 20, averageBitRate = 0;
+    public bool logBitRate = false, logFrameRate = false;
+    public int averageBitRateFrames = 20, averageBitRate = 0, targetFPS = 200;
+
+    public float logInterval = 5;
 
     public int bytesThisFrame { get; set; }
     List<int> pastByteRecords = new();
@@ -32,6 +34,8 @@ public class GameServer : MonoBehaviour
 #if UNITY_SERVER && !UNITY_EDITOR// || true
         //|| true
         ClientBehavior.server = this;
+
+        Application.targetFrameRate = targetFPS;
 
         try
         {
@@ -71,9 +75,45 @@ public class GameServer : MonoBehaviour
             Console.WriteLine("General Exception: " + ex.Message);
             Console.WriteLine("Stack Trace: " + ex.StackTrace);
         }
+
+        Console.WriteLine("This is a server build");
 #else
-        //Debug.Log("This is either not a server or is the Unity editor...");
+        Console.WriteLine("This is either not a server or is the Unity editor...");
 #endif
+
+            //StartCoroutine(BitRateLogging());
+
+        //IEnumerator BitRateLogging ()
+        //{
+        //    while (true)
+        //    {
+        //        if (logBitRate)
+        //        {
+        //            Console.WriteLine($"Sent")
+        //        }
+        //        yield return new WaitForSeconds(logInterval);
+        //    }
+        //}
+
+
+            StartCoroutine(FrameRateLogging());
+
+        IEnumerator FrameRateLogging()
+        {
+            while (true)
+            {
+                if (logFrameRate)
+                {
+                    Console.WriteLine($"FPS: {MathF.Round(1 / Time.deltaTime)}");
+                }
+                if (logBitRate)
+                {
+                    Console.WriteLine($"Bit rate: {bytesThisFrame}");
+                    bytesThisFrame = 0;
+                }
+                yield return new WaitForSeconds(logInterval);
+            }
+        }
     }
 
     public CharDataList newPlayerList = new(), updateList = new(), removeList = new(), currentCharData = new();
@@ -82,14 +122,19 @@ public class GameServer : MonoBehaviour
     {
         //bool sentSomeData = actionQueue.Count > 0;
 
-        while (actionQueue.Count > 0)
+        lock (actionQueue)
         {
-            Action action;
-            lock (actionQueue)
+            //if (actionQueue.Count > 0)
+            //{
+            //    if (logMessagesPerFrame)
+            //        Debug.Log($"recieved {actionQueue.Count} messages this frame");
+            //}
+
+            while (actionQueue.Count > 0)
             {
-                action = actionQueue.Dequeue();
+                Action action = actionQueue.Dequeue();
+                action?.Invoke();
             }
-            action?.Invoke();
         }
 
         foreach (var pair in clients)
@@ -462,8 +507,5 @@ public class ClientBehavior : WebSocketBehavior
         Send(binary);
 
         server.bytesThisFrame += binary.Length;
-
-        if (server.logBitRate)
-            Console.WriteLine($"sent {binary.Length} bytes to client");
     }
 }
