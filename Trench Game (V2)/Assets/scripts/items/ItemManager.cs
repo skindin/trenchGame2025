@@ -3,6 +3,7 @@ using UnityEngine;
 //using System.Linq;
 //using JetBrains.Annotations;
 using System;
+//using static UnityEditor.Progress;
 
 public class ItemManager : MonoBehaviour
 {
@@ -26,11 +27,17 @@ public class ItemManager : MonoBehaviour
     public float grabDur = .1f;
     public float deleteDur = .1f;
 
+    public Dictionary<int, Item> active = new();
+
     private void Awake()
     {
+        var index = 0;
+
         foreach (var pool in itemPools)
         {
             pool.Setup(pool.prefab);
+            pool.index = index;
+            index++;
         }
 
         //dropRoutine = StartCoroutine(ItemDrop());
@@ -82,17 +89,43 @@ public class ItemManager : MonoBehaviour
     //        RunDropInterval(Time.deltaTime);
     //}
 
-    public Item NewItem(Item prefab)
+    public void RemoveAll ()
+    {
+        foreach (var pair in active)
+        {
+            var item = pair.Value;
+
+            RemoveItem(item);
+        }
+    }
+
+    public Item NewItem(Item prefab, int id)
     {
         var itemPool = itemPools.Find(x => x.prefab == prefab);
 
         if (itemPool != null)
         {
             var item = itemPool.NewItem();
+            item.id = id;
+            active[id]  = item;
             return item;
         }
 
-        throw new Exception($"Item ManagerBase does not have server pool setup for {prefab}");
+        throw new Exception($"item cachedManager does not have pool setup for {prefab}");
+    }
+
+    public Item NewItem (int prefabId, int itemId)
+    {
+        if (itemPools.Count > prefabId)
+        {
+            var newItem = itemPools[prefabId].NewItem();
+            newItem.id = itemId;
+            active[itemId] = newItem;
+            //newItem.id = itemId;
+            return newItem;
+        }
+
+        throw new Exception($"item manager does not have pool at index {prefabId}");
     }
 
     public void RemoveItem(Item item, Item prefab)
@@ -102,9 +135,32 @@ public class ItemManager : MonoBehaviour
         if (itemPool != null)
         {
             itemPool.MoveTo(item);
+            active.Remove(item.id);
         }
         else
-            throw new Exception($"Item ManagerBase does not have server pool setup for {prefab}");
+            throw new Exception($"Item manager does not have server pool setup for {prefab}");
+    }
+
+    public void RemoveItem (Item item)
+    {
+        if (item.prefabId < itemPools.Count)
+        {
+            itemPools[item.prefabId].MoveTo(item);
+        }
+        else
+        {
+            throw new Exception($"item manager does not have pool at index {item.prefabId}");
+        }
+    }
+
+    public void RemoveItem (int id)
+    {
+        if (active.TryGetValue(id, out var item))
+        {
+            RemoveItem(item);
+        }
+
+        throw new Exception($"item manager does not have an item with id {item.id}");
     }
 
     //public List<Item> GenerateItemList(List<Item> list, int count, bool clearList = true) //repeating the same item throughout groups causes lots of problems lol
@@ -187,7 +243,7 @@ public class ItemManager : MonoBehaviour
         public ObjectPool<Item> pool;
         public Transform container;
 
-        int nextId = 0;
+        public int index;
 
         public void MoveTo(Item item)
         {
@@ -213,8 +269,6 @@ public class ItemManager : MonoBehaviour
                 maxPooled: pool?.maxPooled ?? 100,
                 newFunc: () => {
                     var item = Instantiate(prefab, container).GetComponent<Item>();
-                    item.gameObject.name += $"{nextId}";
-                    nextId++;
                     return item;
                 },
                 disableAction: item =>
@@ -240,6 +294,7 @@ public class ItemManager : MonoBehaviour
             var item = pool.GetFromPool();
             //active.Add(item);
             item.defaultContainer = container;
+            item.prefabId = index;
             //item.Drop(pos);
             return item;
         }

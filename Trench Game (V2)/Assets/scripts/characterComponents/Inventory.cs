@@ -250,7 +250,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void PickupItem (Item item, Vector2 dropPos)
+    public void PickupItem(Item item, Vector2 dropPos, bool sync = false)
     {
         if (item.wielder)
         {
@@ -268,10 +268,15 @@ public class Inventory : MonoBehaviour
             if (pickedUp && !destroyed)
             {
                 if (ActiveItem)
-                    DropItem(ActiveItem, dropPos);
+                    DropItem(ActiveItem, dropPos); //DO NOT SYNC HERE, pickup message should take care of it
 
                 items.Add(item);
                 ActiveItem = item;
+            }
+
+            if (sync)
+            {
+                NetworkManager.Manager.PickupItem(item,dropPos);
             }
 
             //if (item is Gun
@@ -297,11 +302,16 @@ public class Inventory : MonoBehaviour
         //withinRadius.Add(item); //its already being added by the chunk event dipshit
     }
 
-    public void DropItem (Item item, Vector2 pos)
+    public void DropItem(Item item, Vector2 pos, bool sync = false)
     {
         var delta = pos - (Vector2)transform.position;
         var clampedDelta = Vector2.ClampMagnitude(delta, activePickupRad- .001f);
         var clampedPos = clampedDelta + (Vector2)transform.position;
+
+        if (sync)
+        {
+            NetworkManager.Manager.DropItem(pos);
+        }
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;
         item.Drop(clampedPos, out _);
@@ -335,12 +345,17 @@ public class Inventory : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// WARNING: ALWAYS SYNCS
+    /// </summary>
+    /// <param name="pos"></param>
     public void DropPrevItem(Vector2 pos)
     {
         if (items.Count > 0)
         {
             var item = items[^1];
-            DropItem(item, pos);
+            DropItem(item, pos, true);
         }
     }
 
@@ -350,11 +365,16 @@ public class Inventory : MonoBehaviour
         return SelectedItem;
     }
 
+
+    /// <summary>
+    /// WARNING: ALWAYS SYNCS
+    /// </summary>
+    /// <param name="dropPos"></param>
     public void PickupClosest (Vector2 dropPos)
     {
         if (SelectedItem)
         {
-            PickupItem(SelectedItem, dropPos);
+            PickupItem(SelectedItem, dropPos, true);
             SelectedItem = null;
         }
     }

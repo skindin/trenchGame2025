@@ -22,7 +22,7 @@ public class GameServer : MonoBehaviour
     public Queue<Action> actionQueue = new();
 
     public bool logBitRate = false;
-    public int averageBitRateFrames = 20, averageBitRate = 0;
+    public int averageBitRateFrames = 20, averageBitRate = 0, targetFramerate = 200;
 
     public int bytesThisFrame { get; set; }
     List<int> pastByteRecords = new();
@@ -71,12 +71,18 @@ public class GameServer : MonoBehaviour
             Console.WriteLine("General Exception: " + ex.Message);
             Console.WriteLine("Stack Trace: " + ex.StackTrace);
         }
+
+                Application.targetFrameRate = targetFramerate;
+                Console.WriteLine($"Target framerate set to {targetFramerate}");
 #else
         //Debug.Log("This is either not a server or is the Unity editor...");
 #endif
     }
 
-    public CharDataList newPlayerList = new(), updateList = new(), removeList = new(), currentCharData = new();
+    public CharDataList newPlayerList = new(), updateList = new(), currentCharData = new();
+    public RepeatedField<int> removeCharList = new(), removeItemList = new();
+
+    public RepeatedField<ItemData> newItems = new(), updateItems = new(), currentItems = new();
 
     private void LateUpdate()
     {
@@ -101,7 +107,7 @@ public class GameServer : MonoBehaviour
                 newPlayerList.List.Add(client.newPlayer);
 
                 var pos = ChunkManager.Manager.GetRandomPos();
-                var id = CharacterManager.Manager.NewId;
+                var id = SpawnManager.Manager.NewCharId;
 
                 var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
 
@@ -138,14 +144,50 @@ public class GameServer : MonoBehaviour
                     character.SetPos(pos,false);
                 }
 
+                foreach (var droppedItem in client.droppedItems)
+                {
+                    updateItems.Add(droppedItem);
+                    var item = ItemManager.Manager.active[droppedItem.ItemId];
+                    var pos = DataManager.ConvertDataToVector(droppedItem.Pos);
+                    client.character.inventory.DropItem(item, pos);
+
+                    foreach (var currentItem in currentItems)
+                    {
+                        if (currentItem.ItemId == droppedItem.ItemId)
+                        {
+                            currentItem.Pos = droppedItem.Pos;
+                        }
+                    }
+                }
+
+                if (client.update.HasItemId)
+                {
+                    var item = ItemManager.Manager.active[client.update.ItemId];
+                    character.inventory.PickupItem(item, item.transform.position);
+                    //hopefully adding the previous item to the dropped list makes the drop pos work when switching items...
+                }
+
+                client.droppedItems.Clear();
+
+                if (!character.inventory.ActiveItem)
+                {
+                    currentData.ClearItemId();
+                }
+                else
+                {
+                    currentData.ItemId = character.inventory.ActiveItem.id;
+                }
+
                 //Console.WriteLine($"updated character {character.id}");
                 LogLists();
             }
             else if (client.remove != null)
             {
-                removeList.List.Add(client.remove);
 
                 var character = playerCharacters[client.ID];
+
+                removeCharList.Add(character.id);
+
 
                 SpawnManager.Manager.RemoveCharacter(character);
                 foreach (var currentChar in currentCharData.List)
@@ -187,7 +229,13 @@ public class GameServer : MonoBehaviour
                 //client.newPlayer.Name = null;
 
                 var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars};
-                var message = new BaseMessage { NewPlayerGrant = grant };
+
+                foreach (var item in currentItems) //might be better to make this it's own message, this readonly thing getting annoying
+                {
+                    grant.CurrentItems.Add(item);
+                }
+
+                var message = new MessageForClient { NewPlayerGrant = grant, Time = Time.deltaTime };
                 client.SendData(message.ToByteArray());
 
                 currentChars.List.Add(currentChar);
@@ -198,7 +246,7 @@ public class GameServer : MonoBehaviour
                 client.update = client.remove = client.newPlayer = null;
                 continue;
             }
-
+            //if this is an established player...
             {
                 var gameState = new GameState();
 
@@ -212,11 +260,28 @@ public class GameServer : MonoBehaviour
 
                 gameState.NewRemoteChars = newPlayerList.List.Count > 0 ? newPlayerList : null;
 
-                gameState.RemoveChars = removeList.List.Count > 0 ? removeList : null;
-
-                if (gameState.UpdateChars != null || gameState.NewRemoteChars != null || gameState.RemoveChars != null)
+                foreach (var removeChar in removeCharList)
                 {
-                    var message = new BaseMessage { GameState = gameState };
+                    gameState.RemoveChars.Add(removeChar);
+                }
+
+                foreach (var newItem in newItems)
+                {
+                    gameState.NewItems.Add(newItem);
+                }
+
+                foreach (var updateItem in updateItems)
+                {
+                    gameState.UpdateItems.Add(updateItem);
+                }
+
+                if (gameState.UpdateChars != null ||
+                    gameState.NewRemoteChars != null || 
+                    gameState.RemoveChars != null ||
+                    gameState.NewItems.Count > 0
+                    )
+                {
+                    var message = new MessageForClient { GameState = gameState , Time = Time.deltaTime};
 
                     client.SendData(message.ToByteArray());
                     LogLists();
@@ -236,7 +301,11 @@ public class GameServer : MonoBehaviour
 
         newPlayerList.List.Clear();
         updateList.List.Clear();
-        removeList.List.Clear();
+        removeCharList.Clear();
+
+        newItems.Clear();
+        updateItems.Clear();
+        removeItemList.Clear();
 
         //if (logBitRate)
         //{
@@ -271,6 +340,14 @@ public class GameServer : MonoBehaviour
         var pos = DataManager.VectorToData(character.transform.position);
         var data = new CharacterData{CharacterID = character.id, Pos = pos, Name = character.characterName};
         currentCharData.List.Add(data);
+    }
+
+    public void AddItem(Item item)
+    {
+        var pos = DataManager.VectorToData(item.transform.position);
+        var data = new ItemData { ItemId = item.id, PrefabId = item.prefabId, Pos = pos };
+        newItems.Add(data);
+        currentItems.Add(data);
     }
 
     public void Broadcast (byte[] message)
@@ -333,6 +410,8 @@ public class ClientBehavior : WebSocketBehavior
 
     public CharacterData remove, update, newPlayer;
 
+    public List<ItemData> droppedItems = new(); //GOTTA MAKE THIS LIST THE ITEMS IT'S DROPPING
+
     public Character character;
 
     //public ClientBehavior (GameServer server)
@@ -362,11 +441,11 @@ public class ClientBehavior : WebSocketBehavior
                 Console.WriteLine("Server received message: " + e.Data);
                 //return;
             }
-            else if (DataManager.IfGet<BaseMessage>(rawData, out var message))
+            else if (DataManager.IfGet<MessageForServer>(rawData, out var message))
             {
                 switch (message.TypeCase)
                 {
-                    case BaseMessage.TypeOneofCase.NewPlayerRequest:
+                    case MessageForServer.TypeOneofCase.NewPlayerRequest:
                         {
                             if (!character && newPlayer == null)
                             {
@@ -381,7 +460,7 @@ public class ClientBehavior : WebSocketBehavior
                         }
                         break;
 
-                    case BaseMessage.TypeOneofCase.Input:
+                    case MessageForServer.TypeOneofCase.Input:
                         {
                             if (server.playerCharacters.TryGetValue(ID, out var character))
                             {
@@ -395,7 +474,10 @@ public class ClientBehavior : WebSocketBehavior
                                 if (message.Input.HasName)
                                 {
                                     charData.Name = message.Input.Name;
+                                    //Console.WriteLine($"recieved new name {message.Input.Name}");
                                 }
+
+                                
 
                                 if (update != null)
                                 {
@@ -403,6 +485,28 @@ public class ClientBehavior : WebSocketBehavior
                                 }
                                 else
                                     update = charData;
+
+                                switch (message.Input.ItemCase)
+                                {
+                                    case PlayerInput.ItemOneofCase.Action:
+                                        break;
+
+                                    case PlayerInput.ItemOneofCase.SecondaryAction: break;
+
+                                    case PlayerInput.ItemOneofCase.DirectionalAction: break;
+
+                                    case PlayerInput.ItemOneofCase.DropItem:
+                                        droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id , Pos = message.Input.LookPos});
+                                        break;
+
+                                    case PlayerInput.ItemOneofCase.PickupItem:
+                                        update.ItemId = message.Input.PickupItem;
+                                        if (character.inventory.ActiveItem) //if the character is holding an item,
+                                        {
+                                            droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id, Pos = message.Input.LookPos });
+                                        }
+                                        break;
+                                }
 
                                 //Console.WriteLine($"server recieved input");
                             }

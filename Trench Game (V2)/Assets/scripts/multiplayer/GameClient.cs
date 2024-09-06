@@ -9,6 +9,7 @@ using UnityEngine;
 using WebSocketSharp;
 using UnityEngine.Events;
 using UnityEngine.Rendering.PostProcessing;
+using Google.Protobuf.Collections;
 //using Google.Protobuf.Collections;
 //using UnityEditor.SearchService;
 
@@ -30,7 +31,12 @@ public class GameClient : MonoBehaviour
     List<int> pastByteRecords = new();
 
     CharacterData newPlayer;
-    public CharDataList newRemoteChars = new(), updateChars = new(), removeChars = new();
+    public CharDataList newRemoteChars = new(), updateChars = new();
+    public RepeatedField<int> removeChars = new(), removeItems = new();
+
+    public RepeatedField<ItemData> newItems = new(), updateItems = new();
+
+    float latestMsgStamp = 0;
 
     //private void Start()
     //{
@@ -65,15 +71,50 @@ public class GameClient : MonoBehaviour
             Debug.Log($"spawned local player, character {id}");
         }
 
-        foreach (var remoteChar in newRemoteChars.List)
+        foreach (var newItemData in newItems)
         {
-            var id = remoteChar.CharacterID;
-            var pos = DataManager.ConvertDataToVector(remoteChar.Pos);
-            var name = remoteChar.Name;
+            var newItem = ItemManager.Manager.NewItem(newItemData.PrefabId, newItemData.ItemId);
+            var pos = DataManager.ConvertDataToVector(newItemData.Pos);
+            newItem.Drop(pos);
+        }
 
-            SpawnManager.Manager.SpawnRemoteCharacter(pos, id).characterName = name;
+        foreach (var updateItem in updateItems)
+        {
+            var item = ItemManager.Manager.active[updateItem.ItemId];
 
-            Debug.Log($"spawned remote character {id} named {name} at {pos}");
+            if (updateItem.Pos != null)
+            {
+                var pos = DataManager.ConvertDataToVector(updateItem.Pos);
+
+                if (item.wielder)
+                {
+                    item.wielder.inventory.DropItem(item, pos);
+                }
+                else
+                {
+                    item.Drop(pos);
+                }
+            }
+        }
+
+        foreach (var newRemoteChar in newRemoteChars.List)
+        {
+            var id = newRemoteChar.CharacterID;
+            var pos = DataManager.ConvertDataToVector(newRemoteChar.Pos);
+            var name = newRemoteChar.Name;
+
+            var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
+
+            newCharacter.characterName = name;
+
+            if (newRemoteChar.HasItemId)
+            {
+                var item = ItemManager.Manager.active[newRemoteChar.ItemId];
+
+                newCharacter.inventory.PickupItem(item,item.transform.position);
+            }
+
+            Debug.Log($"spawned remote character {id} named {name} at {pos}{(newRemoteChar.HasItemId ? $" holding item {newRemoteChar.ItemId}":"")}");
         }
 
         foreach (var updateChar in  updateChars.List)
@@ -92,6 +133,15 @@ public class GameClient : MonoBehaviour
                 {
                     character.characterName = updateChar.Name;
                 }
+
+                if (updateChar.HasItemId)
+                {
+                    var item = ItemManager.Manager.active[updateChar.ItemId];
+
+                    character.inventory.PickupItem(item, item.transform.position);
+
+                    Debug.Log($"server told character {character.id} to pickup item {item.id}");
+                }
             }
             else
             {
@@ -99,9 +149,9 @@ public class GameClient : MonoBehaviour
             }
         }
 
-        foreach (var removeChar in removeChars.List)
+        foreach (var removeChar in removeChars)
         {
-            var character = CharacterManager.Manager.active.Find(character => character.id == removeChar.CharacterID);
+            var character = CharacterManager.Manager.active.Find(character => character.id == removeChar);
 
             if (character)
             {
@@ -109,9 +159,11 @@ public class GameClient : MonoBehaviour
             }
             else
             {
-                Debug.Log($"couldn't remove character, no character with id {removeChar.CharacterID}");
+                Debug.Log($"couldn't remove character, no character with id {removeChar}");
             }
         }
+
+
 
         //remove chars
         //add new remoteChars
@@ -120,7 +172,12 @@ public class GameClient : MonoBehaviour
         newPlayer = null;
         newRemoteChars.List.Clear();
         updateChars.List.Clear();
-        removeChars.List.Clear();
+        removeChars.Clear();
+
+        newItems.Clear();
+        updateItems.Clear();
+
+        //SendData(new byte[1]);
     }
 
     //private void LateUpdate()
@@ -155,7 +212,7 @@ public class GameClient : MonoBehaviour
 
         ws.OnOpen += (sender, e) =>
         {
-            var baseMessage = new BaseMessage() { NewPlayerRequest = CharacterManager.Manager.playerName };
+            var baseMessage = new MessageForServer() { NewPlayerRequest = CharacterManager.Manager.playerName };
 
             //var binary = DataManager.MessageToBinary(baseMessage);
 
@@ -185,20 +242,30 @@ public class GameClient : MonoBehaviour
         ws.ConnectAsync();
     }
 
+    //float lastMsgStamp = 0;
+
     void OnMessage(object sender, MessageEventArgs e)
     {
-        actionQueue.Enqueue(() => OnData(e.RawData)); //THERE'S ERRORS HERE BUT I GOTTA SLEEP
+
+
+        actionQueue.Enqueue(() => OnData(e.RawData));
+
+        //if (lastMsgStamp > 0)
+        //{
+        //    actionQueue.Enqueue(() => Debug.Log($"{Time.time - lastMsgStamp} seconds since last message"));
+        //}
+        //lastMsgStamp = Time.time;
 
         void OnData(byte[] rawData)
         {
             //bool uhoh = false;
 
-            if (DataManager.IfGet<BaseMessage>(rawData, out var message))
+            if (DataManager.IfGet<MessageForClient>(rawData, out var message))
             {
 
                 switch (message.TypeCase)
                 {
-                    case BaseMessage.TypeOneofCase.NewPlayerGrant:
+                    case MessageForClient.TypeOneofCase.NewPlayerGrant:
                         {
                             newPlayer = message.NewPlayerGrant.NewPlayer;
 
@@ -207,38 +274,87 @@ public class GameClient : MonoBehaviour
                                 newRemoteChars.List.Add(charData);
                             }
 
+                            foreach (var itemData in message.NewPlayerGrant.CurrentItems)
+                            {
+                                newItems.Add(itemData);
+                            }
+
                             break;
                         }
 
-                    case BaseMessage.TypeOneofCase.GameState:
+                    case MessageForClient.TypeOneofCase.GameState:
                         {
                             if (message.GameState.NewRemoteChars != null)
                             {
-                                foreach (var removeChar in message.GameState.NewRemoteChars.List)
+                                foreach (var newRemoteChar in message.GameState.NewRemoteChars.List)
                                 {
-                                    newRemoteChars.List.Add(removeChar);
+                                    newRemoteChars.List.Add(newRemoteChar);
                                 }
                             }
 
                             if (message.GameState.UpdateChars != null)
                             {
-                                foreach (var removeChar in message.GameState.UpdateChars.List)
+                                foreach (var updateChar in message.GameState.UpdateChars.List)
                                 {
-                                    updateChars.List.Add(removeChar);
+                                    if (updateChar.CharacterID == CharacterManager.Manager.localPlayerCharacter.id)
+                                    {
+                                        Debug.LogError("recieved data for this character");
+                                        continue;
+                                    }
+
+                                    //var pos = DataManager.ConvertDataToVector(updateChar.Pos);
+
+                                    //GeoUtils.MarkPoint(pos, 1, Color.red);
+
+                                    bool foundChar = false;
+
+                                    foreach (var otherChar in updateChars.List)
+                                    {
+                                        if (otherChar.CharacterID == updateChar.CharacterID)
+                                        {
+                                            if (message.Time > latestMsgStamp)
+                                                DataManager.CombineCharData(otherChar, updateChar);
+
+                                            if (updateChar.HasItemId)
+                                                otherChar.ItemId = updateChar.ItemId;
+
+                                            foundChar = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!foundChar)
+                                        updateChars.List.Add(updateChar);
                                 }
                             }
 
                             if (message.GameState.RemoveChars != null)
                             {
-                                foreach (var removeChar in message.GameState.RemoveChars.List)
+                                foreach (var removeChar in message.GameState.RemoveChars)
                                 {
-                                    removeChars.List.Add(removeChar);
+                                    removeChars.Add(removeChar);
                                 }
                             }
+
+                            foreach (var itemData in message.GameState.NewItems)
+                            {
+                                newItems.Add(itemData);
+
+                                Debug.Log($"recieved new item {itemData.ItemId}");
+                            }
+
+                            foreach (var itemData in message.GameState.UpdateItems)
+                            {
+                                updateItems.Add(itemData);
+
+                                Debug.Log($"recieved update for item {itemData.ItemId}");
+                            }
+
                             break;
                         }
                 }
 
+                latestMsgStamp = Mathf.Max(latestMsgStamp, message.Time);
             }
 
             //try
@@ -268,13 +384,14 @@ public class GameClient : MonoBehaviour
         }
 
         CharacterManager.Manager.RemoveAllCharacters();
+        ItemManager.Manager.RemoveAll();
         //CharacterManager.Manager.RemoveAllCharacters();
         onDisconnect.Invoke();
 
         newPlayer = null;
         newRemoteChars.List.Clear();
         updateChars.List.Clear();
-        removeChars.List.Clear();
+        removeChars.Clear();
 
         actionQueue.Clear();
 

@@ -4,8 +4,7 @@
 //using System;
 using UnityEngine;
 using Google.Protobuf;
-using System;
-//using static UnityEditor.PlayerSettings;
+//using System;
 
 public class NetworkManager : ManagerBase<NetworkManager>
 {
@@ -24,7 +23,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         var input = new PlayerInput {Pos = posData};
 
-        var baseMessage = new BaseMessage {Input = input};
+        var baseMessage = new MessageForServer {Input = input};
 
         //var binary = DataManager.MessageToBinary(baseMessage);
 
@@ -45,6 +44,36 @@ public class NetworkManager : ManagerBase<NetworkManager>
 #endif
     }
 
+    public void PickupItem(Item item, Vector2 dropPos)
+    {
+#if (!UNITY_SERVER || UNITY_EDITOR)// && false
+        var posData = DataManager.VectorToData(dropPos);
+
+        var input = new PlayerInput { PickupItem = item.id , LookPos = posData};
+
+        var message = new MessageForServer {Input = input};
+
+        client.SendData(message.ToByteArray());
+
+        Debug.Log($"told server it picked up item {item.id}");
+#endif
+    }
+
+    public void DropItem (Vector2 pos)
+    {
+#if (!UNITY_SERVER || UNITY_EDITOR)// && false
+        var posData = DataManager.VectorToData (pos);
+
+        var input = new PlayerInput { DropItem = true , LookPos = posData };
+
+        var message = new MessageForServer { Input = input };
+
+        client.SendData(message.ToByteArray());
+
+        Debug.Log($"told server it dropped current item");
+#endif
+    }
+
     //private void Update()
     //{
     //    if (PosSyncsPerFrame > 0)
@@ -54,11 +83,11 @@ public class NetworkManager : ManagerBase<NetworkManager>
     //    }
     //}
 
-    public void SetName (string newName)
+    public void SetName (string newName) //this hasn't been changed to combine with movement data but it probably should eventually
     {
 
 #if !UNITY_SERVER || UNITY_EDITOR
-        var baseMessage = new BaseMessage() { Input = new PlayerInput{Name = newName }};
+        var baseMessage = new MessageForServer() { Input = new PlayerInput{Name = newName }};
 
         client.SendData(baseMessage.ToByteArray());
 

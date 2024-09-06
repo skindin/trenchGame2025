@@ -1,28 +1,41 @@
 syntax = "proto3";
 
-message BaseMessage
+message MessageForClient
+{
+    oneof Type
+    {
+        NewPlayerGrant newPlayerGrant = 1;
+        GameState gameState = 2;
+    }
+    float time = 3;
+}
+
+message MessageForServer
 {
     oneof Type
     {
         PlayerInput input = 1;
         string newPlayerRequest = 2;
-        NewPlayerGrant newPlayerGrant = 3;
-        GameState gameState = 4;
     }
+    float time = 3;
 }
 
 message NewPlayerGrant
 {
     CharacterData NewPlayer = 1;
     CharDataList CurrentChars = 2;
+    repeated ItemData currentItems = 3;
 }
 
 message GameState
 {
     CharDataList newRemoteChars = 1;
     CharDataList updateChars = 2;
-    CharDataList removeChars = 3;
+    repeated int32 removeChars = 3;
     repeated BulletBunch newBullets = 4;
+    repeated ItemData newItems = 5;
+    repeated ItemData updateItems = 6;
+    repeated int32 removeItems = 7;
 }
 
 message Vector2Data
@@ -33,24 +46,27 @@ message Vector2Data
 
 message PlayerInput
 {
-    optional Vector2Data pos = 1;
+    Vector2Data pos = 1;
     Vector2Data lookPos = 2;
+    optional string name = 3;
     oneof Item
     {
-        int32 PickupItem = 3;
-        int32 ItemAction = 4;
-        bool ItemActionPos = 5;
-        bool DropItem = 6;
+        bool Action = 4;
+        bool SecondaryAction = 5;
+        bool DirectionalAction = 6;
+        bool DropItem = 7;
+        int32 PickupItem = 8;
     }
-    optional string name = 7;
+
 }
 
 message CharacterData
 {
     int32 characterID = 1;
-    optional Vector2Data pos = 2;
+    Vector2Data pos = 2;
     optional string name = 3;
     optional float hp = 4;
+    optional int32 itemId = 5;
 }
 
 message CharDataList
@@ -69,4 +85,11 @@ message BulletData
 {
     Vector2Data startpos = 1;
     Vector2Data currentPos = 2;
+}
+
+message ItemData
+{
+    int32 itemId = 1;
+    optional int32 prefabId = 2;
+    Vector2Data pos = 3;
 }

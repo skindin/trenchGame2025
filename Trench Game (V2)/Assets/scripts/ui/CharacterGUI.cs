@@ -41,6 +41,12 @@ public class CharacterGUI : MonoBehaviour
 
     void OnGUI()
     {
+        if (!character)
+            character = CharacterManager.Manager.localPlayerCharacter;
+
+        if (!character)
+            return;
+
         var scaleFactor = Screen.height * scale;
 
         var boxStyle = GetBoxStyle();

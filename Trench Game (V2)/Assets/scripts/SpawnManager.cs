@@ -1,4 +1,5 @@
 using Google.Protobuf;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,14 +7,14 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    static SpawnManager manager;
+    static SpawnManager cachedManager;
     public static SpawnManager Manager
     {
         get
         {
-            if (manager == null)
+            if (cachedManager == null)
             {
-                manager = FindObjectOfType<SpawnManager>();
+                cachedManager = FindObjectOfType<SpawnManager>();
                 //if (manager == null)
                 //{
                 //    GameObject go = new GameObject("Bullet");
@@ -21,7 +22,7 @@ public class SpawnManager : MonoBehaviour
                 //    DontDestroyOnLoad(go);
                 //}
             }
-            return manager;
+            return cachedManager;
         }
     }
 
@@ -30,6 +31,29 @@ public class SpawnManager : MonoBehaviour
     public float itemDropRadius = 5, itemDropInterval = 20, itemDropTimer = 0, startDropAreaRadius = 50, dropAreaOffsetSpeed = 10, dropAreaJitter = 10;
     public bool spawnItemDrops = true, debugLines = false;
     Coroutine itemDropRoutine;
+
+    int nextItemId = 0;
+    public int NewItemId
+    {
+        get
+        {
+            nextItemId++;
+            //Debug.Log($"requested id {nextId}");
+            return nextItemId;
+        }
+    }
+
+    int nextCharId = 0;
+    public int NewCharId
+    {
+        get
+        {
+            nextCharId++;
+            //Debug.Log($"requested id {nextId}");
+            return nextCharId;
+        }
+    }
+
     public float TimeToNextDrop
     {
         get
@@ -54,7 +78,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-#if UNITY_SERVER && !UNITY_EDITOR
+#if UNITY_SERVER && !UNITY_EDITOR //|| true
     private void Start() //this code relies on other things being set up, so it's best to put in start
     {
         if (spawnItemDrops)
@@ -132,7 +156,7 @@ public class SpawnManager : MonoBehaviour
                 SpawnItemDrop(nextItemDropPos); //lol idk probably should randomize this
 
                 nextItemDropPos = ChunkManager.Manager.GetRandomPos(itemDropRadius);
-                var offset = Random.insideUnitCircle * (startDropAreaRadius - itemDropRadius);
+                var offset = UnityEngine.Random.insideUnitCircle * (startDropAreaRadius - itemDropRadius);
                 dropAreaCenter = nextItemDropPos + offset;
                 var initialDist = offset.magnitude;
                 dropAreaRadius = startDropAreaRadius;
@@ -157,7 +181,7 @@ public class SpawnManager : MonoBehaviour
                     var timeRatio = itemDropTimer / itemDropInterval;
 
                     dropAreaRadius = Mathf.Lerp(startDropAreaRadius, itemDropRadius, timeRatio);
-                    targetCenterPos = Vector2.ClampMagnitude(targetCenterPos + Random.insideUnitCircle * dropAreaJitter * Time.deltaTime - nextItemDropPos, dropAreaRadius - itemDropRadius) + nextItemDropPos;
+                    targetCenterPos = Vector2.ClampMagnitude(targetCenterPos + UnityEngine.Random.insideUnitCircle * dropAreaJitter * Time.deltaTime - nextItemDropPos, dropAreaRadius - itemDropRadius) + nextItemDropPos;
                     var movedCenterPos = Vector2.MoveTowards(dropAreaCenter, targetCenterPos, dropAreaOffsetSpeed * Time.deltaTime);
                     var movedDelta = movedCenterPos - nextItemDropPos;
                     var clampedMovedDelta = Vector2.ClampMagnitude(movedDelta, Mathf.Lerp(startDropAreaRadius - itemDropRadius, 0, timeRatio));
@@ -202,13 +226,24 @@ public class SpawnManager : MonoBehaviour
     }
     public void SpawnItemDrop(Vector2 dropPos)
     {
+        if (itemsPerDrop <= 0)
+            return;
+
         var itemPairs = GenerateItemPairs();
+
+        var log = "";
+
+        var amountSpawned = 0;
 
         foreach (var pair in itemPairs)
         {
+            amountSpawned += pair.Item2;
+
+            log += $"{pair.Item1.prefab.itemModel.name} x{pair.Item2}, ";
+
             for (var i = 0; i < pair.Item2; i++)
             {
-                var itemPos = Random.insideUnitCircle * itemDropRadius + dropPos;
+                var itemPos = UnityEngine.Random.insideUnitCircle * itemDropRadius + dropPos;
                 //itemPos = Vector2.zero;
                 var newItem = pair.Item1.Get(itemPos);
                 //var spawnDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
@@ -216,6 +251,9 @@ public class SpawnManager : MonoBehaviour
                 //newItem.Spawn(Vector2.zero, spawnDelay, spawnScaleDuration);
             }
         }
+
+        if (amountSpawned > 0)
+            Console.WriteLine($"Spawned {log}");
     }
 
     public Ammo GetAmo(AmmoType type, int amount, Vector2 pos = default)
@@ -278,8 +316,10 @@ public class SpawnManager : MonoBehaviour
 
         public override Item SpawnLogic(Vector2 pos)
         {
-            var item = ItemManager.Manager.NewItem(prefab);
+            var item = ItemManager.Manager.NewItem(prefab, Manager.NewItemId);
             item.transform.position = pos;
+            //item.id = Manager.NewItemId;
+            NetworkManager.Manager.server.AddItem(item);
             return item;
         }
 
@@ -353,7 +393,7 @@ public class SpawnManager : MonoBehaviour
         {
             var botPos = ChunkManager.Manager.GetRandomPos();
 
-            var newBot = SpawnBot(botPos, CharacterManager.Manager.NewId);
+            var newBot = SpawnBot(botPos, NewCharId);
 
             //newBot.characterName += i;
             newBot.characterName = $"bot{i}";

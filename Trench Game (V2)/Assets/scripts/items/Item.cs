@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    public int id;
+    public int id, prefabId;
     public Transform defaultContainer;
     public ItemModel itemModel;
     public Character wielder;

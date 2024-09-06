@@ -21,18 +21,7 @@ public class CharacterManager : MonoBehaviour
     Coroutine stopWatchRoutine, scoreboardRoutine;
     //bool sortCharactersThisFrame = false;
 
-    int nextId = 0;
     public string playerName = "";
-
-    public int NewId
-    {
-        get
-        {
-            nextId++;
-            //Debug.Log($"requested id {nextId}");
-            return nextId;
-        }
-    }
 
     //public float TimeToSquadSpawn
     //{

@@ -1676,12 +1676,12 @@ MonoBehaviour:
     - name: basic amo
       prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
       currentAmount: 0
-      spawnCap: 10
-      chance: 2
+      spawnCap: 1
+      chance: 0
     - name: basic gun
       prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       currentAmount: 0
-      spawnCap: 10
+      spawnCap: 3
       chance: 1
     - name: basic shovel
       prefab: {fileID: 4392698207926738930, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
@@ -1706,8 +1706,8 @@ MonoBehaviour:
       currentAmount: 0
       spawnCap: 5
       chance: 2
-    chance: 1
-  itemsPerDrop: 0
+    chance: 0
+  itemsPerDrop: 1
   itemDropRadius: 5
   itemDropInterval: 20
   itemDropTimer: 0
@@ -1723,7 +1723,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     currentAmount: 0
     spawnCap: 3
-  spawnBots: 1
+  spawnBots: 0
 --- !u!1 &607746247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1960,7 +1960,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &717289629
 Transform:
   m_ObjectHideFlags: 0
@@ -2752,6 +2752,7 @@ MonoBehaviour:
   logBitRate: 0
   averageBitRateFrames: 20
   averageBitRate: 0
+  targetFramerate: 1000
 --- !u!1 &1054766971
 GameObject:
   m_ObjectHideFlags: 0
@@ -2768,7 +2769,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1054766972
 Transform:
   m_ObjectHideFlags: 0
@@ -2803,31 +2804,37 @@ MonoBehaviour:
       minPooled: 0
       maxPooled: 10
     container: {fileID: 0}
+    index: 0
   - prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
     pool:
       minPooled: 0
       maxPooled: 10
     container: {fileID: 0}
+    index: 0
   - prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
     pool:
       minPooled: 0
       maxPooled: 10
     container: {fileID: 0}
+    index: 0
   - prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
     pool:
       minPooled: 0
       maxPooled: 10
     container: {fileID: 0}
+    index: 0
   - prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
     pool:
       minPooled: 0
       maxPooled: 10
     container: {fileID: 0}
+    index: 0
   - prefab: {fileID: 4392698207926738930, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
     pool:
       minPooled: 0
       maxPooled: 10
     container: {fileID: 0}
+    index: 0
   container: {fileID: 1526754501}
   grabDur: 0.1
   deleteDur: 0.1
@@ -3106,17 +3113,6 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
---- !u!114 &1253392265 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 471993008868369067, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
-  m_PrefabInstance: {fileID: 986051951592155817}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecf81435abb7ce14b8132e3c19eab0a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1253392268 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6931149930741630658, guid: c30f6fc2e212f294ba571453fa8d63e5, type: 3}
@@ -4706,10 +4702,22 @@ MonoBehaviour:
   m_CharacterValidation: 0
   m_RegexValue: 
   m_GlobalPointSize: 24
-  m_CharacterLimit: 0
+  m_CharacterLimit: 30
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 896552508}
+        m_TargetAssemblyTypeName: CharacterManager, Assembly-CSharp
+        m_MethodName: SetPlayerName
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 0
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -4902,7 +4910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bcfdade5615b2e4c98b8474f4b4f3f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 1253392265}
+  character: {fileID: 0}
   amoTextSize: 3
   itemTextSize: 2.5
   plainTextColor: {r: 1, g: 1, b: 1, a: 1}
@@ -4914,7 +4922,7 @@ MonoBehaviour:
   infoBoxPadding: 0.5
   screenPadding: 1
   maxVisibleCharacters: 5
-  drawItemsUI: 0
+  drawItemsUI: 1
   drawCharactersUI: 1
   drawPlayerUI: 0
   drawScoreboardUI: 0
@@ -4967,15 +4975,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.01
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalRotation.w
