@@ -177,14 +177,16 @@ public class GameServer : MonoBehaviour
 
                 client.droppedItems.Clear();
 
-                if (!character.inventory.ActiveItem)
-                {
-                    currentData.ClearItemId();
-                }
-                else
-                {
-                    currentData.ItemId = character.inventory.ActiveItem.id;
-                }
+                //if (!character.inventory.ActiveItem)
+                //{
+                //    currentData.ClearItemId();
+                //}
+                //else
+                //{
+                //    currentData.ItemId = character.inventory.ActiveItem.id;
+
+                //}
+                currentData.ItemId = client.update.ItemId;
 
                 //Console.WriteLine($"updated character {character.id}");
                 LogLists();
