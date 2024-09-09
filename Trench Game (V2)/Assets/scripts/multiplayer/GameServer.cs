@@ -275,7 +275,8 @@ public class GameServer : MonoBehaviour
                     gameState.UpdateItems.Add(updateItem);
                 }
 
-                if (gameState.UpdateChars != null ||
+                if ( true || 
+                    gameState.UpdateChars != null ||
                     gameState.NewRemoteChars != null || 
                     gameState.RemoveChars != null ||
                     gameState.NewItems.Count > 0
@@ -298,6 +299,8 @@ public class GameServer : MonoBehaviour
             }
             //LogLists();
         }
+
+        //var message = 
 
         newPlayerList.List.Clear();
         updateList.List.Clear();
