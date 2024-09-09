@@ -4924,7 +4924,7 @@ MonoBehaviour:
   maxVisibleCharacters: 5
   drawItemsUI: 1
   drawCharactersUI: 1
-  drawPlayerUI: 0
+  drawPlayerUI: 1
   drawScoreboardUI: 0
 --- !u!4 &2113553811
 Transform:

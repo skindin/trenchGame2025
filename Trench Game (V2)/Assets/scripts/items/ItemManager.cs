@@ -95,8 +95,10 @@ public class ItemManager : MonoBehaviour
         {
             var item = pair.Value;
 
-            RemoveItem(item);
+            RemoveItem(item,false);
         }
+
+        active.Clear();
     }
 
     public Item NewItem(Item prefab, int id)
@@ -134,6 +136,10 @@ public class ItemManager : MonoBehaviour
 
         if (itemPool != null)
         {
+            if (item.wielder)
+            {
+                item.wielder.inventory.DropItem(item);
+            }
             itemPool.MoveTo(item);
             active.Remove(item.id);
         }
@@ -141,11 +147,18 @@ public class ItemManager : MonoBehaviour
             throw new Exception($"Item manager does not have server pool setup for {prefab}");
     }
 
-    public void RemoveItem (Item item)
+    public void RemoveItem(Item item, bool clearActive = true)
     {
         if (item.prefabId < itemPools.Count)
         {
+            if (item.wielder)
+            {
+                item.wielder.inventory.DropItem(item);
+            }
             itemPools[item.prefabId].MoveTo(item);
+
+            if (clearActive)
+                active.Remove(item.id);
         }
         else
         {

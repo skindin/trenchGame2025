@@ -41,7 +41,7 @@ public class CharacterGUI : MonoBehaviour
 
     void OnGUI()
     {
-        if (!character)
+        //if (!character)
             character = CharacterManager.Manager.localPlayerCharacter;
 
         if (!character)

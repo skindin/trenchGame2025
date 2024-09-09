@@ -74,8 +74,11 @@ public class GameClient : MonoBehaviour
         foreach (var newItemData in newItems)
         {
             var newItem = ItemManager.Manager.NewItem(newItemData.PrefabId, newItemData.ItemId);
-            var pos = DataManager.ConvertDataToVector(newItemData.Pos);
-            newItem.Drop(pos);
+            if (newItemData.Pos != null)
+            {
+                var pos = DataManager.ConvertDataToVector(newItemData.Pos);
+                newItem.Drop(pos);
+            }
         }
 
         foreach (var updateItem in updateItems)

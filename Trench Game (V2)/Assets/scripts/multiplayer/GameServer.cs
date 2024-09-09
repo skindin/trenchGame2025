@@ -164,6 +164,14 @@ public class GameServer : MonoBehaviour
                 {
                     var item = ItemManager.Manager.active[client.update.ItemId];
                     character.inventory.PickupItem(item, item.transform.position);
+
+                    foreach (var itemData in currentItems)
+                    {
+                        if (itemData.ItemId == item.id)
+                        {
+                            itemData.Pos = null;
+                        }
+                    }
                     //hopefully adding the previous item to the dropped list makes the drop pos work when switching items...
                 }
 
