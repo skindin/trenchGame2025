@@ -38,6 +38,8 @@ public class GameClient : MonoBehaviour
 
     float latestMsgStamp = 0;
 
+    long startTimeTick = 0;
+
     //private void Start()
     //{
     //    Connect();
@@ -46,6 +48,8 @@ public class GameClient : MonoBehaviour
 
     private void Update()
     {
+        NetworkManager.Manager.time = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
+
         //bool sentSomeData = actionQueue.Count > 0;
 
         if (ws == null)// || !ws.IsAlive)
@@ -265,7 +269,6 @@ public class GameClient : MonoBehaviour
 
             if (DataManager.IfGet<MessageForClient>(rawData, out var message))
             {
-
                 switch (message.TypeCase)
                 {
                     case MessageForClient.TypeOneofCase.NewPlayerGrant:
@@ -281,6 +284,8 @@ public class GameClient : MonoBehaviour
                             {
                                 newItems.Add(itemData);
                             }
+
+                            startTimeTick = message.NewPlayerGrant.StartTime;
 
                             break;
                         }

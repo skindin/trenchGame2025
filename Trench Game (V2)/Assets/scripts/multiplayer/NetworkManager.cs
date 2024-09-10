@@ -13,6 +13,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameClient client;
     public GameServer server;
 
+    public float time = 0;
     //int PosSyncsPerFrame = 0;
 
     public void SetPos(Vector2 pos, int id)

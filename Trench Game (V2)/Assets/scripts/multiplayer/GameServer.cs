@@ -29,8 +29,10 @@ public class GameServer : MonoBehaviour
 
     private void Awake()
     {
-#if UNITY_SERVER && !UNITY_EDITOR// || true
-        //|| true
+#if !UNITY_SERVER || UNITY_EDITOR
+        return;
+#endif
+
         ClientBehavior.server = this;
 
         try
@@ -74,9 +76,6 @@ public class GameServer : MonoBehaviour
 
                 Application.targetFrameRate = targetFramerate;
                 Console.WriteLine($"Target framerate set to {targetFramerate}");
-#else
-        //Debug.Log("This is either not a server or is the Unity editor...");
-#endif
     }
 
     public CharDataList newPlayerList = new(), updateList = new(), currentCharData = new();
@@ -86,6 +85,8 @@ public class GameServer : MonoBehaviour
 
     private void LateUpdate()
     {
+        NetworkManager.Manager.time = Time.time;
+
         //bool sentSomeData = actionQueue.Count > 0;
 
         while (actionQueue.Count > 0)
@@ -238,14 +239,16 @@ public class GameServer : MonoBehaviour
 
                 //client.newPlayer.Name = null;
 
-                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars};
+                var startTimeTick = DateTime.UtcNow.Ticks - LogicAndMath.SecondsToTicks(Time.time);
+
+                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars, StartTime = startTimeTick};
 
                 foreach (var item in currentItems) //might be better to make this it's own message, this readonly thing getting annoying
                 {
                     grant.CurrentItems.Add(item);
                 }
 
-                var message = new MessageForClient { NewPlayerGrant = grant, Time = Time.deltaTime };
+                var message = new MessageForClient { NewPlayerGrant = grant };
                 client.SendData(message.ToByteArray());
 
                 currentChars.List.Add(currentChar);
@@ -292,7 +295,7 @@ public class GameServer : MonoBehaviour
                     gameState.NewItems.Count > 0
                     )
                 {
-                    var message = new MessageForClient { GameState = gameState , Time = Time.deltaTime};
+                    var message = new MessageForClient { GameState = gameState , Time = Time.time};
 
                     client.SendData(message.ToByteArray());
                     LogLists();
@@ -501,12 +504,12 @@ public class ClientBehavior : WebSocketBehavior
 
                                 switch (message.Input.ItemCase)
                                 {
-                                    case PlayerInput.ItemOneofCase.Action:
-                                        break;
+                                    //case PlayerInput.ItemOneofCase.Action:
+                                    //    break;
 
-                                    case PlayerInput.ItemOneofCase.SecondaryAction: break;
+                                    //case PlayerInput.ItemOneofCase.SecondaryAction: break;
 
-                                    case PlayerInput.ItemOneofCase.DirectionalAction: break;
+                                    //case PlayerInput.ItemOneofCase.DirectionalAction: break;
 
                                     case PlayerInput.ItemOneofCase.DropItem:
                                         droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id , Pos = message.Input.LookPos});

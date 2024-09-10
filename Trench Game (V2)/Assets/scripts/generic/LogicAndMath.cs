@@ -404,4 +404,14 @@ public static class LogicAndMath
 
         return list;
     }
+
+    public static float TicksToSeconds (long ticks)
+    {
+        return ticks / 10000000f;
+    }
+
+    public static long SecondsToTicks (float seconds)
+    {
+        return (long)(seconds * 10000000);
+    }
 }

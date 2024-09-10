@@ -17,7 +17,7 @@ message MessageForServer
         PlayerInput input = 1;
         string newPlayerRequest = 2;
     }
-    float time = 3;
+    optional float time = 3;
 }
 
 message NewPlayerGrant
@@ -25,6 +25,7 @@ message NewPlayerGrant
     CharacterData NewPlayer = 1;
     CharDataList CurrentChars = 2;
     repeated ItemData currentItems = 3;
+    int64 startTime = 4;
 }
 
 message GameState
@@ -48,16 +49,14 @@ message PlayerInput
 {
     Vector2Data pos = 1;
     Vector2Data lookPos = 2;
-    optional string name = 3;
+    float lookDirection = 3;
+    optional string name = 4;
     oneof Item
     {
-        bool Action = 4;
-        bool SecondaryAction = 5;
-        bool DirectionalAction = 6;
-        bool DropItem = 7;
-        int32 PickupItem = 8;
+        bool DropItem = 5;
+        int32 PickupItem = 6;
     }
-
+    BulletBunch bullets = 7;
 }
 
 message CharacterData
@@ -76,15 +75,16 @@ message CharDataList
 
 message BulletBunch
 {
-    float range = 1;
-    float speed = 2;
+    optional float range = 1;
+    optional float speed = 2;
     repeated BulletData bullets = 3;
 }
 
 message BulletData
 {
     Vector2Data startpos = 1;
-    Vector2Data currentPos = 2;
+    Vector2Data endPos = 2;
+    float progress = 3;
 }
 
 message ItemData
@@ -92,4 +92,14 @@ message ItemData
     int32 itemId = 1;
     optional int32 prefabId = 2;
     Vector2Data pos = 3;
+    oneof Type
+    {
+        GunData gun = 4;
+    }
+}
+
+message GunData
+{
+    optional float amo = 1;
+    optional float reload = 2;
 }
