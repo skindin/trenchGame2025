@@ -39,7 +39,7 @@ public class ProjectileRenderer : MonoBehaviour
 #endif
     }
 
-#if !UNITY_SERVER
+#if !UNITY_SERVER || UNITY_EDITOR
 
     public void LateUpdate()
     {

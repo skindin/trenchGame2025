@@ -36,6 +36,8 @@ public class GameClient : MonoBehaviour
 
     public RepeatedField<ItemData> newItems = new(), updateItems = new();
 
+    public RepeatedField<BulletBunch> newBullets = new();
+
     float latestMsgStamp = 0;
 
     long startTimeTick = 0;
@@ -48,7 +50,7 @@ public class GameClient : MonoBehaviour
 
     private void Update()
     {
-        NetworkManager.Manager.Time = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
+        NetworkManager.Manager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
 
         //bool sentSomeData = actionQueue.Count > 0;
 
@@ -356,6 +358,14 @@ public class GameClient : MonoBehaviour
                                 updateItems.Add(itemData);
 
                                 Debug.Log($"recieved update for item {itemData.ItemId}");
+                            }
+
+                            foreach (var bunch in message.GameState.NewBullets)
+                            {
+                                foreach (var bullet in bunch.Bullets)
+                                {
+                                    NetworkManager.Manager.DataToBullet(bullet, CharacterManager.Manager.localPlayerCharacter,bunch.StartTime);
+                                }
                             }
 
                             break;

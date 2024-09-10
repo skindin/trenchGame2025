@@ -22,43 +22,44 @@ public static partial class DataTypesReflection {
   static DataTypesReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg9kYXRhVHlwZXMucHJvdG8idAoQTWVzc2FnZUZvckNsaWVudBIpCg5uZXdQ",
-          "bGF5ZXJHcmFudBgBIAEoCzIPLk5ld1BsYXllckdyYW50SAASHwoJZ2FtZVN0",
-          "YXRlGAIgASgLMgouR2FtZVN0YXRlSAASDAoEdGltZRgDIAEoAkIGCgRUeXBl",
-          "InEKEE1lc3NhZ2VGb3JTZXJ2ZXISHQoFaW5wdXQYASABKAsyDC5QbGF5ZXJJ",
-          "bnB1dEgAEhoKEG5ld1BsYXllclJlcXVlc3QYAiABKAlIABIRCgR0aW1lGAMg",
-          "ASgCSAGIAQFCBgoEVHlwZUIHCgVfdGltZSKMAQoOTmV3UGxheWVyR3JhbnQS",
-          "IQoJTmV3UGxheWVyGAEgASgLMg4uQ2hhcmFjdGVyRGF0YRIjCgxDdXJyZW50",
-          "Q2hhcnMYAiABKAsyDS5DaGFyRGF0YUxpc3QSHwoMY3VycmVudEl0ZW1zGAMg",
-          "AygLMgkuSXRlbURhdGESEQoJc3RhcnRUaW1lGAQgASgDIt8BCglHYW1lU3Rh",
-          "dGUSJQoObmV3UmVtb3RlQ2hhcnMYASABKAsyDS5DaGFyRGF0YUxpc3QSIgoL",
-          "dXBkYXRlQ2hhcnMYAiABKAsyDS5DaGFyRGF0YUxpc3QSEwoLcmVtb3ZlQ2hh",
-          "cnMYAyADKAUSIAoKbmV3QnVsbGV0cxgEIAMoCzIMLkJ1bGxldEJ1bmNoEhsK",
-          "CG5ld0l0ZW1zGAUgAygLMgkuSXRlbURhdGESHgoLdXBkYXRlSXRlbXMYBiAD",
-          "KAsyCS5JdGVtRGF0YRITCgtyZW1vdmVJdGVtcxgHIAMoBSIjCgtWZWN0b3Iy",
-          "RGF0YRIJCgF4GAEgASgCEgkKAXkYAiABKAIiywEKC1BsYXllcklucHV0EhkK",
-          "A3BvcxgBIAEoCzIMLlZlY3RvcjJEYXRhEh0KB2xvb2tQb3MYAiABKAsyDC5W",
-          "ZWN0b3IyRGF0YRIVCg1sb29rRGlyZWN0aW9uGAMgASgCEhEKBG5hbWUYBCAB",
-          "KAlIAYgBARISCghEcm9wSXRlbRgFIAEoCEgAEhQKClBpY2t1cEl0ZW0YBiAB",
-          "KAVIABIdCgdidWxsZXRzGAcgASgLMgwuQnVsbGV0QnVuY2hCBgoESXRlbUIH",
-          "CgVfbmFtZSKTAQoNQ2hhcmFjdGVyRGF0YRITCgtjaGFyYWN0ZXJJRBgBIAEo",
-          "BRIZCgNwb3MYAiABKAsyDC5WZWN0b3IyRGF0YRIRCgRuYW1lGAMgASgJSACI",
-          "AQESDwoCaHAYBCABKAJIAYgBARITCgZpdGVtSWQYBSABKAVIAogBAUIHCgVf",
-          "bmFtZUIFCgNfaHBCCQoHX2l0ZW1JZCIsCgxDaGFyRGF0YUxpc3QSHAoEbGlz",
-          "dBgBIAMoCzIOLkNoYXJhY3RlckRhdGEiZwoLQnVsbGV0QnVuY2gSEgoFcmFu",
-          "Z2UYASABKAJIAIgBARISCgVzcGVlZBgCIAEoAkgBiAEBEhwKB2J1bGxldHMY",
-          "AyADKAsyCy5CdWxsZXREYXRhQggKBl9yYW5nZUIICgZfc3BlZWQiXAoKQnVs",
-          "bGV0RGF0YRIeCghzdGFydHBvcxgBIAEoCzIMLlZlY3RvcjJEYXRhEhwKBmVu",
-          "ZHBvcxgCIAEoCzIMLlZlY3RvcjJEYXRhEhAKCHByb2dyZXNzGAMgASgCInoK",
-          "CEl0ZW1EYXRhEg4KBml0ZW1JZBgBIAEoBRIVCghwcmVmYWJJZBgCIAEoBUgB",
-          "iAEBEhkKA3BvcxgDIAEoCzIMLlZlY3RvcjJEYXRhEhcKA2d1bhgEIAEoCzII",
-          "Lkd1bkRhdGFIAEIGCgRUeXBlQgsKCV9wcmVmYWJJZCJDCgdHdW5EYXRhEhAK",
-          "A2FtbxgBIAEoBUgAiAEBEhMKBnJlbG9hZBgCIAEoAkgBiAEBQgYKBF9hbW9C",
-          "CQoHX3JlbG9hZGIGcHJvdG8z"));
+          "Cg9kYXRhVHlwZXMucHJvdG8iggEKEE1lc3NhZ2VGb3JDbGllbnQSKQoObmV3",
+          "UGxheWVyR3JhbnQYASABKAsyDy5OZXdQbGF5ZXJHcmFudEgAEh8KCWdhbWVT",
+          "dGF0ZRgCIAEoCzIKLkdhbWVTdGF0ZUgAEhEKBHRpbWUYAyABKAJIAYgBAUIG",
+          "CgRUeXBlQgcKBV90aW1lInEKEE1lc3NhZ2VGb3JTZXJ2ZXISHQoFaW5wdXQY",
+          "ASABKAsyDC5QbGF5ZXJJbnB1dEgAEhoKEG5ld1BsYXllclJlcXVlc3QYAiAB",
+          "KAlIABIRCgR0aW1lGAMgASgCSAGIAQFCBgoEVHlwZUIHCgVfdGltZSKMAQoO",
+          "TmV3UGxheWVyR3JhbnQSIQoJTmV3UGxheWVyGAEgASgLMg4uQ2hhcmFjdGVy",
+          "RGF0YRIjCgxDdXJyZW50Q2hhcnMYAiABKAsyDS5DaGFyRGF0YUxpc3QSHwoM",
+          "Y3VycmVudEl0ZW1zGAMgAygLMgkuSXRlbURhdGESEQoJc3RhcnRUaW1lGAQg",
+          "ASgDIt8BCglHYW1lU3RhdGUSJQoObmV3UmVtb3RlQ2hhcnMYASABKAsyDS5D",
+          "aGFyRGF0YUxpc3QSIgoLdXBkYXRlQ2hhcnMYAiABKAsyDS5DaGFyRGF0YUxp",
+          "c3QSEwoLcmVtb3ZlQ2hhcnMYAyADKAUSIAoKbmV3QnVsbGV0cxgEIAMoCzIM",
+          "LkJ1bGxldEJ1bmNoEhsKCG5ld0l0ZW1zGAUgAygLMgkuSXRlbURhdGESHgoL",
+          "dXBkYXRlSXRlbXMYBiADKAsyCS5JdGVtRGF0YRITCgtyZW1vdmVJdGVtcxgH",
+          "IAMoBSIjCgtWZWN0b3IyRGF0YRIJCgF4GAEgASgCEgkKAXkYAiABKAIiywEK",
+          "C1BsYXllcklucHV0EhkKA3BvcxgBIAEoCzIMLlZlY3RvcjJEYXRhEh0KB2xv",
+          "b2tQb3MYAiABKAsyDC5WZWN0b3IyRGF0YRIVCg1sb29rRGlyZWN0aW9uGAMg",
+          "ASgCEhEKBG5hbWUYBCABKAlIAYgBARISCghEcm9wSXRlbRgFIAEoCEgAEhQK",
+          "ClBpY2t1cEl0ZW0YBiABKAVIABIdCgdidWxsZXRzGAcgASgLMgwuQnVsbGV0",
+          "QnVuY2hCBgoESXRlbUIHCgVfbmFtZSKTAQoNQ2hhcmFjdGVyRGF0YRITCgtj",
+          "aGFyYWN0ZXJJRBgBIAEoBRIZCgNwb3MYAiABKAsyDC5WZWN0b3IyRGF0YRIR",
+          "CgRuYW1lGAMgASgJSACIAQESDwoCaHAYBCABKAJIAYgBARITCgZpdGVtSWQY",
+          "BSABKAVIAogBAUIHCgVfbmFtZUIFCgNfaHBCCQoHX2l0ZW1JZCIsCgxDaGFy",
+          "RGF0YUxpc3QSHAoEbGlzdBgBIAMoCzIOLkNoYXJhY3RlckRhdGEiegoLQnVs",
+          "bGV0QnVuY2gSEgoFcmFuZ2UYASABKAJIAIgBARISCgVzcGVlZBgCIAEoAkgB",
+          "iAEBEhwKB2J1bGxldHMYAyADKAsyCy5CdWxsZXREYXRhEhEKCXN0YXJ0VGlt",
+          "ZRgEIAEoAkIICgZfcmFuZ2VCCAoGX3NwZWVkIlwKCkJ1bGxldERhdGESHgoI",
+          "c3RhcnRwb3MYASABKAsyDC5WZWN0b3IyRGF0YRIcCgZlbmRwb3MYAiABKAsy",
+          "DC5WZWN0b3IyRGF0YRIQCghwcm9ncmVzcxgDIAEoAiJ6CghJdGVtRGF0YRIO",
+          "CgZpdGVtSWQYASABKAUSFQoIcHJlZmFiSWQYAiABKAVIAYgBARIZCgNwb3MY",
+          "AyABKAsyDC5WZWN0b3IyRGF0YRIXCgNndW4YBCABKAsyCC5HdW5EYXRhSABC",
+          "BgoEVHlwZUILCglfcHJlZmFiSWQiQwoHR3VuRGF0YRIQCgNhbW8YASABKAVI",
+          "AIgBARITCgZyZWxvYWQYAiABKAJIAYgBAUIGCgRfYW1vQgkKB19yZWxvYWRi",
+          "BnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForClient), global::MessageForClient.Parser, new[]{ "NewPlayerGrant", "GameState", "Time" }, new[]{ "Type" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForClient), global::MessageForClient.Parser, new[]{ "NewPlayerGrant", "GameState", "Time" }, new[]{ "Type", "Time" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::MessageForServer), global::MessageForServer.Parser, new[]{ "Input", "NewPlayerRequest", "Time" }, new[]{ "Type", "Time" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::NewPlayerGrant), global::NewPlayerGrant.Parser, new[]{ "NewPlayer", "CurrentChars", "CurrentItems", "StartTime" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GameState), global::GameState.Parser, new[]{ "NewRemoteChars", "UpdateChars", "RemoveChars", "NewBullets", "NewItems", "UpdateItems", "RemoveItems" }, null, null, null, null),
@@ -66,7 +67,7 @@ public static partial class DataTypesReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Pos", "LookPos", "LookDirection", "Name", "DropItem", "PickupItem", "Bullets" }, new[]{ "Item", "Name" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CharacterData), global::CharacterData.Parser, new[]{ "CharacterID", "Pos", "Name", "Hp", "ItemId" }, new[]{ "Name", "Hp", "ItemId" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CharDataList), global::CharDataList.Parser, new[]{ "List" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::BulletBunch), global::BulletBunch.Parser, new[]{ "Range", "Speed", "Bullets" }, new[]{ "Range", "Speed" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::BulletBunch), global::BulletBunch.Parser, new[]{ "Range", "Speed", "Bullets", "StartTime" }, new[]{ "Range", "Speed" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::BulletData), global::BulletData.Parser, new[]{ "Startpos", "Endpos", "Progress" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ItemData), global::ItemData.Parser, new[]{ "ItemId", "PrefabId", "Pos", "Gun" }, new[]{ "Type", "PrefabId" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GunData), global::GunData.Parser, new[]{ "Amo", "Reload" }, new[]{ "Amo", "Reload" }, null, null, null)
@@ -83,6 +84,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
 {
   private static readonly pb::MessageParser<MessageForClient> _parser = new pb::MessageParser<MessageForClient>(() => new MessageForClient());
   private pb::UnknownFieldSet _unknownFields;
+  private int _hasBits0;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public static pb::MessageParser<MessageForClient> Parser { get { return _parser; } }
@@ -110,6 +112,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public MessageForClient(MessageForClient other) : this() {
+    _hasBits0 = other._hasBits0;
     time_ = other.time_;
     switch (other.TypeCase) {
       case TypeOneofCase.NewPlayerGrant:
@@ -159,10 +162,23 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public float Time {
-    get { return time_; }
+    get { if ((_hasBits0 & 1) != 0) { return time_; } else { return 0F; } }
     set {
+      _hasBits0 |= 1;
       time_ = value;
     }
+  }
+  /// <summary>Gets whether the "time" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasTime {
+    get { return (_hasBits0 & 1) != 0; }
+  }
+  /// <summary>Clears the value of the "time" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearTime() {
+    _hasBits0 &= ~1;
   }
 
   private object type_;
@@ -214,7 +230,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     int hash = 1;
     if (typeCase_ == TypeOneofCase.NewPlayerGrant) hash ^= NewPlayerGrant.GetHashCode();
     if (typeCase_ == TypeOneofCase.GameState) hash ^= GameState.GetHashCode();
-    if (Time != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Time);
+    if (HasTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Time);
     hash ^= (int) typeCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -242,7 +258,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
       output.WriteRawTag(18);
       output.WriteMessage(GameState);
     }
-    if (Time != 0F) {
+    if (HasTime) {
       output.WriteRawTag(29);
       output.WriteFloat(Time);
     }
@@ -264,7 +280,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
       output.WriteRawTag(18);
       output.WriteMessage(GameState);
     }
-    if (Time != 0F) {
+    if (HasTime) {
       output.WriteRawTag(29);
       output.WriteFloat(Time);
     }
@@ -284,7 +300,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     if (typeCase_ == TypeOneofCase.GameState) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(GameState);
     }
-    if (Time != 0F) {
+    if (HasTime) {
       size += 1 + 4;
     }
     if (_unknownFields != null) {
@@ -299,7 +315,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     if (other == null) {
       return;
     }
-    if (other.Time != 0F) {
+    if (other.HasTime) {
       Time = other.Time;
     }
     switch (other.TypeCase) {
@@ -2719,6 +2735,7 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
     range_ = other.range_;
     speed_ = other.speed_;
     bullets_ = other.bullets_.Clone();
+    startTime_ = other.startTime_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -2789,6 +2806,18 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
     get { return bullets_; }
   }
 
+  /// <summary>Field number for the "startTime" field.</summary>
+  public const int StartTimeFieldNumber = 4;
+  private float startTime_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public float StartTime {
+    get { return startTime_; }
+    set {
+      startTime_ = value;
+    }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -2807,6 +2836,7 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
     if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Range, other.Range)) return false;
     if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Speed, other.Speed)) return false;
     if(!bullets_.Equals(other.bullets_)) return false;
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(StartTime, other.StartTime)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -2817,6 +2847,7 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
     if (HasRange) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Range);
     if (HasSpeed) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Speed);
     hash ^= bullets_.GetHashCode();
+    if (StartTime != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(StartTime);
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -2844,6 +2875,10 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
       output.WriteFloat(Speed);
     }
     bullets_.WriteTo(output, _repeated_bullets_codec);
+    if (StartTime != 0F) {
+      output.WriteRawTag(37);
+      output.WriteFloat(StartTime);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -2863,6 +2898,10 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
       output.WriteFloat(Speed);
     }
     bullets_.WriteTo(ref output, _repeated_bullets_codec);
+    if (StartTime != 0F) {
+      output.WriteRawTag(37);
+      output.WriteFloat(StartTime);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -2880,6 +2919,9 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
       size += 1 + 4;
     }
     size += bullets_.CalculateSize(_repeated_bullets_codec);
+    if (StartTime != 0F) {
+      size += 1 + 4;
+    }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
@@ -2899,6 +2941,9 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
       Speed = other.Speed;
     }
     bullets_.Add(other.bullets_);
+    if (other.StartTime != 0F) {
+      StartTime = other.StartTime;
+    }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
 
@@ -2926,6 +2971,10 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
           bullets_.AddEntriesFrom(input, _repeated_bullets_codec);
           break;
         }
+        case 37: {
+          StartTime = input.ReadFloat();
+          break;
+        }
       }
     }
   #endif
@@ -2951,6 +3000,10 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
         }
         case 26: {
           bullets_.AddEntriesFrom(ref input, _repeated_bullets_codec);
+          break;
+        }
+        case 37: {
+          StartTime = input.ReadFloat();
           break;
         }
       }

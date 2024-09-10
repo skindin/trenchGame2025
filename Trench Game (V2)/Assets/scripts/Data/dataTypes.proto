@@ -7,7 +7,7 @@ message MessageForClient
         NewPlayerGrant newPlayerGrant = 1;
         GameState gameState = 2;
     }
-    float time = 3;
+    optional float time = 3;
 }
 
 message MessageForServer
@@ -78,6 +78,7 @@ message BulletBunch
     optional float range = 1;
     optional float speed = 2;
     repeated BulletData bullets = 3;
+    float startTime = 4;
 }
 
 message BulletData

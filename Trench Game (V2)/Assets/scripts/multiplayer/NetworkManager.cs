@@ -4,6 +4,7 @@
 //using System;
 using Google.Protobuf;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 //using System;
 
 public class NetworkManager : ManagerBase<NetworkManager>
@@ -14,7 +15,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameServer server;
 
     float time;
-    public float Time
+    public float NetTime
     {
         get { return time; }
 
@@ -103,7 +104,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         var input = new PlayerInput { Bullets = bunch };
 
-        var message = new MessageForServer { Input = input, Time = Time };
+        var message = new MessageForServer { Input = input, Time = NetTime };
 
         client.SendData(message.ToByteArray());
 #endif
@@ -131,5 +132,38 @@ public class NetworkManager : ManagerBase<NetworkManager>
         //CharacterManager.Manager.localPlayerCharacter.name = newName;
 #endif
 
+    }
+
+    public Bullet DataToBullet (BulletData bullet, Character character, float time)
+    {
+        if (character.inventory.ActiveItem == null || character.inventory.ActiveItem is not Gun gun)
+        {
+            XPlatformLog($"character {character.id} is not holding a gun");
+            return null;
+        }    
+
+        var gunModel = gun.GunModel;
+
+        var startpos = DataManager.ConvertDataToVector(bullet.Startpos);
+
+        var endPos = DataManager.ConvertDataToVector(bullet.Endpos);
+
+        var velocity = (endPos - startpos).normalized * gunModel.bulletSpeed;
+
+        var delta = Time.time - time;
+
+        var progress = bullet.Progress + (delta * velocity.magnitude / gunModel.range);
+
+        return ProjectileManager.Manager.NewBullet(startpos, velocity, gunModel.range, gunModel.DamagePerBullet, character,
+            progress);
+    }
+
+    public static void XPlatformLog(string log)
+    {
+#if UNITY_EDITOR// && false
+        Debug.Log(log);
+#else
+        System.Console.WriteLine(log);
+#endif
     }
 }

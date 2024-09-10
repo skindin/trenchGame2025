@@ -7,6 +7,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem;
 
 //using UnityEngine.Android;
@@ -85,13 +86,15 @@ public class GameServer : MonoBehaviour
 
     public RepeatedField<ItemData> newItems = new(), updateItems = new(), currentItems = new();
 
+    public RepeatedField<BulletBunch> newBullets = new();
+
     private void LateUpdate()
     {
 #if !UNITY_SERVER || UNITY_EDITOR// || true
         return;
 #endif
 
-        NetworkManager.Manager.Time = Time.time;
+        NetworkManager.Manager.NetTime = Time.time;
 
         //bool sentSomeData = actionQueue.Count > 0;
 
@@ -185,6 +188,20 @@ public class GameServer : MonoBehaviour
 
                     currentData.ItemId = client.update.ItemId;
                     //hopefully adding the previous item to the dropped list makes the drop pos work when switching items...
+                }
+
+                if (character.inventory.ActiveWeapon != null
+                    && character.inventory.ActiveWeapon is Gun gun
+                    && client.bullets != null && client.bullets.Bullets.Count > 0)
+                {
+                    var gunModel = gun.GunModel;
+
+                    foreach (var bullet in client.bullets.Bullets)
+                    {
+                        NetworkManager.Manager.DataToBullet(bullet, character, client.bullets.StartTime);
+                    }
+
+                    newBullets.Add(client.bullets);
                 }
 
                 //client.droppedItems.Clear();
@@ -298,6 +315,8 @@ public class GameServer : MonoBehaviour
                 {
                     updateList.List.Remove(client.update);
 
+                    newBullets.Remove(client.bullets);
+
                     foreach (var dropItem in client.droppedItems)
                     {
                         bool found = false;
@@ -317,6 +336,8 @@ public class GameServer : MonoBehaviour
                         if (found)
                             break;
                     }
+
+                    //if (client.bull)
                 }
 
                 gameState.UpdateChars = updateList.List.Count > 0 ? updateList : null;
@@ -336,6 +357,11 @@ public class GameServer : MonoBehaviour
                 foreach (var updateItem in updateItems)
                 {
                     gameState.UpdateItems.Add(updateItem);
+                }
+
+                foreach (var bunch in newBullets)
+                {
+                    gameState.NewBullets.Add(bunch);
                 }
 
                 if ( true || 
@@ -361,9 +387,13 @@ public class GameServer : MonoBehaviour
                     {
                         updateItems.Add(dropItem);
                     }
+
+                    newBullets.Add(client.bullets);
                 }
 
                 client.droppedItems.Clear();
+
+                client.bullets = null;
 
                 client.update = client.remove = client.newPlayer = null;
             }
@@ -487,6 +517,8 @@ public class ClientBehavior : WebSocketBehavior
 
     public Character character;
 
+    public BulletBunch bullets = new();
+
     //public ClientBehavior (GameServer server)
     //{
     //    ClientBehavior.server = server;
@@ -586,7 +618,12 @@ public class ClientBehavior : WebSocketBehavior
                             else
                             {
                                 Console.WriteLine($"server doesn't have a currentChar associated with client {ID}");
-                            }                            
+                            }            
+                            
+                            if (message.Input.Bullets != null && message.Input.Bullets.Bullets.Count > 0)
+                            {
+                                bullets = message.Input.Bullets;
+                            }
                         }
                         break;
                 }
