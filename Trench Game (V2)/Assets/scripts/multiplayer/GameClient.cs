@@ -10,6 +10,7 @@ using WebSocketSharp;
 using UnityEngine.Events;
 using UnityEngine.Rendering.PostProcessing;
 using Google.Protobuf.Collections;
+using UnityEngine.TextCore.Text;
 //using Google.Protobuf.Collections;
 //using UnityEditor.SearchService;
 
@@ -123,6 +124,13 @@ public class GameClient : MonoBehaviour
                 newCharacter.inventory.PickupItem(item, item.transform.position);
             }
 
+            if (newRemoteChar.HasAngle && newCharacter.inventory.ActiveItem is IDirectionalAction dirItem) //idk if there's a point in syncing the angle on the server
+            {
+                Vector2 direction = Quaternion.AngleAxis(newRemoteChar.Angle, Vector3.forward) * Vector2.up;
+                dirItem.Aim(direction);
+                //Debug.Log($"recieved angle {updateChar.Angle}")
+            }
+
             Debug.Log($"spawned remote character {id} named {name} at {pos}{(newRemoteChar.HasItemId ? $" holding item {newRemoteChar.ItemId}" : "")}");
         }
 
@@ -150,6 +158,13 @@ public class GameClient : MonoBehaviour
                     character.inventory.PickupItem(item, item.transform.position);
 
                     Debug.Log($"server told character {character.id} to pickup item {item.id}");
+                }
+
+                if (updateChar.HasAngle && character.inventory.ActiveItem is IDirectionalAction dirItem) //idk if there's a point in syncing the angle on the server
+                {
+                    Vector2 direction = Quaternion.AngleAxis(updateChar.Angle, Vector3.forward) * Vector2.up;
+                    dirItem.Aim(direction);
+                    //Debug.Log($"recieved angle {updateChar.Angle}")
                 }
             }
             else
@@ -350,22 +365,30 @@ public class GameClient : MonoBehaviour
                             {
                                 newItems.Add(itemData);
 
-                                Debug.Log($"recieved new item {itemData.ItemId}");
+                                Debug.Log($"recieved new dirItem {itemData.ItemId}");
                             }
 
                             foreach (var itemData in message.GameState.UpdateItems)
                             {
                                 updateItems.Add(itemData);
 
-                                Debug.Log($"recieved update for item {itemData.ItemId}");
+                                Debug.Log($"recieved update for dirItem {itemData.ItemId}");
                             }
 
                             foreach (var bunch in message.GameState.NewBullets)
                             {
+                                var character = CharacterManager.Manager.active.Find(character => character.id == bunch.CharacterId);
+
+                                if (!character) continue;
+
                                 foreach (var bullet in bunch.Bullets)
                                 {
-                                    NetworkManager.Manager.DataToBullet(bullet, CharacterManager.Manager.localPlayerCharacter,bunch.StartTime);
+                                    NetworkManager.Manager.DataToBullet(bullet, character,bunch.StartTime);
                                 }
+
+                                //NetworkManager.XPlatformLog(
+                                //    $"was told to spawn {bunch.Bullets.Count} bullet(s) by server from character {bunch.CharacterId}"
+                                //    );
                             }
 
                             break;

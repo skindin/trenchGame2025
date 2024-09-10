@@ -30,11 +30,15 @@ public class GameServer : MonoBehaviour
     public int bytesThisFrame { get; set; }
     List<int> pastByteRecords = new();
 
+    long startTick = 0;
+
     private void Awake()
     {
 #if !UNITY_SERVER || UNITY_EDITOR// || true
         return;
 #endif
+        startTick = DateTime.UtcNow.Ticks;
+
         //|| true
         ClientBehavior.server = this;
 
@@ -201,6 +205,8 @@ public class GameServer : MonoBehaviour
                         NetworkManager.Manager.DataToBullet(bullet, character, client.bullets.StartTime);
                     }
 
+                    //NetworkManager.XPlatformLog($"spawned {client.bullets.Bullets.Count} bullet(s)");
+
                     newBullets.Add(client.bullets);
                 }
 
@@ -288,14 +294,16 @@ public class GameServer : MonoBehaviour
 
                 //client.newPlayer.Name = null;
 
-                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars};
+                //var startTime = LogicAndMath.SecondsToTicks(Time.time);
+
+                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars, StartTime = startTick};
 
                 foreach (var item in currentItems) //might be better to make this it's own message, this readonly thing getting annoying
                 {
                     grant.CurrentItems.Add(item);
                 }
 
-                var message = new MessageForClient { NewPlayerGrant = grant, Time = DateTime.UtcNow.Ticks };
+                var message = new MessageForClient { NewPlayerGrant = grant, Time = Time.deltaTime };
                 client.SendData(message.ToByteArray());
 
                 currentChars.List.Add(currentChar);
@@ -315,29 +323,34 @@ public class GameServer : MonoBehaviour
                 {
                     updateList.List.Remove(client.update);
 
-                    newBullets.Remove(client.bullets);
 
-                    foreach (var dropItem in client.droppedItems)
-                    {
-                        bool found = false;
-                        for (int i = 0; i < updateItems.Count; i++)
-                        {
-                            var updateItem = updateItems[i];
-
-                            if (dropItem.ItemId == updateItem.ItemId)
-                            {
-                                updateItems.RemoveAt(i);
-                                i--;
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (found)
-                            break;
-                    }
 
                     //if (client.bull)
+                }
+
+                if (client.bullets != null)
+                {
+                    newBullets.Remove(client.bullets);
+                }
+
+                foreach (var dropItem in client.droppedItems)
+                {
+                    bool found = false;
+                    for (int i = 0; i < updateItems.Count; i++)
+                    {
+                        var updateItem = updateItems[i];
+
+                        if (dropItem.ItemId == updateItem.ItemId)
+                        {
+                            updateItems.RemoveAt(i);
+                            i--;
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        break;
                 }
 
                 gameState.UpdateChars = updateList.List.Count > 0 ? updateList : null;
@@ -364,6 +377,11 @@ public class GameServer : MonoBehaviour
                     gameState.NewBullets.Add(bunch);
                 }
 
+                //if (newBullets.Count > 0)
+                //{
+                //    NetworkManager.XPlatformLog($"told client {client.character.id} to spawn {newBullets.Count} bullet(s)");
+                //}
+
                 if ( true || 
                     gameState.UpdateChars != null ||
                     gameState.NewRemoteChars != null || 
@@ -382,14 +400,16 @@ public class GameServer : MonoBehaviour
                 if (client.update != null) //readd this character back
                 {
                     updateList.List.Add(client.update);
-
-                    foreach (var dropItem in client.droppedItems)
-                    {
-                        updateItems.Add(dropItem);
-                    }
-
-                    newBullets.Add(client.bullets);
                 }
+
+
+                foreach (var dropItem in client.droppedItems)
+                {
+                    updateItems.Add(dropItem);
+                }
+
+                if (client.bullets != null)
+                    newBullets.Add(client.bullets);
 
                 client.droppedItems.Clear();
 
@@ -410,6 +430,7 @@ public class GameServer : MonoBehaviour
         updateItems.Clear();
         removeItemList.Clear();
 
+        newBullets.Clear(); //bruh facepalm emoji
         //if (logBitRate)
         //{
         //    pastByteRecords.Add(bytesThisFrame);
@@ -582,7 +603,11 @@ public class ClientBehavior : WebSocketBehavior
                                     //Console.WriteLine($"recieved new name {message.Input.Name}");
                                 }
 
-                                
+                                if (message.Input.HasAngle)
+                                {
+                                    charData.Angle = message.Input.Angle;
+                                    //Console.WriteLine($"recieved angle {charData.Angle} for character {character.id}");
+                                }
 
                                 if (update != null)
                                 {
@@ -623,6 +648,7 @@ public class ClientBehavior : WebSocketBehavior
                             if (message.Input.Bullets != null && message.Input.Bullets.Bullets.Count > 0)
                             {
                                 bullets = message.Input.Bullets;
+                                bullets.CharacterId = character.id;
                             }
                         }
                         break;

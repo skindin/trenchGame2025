@@ -49,7 +49,7 @@ message PlayerInput
 {
     Vector2Data pos = 1;
     Vector2Data lookPos = 2;
-    float lookDirection = 3;
+    optional float angle = 3;
     optional string name = 4;
     oneof Item
     {
@@ -66,6 +66,7 @@ message CharacterData
     optional string name = 3;
     optional float hp = 4;
     optional int32 itemId = 5;
+    optional float angle = 6;
 }
 
 message CharDataList
@@ -79,13 +80,13 @@ message BulletBunch
     optional float speed = 2;
     repeated BulletData bullets = 3;
     float startTime = 4;
+    optional int32 characterId = 5;
 }
 
 message BulletData
 {
     Vector2Data startpos = 1;
     Vector2Data endpos = 2;
-    float progress = 3;
 }
 
 message ItemData

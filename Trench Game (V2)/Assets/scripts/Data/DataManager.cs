@@ -89,6 +89,11 @@ public static class DataManager
         {
             a.Pos = b.Pos;
         }
+
+        if (b.HasAngle)
+        {
+            a.Angle = b.Angle;
+        }
     }
 }
 

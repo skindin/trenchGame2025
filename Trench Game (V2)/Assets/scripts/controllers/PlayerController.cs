@@ -24,8 +24,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DetermineController();
+        if (!Application.isFocused)
+            return;
 
+        DetermineController();
 
         if (type == ControllerType.keyboard)
         {
@@ -89,11 +91,13 @@ public class PlayerController : MonoBehaviour
 
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mouseDir = mousePos - transform.position;
+        NetworkManager.Manager.SyncDirection(mouseDir);
 
         if (Input.GetMouseButton(0))
         {
             if (Input.GetMouseButtonDown(0))
             {
+
             }
             else
             {

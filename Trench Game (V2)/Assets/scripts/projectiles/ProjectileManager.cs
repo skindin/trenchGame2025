@@ -40,12 +40,12 @@ public class ProjectileManager : MonoBehaviour
             );
     }
 
-    public Bullet NewBullet (Vector2 startPos, Vector2 velocity, float range, float damage, Character source, float progress = 0)
+    public Bullet NewBullet (Vector2 startPos, Vector2 velocity, float range, float damage, Character source)
     {
         var newBullet = bulletPool.GetFromPool();
 
-        newBullet.startPos = startPos;
-        newBullet.pos = startPos + velocity.normalized * range * progress;
+        newBullet.pos = newBullet.startPos = startPos;
+        //newBullet.pos = startPos + velocity.normalized * range * progress;
         newBullet.velocity = velocity;
         newBullet.range = range;
         newBullet.source = source;
@@ -88,95 +88,109 @@ public class ProjectileManager : MonoBehaviour
 
     List<Chunk> chunkList = new();
 
+    public void UpdateBullet(Bullet bullet, float seconds, out bool wasDestroyed)
+    {
+        //var bullet = activeBullets[i];
+
+        if ((bullet.pos - bullet.startPos).magnitude >= bullet.range * destroyDelay)
+        {
+            DestroyBullet(bullet);
+            wasDestroyed = true;
+            return;
+        }
+        else
+        {
+            wasDestroyed = false;
+        }
+
+        //var delta = bullet.pos - bullet.startPos;
+
+        //var nextDelta = delta + (bullet.velocity * seconds);
+        //bullet.destroy = (bullet.pos - bullet.startPos).magnitude >= bullet.range * destructRangeFactor;
+        var nextPos = bullet.pos + bullet.velocity * seconds;
+        //var closestPoint = nextPos;
+        Collider closestCollider = null;
+
+        //float furthestTrenchDist = nextDelta.magnitude;
+        //bool leavingTrench = false;
+        //if (bullet.withinTrench)
+        //{
+        //    var edgePoint = Trench.manager.FindTrenchEdgeFromInside(bullet.pos, nextPos, debugLines);
+        //    if (edgePoint != nextPos)
+        //    {
+        //        furthestTrenchDist = (bullet.pos - edgePoint).magnitude;
+        //        leavingTrench = true;
+        //    }
+        //}
+
+        if (!bullet.hit)
+        {
+
+            var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, chunkList, false, debugLines);
+
+            foreach (var chunk in chunks)
+            {
+                foreach (var collider in chunk.colliders)
+                {
+                    if (bullet.source && bullet.source.collider == collider) continue;
+                    if (!collider.vulnerable) continue;
+
+                    var radius = collider.WorldSize / 2;
+                    var point = GeoUtils.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
+                    if (point.x == Mathf.Infinity) continue;
+                    var pointDist = (point - bullet.startPos).magnitude;
+                    //if (bullet.withinTrench && !collider.vulnerable)
+                    //{
+                    //    if (pointDist > furthestTrenchDist) continue;
+                    //}
+                    var startToNext = bullet.startPos - nextPos;
+                    var clampedNext = Vector2.ClampMagnitude(startToNext, bullet.range);
+                    //var nextDist = (nextPos - bullet.pos).magnitude;
+
+                    if (clampedNext.magnitude > pointDist)
+                    {
+                        bullet.hit = true;
+                        //nextPos = point;
+                        bullet.range = (point - bullet.startPos).magnitude;
+                        closestCollider = collider;
+                        //closestPoint = point;
+                    }
+                }
+            }
+        }
+
+        //if (bullet.withinTrench && leavingTrench)
+        //{
+        //    bullet.withinTrench = false;
+        //}
+
+        if (debugLines)
+        {
+            GeoUtils.DrawCircle(bullet.startPos, bullet.range, Color.red, 10);
+            Debug.DrawLine(bullet.pos, nextPos, Color.red);
+        }
+
+        //bullet.lastPos = bullet.pos;
+        bullet.pos = nextPos;
+
+        if (closestCollider != null)
+        {
+            closestCollider.HitCollider(bullet);
+            //bullet.destroy = true;
+            //Debug.Log($"Hit {closestCollider.gameObject.name}");
+        }
+    }
+
     void UpdateBullets(float seconds)
     {
         for (int i = 0; i < activeBullets.Count; i++)
         {
             var bullet = activeBullets[i];
 
-            if ((bullet.pos - bullet.startPos).magnitude >= bullet.range * destroyDelay)
-            {
-                DestroyBullet(bullet);
+            UpdateBullet(bullet, seconds, out var wasDestroyed);
+
+            if (wasDestroyed)
                 i--;
-                continue;
-            }
-
-            //var delta = bullet.pos - bullet.startPos;
-
-            //var nextDelta = delta + (bullet.velocity * seconds);
-            //bullet.destroy = (bullet.pos - bullet.startPos).magnitude >= bullet.range * destructRangeFactor;
-            var nextPos = bullet.pos + bullet.velocity * seconds;
-            //var closestPoint = nextPos;
-            Collider closestCollider = null;
-
-            //float furthestTrenchDist = nextDelta.magnitude;
-            //bool leavingTrench = false;
-            //if (bullet.withinTrench)
-            //{
-            //    var edgePoint = Trench.manager.FindTrenchEdgeFromInside(bullet.pos, nextPos, debugLines);
-            //    if (edgePoint != nextPos)
-            //    {
-            //        furthestTrenchDist = (bullet.pos - edgePoint).magnitude;
-            //        leavingTrench = true;
-            //    }
-            //}
-
-            if (!bullet.hit)
-            {
-
-                var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, chunkList, false, debugLines);
-
-                foreach (var chunk in chunks)
-                {
-                    foreach (var collider in chunk.colliders)
-                    {
-                        if (bullet.source && bullet.source.collider == collider) continue;
-                        if (!collider.vulnerable) continue;
-
-                        var radius = collider.WorldSize / 2;
-                        var point = GeoUtils.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
-                        if (point.x == Mathf.Infinity) continue;
-                        var pointDist = (point - bullet.startPos).magnitude;
-                        //if (bullet.withinTrench && !collider.vulnerable)
-                        //{
-                        //    if (pointDist > furthestTrenchDist) continue;
-                        //}
-                        var startToNext = bullet.startPos - nextPos;
-                        var clampedNext = Vector2.ClampMagnitude(startToNext, bullet.range);
-                        //var nextDist = (nextPos - bullet.pos).magnitude;
-
-                        if (clampedNext.magnitude > pointDist)
-                        {
-                            bullet.hit = true;
-                            //nextPos = point;
-                            bullet.range = (point - bullet.startPos).magnitude;
-                            closestCollider = collider;
-                            //closestPoint = point;
-                        }
-                    }
-                }
-            }
-
-            //if (bullet.withinTrench && leavingTrench)
-            //{
-            //    bullet.withinTrench = false;
-            //}
-
-            if (debugLines)
-            {
-                GeoUtils.DrawCircle(bullet.startPos, bullet.range, Color.red,10);
-                Debug.DrawLine(bullet.pos, nextPos, Color.red);
-            }
-
-            //bullet.lastPos = bullet.pos;
-            bullet.pos = nextPos;
-
-            if (closestCollider != null)
-            {
-                closestCollider.HitCollider(bullet);
-                //bullet.destroy = true;
-                //Debug.Log($"Hit {closestCollider.gameObject.name}");
-            }
         }
     }
 }
