@@ -231,11 +231,15 @@ public class Gun : Weapon
 
     public Bullet Fire ()
     {
-        return ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos,
+        var bullet = ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos,
             (direction.normalized * GunModel.bulletSpeed) + velocity,
             GunModel.range,
             GunModel.DamagePerBullet,
             wielder);
+
+        NetworkManager.Manager.SpawnBullet(bullet);
+        
+        return bullet;
     }
 
     public override void ItemUpdate()

@@ -83,7 +83,7 @@ message BulletBunch
 message BulletData
 {
     Vector2Data startpos = 1;
-    Vector2Data endPos = 2;
+    Vector2Data velocity = 2;
     float progress = 3;
 }
 
@@ -100,6 +100,6 @@ message ItemData
 
 message GunData
 {
-    optional float amo = 1;
+    optional int32 amo = 1;
     optional float reload = 2;
 }

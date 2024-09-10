@@ -53,7 +53,7 @@ public static partial class DataTypesReflection {
           "CEl0ZW1EYXRhEg4KBml0ZW1JZBgBIAEoBRIVCghwcmVmYWJJZBgCIAEoBUgB",
           "iAEBEhkKA3BvcxgDIAEoCzIMLlZlY3RvcjJEYXRhEhcKA2d1bhgEIAEoCzII",
           "Lkd1bkRhdGFIAEIGCgRUeXBlQgsKCV9wcmVmYWJJZCJDCgdHdW5EYXRhEhAK",
-          "A2FtbxgBIAEoAkgAiAEBEhMKBnJlbG9hZBgCIAEoAkgBiAEBQgYKBF9hbW9C",
+          "A2FtbxgBIAEoBUgAiAEBEhMKBnJlbG9hZBgCIAEoAkgBiAEBQgYKBF9hbW9C",
           "CQoHX3JlbG9hZGIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
@@ -3657,11 +3657,11 @@ public sealed partial class GunData : pb::IMessage<GunData>
 
   /// <summary>Field number for the "amo" field.</summary>
   public const int AmoFieldNumber = 1;
-  private float amo_;
+  private int amo_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public float Amo {
-    get { if ((_hasBits0 & 1) != 0) { return amo_; } else { return 0F; } }
+  public int Amo {
+    get { if ((_hasBits0 & 1) != 0) { return amo_; } else { return 0; } }
     set {
       _hasBits0 |= 1;
       amo_ = value;
@@ -3720,7 +3720,7 @@ public sealed partial class GunData : pb::IMessage<GunData>
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Amo, other.Amo)) return false;
+    if (Amo != other.Amo) return false;
     if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Reload, other.Reload)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -3729,7 +3729,7 @@ public sealed partial class GunData : pb::IMessage<GunData>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (HasAmo) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Amo);
+    if (HasAmo) hash ^= Amo.GetHashCode();
     if (HasReload) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Reload);
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -3750,8 +3750,8 @@ public sealed partial class GunData : pb::IMessage<GunData>
     output.WriteRawMessage(this);
   #else
     if (HasAmo) {
-      output.WriteRawTag(13);
-      output.WriteFloat(Amo);
+      output.WriteRawTag(8);
+      output.WriteInt32(Amo);
     }
     if (HasReload) {
       output.WriteRawTag(21);
@@ -3768,8 +3768,8 @@ public sealed partial class GunData : pb::IMessage<GunData>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
     if (HasAmo) {
-      output.WriteRawTag(13);
-      output.WriteFloat(Amo);
+      output.WriteRawTag(8);
+      output.WriteInt32(Amo);
     }
     if (HasReload) {
       output.WriteRawTag(21);
@@ -3786,7 +3786,7 @@ public sealed partial class GunData : pb::IMessage<GunData>
   public int CalculateSize() {
     int size = 0;
     if (HasAmo) {
-      size += 1 + 4;
+      size += 1 + pb::CodedOutputStream.ComputeInt32Size(Amo);
     }
     if (HasReload) {
       size += 1 + 4;
@@ -3824,8 +3824,8 @@ public sealed partial class GunData : pb::IMessage<GunData>
         default:
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
-        case 13: {
-          Amo = input.ReadFloat();
+        case 8: {
+          Amo = input.ReadInt32();
           break;
         }
         case 21: {
@@ -3847,8 +3847,8 @@ public sealed partial class GunData : pb::IMessage<GunData>
         default:
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
-        case 13: {
-          Amo = input.ReadFloat();
+        case 8: {
+          Amo = input.ReadInt32();
           break;
         }
         case 21: {

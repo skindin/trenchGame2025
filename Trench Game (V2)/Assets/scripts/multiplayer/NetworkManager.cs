@@ -21,12 +21,12 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         set
         {
-            var floored = Mathf.Floor(value);
+            //var floored = Mathf.Floor(value);
 
-            if (floored > Mathf.Floor(time))
-            {
-                XPlatformLog($"T = {floored}");
-            }
+            //if (floored > Mathf.Floor(time))
+            //{
+            //    XPlatformLog($"T = {floored}");
+            //}
 
             time = value;
         }
@@ -83,6 +83,25 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
 
         Debug.Log($"told server it picked up item {item.id}");
+#endif
+    }
+
+    public void SpawnBullet(Bullet bullet)
+    {
+#if (!UNITY_SERVER || UNITY_EDITOR)// && false
+
+        BulletBunch bunch = new();
+
+        var startPosData = DataManager.VectorToData(bullet.startPos);
+        var endPosData = DataManager.VectorToData(bullet.startPos + bullet.velocity.normalized * bullet.range);
+
+        bunch.Bullets.Add(new BulletData { Startpos = startPosData, EndPos = endPosData });
+
+        var input = new PlayerInput { Bullets = bunch };
+
+        var message = new MessageForServer { Input = input , Time = Time};
+
+        client.SendData(message.ToByteArray());
 #endif
     }
 

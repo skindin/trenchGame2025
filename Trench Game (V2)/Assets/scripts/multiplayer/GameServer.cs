@@ -83,18 +83,13 @@ public class GameServer : MonoBehaviour
 
     public RepeatedField<ItemData> newItems = new(), updateItems = new(), currentItems = new();
 
+    public RepeatedField<BulletBunch> newBullets = new();
+
     private void LateUpdate()
     {
-#if !UNITY_SERVER || UNITY_EDITOR
+#if !UNITY_SERVER || UNITY_EDITOR// || true
         return;
 #endif
-
-        var flooredTime = Mathf.Floor(Time.time);
-
-        if (Mathf.Floor(NetworkManager.Manager.Time) < flooredTime)
-        {
-            Console.WriteLine(flooredTime);
-        }
 
         NetworkManager.Manager.Time = Time.time;
 
@@ -153,7 +148,7 @@ public class GameServer : MonoBehaviour
                 if (client.update.Pos != null)
                 {
                     var pos = DataManager.ConvertDataToVector(client.update.Pos);
-                    character.SetPos(pos,false);
+                    character.SetPos(pos, false);
                 }
 
                 foreach (var droppedItem in client.droppedItems)
@@ -172,6 +167,9 @@ public class GameServer : MonoBehaviour
                     }
                 }
 
+                if (client.droppedItems.Count > 0)
+                    currentData.ClearItemId();
+
                 if (client.update.HasItemId)
                 {
                     var item = ItemManager.Manager.active[client.update.ItemId];
@@ -184,10 +182,12 @@ public class GameServer : MonoBehaviour
                             itemData.Pos = null;
                         }
                     }
+
+                    currentData.ItemId = client.update.ItemId;
                     //hopefully adding the previous item to the dropped list makes the drop pos work when switching items...
                 }
 
-                client.droppedItems.Clear();
+                //client.droppedItems.Clear();
 
                 //if (!character.inventory.ActiveItem)
                 //{
@@ -198,7 +198,6 @@ public class GameServer : MonoBehaviour
                 //    currentData.ItemId = character.inventory.ActiveItem.id;
 
                 //}
-                currentData.ItemId = client.update.ItemId;
 
                 //Console.WriteLine($"updated character {character.id}");
                 LogLists();
@@ -219,6 +218,28 @@ public class GameServer : MonoBehaviour
                     if (currentChar.CharacterID == client.remove.CharacterID)
                     {
                         currentCharData.List.Remove(currentChar);
+
+                        //character.inventory.DropActiveItem();
+
+                        ItemData activeItem = null;
+
+                        foreach (var itemData in currentItems)
+                        {
+                            if (itemData.ItemId == currentChar.ItemId)
+                            {
+                                activeItem = itemData;
+                                break;
+                            }
+                        }
+
+                        if (activeItem == null)
+                        {
+                            activeItem = new ItemData { ItemId = currentChar.ItemId };
+                        }
+
+                        activeItem.Pos = currentChar.Pos;
+
+                        //currentChar.ClearItemId();
                         break;
                     }
                 }
@@ -250,16 +271,14 @@ public class GameServer : MonoBehaviour
 
                 //client.newPlayer.Name = null;
 
-                var startTimeTick = DateTime.UtcNow.Ticks - LogicAndMath.SecondsToTicks(Time.time);
-
-                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars, StartTime = startTimeTick};
+                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer, CurrentChars = currentChars };
 
                 foreach (var item in currentItems) //might be better to make this it's own message, this readonly thing getting annoying
                 {
                     grant.CurrentItems.Add(item);
                 }
 
-                var message = new MessageForClient { NewPlayerGrant = grant };
+                var message = new MessageForClient { NewPlayerGrant = grant, Time = DateTime.UtcNow.Ticks };
                 client.SendData(message.ToByteArray());
 
                 currentChars.List.Add(currentChar);
@@ -278,6 +297,26 @@ public class GameServer : MonoBehaviour
                 if (client.update != null)
                 {
                     updateList.List.Remove(client.update);
+
+                    foreach (var dropItem in client.droppedItems)
+                    {
+                        bool found = false;
+                        for (int i = 0; i < updateItems.Count; i++)
+                        {
+                            var updateItem = updateItems[i];
+
+                            if (dropItem.ItemId == updateItem.ItemId)
+                            {
+                                updateItems.RemoveAt(i);
+                                i--;
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (found)
+                            break;
+                    }
                 }
 
                 gameState.UpdateChars = updateList.List.Count > 0 ? updateList : null;
@@ -299,14 +338,14 @@ public class GameServer : MonoBehaviour
                     gameState.UpdateItems.Add(updateItem);
                 }
 
-                if ( true || 
+                if (true ||
                     gameState.UpdateChars != null ||
-                    gameState.NewRemoteChars != null || 
+                    gameState.NewRemoteChars != null ||
                     gameState.RemoveChars != null ||
                     gameState.NewItems.Count > 0
                     )
                 {
-                    var message = new MessageForClient { GameState = gameState , Time = Time.time};
+                    var message = new MessageForClient { GameState = gameState, Time = Time.deltaTime };
 
                     client.SendData(message.ToByteArray());
                     LogLists();
@@ -317,7 +356,14 @@ public class GameServer : MonoBehaviour
                 if (client.update != null) //readd this character back
                 {
                     updateList.List.Add(client.update);
+
+                    foreach (var dropItem in client.droppedItems)
+                    {
+                        updateItems.Add(dropItem);
+                    }
                 }
+
+                client.droppedItems.Clear();
 
                 client.update = client.remove = client.newPlayer = null;
             }
@@ -361,6 +407,7 @@ public class GameServer : MonoBehaviour
             //Console.WriteLine($"{newPlayerList.List.Count} new players, {updateList.List.Count} character updates, {removeList.List.Count} removals, and {currentCharData.List.Count} current characters");
         }
     }
+
 
     public void AddCharacter (Character character)
     {
@@ -440,6 +487,8 @@ public class ClientBehavior : WebSocketBehavior
     public List<ItemData> droppedItems = new(); //GOTTA MAKE THIS LIST THE ITEMS IT'S DROPPING
 
     public Character character;
+
+    public BulletBunch bullets;
 
     //public ClientBehavior (GameServer server)
     //{
@@ -540,7 +589,12 @@ public class ClientBehavior : WebSocketBehavior
                             else
                             {
                                 Console.WriteLine($"server doesn't have a currentChar associated with client {ID}");
-                            }                            
+                            }      
+                            
+                            if (message.Input.Bullets != null)
+                            {
+                                bullets = message.Input.Bullets;
+                            }
                         }
                         break;
                 }
