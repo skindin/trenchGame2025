@@ -227,6 +227,8 @@ public class CharacterManager : MonoBehaviour
             CamFollow.main.Reset();
         }
 
+        character.inventory.DropAllItems();
+
         UpdateScoreBoard();
     }
 

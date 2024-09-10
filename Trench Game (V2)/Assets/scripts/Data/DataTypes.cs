@@ -22,49 +22,54 @@ public static partial class DataTypesReflection {
   static DataTypesReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg9kYXRhVHlwZXMucHJvdG8idAoQTWVzc2FnZUZvckNsaWVudBIpCg5uZXdQ",
-          "bGF5ZXJHcmFudBgBIAEoCzIPLk5ld1BsYXllckdyYW50SAASHwoJZ2FtZVN0",
-          "YXRlGAIgASgLMgouR2FtZVN0YXRlSAASDAoEdGltZRgDIAEoAkIGCgRUeXBl",
-          "ImMKEE1lc3NhZ2VGb3JTZXJ2ZXISHQoFaW5wdXQYASABKAsyDC5QbGF5ZXJJ",
-          "bnB1dEgAEhoKEG5ld1BsYXllclJlcXVlc3QYAiABKAlIABIMCgR0aW1lGAMg",
-          "ASgCQgYKBFR5cGUieQoOTmV3UGxheWVyR3JhbnQSIQoJTmV3UGxheWVyGAEg",
-          "ASgLMg4uQ2hhcmFjdGVyRGF0YRIjCgxDdXJyZW50Q2hhcnMYAiABKAsyDS5D",
-          "aGFyRGF0YUxpc3QSHwoMY3VycmVudEl0ZW1zGAMgAygLMgkuSXRlbURhdGEi",
-          "3wEKCUdhbWVTdGF0ZRIlCg5uZXdSZW1vdGVDaGFycxgBIAEoCzINLkNoYXJE",
-          "YXRhTGlzdBIiCgt1cGRhdGVDaGFycxgCIAEoCzINLkNoYXJEYXRhTGlzdBIT",
-          "CgtyZW1vdmVDaGFycxgDIAMoBRIgCgpuZXdCdWxsZXRzGAQgAygLMgwuQnVs",
-          "bGV0QnVuY2gSGwoIbmV3SXRlbXMYBSADKAsyCS5JdGVtRGF0YRIeCgt1cGRh",
-          "dGVJdGVtcxgGIAMoCzIJLkl0ZW1EYXRhEhMKC3JlbW92ZUl0ZW1zGAcgAygF",
-          "IiMKC1ZlY3RvcjJEYXRhEgkKAXgYASABKAISCQoBeRgCIAEoAiLfAQoLUGxh",
-          "eWVySW5wdXQSGQoDcG9zGAEgASgLMgwuVmVjdG9yMkRhdGESHQoHbG9va1Bv",
-          "cxgCIAEoCzIMLlZlY3RvcjJEYXRhEhEKBG5hbWUYAyABKAlIAYgBARIQCgZB",
-          "Y3Rpb24YBCABKAhIABIZCg9TZWNvbmRhcnlBY3Rpb24YBSABKAhIABIbChFE",
-          "aXJlY3Rpb25hbEFjdGlvbhgGIAEoCEgAEhIKCERyb3BJdGVtGAcgASgISAAS",
-          "FAoKUGlja3VwSXRlbRgIIAEoBUgAQgYKBEl0ZW1CBwoFX25hbWUikwEKDUNo",
-          "YXJhY3RlckRhdGESEwoLY2hhcmFjdGVySUQYASABKAUSGQoDcG9zGAIgASgL",
-          "MgwuVmVjdG9yMkRhdGESEQoEbmFtZRgDIAEoCUgAiAEBEg8KAmhwGAQgASgC",
-          "SAGIAQESEwoGaXRlbUlkGAUgASgFSAKIAQFCBwoFX25hbWVCBQoDX2hwQgkK",
-          "B19pdGVtSWQiLAoMQ2hhckRhdGFMaXN0EhwKBGxpc3QYASADKAsyDi5DaGFy",
-          "YWN0ZXJEYXRhIkkKC0J1bGxldEJ1bmNoEg0KBXJhbmdlGAEgASgCEg0KBXNw",
-          "ZWVkGAIgASgCEhwKB2J1bGxldHMYAyADKAsyCy5CdWxsZXREYXRhIk4KCkJ1",
-          "bGxldERhdGESHgoIc3RhcnRwb3MYASABKAsyDC5WZWN0b3IyRGF0YRIgCgpj",
-          "dXJyZW50UG9zGAIgASgLMgwuVmVjdG9yMkRhdGEiWQoISXRlbURhdGESDgoG",
-          "aXRlbUlkGAEgASgFEhUKCHByZWZhYklkGAIgASgFSACIAQESGQoDcG9zGAMg",
-          "ASgLMgwuVmVjdG9yMkRhdGFCCwoJX3ByZWZhYklkYgZwcm90bzM="));
+          "Cg9kYXRhVHlwZXMucHJvdG8iggEKEE1lc3NhZ2VGb3JDbGllbnQSKQoObmV3",
+          "UGxheWVyR3JhbnQYASABKAsyDy5OZXdQbGF5ZXJHcmFudEgAEh8KCWdhbWVT",
+          "dGF0ZRgCIAEoCzIKLkdhbWVTdGF0ZUgAEhEKBHRpbWUYAyABKANIAYgBAUIG",
+          "CgRUeXBlQgcKBV90aW1lInEKEE1lc3NhZ2VGb3JTZXJ2ZXISHQoFaW5wdXQY",
+          "ASABKAsyDC5QbGF5ZXJJbnB1dEgAEhoKEG5ld1BsYXllclJlcXVlc3QYAiAB",
+          "KAlIABIRCgR0aW1lGAMgASgDSAGIAQFCBgoEVHlwZUIHCgVfdGltZSJ5Cg5O",
+          "ZXdQbGF5ZXJHcmFudBIhCglOZXdQbGF5ZXIYASABKAsyDi5DaGFyYWN0ZXJE",
+          "YXRhEiMKDEN1cnJlbnRDaGFycxgCIAEoCzINLkNoYXJEYXRhTGlzdBIfCgxj",
+          "dXJyZW50SXRlbXMYAyADKAsyCS5JdGVtRGF0YSLfAQoJR2FtZVN0YXRlEiUK",
+          "Dm5ld1JlbW90ZUNoYXJzGAEgASgLMg0uQ2hhckRhdGFMaXN0EiIKC3VwZGF0",
+          "ZUNoYXJzGAIgASgLMg0uQ2hhckRhdGFMaXN0EhMKC3JlbW92ZUNoYXJzGAMg",
+          "AygFEiAKCm5ld0J1bGxldHMYBCADKAsyDC5CdWxsZXRCdW5jaBIbCghuZXdJ",
+          "dGVtcxgFIAMoCzIJLkl0ZW1EYXRhEh4KC3VwZGF0ZUl0ZW1zGAYgAygLMgku",
+          "SXRlbURhdGESEwoLcmVtb3ZlSXRlbXMYByADKAUiIwoLVmVjdG9yMkRhdGES",
+          "CQoBeBgBIAEoAhIJCgF5GAIgASgCIssBCgtQbGF5ZXJJbnB1dBIZCgNwb3MY",
+          "ASABKAsyDC5WZWN0b3IyRGF0YRIdCgdsb29rUG9zGAIgASgLMgwuVmVjdG9y",
+          "MkRhdGESFQoNbG9va0RpcmVjdGlvbhgDIAEoAhIRCgRuYW1lGAQgASgJSAGI",
+          "AQESEgoIRHJvcEl0ZW0YBSABKAhIABIUCgpQaWNrdXBJdGVtGAYgASgFSAAS",
+          "HQoHYnVsbGV0cxgHIAEoCzIMLkJ1bGxldEJ1bmNoQgYKBEl0ZW1CBwoFX25h",
+          "bWUikwEKDUNoYXJhY3RlckRhdGESEwoLY2hhcmFjdGVySUQYASABKAUSGQoD",
+          "cG9zGAIgASgLMgwuVmVjdG9yMkRhdGESEQoEbmFtZRgDIAEoCUgAiAEBEg8K",
+          "AmhwGAQgASgCSAGIAQESEwoGaXRlbUlkGAUgASgFSAKIAQFCBwoFX25hbWVC",
+          "BQoDX2hwQgkKB19pdGVtSWQiLAoMQ2hhckRhdGFMaXN0EhwKBGxpc3QYASAD",
+          "KAsyDi5DaGFyYWN0ZXJEYXRhImcKC0J1bGxldEJ1bmNoEhIKBXJhbmdlGAEg",
+          "ASgCSACIAQESEgoFc3BlZWQYAiABKAJIAYgBARIcCgdidWxsZXRzGAMgAygL",
+          "MgsuQnVsbGV0RGF0YUIICgZfcmFuZ2VCCAoGX3NwZWVkIlwKCkJ1bGxldERh",
+          "dGESHgoIc3RhcnRwb3MYASABKAsyDC5WZWN0b3IyRGF0YRIcCgZlbmRQb3MY",
+          "AiABKAsyDC5WZWN0b3IyRGF0YRIQCghwcm9ncmVzcxgDIAEoAiJ6CghJdGVt",
+          "RGF0YRIOCgZpdGVtSWQYASABKAUSFQoIcHJlZmFiSWQYAiABKAVIAYgBARIZ",
+          "CgNwb3MYAyABKAsyDC5WZWN0b3IyRGF0YRIXCgNndW4YBCABKAsyCC5HdW5E",
+          "YXRhSABCBgoEVHlwZUILCglfcHJlZmFiSWQiQwoHR3VuRGF0YRIQCgNhbW8Y",
+          "ASABKAJIAIgBARITCgZyZWxvYWQYAiABKAJIAYgBAUIGCgRfYW1vQgkKB19y",
+          "ZWxvYWRiBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForClient), global::MessageForClient.Parser, new[]{ "NewPlayerGrant", "GameState", "Time" }, new[]{ "Type" }, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForServer), global::MessageForServer.Parser, new[]{ "Input", "NewPlayerRequest", "Time" }, new[]{ "Type" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForClient), global::MessageForClient.Parser, new[]{ "NewPlayerGrant", "GameState", "Time" }, new[]{ "Type", "Time" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForServer), global::MessageForServer.Parser, new[]{ "Input", "NewPlayerRequest", "Time" }, new[]{ "Type", "Time" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::NewPlayerGrant), global::NewPlayerGrant.Parser, new[]{ "NewPlayer", "CurrentChars", "CurrentItems" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GameState), global::GameState.Parser, new[]{ "NewRemoteChars", "UpdateChars", "RemoveChars", "NewBullets", "NewItems", "UpdateItems", "RemoveItems" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Vector2Data), global::Vector2Data.Parser, new[]{ "X", "Y" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Pos", "LookPos", "Name", "Action", "SecondaryAction", "DirectionalAction", "DropItem", "PickupItem" }, new[]{ "Item", "Name" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Pos", "LookPos", "LookDirection", "Name", "DropItem", "PickupItem", "Bullets" }, new[]{ "Item", "Name" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CharacterData), global::CharacterData.Parser, new[]{ "CharacterID", "Pos", "Name", "Hp", "ItemId" }, new[]{ "Name", "Hp", "ItemId" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CharDataList), global::CharDataList.Parser, new[]{ "List" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::BulletBunch), global::BulletBunch.Parser, new[]{ "Range", "Speed", "Bullets" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::BulletData), global::BulletData.Parser, new[]{ "Startpos", "CurrentPos" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::ItemData), global::ItemData.Parser, new[]{ "ItemId", "PrefabId", "Pos" }, new[]{ "PrefabId" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::BulletBunch), global::BulletBunch.Parser, new[]{ "Range", "Speed", "Bullets" }, new[]{ "Range", "Speed" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::BulletData), global::BulletData.Parser, new[]{ "Startpos", "EndPos", "Progress" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::ItemData), global::ItemData.Parser, new[]{ "ItemId", "PrefabId", "Pos", "Gun" }, new[]{ "Type", "PrefabId" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GunData), global::GunData.Parser, new[]{ "Amo", "Reload" }, new[]{ "Amo", "Reload" }, null, null, null)
         }));
   }
   #endregion
@@ -78,6 +83,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
 {
   private static readonly pb::MessageParser<MessageForClient> _parser = new pb::MessageParser<MessageForClient>(() => new MessageForClient());
   private pb::UnknownFieldSet _unknownFields;
+  private int _hasBits0;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public static pb::MessageParser<MessageForClient> Parser { get { return _parser; } }
@@ -105,6 +111,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public MessageForClient(MessageForClient other) : this() {
+    _hasBits0 = other._hasBits0;
     time_ = other.time_;
     switch (other.TypeCase) {
       case TypeOneofCase.NewPlayerGrant:
@@ -150,14 +157,27 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
 
   /// <summary>Field number for the "time" field.</summary>
   public const int TimeFieldNumber = 3;
-  private float time_;
+  private long time_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public float Time {
-    get { return time_; }
+  public long Time {
+    get { if ((_hasBits0 & 1) != 0) { return time_; } else { return 0L; } }
     set {
+      _hasBits0 |= 1;
       time_ = value;
     }
+  }
+  /// <summary>Gets whether the "time" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasTime {
+    get { return (_hasBits0 & 1) != 0; }
+  }
+  /// <summary>Clears the value of the "time" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearTime() {
+    _hasBits0 &= ~1;
   }
 
   private object type_;
@@ -198,7 +218,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     }
     if (!object.Equals(NewPlayerGrant, other.NewPlayerGrant)) return false;
     if (!object.Equals(GameState, other.GameState)) return false;
-    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Time, other.Time)) return false;
+    if (Time != other.Time) return false;
     if (TypeCase != other.TypeCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -209,7 +229,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     int hash = 1;
     if (typeCase_ == TypeOneofCase.NewPlayerGrant) hash ^= NewPlayerGrant.GetHashCode();
     if (typeCase_ == TypeOneofCase.GameState) hash ^= GameState.GetHashCode();
-    if (Time != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Time);
+    if (HasTime) hash ^= Time.GetHashCode();
     hash ^= (int) typeCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -237,9 +257,9 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
       output.WriteRawTag(18);
       output.WriteMessage(GameState);
     }
-    if (Time != 0F) {
-      output.WriteRawTag(29);
-      output.WriteFloat(Time);
+    if (HasTime) {
+      output.WriteRawTag(24);
+      output.WriteInt64(Time);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -259,9 +279,9 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
       output.WriteRawTag(18);
       output.WriteMessage(GameState);
     }
-    if (Time != 0F) {
-      output.WriteRawTag(29);
-      output.WriteFloat(Time);
+    if (HasTime) {
+      output.WriteRawTag(24);
+      output.WriteInt64(Time);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -279,8 +299,8 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     if (typeCase_ == TypeOneofCase.GameState) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(GameState);
     }
-    if (Time != 0F) {
-      size += 1 + 4;
+    if (HasTime) {
+      size += 1 + pb::CodedOutputStream.ComputeInt64Size(Time);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -294,7 +314,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     if (other == null) {
       return;
     }
-    if (other.Time != 0F) {
+    if (other.HasTime) {
       Time = other.Time;
     }
     switch (other.TypeCase) {
@@ -345,8 +365,8 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
           GameState = subBuilder;
           break;
         }
-        case 29: {
-          Time = input.ReadFloat();
+        case 24: {
+          Time = input.ReadInt64();
           break;
         }
       }
@@ -382,8 +402,8 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
           GameState = subBuilder;
           break;
         }
-        case 29: {
-          Time = input.ReadFloat();
+        case 24: {
+          Time = input.ReadInt64();
           break;
         }
       }
@@ -400,6 +420,7 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
 {
   private static readonly pb::MessageParser<MessageForServer> _parser = new pb::MessageParser<MessageForServer>(() => new MessageForServer());
   private pb::UnknownFieldSet _unknownFields;
+  private int _hasBits0;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public static pb::MessageParser<MessageForServer> Parser { get { return _parser; } }
@@ -427,6 +448,7 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public MessageForServer(MessageForServer other) : this() {
+    _hasBits0 = other._hasBits0;
     time_ = other.time_;
     switch (other.TypeCase) {
       case TypeOneofCase.Input:
@@ -472,14 +494,27 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
 
   /// <summary>Field number for the "time" field.</summary>
   public const int TimeFieldNumber = 3;
-  private float time_;
+  private long time_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public float Time {
-    get { return time_; }
+  public long Time {
+    get { if ((_hasBits0 & 1) != 0) { return time_; } else { return 0L; } }
     set {
+      _hasBits0 |= 1;
       time_ = value;
     }
+  }
+  /// <summary>Gets whether the "time" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasTime {
+    get { return (_hasBits0 & 1) != 0; }
+  }
+  /// <summary>Clears the value of the "time" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearTime() {
+    _hasBits0 &= ~1;
   }
 
   private object type_;
@@ -520,7 +555,7 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     }
     if (!object.Equals(Input, other.Input)) return false;
     if (NewPlayerRequest != other.NewPlayerRequest) return false;
-    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Time, other.Time)) return false;
+    if (Time != other.Time) return false;
     if (TypeCase != other.TypeCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -531,7 +566,7 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     int hash = 1;
     if (typeCase_ == TypeOneofCase.Input) hash ^= Input.GetHashCode();
     if (typeCase_ == TypeOneofCase.NewPlayerRequest) hash ^= NewPlayerRequest.GetHashCode();
-    if (Time != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Time);
+    if (HasTime) hash ^= Time.GetHashCode();
     hash ^= (int) typeCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -559,9 +594,9 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
       output.WriteRawTag(18);
       output.WriteString(NewPlayerRequest);
     }
-    if (Time != 0F) {
-      output.WriteRawTag(29);
-      output.WriteFloat(Time);
+    if (HasTime) {
+      output.WriteRawTag(24);
+      output.WriteInt64(Time);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -581,9 +616,9 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
       output.WriteRawTag(18);
       output.WriteString(NewPlayerRequest);
     }
-    if (Time != 0F) {
-      output.WriteRawTag(29);
-      output.WriteFloat(Time);
+    if (HasTime) {
+      output.WriteRawTag(24);
+      output.WriteInt64(Time);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -601,8 +636,8 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     if (typeCase_ == TypeOneofCase.NewPlayerRequest) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(NewPlayerRequest);
     }
-    if (Time != 0F) {
-      size += 1 + 4;
+    if (HasTime) {
+      size += 1 + pb::CodedOutputStream.ComputeInt64Size(Time);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -616,7 +651,7 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     if (other == null) {
       return;
     }
-    if (other.Time != 0F) {
+    if (other.HasTime) {
       Time = other.Time;
     }
     switch (other.TypeCase) {
@@ -659,8 +694,8 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
           NewPlayerRequest = input.ReadString();
           break;
         }
-        case 29: {
-          Time = input.ReadFloat();
+        case 24: {
+          Time = input.ReadInt64();
           break;
         }
       }
@@ -691,8 +726,8 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
           NewPlayerRequest = input.ReadString();
           break;
         }
-        case 29: {
-          Time = input.ReadFloat();
+        case 24: {
+          Time = input.ReadInt64();
           break;
         }
       }
@@ -1612,17 +1647,10 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   public PlayerInput(PlayerInput other) : this() {
     pos_ = other.pos_ != null ? other.pos_.Clone() : null;
     lookPos_ = other.lookPos_ != null ? other.lookPos_.Clone() : null;
+    lookDirection_ = other.lookDirection_;
     name_ = other.name_;
+    bullets_ = other.bullets_ != null ? other.bullets_.Clone() : null;
     switch (other.ItemCase) {
-      case ItemOneofCase.Action:
-        Action = other.Action;
-        break;
-      case ItemOneofCase.SecondaryAction:
-        SecondaryAction = other.SecondaryAction;
-        break;
-      case ItemOneofCase.DirectionalAction:
-        DirectionalAction = other.DirectionalAction;
-        break;
       case ItemOneofCase.DropItem:
         DropItem = other.DropItem;
         break;
@@ -1664,8 +1692,20 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     }
   }
 
+  /// <summary>Field number for the "lookDirection" field.</summary>
+  public const int LookDirectionFieldNumber = 3;
+  private float lookDirection_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public float LookDirection {
+    get { return lookDirection_; }
+    set {
+      lookDirection_ = value;
+    }
+  }
+
   /// <summary>Field number for the "name" field.</summary>
-  public const int NameFieldNumber = 3;
+  public const int NameFieldNumber = 4;
   private string name_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1688,44 +1728,8 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     name_ = null;
   }
 
-  /// <summary>Field number for the "Action" field.</summary>
-  public const int ActionFieldNumber = 4;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Action {
-    get { return itemCase_ == ItemOneofCase.Action ? (bool) item_ : false; }
-    set {
-      item_ = value;
-      itemCase_ = ItemOneofCase.Action;
-    }
-  }
-
-  /// <summary>Field number for the "SecondaryAction" field.</summary>
-  public const int SecondaryActionFieldNumber = 5;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool SecondaryAction {
-    get { return itemCase_ == ItemOneofCase.SecondaryAction ? (bool) item_ : false; }
-    set {
-      item_ = value;
-      itemCase_ = ItemOneofCase.SecondaryAction;
-    }
-  }
-
-  /// <summary>Field number for the "DirectionalAction" field.</summary>
-  public const int DirectionalActionFieldNumber = 6;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool DirectionalAction {
-    get { return itemCase_ == ItemOneofCase.DirectionalAction ? (bool) item_ : false; }
-    set {
-      item_ = value;
-      itemCase_ = ItemOneofCase.DirectionalAction;
-    }
-  }
-
   /// <summary>Field number for the "DropItem" field.</summary>
-  public const int DropItemFieldNumber = 7;
+  public const int DropItemFieldNumber = 5;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public bool DropItem {
@@ -1737,7 +1741,7 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   }
 
   /// <summary>Field number for the "PickupItem" field.</summary>
-  public const int PickupItemFieldNumber = 8;
+  public const int PickupItemFieldNumber = 6;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int PickupItem {
@@ -1748,15 +1752,24 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     }
   }
 
+  /// <summary>Field number for the "bullets" field.</summary>
+  public const int BulletsFieldNumber = 7;
+  private global::BulletBunch bullets_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::BulletBunch Bullets {
+    get { return bullets_; }
+    set {
+      bullets_ = value;
+    }
+  }
+
   private object item_;
   /// <summary>Enum of possible cases for the "Item" oneof.</summary>
   public enum ItemOneofCase {
     None = 0,
-    Action = 4,
-    SecondaryAction = 5,
-    DirectionalAction = 6,
-    DropItem = 7,
-    PickupItem = 8,
+    DropItem = 5,
+    PickupItem = 6,
   }
   private ItemOneofCase itemCase_ = ItemOneofCase.None;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1789,12 +1802,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     }
     if (!object.Equals(Pos, other.Pos)) return false;
     if (!object.Equals(LookPos, other.LookPos)) return false;
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(LookDirection, other.LookDirection)) return false;
     if (Name != other.Name) return false;
-    if (Action != other.Action) return false;
-    if (SecondaryAction != other.SecondaryAction) return false;
-    if (DirectionalAction != other.DirectionalAction) return false;
     if (DropItem != other.DropItem) return false;
     if (PickupItem != other.PickupItem) return false;
+    if (!object.Equals(Bullets, other.Bullets)) return false;
     if (ItemCase != other.ItemCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -1805,12 +1817,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     int hash = 1;
     if (pos_ != null) hash ^= Pos.GetHashCode();
     if (lookPos_ != null) hash ^= LookPos.GetHashCode();
+    if (LookDirection != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(LookDirection);
     if (HasName) hash ^= Name.GetHashCode();
-    if (itemCase_ == ItemOneofCase.Action) hash ^= Action.GetHashCode();
-    if (itemCase_ == ItemOneofCase.SecondaryAction) hash ^= SecondaryAction.GetHashCode();
-    if (itemCase_ == ItemOneofCase.DirectionalAction) hash ^= DirectionalAction.GetHashCode();
     if (itemCase_ == ItemOneofCase.DropItem) hash ^= DropItem.GetHashCode();
     if (itemCase_ == ItemOneofCase.PickupItem) hash ^= PickupItem.GetHashCode();
+    if (bullets_ != null) hash ^= Bullets.GetHashCode();
     hash ^= (int) itemCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -1838,29 +1849,25 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       output.WriteRawTag(18);
       output.WriteMessage(LookPos);
     }
+    if (LookDirection != 0F) {
+      output.WriteRawTag(29);
+      output.WriteFloat(LookDirection);
+    }
     if (HasName) {
-      output.WriteRawTag(26);
+      output.WriteRawTag(34);
       output.WriteString(Name);
     }
-    if (itemCase_ == ItemOneofCase.Action) {
-      output.WriteRawTag(32);
-      output.WriteBool(Action);
-    }
-    if (itemCase_ == ItemOneofCase.SecondaryAction) {
-      output.WriteRawTag(40);
-      output.WriteBool(SecondaryAction);
-    }
-    if (itemCase_ == ItemOneofCase.DirectionalAction) {
-      output.WriteRawTag(48);
-      output.WriteBool(DirectionalAction);
-    }
     if (itemCase_ == ItemOneofCase.DropItem) {
-      output.WriteRawTag(56);
+      output.WriteRawTag(40);
       output.WriteBool(DropItem);
     }
     if (itemCase_ == ItemOneofCase.PickupItem) {
-      output.WriteRawTag(64);
+      output.WriteRawTag(48);
       output.WriteInt32(PickupItem);
+    }
+    if (bullets_ != null) {
+      output.WriteRawTag(58);
+      output.WriteMessage(Bullets);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -1880,29 +1887,25 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       output.WriteRawTag(18);
       output.WriteMessage(LookPos);
     }
+    if (LookDirection != 0F) {
+      output.WriteRawTag(29);
+      output.WriteFloat(LookDirection);
+    }
     if (HasName) {
-      output.WriteRawTag(26);
+      output.WriteRawTag(34);
       output.WriteString(Name);
     }
-    if (itemCase_ == ItemOneofCase.Action) {
-      output.WriteRawTag(32);
-      output.WriteBool(Action);
-    }
-    if (itemCase_ == ItemOneofCase.SecondaryAction) {
-      output.WriteRawTag(40);
-      output.WriteBool(SecondaryAction);
-    }
-    if (itemCase_ == ItemOneofCase.DirectionalAction) {
-      output.WriteRawTag(48);
-      output.WriteBool(DirectionalAction);
-    }
     if (itemCase_ == ItemOneofCase.DropItem) {
-      output.WriteRawTag(56);
+      output.WriteRawTag(40);
       output.WriteBool(DropItem);
     }
     if (itemCase_ == ItemOneofCase.PickupItem) {
-      output.WriteRawTag(64);
+      output.WriteRawTag(48);
       output.WriteInt32(PickupItem);
+    }
+    if (bullets_ != null) {
+      output.WriteRawTag(58);
+      output.WriteMessage(Bullets);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -1920,23 +1923,20 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     if (lookPos_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(LookPos);
     }
+    if (LookDirection != 0F) {
+      size += 1 + 4;
+    }
     if (HasName) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
-    }
-    if (itemCase_ == ItemOneofCase.Action) {
-      size += 1 + 1;
-    }
-    if (itemCase_ == ItemOneofCase.SecondaryAction) {
-      size += 1 + 1;
-    }
-    if (itemCase_ == ItemOneofCase.DirectionalAction) {
-      size += 1 + 1;
     }
     if (itemCase_ == ItemOneofCase.DropItem) {
       size += 1 + 1;
     }
     if (itemCase_ == ItemOneofCase.PickupItem) {
       size += 1 + pb::CodedOutputStream.ComputeInt32Size(PickupItem);
+    }
+    if (bullets_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Bullets);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -1962,19 +1962,19 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       }
       LookPos.MergeFrom(other.LookPos);
     }
+    if (other.LookDirection != 0F) {
+      LookDirection = other.LookDirection;
+    }
     if (other.HasName) {
       Name = other.Name;
     }
+    if (other.bullets_ != null) {
+      if (bullets_ == null) {
+        Bullets = new global::BulletBunch();
+      }
+      Bullets.MergeFrom(other.Bullets);
+    }
     switch (other.ItemCase) {
-      case ItemOneofCase.Action:
-        Action = other.Action;
-        break;
-      case ItemOneofCase.SecondaryAction:
-        SecondaryAction = other.SecondaryAction;
-        break;
-      case ItemOneofCase.DirectionalAction:
-        DirectionalAction = other.DirectionalAction;
-        break;
       case ItemOneofCase.DropItem:
         DropItem = other.DropItem;
         break;
@@ -2012,28 +2012,27 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
           input.ReadMessage(LookPos);
           break;
         }
-        case 26: {
+        case 29: {
+          LookDirection = input.ReadFloat();
+          break;
+        }
+        case 34: {
           Name = input.ReadString();
           break;
         }
-        case 32: {
-          Action = input.ReadBool();
-          break;
-        }
         case 40: {
-          SecondaryAction = input.ReadBool();
-          break;
-        }
-        case 48: {
-          DirectionalAction = input.ReadBool();
-          break;
-        }
-        case 56: {
           DropItem = input.ReadBool();
           break;
         }
-        case 64: {
+        case 48: {
           PickupItem = input.ReadInt32();
+          break;
+        }
+        case 58: {
+          if (bullets_ == null) {
+            Bullets = new global::BulletBunch();
+          }
+          input.ReadMessage(Bullets);
           break;
         }
       }
@@ -2065,28 +2064,27 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
           input.ReadMessage(LookPos);
           break;
         }
-        case 26: {
+        case 29: {
+          LookDirection = input.ReadFloat();
+          break;
+        }
+        case 34: {
           Name = input.ReadString();
           break;
         }
-        case 32: {
-          Action = input.ReadBool();
-          break;
-        }
         case 40: {
-          SecondaryAction = input.ReadBool();
-          break;
-        }
-        case 48: {
-          DirectionalAction = input.ReadBool();
-          break;
-        }
-        case 56: {
           DropItem = input.ReadBool();
           break;
         }
-        case 64: {
+        case 48: {
           PickupItem = input.ReadInt32();
+          break;
+        }
+        case 58: {
+          if (bullets_ == null) {
+            Bullets = new global::BulletBunch();
+          }
+          input.ReadMessage(Bullets);
           break;
         }
       }
@@ -2667,6 +2665,7 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
 {
   private static readonly pb::MessageParser<BulletBunch> _parser = new pb::MessageParser<BulletBunch>(() => new BulletBunch());
   private pb::UnknownFieldSet _unknownFields;
+  private int _hasBits0;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public static pb::MessageParser<BulletBunch> Parser { get { return _parser; } }
@@ -2694,6 +2693,7 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public BulletBunch(BulletBunch other) : this() {
+    _hasBits0 = other._hasBits0;
     range_ = other.range_;
     speed_ = other.speed_;
     bullets_ = other.bullets_.Clone();
@@ -2712,10 +2712,23 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public float Range {
-    get { return range_; }
+    get { if ((_hasBits0 & 1) != 0) { return range_; } else { return 0F; } }
     set {
+      _hasBits0 |= 1;
       range_ = value;
     }
+  }
+  /// <summary>Gets whether the "range" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasRange {
+    get { return (_hasBits0 & 1) != 0; }
+  }
+  /// <summary>Clears the value of the "range" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearRange() {
+    _hasBits0 &= ~1;
   }
 
   /// <summary>Field number for the "speed" field.</summary>
@@ -2724,10 +2737,23 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public float Speed {
-    get { return speed_; }
+    get { if ((_hasBits0 & 2) != 0) { return speed_; } else { return 0F; } }
     set {
+      _hasBits0 |= 2;
       speed_ = value;
     }
+  }
+  /// <summary>Gets whether the "speed" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasSpeed {
+    get { return (_hasBits0 & 2) != 0; }
+  }
+  /// <summary>Clears the value of the "speed" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearSpeed() {
+    _hasBits0 &= ~2;
   }
 
   /// <summary>Field number for the "bullets" field.</summary>
@@ -2766,8 +2792,8 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (Range != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Range);
-    if (Speed != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Speed);
+    if (HasRange) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Range);
+    if (HasSpeed) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Speed);
     hash ^= bullets_.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -2787,11 +2813,11 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (Range != 0F) {
+    if (HasRange) {
       output.WriteRawTag(13);
       output.WriteFloat(Range);
     }
-    if (Speed != 0F) {
+    if (HasSpeed) {
       output.WriteRawTag(21);
       output.WriteFloat(Speed);
     }
@@ -2806,11 +2832,11 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (Range != 0F) {
+    if (HasRange) {
       output.WriteRawTag(13);
       output.WriteFloat(Range);
     }
-    if (Speed != 0F) {
+    if (HasSpeed) {
       output.WriteRawTag(21);
       output.WriteFloat(Speed);
     }
@@ -2825,10 +2851,10 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (Range != 0F) {
+    if (HasRange) {
       size += 1 + 4;
     }
-    if (Speed != 0F) {
+    if (HasSpeed) {
       size += 1 + 4;
     }
     size += bullets_.CalculateSize(_repeated_bullets_codec);
@@ -2844,10 +2870,10 @@ public sealed partial class BulletBunch : pb::IMessage<BulletBunch>
     if (other == null) {
       return;
     }
-    if (other.Range != 0F) {
+    if (other.HasRange) {
       Range = other.Range;
     }
-    if (other.Speed != 0F) {
+    if (other.HasSpeed) {
       Speed = other.Speed;
     }
     bullets_.Add(other.bullets_);
@@ -2947,7 +2973,8 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public BulletData(BulletData other) : this() {
     startpos_ = other.startpos_ != null ? other.startpos_.Clone() : null;
-    currentPos_ = other.currentPos_ != null ? other.currentPos_.Clone() : null;
+    endPos_ = other.endPos_ != null ? other.endPos_.Clone() : null;
+    progress_ = other.progress_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -2969,15 +2996,27 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
     }
   }
 
-  /// <summary>Field number for the "currentPos" field.</summary>
-  public const int CurrentPosFieldNumber = 2;
-  private global::Vector2Data currentPos_;
+  /// <summary>Field number for the "endPos" field.</summary>
+  public const int EndPosFieldNumber = 2;
+  private global::Vector2Data endPos_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public global::Vector2Data CurrentPos {
-    get { return currentPos_; }
+  public global::Vector2Data EndPos {
+    get { return endPos_; }
     set {
-      currentPos_ = value;
+      endPos_ = value;
+    }
+  }
+
+  /// <summary>Field number for the "progress" field.</summary>
+  public const int ProgressFieldNumber = 3;
+  private float progress_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public float Progress {
+    get { return progress_; }
+    set {
+      progress_ = value;
     }
   }
 
@@ -2997,7 +3036,8 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
       return true;
     }
     if (!object.Equals(Startpos, other.Startpos)) return false;
-    if (!object.Equals(CurrentPos, other.CurrentPos)) return false;
+    if (!object.Equals(EndPos, other.EndPos)) return false;
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Progress, other.Progress)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -3006,7 +3046,8 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
   public override int GetHashCode() {
     int hash = 1;
     if (startpos_ != null) hash ^= Startpos.GetHashCode();
-    if (currentPos_ != null) hash ^= CurrentPos.GetHashCode();
+    if (endPos_ != null) hash ^= EndPos.GetHashCode();
+    if (Progress != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Progress);
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -3029,9 +3070,13 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
       output.WriteRawTag(10);
       output.WriteMessage(Startpos);
     }
-    if (currentPos_ != null) {
+    if (endPos_ != null) {
       output.WriteRawTag(18);
-      output.WriteMessage(CurrentPos);
+      output.WriteMessage(EndPos);
+    }
+    if (Progress != 0F) {
+      output.WriteRawTag(29);
+      output.WriteFloat(Progress);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -3047,9 +3092,13 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
       output.WriteRawTag(10);
       output.WriteMessage(Startpos);
     }
-    if (currentPos_ != null) {
+    if (endPos_ != null) {
       output.WriteRawTag(18);
-      output.WriteMessage(CurrentPos);
+      output.WriteMessage(EndPos);
+    }
+    if (Progress != 0F) {
+      output.WriteRawTag(29);
+      output.WriteFloat(Progress);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -3064,8 +3113,11 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
     if (startpos_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Startpos);
     }
-    if (currentPos_ != null) {
-      size += 1 + pb::CodedOutputStream.ComputeMessageSize(CurrentPos);
+    if (endPos_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(EndPos);
+    }
+    if (Progress != 0F) {
+      size += 1 + 4;
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -3085,11 +3137,14 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
       }
       Startpos.MergeFrom(other.Startpos);
     }
-    if (other.currentPos_ != null) {
-      if (currentPos_ == null) {
-        CurrentPos = new global::Vector2Data();
+    if (other.endPos_ != null) {
+      if (endPos_ == null) {
+        EndPos = new global::Vector2Data();
       }
-      CurrentPos.MergeFrom(other.CurrentPos);
+      EndPos.MergeFrom(other.EndPos);
+    }
+    if (other.Progress != 0F) {
+      Progress = other.Progress;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -3114,10 +3169,14 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
           break;
         }
         case 18: {
-          if (currentPos_ == null) {
-            CurrentPos = new global::Vector2Data();
+          if (endPos_ == null) {
+            EndPos = new global::Vector2Data();
           }
-          input.ReadMessage(CurrentPos);
+          input.ReadMessage(EndPos);
+          break;
+        }
+        case 29: {
+          Progress = input.ReadFloat();
           break;
         }
       }
@@ -3143,10 +3202,14 @@ public sealed partial class BulletData : pb::IMessage<BulletData>
           break;
         }
         case 18: {
-          if (currentPos_ == null) {
-            CurrentPos = new global::Vector2Data();
+          if (endPos_ == null) {
+            EndPos = new global::Vector2Data();
           }
-          input.ReadMessage(CurrentPos);
+          input.ReadMessage(EndPos);
+          break;
+        }
+        case 29: {
+          Progress = input.ReadFloat();
           break;
         }
       }
@@ -3195,6 +3258,12 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     itemId_ = other.itemId_;
     prefabId_ = other.prefabId_;
     pos_ = other.pos_ != null ? other.pos_.Clone() : null;
+    switch (other.TypeCase) {
+      case TypeOneofCase.Gun:
+        Gun = other.Gun.Clone();
+        break;
+    }
+
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -3253,6 +3322,38 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     }
   }
 
+  /// <summary>Field number for the "gun" field.</summary>
+  public const int GunFieldNumber = 4;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::GunData Gun {
+    get { return typeCase_ == TypeOneofCase.Gun ? (global::GunData) type_ : null; }
+    set {
+      type_ = value;
+      typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Gun;
+    }
+  }
+
+  private object type_;
+  /// <summary>Enum of possible cases for the "Type" oneof.</summary>
+  public enum TypeOneofCase {
+    None = 0,
+    Gun = 4,
+  }
+  private TypeOneofCase typeCase_ = TypeOneofCase.None;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public TypeOneofCase TypeCase {
+    get { return typeCase_; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearType() {
+    typeCase_ = TypeOneofCase.None;
+    type_ = null;
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -3271,6 +3372,8 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     if (ItemId != other.ItemId) return false;
     if (PrefabId != other.PrefabId) return false;
     if (!object.Equals(Pos, other.Pos)) return false;
+    if (!object.Equals(Gun, other.Gun)) return false;
+    if (TypeCase != other.TypeCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -3281,6 +3384,8 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     if (ItemId != 0) hash ^= ItemId.GetHashCode();
     if (HasPrefabId) hash ^= PrefabId.GetHashCode();
     if (pos_ != null) hash ^= Pos.GetHashCode();
+    if (typeCase_ == TypeOneofCase.Gun) hash ^= Gun.GetHashCode();
+    hash ^= (int) typeCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -3311,6 +3416,10 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
       output.WriteRawTag(26);
       output.WriteMessage(Pos);
     }
+    if (typeCase_ == TypeOneofCase.Gun) {
+      output.WriteRawTag(34);
+      output.WriteMessage(Gun);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -3333,6 +3442,10 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
       output.WriteRawTag(26);
       output.WriteMessage(Pos);
     }
+    if (typeCase_ == TypeOneofCase.Gun) {
+      output.WriteRawTag(34);
+      output.WriteMessage(Gun);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -3351,6 +3464,9 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     }
     if (pos_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Pos);
+    }
+    if (typeCase_ == TypeOneofCase.Gun) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Gun);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -3376,6 +3492,15 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
       }
       Pos.MergeFrom(other.Pos);
     }
+    switch (other.TypeCase) {
+      case TypeOneofCase.Gun:
+        if (Gun == null) {
+          Gun = new global::GunData();
+        }
+        Gun.MergeFrom(other.Gun);
+        break;
+    }
+
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
 
@@ -3406,6 +3531,15 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
           input.ReadMessage(Pos);
           break;
         }
+        case 34: {
+          global::GunData subBuilder = new global::GunData();
+          if (typeCase_ == TypeOneofCase.Gun) {
+            subBuilder.MergeFrom(Gun);
+          }
+          input.ReadMessage(subBuilder);
+          Gun = subBuilder;
+          break;
+        }
       }
     }
   #endif
@@ -3434,6 +3568,269 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
             Pos = new global::Vector2Data();
           }
           input.ReadMessage(Pos);
+          break;
+        }
+        case 34: {
+          global::GunData subBuilder = new global::GunData();
+          if (typeCase_ == TypeOneofCase.Gun) {
+            subBuilder.MergeFrom(Gun);
+          }
+          input.ReadMessage(subBuilder);
+          Gun = subBuilder;
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
+public sealed partial class GunData : pb::IMessage<GunData>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<GunData> _parser = new pb::MessageParser<GunData>(() => new GunData());
+  private pb::UnknownFieldSet _unknownFields;
+  private int _hasBits0;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<GunData> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::DataTypesReflection.Descriptor.MessageTypes[11]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GunData() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GunData(GunData other) : this() {
+    _hasBits0 = other._hasBits0;
+    amo_ = other.amo_;
+    reload_ = other.reload_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GunData Clone() {
+    return new GunData(this);
+  }
+
+  /// <summary>Field number for the "amo" field.</summary>
+  public const int AmoFieldNumber = 1;
+  private float amo_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public float Amo {
+    get { if ((_hasBits0 & 1) != 0) { return amo_; } else { return 0F; } }
+    set {
+      _hasBits0 |= 1;
+      amo_ = value;
+    }
+  }
+  /// <summary>Gets whether the "amo" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasAmo {
+    get { return (_hasBits0 & 1) != 0; }
+  }
+  /// <summary>Clears the value of the "amo" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearAmo() {
+    _hasBits0 &= ~1;
+  }
+
+  /// <summary>Field number for the "reload" field.</summary>
+  public const int ReloadFieldNumber = 2;
+  private float reload_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public float Reload {
+    get { if ((_hasBits0 & 2) != 0) { return reload_; } else { return 0F; } }
+    set {
+      _hasBits0 |= 2;
+      reload_ = value;
+    }
+  }
+  /// <summary>Gets whether the "reload" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasReload {
+    get { return (_hasBits0 & 2) != 0; }
+  }
+  /// <summary>Clears the value of the "reload" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearReload() {
+    _hasBits0 &= ~2;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as GunData);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(GunData other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Amo, other.Amo)) return false;
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Reload, other.Reload)) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (HasAmo) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Amo);
+    if (HasReload) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Reload);
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (HasAmo) {
+      output.WriteRawTag(13);
+      output.WriteFloat(Amo);
+    }
+    if (HasReload) {
+      output.WriteRawTag(21);
+      output.WriteFloat(Reload);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (HasAmo) {
+      output.WriteRawTag(13);
+      output.WriteFloat(Amo);
+    }
+    if (HasReload) {
+      output.WriteRawTag(21);
+      output.WriteFloat(Reload);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (HasAmo) {
+      size += 1 + 4;
+    }
+    if (HasReload) {
+      size += 1 + 4;
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(GunData other) {
+    if (other == null) {
+      return;
+    }
+    if (other.HasAmo) {
+      Amo = other.Amo;
+    }
+    if (other.HasReload) {
+      Reload = other.Reload;
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 13: {
+          Amo = input.ReadFloat();
+          break;
+        }
+        case 21: {
+          Reload = input.ReadFloat();
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 13: {
+          Amo = input.ReadFloat();
+          break;
+        }
+        case 21: {
+          Reload = input.ReadFloat();
           break;
         }
       }

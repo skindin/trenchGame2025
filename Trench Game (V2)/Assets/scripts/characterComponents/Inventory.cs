@@ -259,7 +259,7 @@ public class Inventory : MonoBehaviour
         }//actually, I do have to run this, because sometimes items are picked up by other characters, and the chunk won't alert them of that
         //would probably better for the chunk to manage all this...
 
-        if (withinRadius.Contains(item))
+        if (true || withinRadius.Contains(item))
         {
             item.Pickup(character, out var pickedUp, out var destroyed);
             if (pickedUp)
@@ -320,13 +320,13 @@ public class Inventory : MonoBehaviour
 
     }
 
-    public void DropAllItems()
+    public void DropAllItems(bool sync = false)
     {
         for (int i = 0; i < items.Count; i++)
         {
             var item = items[0];
 
-            DropItem(item);
+            DropItem(item, transform.position, sync);
             i--;
         }
     }

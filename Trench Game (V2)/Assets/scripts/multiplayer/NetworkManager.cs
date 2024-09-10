@@ -13,6 +13,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameClient client;
     public GameServer server;
 
+    public float time = 0; //might be good to add unscaled time later...
     //int PosSyncsPerFrame = 0;
 
     public void SetPos(Vector2 pos, int id)
@@ -71,6 +72,20 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
 
         Debug.Log($"told server it dropped current item");
+#endif
+    }
+
+    public void SyncBullet (Bullet bullet)
+    {
+#if (!UNITY_SERVER || UNITY_EDITOR) //for now, just assuming the client's framerate is sufficient
+        //BulletBunch bunch = new();
+
+        //var startPosData = DataManager.VectorToData(bullet.startPos);
+        //var endPosData = DataManager.VectorToData(bullet.startPos + bullet.velocity.normalized * bullet.range);
+
+        //bunch.Bullets.Add(new BulletData { Startpos = startPosData, EndPos = endPosData });
+
+
 #endif
     }
 
