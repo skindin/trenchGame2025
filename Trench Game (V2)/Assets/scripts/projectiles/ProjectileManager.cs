@@ -40,11 +40,12 @@ public class ProjectileManager : MonoBehaviour
             );
     }
 
-    public Bullet NewBullet (Vector2 pos, Vector2 velocity, float range, float damage, Character source)
+    public Bullet NewBullet (Vector2 startPos, Vector2 velocity, float range, float damage, Character source, float progress = 0)
     {
         var newBullet = bulletPool.GetFromPool();
 
-        newBullet.pos = newBullet.startPos = pos;
+        newBullet.startPos = startPos;
+        newBullet.pos = startPos + velocity.normalized * range * progress;
         newBullet.velocity = velocity;
         newBullet.range = range;
         newBullet.source = source;

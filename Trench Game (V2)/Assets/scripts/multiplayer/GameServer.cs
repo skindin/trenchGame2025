@@ -91,7 +91,7 @@ public class GameServer : MonoBehaviour
         return;
 #endif
 
-        NetworkManager.Manager.time = Time.time;
+        NetworkManager.Manager.Time = Time.time;
 
         //bool sentSomeData = actionQueue.Count > 0;
 
@@ -561,12 +561,12 @@ public class ClientBehavior : WebSocketBehavior
 
                                 switch (message.Input.ItemCase)
                                 {
-                                    case PlayerInput.ItemOneofCase.Action:
-                                        break;
+                                    //case PlayerInput.ItemOneofCase.Action:
+                                    //    break;
 
-                                    case PlayerInput.ItemOneofCase.SecondaryAction: break;
+                                    //case PlayerInput.ItemOneofCase.SecondaryAction: break;
 
-                                    case PlayerInput.ItemOneofCase.DirectionalAction: break;
+                                    //case PlayerInput.ItemOneofCase.DirectionalAction: break;
 
                                     case PlayerInput.ItemOneofCase.DropItem:
                                         droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id , Pos = message.Input.LookPos});

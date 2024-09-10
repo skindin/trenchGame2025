@@ -2,8 +2,8 @@
 //using System.Collections.Generic;
 //using System.IO;
 //using System;
-using UnityEngine;
 using Google.Protobuf;
+using UnityEngine;
 //using System;
 
 public class NetworkManager : ManagerBase<NetworkManager>
@@ -13,8 +13,23 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameClient client;
     public GameServer server;
 
-    public float time = 0; //might be good to add unscaled time later...
-    //int PosSyncsPerFrame = 0;
+    float time;
+    public float Time
+    {
+        get { return time; }
+
+        set
+        {
+            //var floored = Mathf.Floor(value);
+
+            //if (floored > Mathf.Floor(time))
+            //{
+            //    XPlatformLog($"T = {floored}");
+            //}
+
+            time = value;
+        }
+    }
 
     public void SetPos(Vector2 pos, int id)
     {
@@ -75,17 +90,22 @@ public class NetworkManager : ManagerBase<NetworkManager>
 #endif
     }
 
-    public void SyncBullet (Bullet bullet)
+    public void SpawnBullet(Bullet bullet)
     {
-#if (!UNITY_SERVER || UNITY_EDITOR) //for now, just assuming the client's framerate is sufficient
-        //BulletBunch bunch = new();
+#if (!UNITY_SERVER || UNITY_EDITOR)// && false
 
-        //var startPosData = DataManager.VectorToData(bullet.startPos);
-        //var endPosData = DataManager.VectorToData(bullet.startPos + bullet.velocity.normalized * bullet.range);
+        BulletBunch bunch = new();
 
-        //bunch.Bullets.Add(new BulletData { Startpos = startPosData, EndPos = endPosData });
+        var startPosData = DataManager.VectorToData(bullet.startPos);
+        var endPosData = DataManager.VectorToData(bullet.startPos + bullet.velocity.normalized * bullet.range);
 
+        bunch.Bullets.Add(new BulletData { Startpos = startPosData, Endpos = endPosData });
 
+        var input = new PlayerInput { Bullets = bunch };
+
+        var message = new MessageForServer { Input = input, Time = Time };
+
+        client.SendData(message.ToByteArray());
 #endif
     }
 

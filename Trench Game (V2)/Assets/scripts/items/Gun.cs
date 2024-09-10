@@ -237,7 +237,9 @@ public class Gun : Weapon
             GunModel.DamagePerBullet,
             wielder);
 
-        NetworkManager.Manager.SyncBullet(bullet);
+        NetworkManager.Manager.SpawnBullet(bullet);
+
+        return bullet;
     }
 
     public override void ItemUpdate()
