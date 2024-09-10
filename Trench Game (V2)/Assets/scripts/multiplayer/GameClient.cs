@@ -48,7 +48,7 @@ public class GameClient : MonoBehaviour
 
     private void Update()
     {
-        NetworkManager.Manager.time = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
+        NetworkManager.Manager.Time = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
 
         //bool sentSomeData = actionQueue.Count > 0;
 

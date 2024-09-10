@@ -13,8 +13,34 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameClient client;
     public GameServer server;
 
-    public float time = 0;
+
+    float time;
+    public float Time 
+    {
+        get {  return time; }
+
+        set
+        {
+            var floored = Mathf.Floor(value);
+
+            if (floored > Mathf.Floor(time))
+            {
+                XPlatformLog($"T = {floored}");
+            }
+
+            time = value;
+        }
+    }
     //int PosSyncsPerFrame = 0;
+
+    public static void XPlatformLog (string log)
+    {
+#if UNITY_EDITOR// && false
+        Debug.Log (log);
+#else
+        System.Console.WriteLine(log);
+#endif
+    }
 
     public void SetPos(Vector2 pos, int id)
     {

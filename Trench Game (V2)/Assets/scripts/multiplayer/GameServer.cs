@@ -85,7 +85,18 @@ public class GameServer : MonoBehaviour
 
     private void LateUpdate()
     {
-        NetworkManager.Manager.time = Time.time;
+#if !UNITY_SERVER || UNITY_EDITOR
+        return;
+#endif
+
+        var flooredTime = Mathf.Floor(Time.time);
+
+        if (Mathf.Floor(NetworkManager.Manager.Time) < flooredTime)
+        {
+            Console.WriteLine(flooredTime);
+        }
+
+        NetworkManager.Manager.Time = Time.time;
 
         //bool sentSomeData = actionQueue.Count > 0;
 
