@@ -8,6 +8,7 @@ message MessageForClient
         GameState gameState = 2;
     }
     optional float time = 3;
+    optional int64 startTick = 4;
 }
 
 message MessageForServer
@@ -18,6 +19,7 @@ message MessageForServer
         string newPlayerRequest = 2;
     }
     optional float time = 3;
+    optional int64 tick = 4;
 }
 
 message NewPlayerGrant
@@ -25,7 +27,6 @@ message NewPlayerGrant
     CharacterData NewPlayer = 1;
     CharDataList CurrentChars = 2;
     repeated ItemData currentItems = 3;
-    int64 startTime = 4;
 }
 
 message GameState

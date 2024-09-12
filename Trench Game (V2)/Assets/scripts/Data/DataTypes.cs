@@ -22,47 +22,48 @@ public static partial class DataTypesReflection {
   static DataTypesReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg9kYXRhVHlwZXMucHJvdG8iggEKEE1lc3NhZ2VGb3JDbGllbnQSKQoObmV3",
+          "Cg9kYXRhVHlwZXMucHJvdG8iqAEKEE1lc3NhZ2VGb3JDbGllbnQSKQoObmV3",
           "UGxheWVyR3JhbnQYASABKAsyDy5OZXdQbGF5ZXJHcmFudEgAEh8KCWdhbWVT",
-          "dGF0ZRgCIAEoCzIKLkdhbWVTdGF0ZUgAEhEKBHRpbWUYAyABKAJIAYgBAUIG",
-          "CgRUeXBlQgcKBV90aW1lInEKEE1lc3NhZ2VGb3JTZXJ2ZXISHQoFaW5wdXQY",
-          "ASABKAsyDC5QbGF5ZXJJbnB1dEgAEhoKEG5ld1BsYXllclJlcXVlc3QYAiAB",
-          "KAlIABIRCgR0aW1lGAMgASgCSAGIAQFCBgoEVHlwZUIHCgVfdGltZSKMAQoO",
-          "TmV3UGxheWVyR3JhbnQSIQoJTmV3UGxheWVyGAEgASgLMg4uQ2hhcmFjdGVy",
-          "RGF0YRIjCgxDdXJyZW50Q2hhcnMYAiABKAsyDS5DaGFyRGF0YUxpc3QSHwoM",
-          "Y3VycmVudEl0ZW1zGAMgAygLMgkuSXRlbURhdGESEQoJc3RhcnRUaW1lGAQg",
-          "ASgDIt8BCglHYW1lU3RhdGUSJQoObmV3UmVtb3RlQ2hhcnMYASABKAsyDS5D",
-          "aGFyRGF0YUxpc3QSIgoLdXBkYXRlQ2hhcnMYAiABKAsyDS5DaGFyRGF0YUxp",
-          "c3QSEwoLcmVtb3ZlQ2hhcnMYAyADKAUSIAoKbmV3QnVsbGV0cxgEIAMoCzIM",
-          "LkJ1bGxldEJ1bmNoEhsKCG5ld0l0ZW1zGAUgAygLMgkuSXRlbURhdGESHgoL",
-          "dXBkYXRlSXRlbXMYBiADKAsyCS5JdGVtRGF0YRITCgtyZW1vdmVJdGVtcxgH",
-          "IAMoBSIjCgtWZWN0b3IyRGF0YRIJCgF4GAEgASgCEgkKAXkYAiABKAIi0gEK",
-          "C1BsYXllcklucHV0EhkKA3BvcxgBIAEoCzIMLlZlY3RvcjJEYXRhEh0KB2xv",
-          "b2tQb3MYAiABKAsyDC5WZWN0b3IyRGF0YRISCgVhbmdsZRgDIAEoAkgBiAEB",
-          "EhEKBG5hbWUYBCABKAlIAogBARISCghEcm9wSXRlbRgFIAEoCEgAEhQKClBp",
-          "Y2t1cEl0ZW0YBiABKAVIABIdCgdidWxsZXRzGAcgASgLMgwuQnVsbGV0QnVu",
-          "Y2hCBgoESXRlbUIICgZfYW5nbGVCBwoFX25hbWUisQEKDUNoYXJhY3RlckRh",
-          "dGESEwoLY2hhcmFjdGVySUQYASABKAUSGQoDcG9zGAIgASgLMgwuVmVjdG9y",
-          "MkRhdGESEQoEbmFtZRgDIAEoCUgAiAEBEg8KAmhwGAQgASgCSAGIAQESEwoG",
-          "aXRlbUlkGAUgASgFSAKIAQESEgoFYW5nbGUYBiABKAJIA4gBAUIHCgVfbmFt",
-          "ZUIFCgNfaHBCCQoHX2l0ZW1JZEIICgZfYW5nbGUiLAoMQ2hhckRhdGFMaXN0",
-          "EhwKBGxpc3QYASADKAsyDi5DaGFyYWN0ZXJEYXRhIqQBCgtCdWxsZXRCdW5j",
-          "aBISCgVyYW5nZRgBIAEoAkgAiAEBEhIKBXNwZWVkGAIgASgCSAGIAQESHAoH",
-          "YnVsbGV0cxgDIAMoCzILLkJ1bGxldERhdGESEQoJc3RhcnRUaW1lGAQgASgC",
-          "EhgKC2NoYXJhY3RlcklkGAUgASgFSAKIAQFCCAoGX3JhbmdlQggKBl9zcGVl",
-          "ZEIOCgxfY2hhcmFjdGVySWQiSgoKQnVsbGV0RGF0YRIeCghzdGFydHBvcxgB",
-          "IAEoCzIMLlZlY3RvcjJEYXRhEhwKBmVuZHBvcxgCIAEoCzIMLlZlY3RvcjJE",
-          "YXRhInoKCEl0ZW1EYXRhEg4KBml0ZW1JZBgBIAEoBRIVCghwcmVmYWJJZBgC",
-          "IAEoBUgBiAEBEhkKA3BvcxgDIAEoCzIMLlZlY3RvcjJEYXRhEhcKA2d1bhgE",
-          "IAEoCzIILkd1bkRhdGFIAEIGCgRUeXBlQgsKCV9wcmVmYWJJZCJDCgdHdW5E",
-          "YXRhEhAKA2FtbxgBIAEoBUgAiAEBEhMKBnJlbG9hZBgCIAEoAkgBiAEBQgYK",
-          "BF9hbW9CCQoHX3JlbG9hZGIGcHJvdG8z"));
+          "dGF0ZRgCIAEoCzIKLkdhbWVTdGF0ZUgAEhEKBHRpbWUYAyABKAJIAYgBARIW",
+          "CglzdGFydFRpY2sYBCABKANIAogBAUIGCgRUeXBlQgcKBV90aW1lQgwKCl9z",
+          "dGFydFRpY2sijQEKEE1lc3NhZ2VGb3JTZXJ2ZXISHQoFaW5wdXQYASABKAsy",
+          "DC5QbGF5ZXJJbnB1dEgAEhoKEG5ld1BsYXllclJlcXVlc3QYAiABKAlIABIR",
+          "CgR0aW1lGAMgASgCSAGIAQESEQoEdGljaxgEIAEoA0gCiAEBQgYKBFR5cGVC",
+          "BwoFX3RpbWVCBwoFX3RpY2sieQoOTmV3UGxheWVyR3JhbnQSIQoJTmV3UGxh",
+          "eWVyGAEgASgLMg4uQ2hhcmFjdGVyRGF0YRIjCgxDdXJyZW50Q2hhcnMYAiAB",
+          "KAsyDS5DaGFyRGF0YUxpc3QSHwoMY3VycmVudEl0ZW1zGAMgAygLMgkuSXRl",
+          "bURhdGEi3wEKCUdhbWVTdGF0ZRIlCg5uZXdSZW1vdGVDaGFycxgBIAEoCzIN",
+          "LkNoYXJEYXRhTGlzdBIiCgt1cGRhdGVDaGFycxgCIAEoCzINLkNoYXJEYXRh",
+          "TGlzdBITCgtyZW1vdmVDaGFycxgDIAMoBRIgCgpuZXdCdWxsZXRzGAQgAygL",
+          "MgwuQnVsbGV0QnVuY2gSGwoIbmV3SXRlbXMYBSADKAsyCS5JdGVtRGF0YRIe",
+          "Cgt1cGRhdGVJdGVtcxgGIAMoCzIJLkl0ZW1EYXRhEhMKC3JlbW92ZUl0ZW1z",
+          "GAcgAygFIiMKC1ZlY3RvcjJEYXRhEgkKAXgYASABKAISCQoBeRgCIAEoAiLS",
+          "AQoLUGxheWVySW5wdXQSGQoDcG9zGAEgASgLMgwuVmVjdG9yMkRhdGESHQoH",
+          "bG9va1BvcxgCIAEoCzIMLlZlY3RvcjJEYXRhEhIKBWFuZ2xlGAMgASgCSAGI",
+          "AQESEQoEbmFtZRgEIAEoCUgCiAEBEhIKCERyb3BJdGVtGAUgASgISAASFAoK",
+          "UGlja3VwSXRlbRgGIAEoBUgAEh0KB2J1bGxldHMYByABKAsyDC5CdWxsZXRC",
+          "dW5jaEIGCgRJdGVtQggKBl9hbmdsZUIHCgVfbmFtZSKxAQoNQ2hhcmFjdGVy",
+          "RGF0YRITCgtjaGFyYWN0ZXJJRBgBIAEoBRIZCgNwb3MYAiABKAsyDC5WZWN0",
+          "b3IyRGF0YRIRCgRuYW1lGAMgASgJSACIAQESDwoCaHAYBCABKAJIAYgBARIT",
+          "CgZpdGVtSWQYBSABKAVIAogBARISCgVhbmdsZRgGIAEoAkgDiAEBQgcKBV9u",
+          "YW1lQgUKA19ocEIJCgdfaXRlbUlkQggKBl9hbmdsZSIsCgxDaGFyRGF0YUxp",
+          "c3QSHAoEbGlzdBgBIAMoCzIOLkNoYXJhY3RlckRhdGEipAEKC0J1bGxldEJ1",
+          "bmNoEhIKBXJhbmdlGAEgASgCSACIAQESEgoFc3BlZWQYAiABKAJIAYgBARIc",
+          "CgdidWxsZXRzGAMgAygLMgsuQnVsbGV0RGF0YRIRCglzdGFydFRpbWUYBCAB",
+          "KAISGAoLY2hhcmFjdGVySWQYBSABKAVIAogBAUIICgZfcmFuZ2VCCAoGX3Nw",
+          "ZWVkQg4KDF9jaGFyYWN0ZXJJZCJKCgpCdWxsZXREYXRhEh4KCHN0YXJ0cG9z",
+          "GAEgASgLMgwuVmVjdG9yMkRhdGESHAoGZW5kcG9zGAIgASgLMgwuVmVjdG9y",
+          "MkRhdGEiegoISXRlbURhdGESDgoGaXRlbUlkGAEgASgFEhUKCHByZWZhYklk",
+          "GAIgASgFSAGIAQESGQoDcG9zGAMgASgLMgwuVmVjdG9yMkRhdGESFwoDZ3Vu",
+          "GAQgASgLMgguR3VuRGF0YUgAQgYKBFR5cGVCCwoJX3ByZWZhYklkIkMKB0d1",
+          "bkRhdGESEAoDYW1vGAEgASgFSACIAQESEwoGcmVsb2FkGAIgASgCSAGIAQFC",
+          "BgoEX2Ftb0IJCgdfcmVsb2FkYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForClient), global::MessageForClient.Parser, new[]{ "NewPlayerGrant", "GameState", "Time" }, new[]{ "Type", "Time" }, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForServer), global::MessageForServer.Parser, new[]{ "Input", "NewPlayerRequest", "Time" }, new[]{ "Type", "Time" }, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::NewPlayerGrant), global::NewPlayerGrant.Parser, new[]{ "NewPlayer", "CurrentChars", "CurrentItems", "StartTime" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForClient), global::MessageForClient.Parser, new[]{ "NewPlayerGrant", "GameState", "Time", "StartTick" }, new[]{ "Type", "Time", "StartTick" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::MessageForServer), global::MessageForServer.Parser, new[]{ "Input", "NewPlayerRequest", "Time", "Tick" }, new[]{ "Type", "Time", "Tick" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::NewPlayerGrant), global::NewPlayerGrant.Parser, new[]{ "NewPlayer", "CurrentChars", "CurrentItems" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GameState), global::GameState.Parser, new[]{ "NewRemoteChars", "UpdateChars", "RemoveChars", "NewBullets", "NewItems", "UpdateItems", "RemoveItems" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Vector2Data), global::Vector2Data.Parser, new[]{ "X", "Y" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Pos", "LookPos", "Angle", "Name", "DropItem", "PickupItem", "Bullets" }, new[]{ "Item", "Angle", "Name" }, null, null, null),
@@ -115,6 +116,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
   public MessageForClient(MessageForClient other) : this() {
     _hasBits0 = other._hasBits0;
     time_ = other.time_;
+    startTick_ = other.startTick_;
     switch (other.TypeCase) {
       case TypeOneofCase.NewPlayerGrant:
         NewPlayerGrant = other.NewPlayerGrant.Clone();
@@ -182,6 +184,31 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     _hasBits0 &= ~1;
   }
 
+  /// <summary>Field number for the "startTick" field.</summary>
+  public const int StartTickFieldNumber = 4;
+  private long startTick_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public long StartTick {
+    get { if ((_hasBits0 & 2) != 0) { return startTick_; } else { return 0L; } }
+    set {
+      _hasBits0 |= 2;
+      startTick_ = value;
+    }
+  }
+  /// <summary>Gets whether the "startTick" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasStartTick {
+    get { return (_hasBits0 & 2) != 0; }
+  }
+  /// <summary>Clears the value of the "startTick" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearStartTick() {
+    _hasBits0 &= ~2;
+  }
+
   private object type_;
   /// <summary>Enum of possible cases for the "Type" oneof.</summary>
   public enum TypeOneofCase {
@@ -221,6 +248,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     if (!object.Equals(NewPlayerGrant, other.NewPlayerGrant)) return false;
     if (!object.Equals(GameState, other.GameState)) return false;
     if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Time, other.Time)) return false;
+    if (StartTick != other.StartTick) return false;
     if (TypeCase != other.TypeCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -232,6 +260,7 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     if (typeCase_ == TypeOneofCase.NewPlayerGrant) hash ^= NewPlayerGrant.GetHashCode();
     if (typeCase_ == TypeOneofCase.GameState) hash ^= GameState.GetHashCode();
     if (HasTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Time);
+    if (HasStartTick) hash ^= StartTick.GetHashCode();
     hash ^= (int) typeCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -263,6 +292,10 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
       output.WriteRawTag(29);
       output.WriteFloat(Time);
     }
+    if (HasStartTick) {
+      output.WriteRawTag(32);
+      output.WriteInt64(StartTick);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -285,6 +318,10 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
       output.WriteRawTag(29);
       output.WriteFloat(Time);
     }
+    if (HasStartTick) {
+      output.WriteRawTag(32);
+      output.WriteInt64(StartTick);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -304,6 +341,9 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     if (HasTime) {
       size += 1 + 4;
     }
+    if (HasStartTick) {
+      size += 1 + pb::CodedOutputStream.ComputeInt64Size(StartTick);
+    }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
@@ -318,6 +358,9 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
     }
     if (other.HasTime) {
       Time = other.Time;
+    }
+    if (other.HasStartTick) {
+      StartTick = other.StartTick;
     }
     switch (other.TypeCase) {
       case TypeOneofCase.NewPlayerGrant:
@@ -371,6 +414,10 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
           Time = input.ReadFloat();
           break;
         }
+        case 32: {
+          StartTick = input.ReadInt64();
+          break;
+        }
       }
     }
   #endif
@@ -406,6 +453,10 @@ public sealed partial class MessageForClient : pb::IMessage<MessageForClient>
         }
         case 29: {
           Time = input.ReadFloat();
+          break;
+        }
+        case 32: {
+          StartTick = input.ReadInt64();
           break;
         }
       }
@@ -452,6 +503,7 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
   public MessageForServer(MessageForServer other) : this() {
     _hasBits0 = other._hasBits0;
     time_ = other.time_;
+    tick_ = other.tick_;
     switch (other.TypeCase) {
       case TypeOneofCase.Input:
         Input = other.Input.Clone();
@@ -519,6 +571,31 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     _hasBits0 &= ~1;
   }
 
+  /// <summary>Field number for the "tick" field.</summary>
+  public const int TickFieldNumber = 4;
+  private long tick_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public long Tick {
+    get { if ((_hasBits0 & 2) != 0) { return tick_; } else { return 0L; } }
+    set {
+      _hasBits0 |= 2;
+      tick_ = value;
+    }
+  }
+  /// <summary>Gets whether the "tick" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasTick {
+    get { return (_hasBits0 & 2) != 0; }
+  }
+  /// <summary>Clears the value of the "tick" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearTick() {
+    _hasBits0 &= ~2;
+  }
+
   private object type_;
   /// <summary>Enum of possible cases for the "Type" oneof.</summary>
   public enum TypeOneofCase {
@@ -558,6 +635,7 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     if (!object.Equals(Input, other.Input)) return false;
     if (NewPlayerRequest != other.NewPlayerRequest) return false;
     if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Time, other.Time)) return false;
+    if (Tick != other.Tick) return false;
     if (TypeCase != other.TypeCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -569,6 +647,7 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     if (typeCase_ == TypeOneofCase.Input) hash ^= Input.GetHashCode();
     if (typeCase_ == TypeOneofCase.NewPlayerRequest) hash ^= NewPlayerRequest.GetHashCode();
     if (HasTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Time);
+    if (HasTick) hash ^= Tick.GetHashCode();
     hash ^= (int) typeCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -600,6 +679,10 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
       output.WriteRawTag(29);
       output.WriteFloat(Time);
     }
+    if (HasTick) {
+      output.WriteRawTag(32);
+      output.WriteInt64(Tick);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -622,6 +705,10 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
       output.WriteRawTag(29);
       output.WriteFloat(Time);
     }
+    if (HasTick) {
+      output.WriteRawTag(32);
+      output.WriteInt64(Tick);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -641,6 +728,9 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     if (HasTime) {
       size += 1 + 4;
     }
+    if (HasTick) {
+      size += 1 + pb::CodedOutputStream.ComputeInt64Size(Tick);
+    }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
@@ -655,6 +745,9 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
     }
     if (other.HasTime) {
       Time = other.Time;
+    }
+    if (other.HasTick) {
+      Tick = other.Tick;
     }
     switch (other.TypeCase) {
       case TypeOneofCase.Input:
@@ -700,6 +793,10 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
           Time = input.ReadFloat();
           break;
         }
+        case 32: {
+          Tick = input.ReadInt64();
+          break;
+        }
       }
     }
   #endif
@@ -730,6 +827,10 @@ public sealed partial class MessageForServer : pb::IMessage<MessageForServer>
         }
         case 29: {
           Time = input.ReadFloat();
+          break;
+        }
+        case 32: {
+          Tick = input.ReadInt64();
           break;
         }
       }
@@ -776,7 +877,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
     newPlayer_ = other.newPlayer_ != null ? other.newPlayer_.Clone() : null;
     currentChars_ = other.currentChars_ != null ? other.currentChars_.Clone() : null;
     currentItems_ = other.currentItems_.Clone();
-    startTime_ = other.startTime_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -821,18 +921,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
     get { return currentItems_; }
   }
 
-  /// <summary>Field number for the "startTime" field.</summary>
-  public const int StartTimeFieldNumber = 4;
-  private long startTime_;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public long StartTime {
-    get { return startTime_; }
-    set {
-      startTime_ = value;
-    }
-  }
-
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -851,7 +939,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
     if (!object.Equals(NewPlayer, other.NewPlayer)) return false;
     if (!object.Equals(CurrentChars, other.CurrentChars)) return false;
     if(!currentItems_.Equals(other.currentItems_)) return false;
-    if (StartTime != other.StartTime) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -862,7 +949,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
     if (newPlayer_ != null) hash ^= NewPlayer.GetHashCode();
     if (currentChars_ != null) hash ^= CurrentChars.GetHashCode();
     hash ^= currentItems_.GetHashCode();
-    if (StartTime != 0L) hash ^= StartTime.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -890,10 +976,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
       output.WriteMessage(CurrentChars);
     }
     currentItems_.WriteTo(output, _repeated_currentItems_codec);
-    if (StartTime != 0L) {
-      output.WriteRawTag(32);
-      output.WriteInt64(StartTime);
-    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -913,10 +995,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
       output.WriteMessage(CurrentChars);
     }
     currentItems_.WriteTo(ref output, _repeated_currentItems_codec);
-    if (StartTime != 0L) {
-      output.WriteRawTag(32);
-      output.WriteInt64(StartTime);
-    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -934,9 +1012,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(CurrentChars);
     }
     size += currentItems_.CalculateSize(_repeated_currentItems_codec);
-    if (StartTime != 0L) {
-      size += 1 + pb::CodedOutputStream.ComputeInt64Size(StartTime);
-    }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
@@ -962,9 +1037,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
       CurrentChars.MergeFrom(other.CurrentChars);
     }
     currentItems_.Add(other.currentItems_);
-    if (other.StartTime != 0L) {
-      StartTime = other.StartTime;
-    }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
 
@@ -998,10 +1070,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
           currentItems_.AddEntriesFrom(input, _repeated_currentItems_codec);
           break;
         }
-        case 32: {
-          StartTime = input.ReadInt64();
-          break;
-        }
       }
     }
   #endif
@@ -1033,10 +1101,6 @@ public sealed partial class NewPlayerGrant : pb::IMessage<NewPlayerGrant>
         }
         case 26: {
           currentItems_.AddEntriesFrom(ref input, _repeated_currentItems_codec);
-          break;
-        }
-        case 32: {
-          StartTime = input.ReadInt64();
           break;
         }
       }

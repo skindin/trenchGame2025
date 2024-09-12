@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
@@ -81,8 +82,8 @@ public class GameServer : MonoBehaviour
             Console.WriteLine("Stack Trace: " + ex.StackTrace);
         }
 
-                Application.targetFrameRate = targetFramerate;
-                Console.WriteLine($"Target framerate set to {targetFramerate}");
+        Application.targetFrameRate = targetFramerate;
+        Console.WriteLine($"Target framerate set to {targetFramerate}");
     }
 
     public CharDataList newPlayerList = new(), updateList = new(), currentCharData = new();
@@ -98,7 +99,7 @@ public class GameServer : MonoBehaviour
         return;
 #endif
 
-        NetworkManager.Manager.NetTime = Time.time;
+        NetworkManager.Manager.NetTime = Time.unscaledTime;
 
         //bool sentSomeData = actionQueue.Count > 0;
 
@@ -155,7 +156,7 @@ public class GameServer : MonoBehaviour
                 if (client.update.Pos != null)
                 {
                     var pos = DataManager.ConvertDataToVector(client.update.Pos);
-                    character.SetPos(pos,false);
+                    character.SetPos(pos, false);
                 }
 
                 foreach (var droppedItem in client.droppedItems)
@@ -254,10 +255,10 @@ public class GameServer : MonoBehaviour
                                 break;
                             }
                         }
-                        
+
                         if (activeItem == null)
                         {
-                            activeItem = new ItemData { ItemId = currentChar.ItemId};
+                            activeItem = new ItemData { ItemId = currentChar.ItemId };
                         }
 
                         activeItem.Pos = currentChar.Pos;
@@ -296,15 +297,17 @@ public class GameServer : MonoBehaviour
 
                 //var startTime = LogicAndMath.SecondsToTicks(Time.time);
 
-                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer , CurrentChars = currentChars, StartTime = startTick};
+                var grant = new NewPlayerGrant { NewPlayer = client.newPlayer, CurrentChars = currentChars };
 
                 foreach (var item in currentItems) //might be better to make this it's own message, this readonly thing getting annoying
                 {
                     grant.CurrentItems.Add(item);
                 }
 
-                var message = new MessageForClient { NewPlayerGrant = grant, Time = Time.deltaTime };
+                var message = new MessageForClient { NewPlayerGrant = grant };
                 client.SendData(message.ToByteArray());
+
+                client.connStartTick = DateTime.UtcNow.Ticks;
 
                 currentChars.List.Add(currentChar);
 
@@ -382,14 +385,14 @@ public class GameServer : MonoBehaviour
                 //    NetworkManager.XPlatformLog($"told client {client.character.id} to spawn {newBullets.Count} bullet(s)");
                 //}
 
-                if ( true || 
+                if (true ||
                     gameState.UpdateChars != null ||
-                    gameState.NewRemoteChars != null || 
+                    gameState.NewRemoteChars != null ||
                     gameState.RemoveChars != null ||
                     gameState.NewItems.Count > 0
                     )
                 {
-                    var message = new MessageForClient { GameState = gameState , Time = Time.deltaTime};
+                    var message = new MessageForClient { GameState = gameState, Time = Time.deltaTime };
 
                     client.SendData(message.ToByteArray());
                     LogLists();
@@ -459,10 +462,10 @@ public class GameServer : MonoBehaviour
         }
     }
 
-    public void AddCharacter (Character character)
+    public void AddCharacter(Character character)
     {
         var pos = DataManager.VectorToData(character.transform.position);
-        var data = new CharacterData{CharacterID = character.id, Pos = pos, Name = character.characterName};
+        var data = new CharacterData { CharacterID = character.id, Pos = pos, Name = character.characterName };
         currentCharData.List.Add(data);
     }
 
@@ -474,7 +477,7 @@ public class GameServer : MonoBehaviour
         currentItems.Add(data);
     }
 
-    public void Broadcast (byte[] message)
+    public void Broadcast(byte[] message)
     {
         //foreach (var session in wssv.WebSocketServices["/Echo"].Sessions) ;
 
@@ -508,13 +511,13 @@ public class GameServer : MonoBehaviour
         }
     }
 
-//    private void Update()
-//    {
-//#if UNITY_SERVER && !UNITY_EDITOR 
-////||true
-//        BroadCast("server spamming client");
-//#endif
-//    }
+    //    private void Update()
+    //    {
+    //#if UNITY_SERVER && !UNITY_EDITOR 
+    ////||true
+    //        BroadCast("server spamming client");
+    //#endif
+    //    }
 
 
 
@@ -526,184 +529,201 @@ public class GameServer : MonoBehaviour
             wssv = null;
         }
     }
-}
 
-public class ClientBehavior : WebSocketBehavior
-{
-    public static GameServer server;
-
-    public CharacterData remove, update, newPlayer;
-
-    public List<ItemData> droppedItems = new(); //GOTTA MAKE THIS LIST THE ITEMS IT'S DROPPING
-
-    public Character character;
-
-    public BulletBunch bullets = new();
-
-    //public ClientBehavior (GameServer server)
-    //{
-    //    ClientBehavior.server = server;
-    //}
-
-    protected override void OnOpen()
+    public class ClientBehavior : WebSocketBehavior
     {
-        //Console.WriteLine("New clientBehavior connected.");
-        server.clients.Add(ID, this);
-    }
+        public static GameServer server;
 
-    protected override void OnMessage(MessageEventArgs e)
-    {
+        public CharacterData remove, update, newPlayer;
 
+        public List<ItemData> droppedItems = new(); //GOTTA MAKE THIS LIST THE ITEMS IT'S DROPPING
 
-        // Use Coroutine on the main thread
-        //Console.WriteLine("onmessage started on server");
-        server.actionQueue.Enqueue(() => UseData(e.RawData));
-        //Console.WriteLine("started coroutine on server");
+        public Character character;
 
-        void UseData(byte[] rawData)
+        public BulletBunch bullets = new();
+
+        public long connStartTick;
+
+        //public ClientBehavior (GameServer server)
+        //{
+        //    ClientBehavior.server = server;
+        //}
+
+        protected override void OnOpen()
         {
-            if (e.IsText)
+            //Console.WriteLine("New clientBehavior connected.");
+            server.clients.Add(ID, this);
+        }
+
+        protected override void OnMessage(MessageEventArgs e)
+        {
+
+
+            // Use Coroutine on the main thread
+            //Console.WriteLine("onmessage started on server");
+            server.actionQueue.Enqueue(() => UseData(e.RawData));
+            //Console.WriteLine("started coroutine on server");
+
+            void UseData(byte[] rawData)
             {
-                Console.WriteLine("Server received message: " + e.Data);
-                //return;
-            }
-            else if (DataManager.IfGet<MessageForServer>(rawData, out var message))
-            {
-                switch (message.TypeCase)
+                if (e.IsText)
                 {
-                    case MessageForServer.TypeOneofCase.NewPlayerRequest:
-                        {
-                            if (!character && newPlayer == null)
+                    Console.WriteLine("Server received message: " + e.Data);
+                    //return;
+                }
+                else if (DataManager.IfGet<MessageForServer>(rawData, out var message))
+                {
+                    switch (message.TypeCase)
+                    {
+                        case MessageForServer.TypeOneofCase.NewPlayerRequest:
                             {
-                                //var pos = ChunkManager.Manager.GetRandomPos();
+                                if (!character && newPlayer == null)
+                                {
+                                    //var pos = ChunkManager.Manager.GetRandomPos();
 
-                                var name = message.NewPlayerRequest;
+                                    var name = message.NewPlayerRequest;
 
-                                newPlayer = new CharacterData {Name = name};
+                                    newPlayer = new CharacterData { Name = name };
 
-                                Console.WriteLine($"recieved new player request");
+                                    Console.WriteLine($"recieved new player request");
+                                }
                             }
-                        }
-                        break;
+                            break;
 
-                    case MessageForServer.TypeOneofCase.Input:
-                        {
-                            if (server.playerCharacters.TryGetValue(ID, out var character))
+                        case MessageForServer.TypeOneofCase.Input:
                             {
-                                var charData = new CharacterData {CharacterID = this.character.id};
-
-                                if (message.Input.Pos != null)
+                                if (server.playerCharacters.TryGetValue(ID, out var character))
                                 {
-                                    charData.Pos = message.Input.Pos;
-                                }
+                                    var charData = new CharacterData { CharacterID = this.character.id };
 
-                                if (message.Input.HasName)
-                                {
-                                    charData.Name = message.Input.Name;
-                                    //Console.WriteLine($"recieved new name {message.Input.Name}");
-                                }
+                                    if (message.Input.Pos != null)
+                                    {
+                                        charData.Pos = message.Input.Pos;
+                                    }
 
-                                if (message.Input.HasAngle)
-                                {
-                                    charData.Angle = message.Input.Angle;
-                                    //Console.WriteLine($"recieved angle {charData.Angle} for character {character.id}");
-                                }
+                                    if (message.Input.HasName)
+                                    {
+                                        charData.Name = message.Input.Name;
+                                        //Console.WriteLine($"recieved new name {message.Input.Name}");
+                                    }
 
-                                if (update != null)
-                                {
-                                    DataManager.CombineCharData(update, charData);
+                                    if (message.Input.HasAngle)
+                                    {
+                                        charData.Angle = message.Input.Angle;
+                                        //Console.WriteLine($"recieved angle {charData.Angle} for character {character.id}");
+                                    }
+
+                                    if (update != null)
+                                    {
+                                        DataManager.CombineCharData(update, charData);
+                                    }
+                                    else
+                                        update = charData;
+
+                                    switch (message.Input.ItemCase)
+                                    {
+                                        //case PlayerInput.ItemOneofCase.Action:
+                                        //    break;
+
+                                        //case PlayerInput.ItemOneofCase.SecondaryAction: break;
+
+                                        //case PlayerInput.ItemOneofCase.DirectionalAction: break;
+
+                                        case PlayerInput.ItemOneofCase.DropItem:
+                                            droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id, Pos = message.Input.LookPos });
+                                            break;
+
+                                        case PlayerInput.ItemOneofCase.PickupItem:
+                                            update.ItemId = message.Input.PickupItem;
+                                            if (character.inventory.ActiveItem) //if the character is holding an item,
+                                            {
+                                                droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id, Pos = message.Input.LookPos });
+                                            }
+                                            break;
+                                    }
+
+                                    //Console.WriteLine($"server recieved input");
                                 }
                                 else
-                                    update = charData;
-
-                                switch (message.Input.ItemCase)
                                 {
-                                    //case PlayerInput.ItemOneofCase.Action:
-                                    //    break;
-
-                                    //case PlayerInput.ItemOneofCase.SecondaryAction: break;
-
-                                    //case PlayerInput.ItemOneofCase.DirectionalAction: break;
-
-                                    case PlayerInput.ItemOneofCase.DropItem:
-                                        droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id , Pos = message.Input.LookPos});
-                                        break;
-
-                                    case PlayerInput.ItemOneofCase.PickupItem:
-                                        update.ItemId = message.Input.PickupItem;
-                                        if (character.inventory.ActiveItem) //if the character is holding an item,
-                                        {
-                                            droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id, Pos = message.Input.LookPos });
-                                        }
-                                        break;
+                                    Console.WriteLine($"server doesn't have a currentChar associated with client {ID}");
                                 }
 
-                                //Console.WriteLine($"server recieved input");
+                                if (message.Input.Bullets != null && message.Input.Bullets.Bullets.Count > 0)
+                                {
+                                    bullets = message.Input.Bullets;
+                                    bullets.CharacterId = character.id;
+                                }
                             }
-                            else
-                            {
-                                Console.WriteLine($"server doesn't have a currentChar associated with client {ID}");
-                            }            
-                            
-                            if (message.Input.Bullets != null && message.Input.Bullets.Bullets.Count > 0)
-                            {
-                                bullets = message.Input.Bullets;
-                                bullets.CharacterId = character.id;
-                            }
-                        }
-                        break;
+                            break;
+                    }
+
+                    if (message.HasTick)
+                    {
+                        var delay = DateTime.UtcNow.Ticks - connStartTick; //delay is how long this message took roundTrip
+
+                        var remoteTick = message.Tick - (delay); //remote tick is the tick that the client thought it was when the server sent the message
+
+                        //var ticksSinceStart = LogicAndMath.SecondsToTicks(Time.unscaledTime);
+
+                        var remoteStartTick = remoteTick - connStartTick + server.startTick;
+
+                        var startTickMessage = new MessageForClient { StartTick = remoteStartTick };
+
+                        SendData(startTickMessage.ToByteArray());
+                    }
                 }
             }
         }
-    }
 
 
-    protected override void OnClose(CloseEventArgs e)
-    {
-        Console.WriteLine("Client disconnected. Reason: " + e.Reason);
-
-        server.actionQueue.Enqueue(() => RemoveCharacter(ID));
-
-        void RemoveCharacter (string ID)
+        protected override void OnClose(CloseEventArgs e)
         {
-            if (character)
+            Console.WriteLine("Client disconnected. Reason: " + e.Reason);
+
+            server.actionQueue.Enqueue(() => RemoveCharacter(ID));
+
+            void RemoveCharacter(string ID)
             {
-                remove = new CharacterData { CharacterID = character.id };
+                if (character)
+                {
+                    remove = new CharacterData { CharacterID = character.id };
 
-                newPlayer = update = null;
+                    newPlayer = update = null;
 
-                server.disconnected.Enqueue(ID);
+                    server.disconnected.Enqueue(ID);
+                }
+
+                //server.clients.Remove(ID);
+
+                //if (server.playerCharacters.TryGetValue(ID, out var character))
+                //{
+                //    server.playerCharacters.Remove(ID);
+
+                //    CharacterManager.Manager.RemoveCharacter(character);
+                //}
+
+                //var removeMessage = new BaseMessage() { RemoveCharOfID = character.id };
+
+                //server.SendDataDisclude(removeMessage.ToByteArray(), ID);
+
+                //Console.WriteLine($"Removed character {character.id}");
             }
-
-            //server.clients.Remove(ID);
-
-            //if (server.playerCharacters.TryGetValue(ID, out var character))
-            //{
-            //    server.playerCharacters.Remove(ID);
-
-            //    CharacterManager.Manager.RemoveCharacter(character);
-            //}
-
-            //var removeMessage = new BaseMessage() { RemoveCharOfID = character.id };
-
-            //server.SendDataDisclude(removeMessage.ToByteArray(), ID);
-
-            //Console.WriteLine($"Removed character {character.id}");
         }
-    }
 
-    protected override void OnError(ErrorEventArgs e)
-    {
-        Console.WriteLine("WebSocket error: " + e.Message);
-    }
+        protected override void OnError(ErrorEventArgs e)
+        {
+            Console.WriteLine("WebSocket error: " + e.Message);
+        }
 
-    public void SendData(byte[] binary)
-    {
-        Send(binary);
+        public void SendData(byte[] binary)
+        {
+            Send(binary);
 
-        server.bytesThisFrame += binary.Length;
+            server.bytesThisFrame += binary.Length;
 
-        if (server.logBitRate)
-            Console.WriteLine($"sent {binary.Length} bytes to client");
+            if (server.logBitRate)
+                Console.WriteLine($"sent {binary.Length} bytes to client");
+        }
     }
 }

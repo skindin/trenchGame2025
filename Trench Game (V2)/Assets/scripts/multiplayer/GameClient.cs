@@ -49,14 +49,20 @@ public class GameClient : MonoBehaviour
     //    //ID = 
     //}
 
+    //private void Awake()
+    //{
+    //    startTimeTick = DateTime.UtcNow
+    //}
+
     private void Update()
     {
-        NetworkManager.Manager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
-
         //bool sentSomeData = actionQueue.Count > 0;
 
         if (ws == null)// || !ws.IsAlive)
             return;
+
+        if (startTimeTick > 0)
+            NetworkManager.Manager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
 
         while (actionQueue.Count > 0)
         {
@@ -286,6 +292,9 @@ public class GameClient : MonoBehaviour
 
             if (DataManager.IfGet<MessageForClient>(rawData, out var message))
             {
+                if (message.HasStartTick)
+                    startTimeTick = message.StartTick;
+
                 switch (message.TypeCase)
                 {
                     case MessageForClient.TypeOneofCase.NewPlayerGrant:
@@ -302,7 +311,11 @@ public class GameClient : MonoBehaviour
                                 newItems.Add(itemData);
                             }
 
-                            startTimeTick = message.NewPlayerGrant.StartTime;
+                            if (!message.HasStartTick)
+                            {
+                                var tickMsg = new MessageForServer { Tick = DateTime.UtcNow.Ticks };
+                                SendData(tickMsg.ToByteArray());
+                            }
 
                             break;
                         }
