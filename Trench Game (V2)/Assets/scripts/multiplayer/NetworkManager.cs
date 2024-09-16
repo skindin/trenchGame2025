@@ -14,24 +14,8 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameClient client;
     public GameServer server;
 
-    float time;
-    public float NetTime
-    //{
-    //    get { return time; }
-
-    //    set
-    //    {
-    //        //var floored = Mathf.Floor(value);
-
-    //        //if (floored > Mathf.Floor(time))
-    //        //{
-    //        //    XPlatformLog($"T = {floored}");
-    //        //}
-
-    //        time = value;
-    //    }
-    //}
-    ;
+    //float time;
+    public float NetTime;
 
     public void SetPos(Vector2 pos, int id)
     {
@@ -52,7 +36,9 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         var charData = new CharacterData { Pos = posData , CharacterID = id};
 
-        server.updateList.List.Add(charData);
+        //server.updateCharData.List.Add(charData);
+
+        server.UpdateCharData(charData);
 
         //server.SendDataDisclude(message.ToByteArray());
 
@@ -107,7 +93,49 @@ public class NetworkManager : ManagerBase<NetworkManager>
 #endif
     }
 
+    public void ServerRemoveItem (Item item)
+    {
+#if !UNITY_SERVER || UNITY_EDITOR
+        return;
+#endif
 
+        server.removeItemList.Add(item.id);
+
+        for (int i = 0; i < server.updateItems.Count; i++)
+        {
+            var updateItem = server.updateItems[i];
+
+            if (updateItem.ItemId == item.id)
+            {
+                server.updateItems.RemoveAt(i);
+                i--;
+                break;
+            }
+        }
+
+        for (int i = 0; i < server.currentItems.Count; i++)
+        {
+            var currentItem = server.currentItems[i];
+
+            if (currentItem.ItemId == item.id)
+            {
+                server.currentItems.RemoveAt(i);
+                i--;
+                break;
+            }
+        }
+    }
+
+    public void SetHealth(Character character, float health)
+    {
+#if !UNITY_SERVER || UNITY_EDITOR
+        return;
+#endif
+
+        var charData = new CharacterData { CharacterID = character.id, Hp = health };
+
+        server.UpdateCharData(charData);
+    }
 
     public void SpawnBullet(Bullet bullet)
     {

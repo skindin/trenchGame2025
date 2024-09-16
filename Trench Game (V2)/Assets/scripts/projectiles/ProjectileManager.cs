@@ -173,12 +173,18 @@ public class ProjectileManager : MonoBehaviour
         //bullet.lastPos = bullet.pos;
         bullet.pos = nextPos;
 
-        if (closestCollider != null)
+
+#if !UNITY_SERVER || UNITY_EDITOR
+        return;
+#endif
+
+        if (closestCollider != null) //dont want to damage characters here...
         {
             closestCollider.HitCollider(bullet);
             //bullet.destroy = true;
             //Debug.Log($"Hit {closestCollider.gameObject.name}");
         }
+
     }
 
     void UpdateBullets(float seconds)

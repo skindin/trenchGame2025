@@ -1289,6 +1289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   client: {fileID: 1377846333}
   server: {fileID: 950176246}
+  NetTime: 0
 --- !u!1 &478373407
 GameObject:
   m_ObjectHideFlags: 0
@@ -1676,8 +1677,8 @@ MonoBehaviour:
     - name: basic amo
       prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
       currentAmount: 0
-      spawnCap: 1
-      chance: 0
+      spawnCap: 3
+      chance: 2
     - name: basic gun
       prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       currentAmount: 0
@@ -1707,7 +1708,7 @@ MonoBehaviour:
       spawnCap: 5
       chance: 2
     chance: 0
-  itemsPerDrop: 1
+  itemsPerDrop: 3
   itemDropRadius: 5
   itemDropInterval: 20
   itemDropTimer: 0

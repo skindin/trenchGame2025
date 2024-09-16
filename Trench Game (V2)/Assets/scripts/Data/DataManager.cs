@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 //using Newtonsoft.Json;
 ////using static DataManager;
 ////using static UnityEditor.Progress;
@@ -93,6 +94,173 @@ public static class DataManager
         if (b.HasAngle)
         {
             a.Angle = b.Angle;
+        }
+
+        if (b.HasHp) //i shouldn't be sending the hp when it's at the default value but idc rn
+        {
+            a.Hp = b.Hp; 
+        }
+    }
+
+    public static void CombineCharDataList(CharacterData charData, CharDataList list)
+    {
+        //bool found = false;
+        foreach (var listChar in list.List)
+        {
+            if (charData.CharacterID == listChar.CharacterID)
+            {
+                CombineCharData(listChar, charData);
+                //found = true;
+                return;
+            }
+        }
+
+        //if (!found)
+        //{
+            list.List.Add(charData);
+        //}
+    }
+
+    /// <summary>
+    /// Modifies a to have any new values from b
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    public static void CombineItemData (ItemData a, ItemData b)
+    {
+        if (a == null)
+        {
+            Console.WriteLine("a is null");
+        }
+
+        if (b == null)
+        {
+            Console.WriteLine("b is null");
+        }
+
+        if (a == null || b == null)
+        {
+            return;
+        }
+
+        switch (b.TypeCase)
+        {
+            case ItemData.TypeOneofCase.Gun:
+                {
+                    if (a.Gun == null)
+                    {
+                        a.Gun = b.Gun;
+                    }
+                    else
+                    {
+                        if (b.Gun.HasAmo)
+                        {
+                            a.Gun.Amo = b.Gun.Amo;
+                        }
+
+                        if (b.Gun.HasReload)
+                        {
+                            a.Gun.Reload = b.Gun.Reload;
+                        }
+                    }
+                }
+                break;
+
+            case ItemData.TypeOneofCase.Stack:
+                {
+                    if (a.Stack == null)
+                    {
+                        a.Stack = b.Stack;
+                    }
+                    else //this will work as long as the amount isn't optional
+                    {
+                       a.Stack.Amount = b.Stack.Amount;
+                    }
+                }
+                break;
+        }
+    }
+
+    public static void CombineItemDataList (ItemData data, RepeatedField<ItemData> list)
+    {
+        foreach (var otherData in list)
+        {
+            if (otherData.ItemId == data.ItemId)
+            {
+                CombineItemData(otherData, data);
+                return;
+            }
+        }
+
+        list.Add(data);
+    }
+
+    public static Item CreateItemWithData(ItemData data)
+    {
+        var newItem = ItemManager.Manager.NewItem(data.PrefabId, data.ItemId);
+        if (data.Pos != null)
+        {
+            var pos = DataManager.ConvertDataToVector(data.Pos);
+            newItem.Drop(pos);
+        }
+
+        ModifyItemWithData(newItem, data);
+
+        return newItem;
+    }
+
+    public static Item UpdateItemWithData (ItemData data)
+    {
+        var item = ItemManager.Manager.active[data.ItemId];
+
+        if (data.Pos != null)
+        {
+            var pos = DataManager.ConvertDataToVector(data.Pos);
+
+            if (item.wielder)
+            {
+                item.wielder.inventory.DropItem(item, pos);
+            }
+            else
+            {
+                item.Drop(pos);
+            }
+        }
+
+        ModifyItemWithData(item, data);
+
+        return item;
+    }
+
+    static void ModifyItemWithData (Item item, ItemData data)
+    {
+        switch (data.TypeCase)
+        {
+            case ItemData.TypeOneofCase.Gun:
+                {
+                    if (item is Gun gun)
+                    {
+                        gun.rounds = data.Gun.Amo;
+                    }
+                    else
+                    {
+                        Debug.LogError($"item {item.id} was given gun data, but it is not a gun");
+                    }
+                }
+                break;
+
+            case ItemData.TypeOneofCase.Stack:
+                {
+                    if (item is StackableItem stack)
+                    {
+                        stack.amount = data.Stack.Amount;
+                    }
+                    else
+                    {
+                        Debug.LogError($"item {item.id} was given stack data, but it is not a stack");
+                    }
+                }
+                break;
         }
     }
 }

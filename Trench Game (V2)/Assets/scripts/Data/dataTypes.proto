@@ -98,6 +98,7 @@ message ItemData
     oneof Type
     {
         GunData gun = 4;
+        StackData stack = 5;
     }
 }
 
@@ -105,4 +106,9 @@ message GunData
 {
     optional int32 amo = 1;
     optional float reload = 2;
+}
+
+message StackData
+{
+    int32 amount = 1;
 }

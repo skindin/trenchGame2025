@@ -276,7 +276,7 @@ public class Inventory : MonoBehaviour
 
             if (sync)
             {
-                NetworkManager.Manager.PickupItem(item,dropPos);
+                NetworkManager.Manager.PickupItem(item,dropPos); //bruh not everything is picked up this way facepalm emoji
             }
 
             //if (item is Gun

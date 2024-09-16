@@ -86,7 +86,7 @@ public class GameServer : MonoBehaviour
         Console.WriteLine($"Target framerate set to {targetFramerate}");
     }
 
-    public CharDataList newPlayerList = new(), updateList = new(), currentCharData = new();
+    public CharDataList newPlayerData = new(), updateCharData = new(), currentCharData = new();
     public RepeatedField<int> removeCharList = new(), removeItemList = new();
 
     public RepeatedField<ItemData> newItems = new(), updateItems = new(), currentItems = new();
@@ -119,7 +119,7 @@ public class GameServer : MonoBehaviour
 
             if (client.newPlayer != null)
             {
-                newPlayerList.List.Add(client.newPlayer);
+                newPlayerData.List.Add(client.newPlayer);
 
                 var pos = ChunkManager.Manager.GetRandomPos();
                 var id = SpawnManager.Manager.NewCharId;
@@ -139,7 +139,7 @@ public class GameServer : MonoBehaviour
             }
             else if (client.update != null)
             {
-                updateList.List.Add(client.update);
+                updateCharData.List.Add(client.update);
 
                 var character = playerCharacters[client.ID];
 
@@ -191,7 +191,7 @@ public class GameServer : MonoBehaviour
                         }
                     }
 
-                    currentData.ItemId = client.update.ItemId;
+                    currentData.ItemId = client.update.ItemId; //i could make combinedata do this but idc rn
                     //hopefully adding the previous item to the dropped list makes the drop pos work when switching items...
                 }
 
@@ -203,7 +203,18 @@ public class GameServer : MonoBehaviour
 
                     foreach (var bullet in client.bullets.Bullets)
                     {
+                        if (gun.rounds > 0)
                         NetworkManager.Manager.DataToBullet(bullet, character, client.bullets.StartTime);
+                        gun.rounds--;
+                    }
+
+                    if (client.bullets.Bullets.Count > 0)
+                    {
+                        var gunData = new GunData { Amo = gun.rounds };
+
+                        var itemData = new ItemData { ItemId = gun.id, Gun = gunData };
+
+                        UpdateItemData(itemData);
                     }
 
                     //NetworkManager.XPlatformLog($"spawned {client.bullets.Bullets.Count} bullet(s)");
@@ -268,9 +279,12 @@ public class GameServer : MonoBehaviour
                     }
                 }
 
-                Console.WriteLine($"removed character {character.id}");
+                Console.WriteLine($"removed character {character.id}, {currentCharData.List.Count} characters left");
             }
         }
+
+        //if (updateCharData.List.Count > 1)
+        //    Console.WriteLine($"{updateCharData}");
 
         foreach (var pair in clients)
         {
@@ -322,11 +336,17 @@ public class GameServer : MonoBehaviour
                 var gameState = new GameState();
 
 
-                if (client.update != null)
+                if (client.update != null) //this might cause a problem when the character's hp is modified when they're also moving
                 {
-                    updateList.List.Remove(client.update);
+                    var removed = updateCharData.List.Remove(client.update);
 
+                    //if (updateCharData.List.Count > 0)
+                    //    Console.WriteLine($"{updateCharData}");
 
+                    //if (removed && updateCharData.List.Count > 2)
+                    //    Console.WriteLine($"removed {client.update}");
+
+                    //var skinned = new CharacterData { CharacterID = client.update.CharacterID, }
 
                     //if (client.bull)
                 }
@@ -356,9 +376,9 @@ public class GameServer : MonoBehaviour
                         break;
                 }
 
-                gameState.UpdateChars = updateList.List.Count > 0 ? updateList : null;
+                gameState.UpdateChars = updateCharData.List.Count > 0 ? updateCharData : null;
 
-                gameState.NewRemoteChars = newPlayerList.List.Count > 0 ? newPlayerList : null;
+                gameState.NewRemoteChars = newPlayerData.List.Count > 0 ? newPlayerData : null;
 
                 foreach (var removeChar in removeCharList)
                 {
@@ -367,12 +387,18 @@ public class GameServer : MonoBehaviour
 
                 foreach (var newItem in newItems)
                 {
-                    gameState.NewItems.Add(newItem);
+                    if (!client.character.inventory.ActiveItem || client.character.inventory.ActiveItem.id != newItem.ItemId)
+                        gameState.NewItems.Add(newItem);
                 }
 
                 foreach (var updateItem in updateItems)
                 {
                     gameState.UpdateItems.Add(updateItem);
+                }
+
+                foreach (var removeItem in removeItemList)
+                {
+                    gameState.RemoveItems.Add(removeItem);
                 }
 
                 foreach (var bunch in newBullets)
@@ -392,7 +418,7 @@ public class GameServer : MonoBehaviour
                     gameState.NewItems.Count > 0
                     )
                 {
-                    var message = new MessageForClient { GameState = gameState, Time = Time.deltaTime };
+                    var message = new MessageForClient { GameState = gameState, Time = Time.time };
 
                     client.SendData(message.ToByteArray());
                     LogLists();
@@ -402,7 +428,7 @@ public class GameServer : MonoBehaviour
 
                 if (client.update != null) //readd this character back
                 {
-                    updateList.List.Add(client.update);
+                    updateCharData.List.Add(client.update);
                 }
 
 
@@ -423,10 +449,13 @@ public class GameServer : MonoBehaviour
             //LogLists();
         }
 
+        //if (updateCharData.List.Count > 1)
+        //    Console.WriteLine($"{updateCharData}");
+
         //var message = 
 
-        newPlayerList.List.Clear();
-        updateList.List.Clear();
+        newPlayerData.List.Clear();
+        updateCharData.List.Clear();
         removeCharList.Clear();
 
         newItems.Clear();
@@ -462,11 +491,24 @@ public class GameServer : MonoBehaviour
         }
     }
 
+    public void UpdateCharData (CharacterData data)
+    {
+        DataManager.CombineCharDataList(data, currentCharData);
+        //DataManager.CombineCharDataList(data, updateCharData);
+        updateCharData.List.Add(data); //this is so fucking sloppy because it's adding more characters bleh
+    }
+
     public void AddCharacter(Character character)
     {
         var pos = DataManager.VectorToData(character.transform.position);
         var data = new CharacterData { CharacterID = character.id, Pos = pos, Name = character.characterName };
         currentCharData.List.Add(data);
+    }
+
+    public void UpdateItemData (ItemData data)
+    {
+        DataManager.CombineItemDataList(data,currentItems);
+        DataManager.CombineItemDataList(data,updateItems);
     }
 
     public void AddItem(Item item)

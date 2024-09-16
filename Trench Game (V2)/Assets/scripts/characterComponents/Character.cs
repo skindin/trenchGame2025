@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -111,21 +112,36 @@ public class Character : MonoBehaviour
 
     public void Damage (float hp, Character killer)
     {
-        this.hp -= hp;
+        SetHP(MathF.Max(this.hp - hp,0));
 
-        if (this.hp <= 0)
+        if (this.hp == 0)
         {
-            this.hp = 0;
-
             KillThis();
 
             killer.killCount++;
         }
+
+        //SetHP(newHp);
     }
 
     public void Heal (float hp)
     {
-        this.hp = Mathf.Min(maxHp, this.hp + hp);
+        SetHP(Mathf.Min(maxHp, this.hp + hp));
+    }
+
+    public void SetHP (float hp)
+    {
+        //Debug.Log($"hp was set to {hp}");
+
+        this.hp = hp;
+
+#if !UNITY_SERVER || UNITY_EDITOR
+        return;
+#endif
+
+        NetworkManager.Manager.SetHealth(this,hp);
+
+        //Console.WriteLine($"set character {id} hp to {hp}");
     }
 
     //private void OnEnable()
@@ -293,7 +309,7 @@ public class Character : MonoBehaviour
 
         collider.ResetCollider();
 
-        hp = maxHp;
+        hp = maxHp; //shouldn't use set, because then the server sends new character data every time it resets a character object
 
         killCount = 0;
         //CharacterManager.Manager.UpdateScoreBoard();

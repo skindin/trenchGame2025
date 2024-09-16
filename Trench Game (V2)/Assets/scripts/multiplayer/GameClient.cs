@@ -11,6 +11,7 @@ using UnityEngine.Events;
 using UnityEngine.Rendering.PostProcessing;
 using Google.Protobuf.Collections;
 using UnityEngine.TextCore.Text;
+using Unity.VisualScripting.Dependencies.NCalc;
 //using Google.Protobuf.Collections;
 //using UnityEditor.SearchService;
 
@@ -86,31 +87,19 @@ public class GameClient : MonoBehaviour
 
         foreach (var newItemData in newItems)
         {
-            var newItem = ItemManager.Manager.NewItem(newItemData.PrefabId, newItemData.ItemId);
-            if (newItemData.Pos != null)
-            {
-                var pos = DataManager.ConvertDataToVector(newItemData.Pos);
-                newItem.Drop(pos);
-            }
+            DataManager.CreateItemWithData(newItemData);
         }
 
         foreach (var updateItem in updateItems)
         {
-            var item = ItemManager.Manager.active[updateItem.ItemId];
+            DataManager.UpdateItemWithData(updateItem);
+        }
 
-            if (updateItem.Pos != null)
-            {
-                var pos = DataManager.ConvertDataToVector(updateItem.Pos);
+        foreach (var removeItem in removeItems)
+        {
+            var item = ItemManager.Manager.active[removeItem];
 
-                if (item.wielder)
-                {
-                    item.wielder.inventory.DropItem(item, pos);
-                }
-                else
-                {
-                    item.Drop(pos);
-                }
-            }
+            item.DestroyItem();
         }
 
         foreach (var newRemoteChar in newRemoteChars.List)
@@ -137,8 +126,15 @@ public class GameClient : MonoBehaviour
                 //Debug.Log($"recieved angle {updateChar.Angle}")
             }
 
+            if (newRemoteChar.HasHp)
+            {
+                newCharacter.SetHP(newRemoteChar.Hp);
+            }
+
             Debug.Log($"spawned remote character {id} named {name} at {pos}{(newRemoteChar.HasItemId ? $" holding item {newRemoteChar.ItemId}" : "")}");
         }
+
+        //Debug.Log(updateChars.List);
 
         foreach (var updateChar in updateChars.List)
         {
@@ -164,6 +160,11 @@ public class GameClient : MonoBehaviour
                     character.inventory.PickupItem(item, item.transform.position);
 
                     Debug.Log($"server told character {character.id} to pickup item {item.id}");
+                }
+
+                if (updateChar.HasHp)
+                {
+                    character.SetHP(updateChar.Hp);
                 }
 
                 if (updateChar.HasAngle && character.inventory.ActiveItem is IDirectionalAction dirItem) //idk if there's a point in syncing the angle on the server
@@ -232,6 +233,9 @@ public class GameClient : MonoBehaviour
 
     public void Connect()
     {
+        if (ws != null)
+            return;
+
         Disconnect();
 
         // Initialize WebSocket
@@ -336,8 +340,8 @@ public class GameClient : MonoBehaviour
                                 {
                                     if (updateChar.CharacterID == CharacterManager.Manager.localPlayerCharacter.id)
                                     {
-                                        Debug.LogError("recieved data for this character");
-                                        continue;
+                                        Debug.Log($"recieved data for local player, {updateChar}");
+                                        //continue;
                                     }
 
                                     //var pos = DataManager.ConvertDataToVector(updateChar.Pos);
@@ -350,7 +354,7 @@ public class GameClient : MonoBehaviour
                                     {
                                         if (otherChar.CharacterID == updateChar.CharacterID)
                                         {
-                                            if (message.Time > latestMsgStamp)
+                                            if (message.Time >= latestMsgStamp) //this is fucking stuff up
                                                 DataManager.CombineCharData(otherChar, updateChar);
 
                                             if (updateChar.HasItemId)
@@ -386,6 +390,11 @@ public class GameClient : MonoBehaviour
                                 updateItems.Add(itemData);
 
                                 Debug.Log($"recieved update for dirItem {itemData.ItemId}");
+                            }
+
+                            foreach (var removeItem in message.GameState.RemoveItems)
+                            {
+                                removeItems.Add(removeItem);
                             }
 
                             foreach (var bunch in message.GameState.NewBullets)

@@ -270,8 +270,14 @@ public class CharacterManager : MonoBehaviour
 
             //active.Add(character);
 
+
+
             character.gameObject.SetActive(true);
             character.SetPos(ChunkManager.Manager.GetRandomPos());
+            //Console.WriteLine($"updated pos, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
+
+            character.SetHP(character.maxHp); //i think this is a fine place to put it shrugging emoji
+            //Console.WriteLine($"updated hp, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
             character.Type = type;
 
             character.UpdateChunk();

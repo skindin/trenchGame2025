@@ -53,11 +53,12 @@ public static partial class DataTypesReflection {
           "KAISGAoLY2hhcmFjdGVySWQYBSABKAVIAogBAUIICgZfcmFuZ2VCCAoGX3Nw",
           "ZWVkQg4KDF9jaGFyYWN0ZXJJZCJKCgpCdWxsZXREYXRhEh4KCHN0YXJ0cG9z",
           "GAEgASgLMgwuVmVjdG9yMkRhdGESHAoGZW5kcG9zGAIgASgLMgwuVmVjdG9y",
-          "MkRhdGEiegoISXRlbURhdGESDgoGaXRlbUlkGAEgASgFEhUKCHByZWZhYklk",
-          "GAIgASgFSAGIAQESGQoDcG9zGAMgASgLMgwuVmVjdG9yMkRhdGESFwoDZ3Vu",
-          "GAQgASgLMgguR3VuRGF0YUgAQgYKBFR5cGVCCwoJX3ByZWZhYklkIkMKB0d1",
-          "bkRhdGESEAoDYW1vGAEgASgFSACIAQESEwoGcmVsb2FkGAIgASgCSAGIAQFC",
-          "BgoEX2Ftb0IJCgdfcmVsb2FkYgZwcm90bzM="));
+          "MkRhdGEilwEKCEl0ZW1EYXRhEg4KBml0ZW1JZBgBIAEoBRIVCghwcmVmYWJJ",
+          "ZBgCIAEoBUgBiAEBEhkKA3BvcxgDIAEoCzIMLlZlY3RvcjJEYXRhEhcKA2d1",
+          "bhgEIAEoCzIILkd1bkRhdGFIABIbCgVzdGFjaxgFIAEoCzIKLlN0YWNrRGF0",
+          "YUgAQgYKBFR5cGVCCwoJX3ByZWZhYklkIkMKB0d1bkRhdGESEAoDYW1vGAEg",
+          "ASgFSACIAQESEwoGcmVsb2FkGAIgASgCSAGIAQFCBgoEX2Ftb0IJCgdfcmVs",
+          "b2FkIhsKCVN0YWNrRGF0YRIOCgZhbW91bnQYASABKAViBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -71,8 +72,9 @@ public static partial class DataTypesReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::CharDataList), global::CharDataList.Parser, new[]{ "List" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::BulletBunch), global::BulletBunch.Parser, new[]{ "Range", "Speed", "Bullets", "StartTime", "CharacterId" }, new[]{ "Range", "Speed", "CharacterId" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::BulletData), global::BulletData.Parser, new[]{ "Startpos", "Endpos" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::ItemData), global::ItemData.Parser, new[]{ "ItemId", "PrefabId", "Pos", "Gun" }, new[]{ "Type", "PrefabId" }, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::GunData), global::GunData.Parser, new[]{ "Amo", "Reload" }, new[]{ "Amo", "Reload" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::ItemData), global::ItemData.Parser, new[]{ "ItemId", "PrefabId", "Pos", "Gun", "Stack" }, new[]{ "Type", "PrefabId" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GunData), global::GunData.Parser, new[]{ "Amo", "Reload" }, new[]{ "Amo", "Reload" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::StackData), global::StackData.Parser, new[]{ "Amount" }, null, null, null, null)
         }));
   }
   #endregion
@@ -3480,6 +3482,9 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
       case TypeOneofCase.Gun:
         Gun = other.Gun.Clone();
         break;
+      case TypeOneofCase.Stack:
+        Stack = other.Stack.Clone();
+        break;
     }
 
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -3552,11 +3557,24 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     }
   }
 
+  /// <summary>Field number for the "stack" field.</summary>
+  public const int StackFieldNumber = 5;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::StackData Stack {
+    get { return typeCase_ == TypeOneofCase.Stack ? (global::StackData) type_ : null; }
+    set {
+      type_ = value;
+      typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.Stack;
+    }
+  }
+
   private object type_;
   /// <summary>Enum of possible cases for the "Type" oneof.</summary>
   public enum TypeOneofCase {
     None = 0,
     Gun = 4,
+    Stack = 5,
   }
   private TypeOneofCase typeCase_ = TypeOneofCase.None;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3591,6 +3609,7 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     if (PrefabId != other.PrefabId) return false;
     if (!object.Equals(Pos, other.Pos)) return false;
     if (!object.Equals(Gun, other.Gun)) return false;
+    if (!object.Equals(Stack, other.Stack)) return false;
     if (TypeCase != other.TypeCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -3603,6 +3622,7 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     if (HasPrefabId) hash ^= PrefabId.GetHashCode();
     if (pos_ != null) hash ^= Pos.GetHashCode();
     if (typeCase_ == TypeOneofCase.Gun) hash ^= Gun.GetHashCode();
+    if (typeCase_ == TypeOneofCase.Stack) hash ^= Stack.GetHashCode();
     hash ^= (int) typeCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -3638,6 +3658,10 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
       output.WriteRawTag(34);
       output.WriteMessage(Gun);
     }
+    if (typeCase_ == TypeOneofCase.Stack) {
+      output.WriteRawTag(42);
+      output.WriteMessage(Stack);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -3664,6 +3688,10 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
       output.WriteRawTag(34);
       output.WriteMessage(Gun);
     }
+    if (typeCase_ == TypeOneofCase.Stack) {
+      output.WriteRawTag(42);
+      output.WriteMessage(Stack);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -3685,6 +3713,9 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
     }
     if (typeCase_ == TypeOneofCase.Gun) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Gun);
+    }
+    if (typeCase_ == TypeOneofCase.Stack) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Stack);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -3716,6 +3747,12 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
           Gun = new global::GunData();
         }
         Gun.MergeFrom(other.Gun);
+        break;
+      case TypeOneofCase.Stack:
+        if (Stack == null) {
+          Stack = new global::StackData();
+        }
+        Stack.MergeFrom(other.Stack);
         break;
     }
 
@@ -3758,6 +3795,15 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
           Gun = subBuilder;
           break;
         }
+        case 42: {
+          global::StackData subBuilder = new global::StackData();
+          if (typeCase_ == TypeOneofCase.Stack) {
+            subBuilder.MergeFrom(Stack);
+          }
+          input.ReadMessage(subBuilder);
+          Stack = subBuilder;
+          break;
+        }
       }
     }
   #endif
@@ -3795,6 +3841,15 @@ public sealed partial class ItemData : pb::IMessage<ItemData>
           }
           input.ReadMessage(subBuilder);
           Gun = subBuilder;
+          break;
+        }
+        case 42: {
+          global::StackData subBuilder = new global::StackData();
+          if (typeCase_ == TypeOneofCase.Stack) {
+            subBuilder.MergeFrom(Stack);
+          }
+          input.ReadMessage(subBuilder);
+          Stack = subBuilder;
           break;
         }
       }
@@ -4049,6 +4104,195 @@ public sealed partial class GunData : pb::IMessage<GunData>
         }
         case 21: {
           Reload = input.ReadFloat();
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
+public sealed partial class StackData : pb::IMessage<StackData>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<StackData> _parser = new pb::MessageParser<StackData>(() => new StackData());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<StackData> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::DataTypesReflection.Descriptor.MessageTypes[12]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public StackData() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public StackData(StackData other) : this() {
+    amount_ = other.amount_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public StackData Clone() {
+    return new StackData(this);
+  }
+
+  /// <summary>Field number for the "amount" field.</summary>
+  public const int AmountFieldNumber = 1;
+  private int amount_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int Amount {
+    get { return amount_; }
+    set {
+      amount_ = value;
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as StackData);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(StackData other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (Amount != other.Amount) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (Amount != 0) hash ^= Amount.GetHashCode();
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (Amount != 0) {
+      output.WriteRawTag(8);
+      output.WriteInt32(Amount);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (Amount != 0) {
+      output.WriteRawTag(8);
+      output.WriteInt32(Amount);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (Amount != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeInt32Size(Amount);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(StackData other) {
+    if (other == null) {
+      return;
+    }
+    if (other.Amount != 0) {
+      Amount = other.Amount;
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 8: {
+          Amount = input.ReadInt32();
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 8: {
+          Amount = input.ReadInt32();
           break;
         }
       }
