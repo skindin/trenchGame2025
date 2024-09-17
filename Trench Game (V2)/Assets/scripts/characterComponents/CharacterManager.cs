@@ -60,9 +60,9 @@ public class CharacterManager : MonoBehaviour
         StartStopWatch();
 
 //#if !DEDICATED_SERVER
-//        Console.WriteLine("This program is not a dedicated server... " + symbolTest);
+//        Debug.Log("This program is not a dedicated server... " + symbolTest);
 //#else
-//        Console.WriteLine("This program is a dedicated server");
+//        Debug.Log("This program is a dedicated server");
 //#endif
     }
 
@@ -274,10 +274,10 @@ public class CharacterManager : MonoBehaviour
 
             character.gameObject.SetActive(true);
             character.SetPos(ChunkManager.Manager.GetRandomPos());
-            //Console.WriteLine($"updated pos, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
+            //Debug.Log($"updated pos, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
 
             character.SetHP(character.maxHp); //i think this is a fine place to put it shrugging emoji
-            //Console.WriteLine($"updated hp, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
+            //Debug.Log($"updated hp, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
             character.Type = type;
 
             character.UpdateChunk();

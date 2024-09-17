@@ -68,7 +68,7 @@ public static class DataManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Debug.Log(ex.Message);
             return false;
         }
     }
@@ -130,12 +130,12 @@ public static class DataManager
     {
         if (a == null)
         {
-            Console.WriteLine("a is null");
+            Debug.Log("a is null");
         }
 
         if (b == null)
         {
-            Console.WriteLine("b is null");
+            Debug.Log("b is null");
         }
 
         if (a == null || b == null)
@@ -200,7 +200,7 @@ public static class DataManager
         var newItem = ItemManager.Manager.NewItem(data.PrefabId, data.ItemId);
         if (data.Pos != null)
         {
-            var pos = DataManager.ConvertDataToVector(data.Pos);
+            var pos = ConvertDataToVector(data.Pos);
             newItem.Drop(pos);
         }
 
@@ -215,7 +215,7 @@ public static class DataManager
 
         if (data.Pos != null)
         {
-            var pos = DataManager.ConvertDataToVector(data.Pos);
+            var pos = ConvertDataToVector(data.Pos);
 
             if (item.wielder)
             {

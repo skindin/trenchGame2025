@@ -174,9 +174,8 @@ public class ProjectileManager : MonoBehaviour
         bullet.pos = nextPos;
 
 
-#if !UNITY_SERVER || UNITY_EDITOR
-        return;
-#endif
+        if (!NetworkManager.IsServer)
+            return;
 
         if (closestCollider != null) //dont want to damage characters here...
         {

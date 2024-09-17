@@ -34,9 +34,8 @@ public class ProjectileRenderer : MonoBehaviour
 
         bulletMaterial = new Material(bulletMaterial);
 
-#if UNITY_SERVER
-        Console.WriteLine("this is server dedicated server");
-#endif
+        if (!NetworkManager.IsServer)
+            Debug.Log("this is server dedicated server");
     }
 
 #if !UNITY_SERVER || UNITY_EDITOR

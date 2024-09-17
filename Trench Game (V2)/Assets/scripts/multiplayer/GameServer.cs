@@ -35,9 +35,9 @@ public class GameServer : MonoBehaviour
 
     private void Awake()
     {
-#if !UNITY_SERVER || UNITY_EDITOR// || true
-        return;
-#endif
+        if (!NetworkManager.IsServer)
+            return;
+
         startTick = DateTime.UtcNow.Ticks;
 
         //|| true
@@ -56,34 +56,34 @@ public class GameServer : MonoBehaviour
 
             if (wssv.IsListening)
             {
-                Console.WriteLine("WebSocket Server listening on port " + wssv.Port + ", and providing WebSocket services:");
+                Debug.Log("WebSocket Server listening on port " + wssv.Port + ", and providing WebSocket services:");
                 foreach (var path in wssv.WebSocketServices.Paths)
                 {
-                    Console.WriteLine("- " + path);
+                    Debug.Log("- " + path);
                 }
             }
         }
         catch (TypeInitializationException ex)
         {
-            Console.WriteLine("Type Initialization Exception: " + ex.Message);
+            Debug.Log("Type Initialization Exception: " + ex.Message);
             if (ex.InnerException != null)
             {
-                Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
-                Console.WriteLine("Stack Trace: " + ex.InnerException.StackTrace);
+                Debug.Log("Inner Exception: " + ex.InnerException.Message);
+                Debug.Log("Stack Trace: " + ex.InnerException.StackTrace);
             }
             else
             {
-                Console.WriteLine("No Inner Exception.");
+                Debug.Log("No Inner Exception.");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine("General Exception: " + ex.Message);
-            Console.WriteLine("Stack Trace: " + ex.StackTrace);
+            Debug.Log("General Exception: " + ex.Message);
+            Debug.Log("Stack Trace: " + ex.StackTrace);
         }
 
         Application.targetFrameRate = targetFramerate;
-        Console.WriteLine($"Target framerate set to {targetFramerate}");
+        Debug.Log($"Target framerate set to {targetFramerate}");
     }
 
     public CharDataList newPlayerData = new(), updateCharData = new(), currentCharData = new();
@@ -95,11 +95,10 @@ public class GameServer : MonoBehaviour
 
     private void LateUpdate()
     {
-#if !UNITY_SERVER || UNITY_EDITOR// || true
-        return;
-#endif
+        if (!NetworkManager.IsServer)
+            return;
 
-        NetworkManager.Manager.NetTime = Time.unscaledTime;
+        NetworkManager.Manager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTick);
 
         //bool sentSomeData = actionQueue.Count > 0;
 
@@ -126,7 +125,7 @@ public class GameServer : MonoBehaviour
 
                 var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
 
-                Console.WriteLine($"spawned remote character {id} named {client.newPlayer.Name}");
+                Debug.Log($"spawned remote character {id} named {client.newPlayer.Name}");
 
                 playerCharacters.Add(client.ID, newCharacter);
                 client.character = newCharacter;
@@ -217,7 +216,7 @@ public class GameServer : MonoBehaviour
                         UpdateItemData(itemData);
                     }
 
-                    //NetworkManager.XPlatformLog($"spawned {client.bullets.Bullets.Count} bullet(s)");
+                    //Debug.Log($"spawned {client.bullets.Bullets.Count} bullet(s)");
 
                     newBullets.Add(client.bullets);
                 }
@@ -234,7 +233,7 @@ public class GameServer : MonoBehaviour
 
                 //}
 
-                //Console.WriteLine($"updated character {character.id}");
+                //Debug.Log($"updated character {character.id}");
                 LogLists();
             }
             else if (client.remove != null)
@@ -279,12 +278,12 @@ public class GameServer : MonoBehaviour
                     }
                 }
 
-                Console.WriteLine($"removed character {character.id}, {currentCharData.List.Count} characters left");
+                Debug.Log($"removed character {character.id}, {currentCharData.List.Count} characters left");
             }
         }
 
         //if (updateCharData.List.Count > 1)
-        //    Console.WriteLine($"{updateCharData}");
+        //    Debug.Log($"{updateCharData}");
 
         foreach (var pair in clients)
         {
@@ -325,7 +324,7 @@ public class GameServer : MonoBehaviour
 
                 currentChars.List.Add(currentChar);
 
-                Console.WriteLine($"told client to spawn their player, character {client.newPlayer.CharacterID}");
+                Debug.Log($"told client to spawn their player, character {client.newPlayer.CharacterID}");
 
                 LogLists();
                 client.update = client.remove = client.newPlayer = null;
@@ -341,10 +340,10 @@ public class GameServer : MonoBehaviour
                     var removed = updateCharData.List.Remove(client.update);
 
                     //if (updateCharData.List.Count > 0)
-                    //    Console.WriteLine($"{updateCharData}");
+                    //    Debug.Log($"{updateCharData}");
 
                     //if (removed && updateCharData.List.Count > 2)
-                    //    Console.WriteLine($"removed {client.update}");
+                    //    Debug.Log($"removed {client.update}");
 
                     //var skinned = new CharacterData { CharacterID = client.update.CharacterID, }
 
@@ -408,7 +407,7 @@ public class GameServer : MonoBehaviour
 
                 //if (newBullets.Count > 0)
                 //{
-                //    NetworkManager.XPlatformLog($"told client {client.character.id} to spawn {newBullets.Count} bullet(s)");
+                //    Debug.Log($"told client {client.character.id} to spawn {newBullets.Count} bullet(s)");
                 //}
 
                 if (true ||
@@ -424,7 +423,7 @@ public class GameServer : MonoBehaviour
                     LogLists();
                 }
                 //else
-                //    Console.WriteLine("apparently all the lists are empty shruggin emoji");
+                //    Debug.Log("apparently all the lists are empty shruggin emoji");
 
                 if (client.update != null) //readd this character back
                 {
@@ -450,7 +449,7 @@ public class GameServer : MonoBehaviour
         }
 
         //if (updateCharData.List.Count > 1)
-        //    Console.WriteLine($"{updateCharData}");
+        //    Debug.Log($"{updateCharData}");
 
         //var message = 
 
@@ -473,7 +472,7 @@ public class GameServer : MonoBehaviour
         //    averageBitRate = Mathf.RoundToInt(LogicAndMath.GetListValueTotal(pastByteRecords.ToArray(), byteCount => byteCount) / pastByteRecords.Count / Time.deltaTime);
 
         //    if (bytesThisFrame > 0)
-        //        Console.WriteLine($"average bit rate: {averageBitRate}");
+        //        Debug.Log($"average bit rate: {averageBitRate}");
 
         //    bytesThisFrame = 0;
         //}
@@ -487,7 +486,7 @@ public class GameServer : MonoBehaviour
 
         void LogLists()
         {
-            //Console.WriteLine($"{newPlayerList.List.Count} new players, {updateList.List.Count} character updates, {removeList.List.Count} removals, and {currentCharData.List.Count} current characters");
+            //Debug.Log($"{newPlayerList.List.Count} new players, {updateList.List.Count} character updates, {removeList.List.Count} removals, and {currentCharData.List.Count} current characters");
         }
     }
 
@@ -535,7 +534,7 @@ public class GameServer : MonoBehaviour
 
     public void SendDataDisclude(byte[] binary, params string[] discludeIDs)
     {
-        //Console.WriteLine($"began send data disclude. clients: {clients} discludedIds: {discludeIDs}");
+        //Debug.Log($"began send data disclude. clients: {clients} discludedIds: {discludeIDs}");
         foreach (var clientBehavior in clients)
         {
             if (!discludeIDs.Contains(clientBehavior.Key))
@@ -552,16 +551,6 @@ public class GameServer : MonoBehaviour
             client.SendData(binary);
         }
     }
-
-    //    private void Update()
-    //    {
-    //#if UNITY_SERVER && !UNITY_EDITOR 
-    ////||true
-    //        BroadCast("server spamming client");
-    //#endif
-    //    }
-
-
 
     private void OnDestroy()
     {
@@ -593,7 +582,7 @@ public class GameServer : MonoBehaviour
 
         protected override void OnOpen()
         {
-            //Console.WriteLine("New clientBehavior connected.");
+            //Debug.Log("New clientBehavior connected.");
             server.clients.Add(ID, this);
         }
 
@@ -602,15 +591,15 @@ public class GameServer : MonoBehaviour
 
 
             // Use Coroutine on the main thread
-            //Console.WriteLine("onmessage started on server");
+            //Debug.Log("onmessage started on server");
             server.actionQueue.Enqueue(() => UseData(e.RawData));
-            //Console.WriteLine("started coroutine on server");
+            //Debug.Log("started coroutine on server");
 
             void UseData(byte[] rawData)
             {
                 if (e.IsText)
                 {
-                    Console.WriteLine("Server received message: " + e.Data);
+                    Debug.Log("Server received message: " + e.Data);
                     //return;
                 }
                 else if (DataManager.IfGet<MessageForServer>(rawData, out var message))
@@ -627,7 +616,7 @@ public class GameServer : MonoBehaviour
 
                                     newPlayer = new CharacterData { Name = name };
 
-                                    Console.WriteLine($"recieved new player request");
+                                    Debug.Log($"recieved new player request");
                                 }
                             }
                             break;
@@ -646,13 +635,13 @@ public class GameServer : MonoBehaviour
                                     if (message.Input.HasName)
                                     {
                                         charData.Name = message.Input.Name;
-                                        //Console.WriteLine($"recieved new name {message.Input.Name}");
+                                        //Debug.Log($"recieved new name {message.Input.Name}");
                                     }
 
                                     if (message.Input.HasAngle)
                                     {
                                         charData.Angle = message.Input.Angle;
-                                        //Console.WriteLine($"recieved angle {charData.Angle} for character {character.id}");
+                                        //Debug.Log($"recieved angle {charData.Angle} for character {character.id}");
                                     }
 
                                     if (update != null)
@@ -684,11 +673,11 @@ public class GameServer : MonoBehaviour
                                             break;
                                     }
 
-                                    //Console.WriteLine($"server recieved input");
+                                    //Debug.Log($"server recieved input");
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"server doesn't have a currentChar associated with client {ID}");
+                                    Debug.Log($"server doesn't have a currentChar associated with client {ID}");
                                 }
 
                                 if (message.Input.Bullets != null && message.Input.Bullets.Bullets.Count > 0)
@@ -703,12 +692,13 @@ public class GameServer : MonoBehaviour
                     if (message.HasTick)
                     {
                         var delay = DateTime.UtcNow.Ticks - connStartTick; //delay is how long this message took roundTrip
+                        var delayInSeconds = LogicAndMath.TicksToSeconds(delay);
 
                         var remoteTick = message.Tick - (delay); //remote tick is the tick that the client thought it was when the server sent the message
-
                         //var ticksSinceStart = LogicAndMath.SecondsToTicks(Time.unscaledTime);
 
                         var remoteStartTick = remoteTick - connStartTick + server.startTick;
+                        var startTickDelta = LogicAndMath.TicksToSeconds(server.startTick - remoteStartTick);
 
                         var startTickMessage = new MessageForClient { StartTick = remoteStartTick };
 
@@ -721,7 +711,7 @@ public class GameServer : MonoBehaviour
 
         protected override void OnClose(CloseEventArgs e)
         {
-            Console.WriteLine("Client disconnected. Reason: " + e.Reason);
+            Debug.Log("Client disconnected. Reason: " + e.Reason);
 
             server.actionQueue.Enqueue(() => RemoveCharacter(ID));
 
@@ -749,13 +739,13 @@ public class GameServer : MonoBehaviour
 
                 //server.SendDataDisclude(removeMessage.ToByteArray(), ID);
 
-                //Console.WriteLine($"Removed character {character.id}");
+                //Debug.Log($"Removed character {character.id}");
             }
         }
 
         protected override void OnError(ErrorEventArgs e)
         {
-            Console.WriteLine("WebSocket error: " + e.Message);
+            Debug.Log("WebSocket error: " + e.Message);
         }
 
         public void SendData(byte[] binary)
@@ -765,7 +755,7 @@ public class GameServer : MonoBehaviour
             server.bytesThisFrame += binary.Length;
 
             if (server.logBitRate)
-                Console.WriteLine($"sent {binary.Length} bytes to client");
+                Debug.Log($"sent {binary.Length} bytes to client");
         }
     }
 }

@@ -3,6 +3,7 @@
 //using System.IO;
 //using System;
 using Google.Protobuf;
+using System;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 //using System;
@@ -10,6 +11,16 @@ using UnityEngine.TextCore.Text;
 public class NetworkManager : ManagerBase<NetworkManager>
 {
     //string id;
+    public static bool IsServer{ get {
+#if UNITY_EDITOR
+        return Manager.editorIsServer;
+#elif UNITY_SERVER
+        return true;
+#else
+        return false;
+#endif
+        }}
+    public bool editorIsServer;
 
     public GameClient client;
     public GameServer server;
@@ -21,37 +32,41 @@ public class NetworkManager : ManagerBase<NetworkManager>
     {
         var posData = DataManager.VectorToData(pos);
 
-#if (!UNITY_SERVER || UNITY_EDITOR)// && false
 
-        var input = new PlayerInput {Pos = posData};
+        if (!IsServer)
+        {
 
-        var baseMessage = new MessageForServer {Input = input};
+            var input = new PlayerInput { Pos = posData };
 
-        //var binary = DataManager.MessageToBinary(baseMessage);
+            var baseMessage = new MessageForServer { Input = input };
 
-        client.SendData(baseMessage.ToByteArray());
+            //var binary = DataManager.MessageToBinary(baseMessage);
 
-        //Debug.Log($"sent pos {pos} to server");
-#else
+            client.SendData(baseMessage.ToByteArray());
 
-        var charData = new CharacterData { Pos = posData , CharacterID = id};
+            //Debug.Log($"sent pos {pos} to server");
+        }
+        else {
 
-        //server.updateCharData.List.Add(charData);
+            var charData = new CharacterData { Pos = posData, CharacterID = id };
 
-        server.UpdateCharData(charData);
+            //server.updateCharData.List.Add(charData);
 
-        //server.SendDataDisclude(message.ToByteArray());
+            server.UpdateCharData(charData);
 
-        //PosSyncsPerFrame++;
+            //server.SendDataDisclude(message.ToByteArray());
 
-        //Console.WriteLine($"server character {id} moved to {pos}");
-#endif
-    }
+            //PosSyncsPerFrame++;
+
+            //Debug.Log($"server character {id} moved to {pos}");
+            }
+        }
 
     public void SetName(string newName) //this hasn't been changed to combine with movement data but it probably should eventually
     {
+        if (IsServer)
+            return;
 
-#if !UNITY_SERVER || UNITY_EDITOR
         var baseMessage = new MessageForServer() { Input = new PlayerInput { Name = newName } };
 
         client.SendData(baseMessage.ToByteArray());
@@ -59,13 +74,14 @@ public class NetworkManager : ManagerBase<NetworkManager>
         Debug.Log($"sent characterName {newName} to server");
 
         //CharacterManager.Manager.localPlayerCharacter.name = newName;
-#endif
 
     }
 
     public void PickupItem(Item item, Vector2 dropPos)
     {
-#if (!UNITY_SERVER || UNITY_EDITOR)// && false
+        if (IsServer)
+            return;
+
         var posData = DataManager.VectorToData(dropPos);
 
         var input = new PlayerInput { PickupItem = item.id , LookPos = posData};
@@ -75,12 +91,20 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
 
         Debug.Log($"told server it picked up item {item.id}");
-#endif
     }
 
-    public void DropItem (Vector2 pos)
+    //public void DropItemServer(Item item, Vector2 dropPos)
+    //{
+    //    var posData = DataManager.VectorToData(dropPos);
+
+    //    var itemData = new ItemData { ItemId = item.id , Pos = posData};
+    //}
+
+    public void DropItemClient (Vector2 pos)
     {
-#if (!UNITY_SERVER || UNITY_EDITOR)// && false
+        if (IsServer)
+            return;
+
         var posData = DataManager.VectorToData (pos);
 
         var input = new PlayerInput { DropItem = true , LookPos = posData };
@@ -90,14 +114,12 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
 
         Debug.Log($"told server it dropped current item");
-#endif
     }
 
     public void ServerRemoveItem (Item item)
     {
-#if !UNITY_SERVER || UNITY_EDITOR
-        return;
-#endif
+        if (!IsServer)
+            return;
 
         server.removeItemList.Add(item.id);
 
@@ -120,6 +142,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
             if (currentItem.ItemId == item.id)
             {
                 server.currentItems.RemoveAt(i);
+                XPlatformLog($"removed item data {item.id}");
                 i--;
                 break;
             }
@@ -128,9 +151,8 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
     public void SetHealth(Character character, float health)
     {
-#if !UNITY_SERVER || UNITY_EDITOR
-        return;
-#endif
+        if (!IsServer)
+            return;
 
         var charData = new CharacterData { CharacterID = character.id, Hp = health };
 
@@ -139,7 +161,8 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
     public void SpawnBullet(Bullet bullet)
     {
-#if (!UNITY_SERVER || UNITY_EDITOR)// && false
+        if (IsServer)
+            return;
 
         var bunch = new BulletBunch { StartTime = NetTime};
 
@@ -155,7 +178,6 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
 
         //XPlatformLog($"told server to spawn a bullet");
-#endif
     }
 
     //private void Update()
@@ -196,7 +218,9 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
     public void SyncDirection (Vector2 direction)
     {
-#if UNITY_EDITOR || !UNITY_SERVER// && false
+        if (IsServer)
+            return;
+
         float angle = Quaternion.LookRotation(Vector3.forward, direction).eulerAngles.z;
 
         var input = new PlayerInput { Angle = angle };
@@ -204,7 +228,6 @@ public class NetworkManager : ManagerBase<NetworkManager>
         var message = new MessageForServer { Input = input };
 
         client.SendData(message.ToByteArray());
-#endif
     }
 
     public static void XPlatformLog(string log)
@@ -213,6 +236,15 @@ public class NetworkManager : ManagerBase<NetworkManager>
         Debug.Log(log);
 #else
         System.Console.WriteLine(log);
+#endif
+    }
+
+    public static void XPlatformLogError (string error)
+    {
+#if UNITY_EDITOR// && false
+        Debug.LogError(error);
+#else
+        System.Console.WriteLine(error);
 #endif
     }
 }

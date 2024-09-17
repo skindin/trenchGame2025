@@ -17,10 +17,11 @@ using Unity.VisualScripting.Dependencies.NCalc;
 
 public class GameClient : MonoBehaviour
 {
-#if !UNITY_SERVER || UNITY_EDITOR
-
     private WebSocket ws;
     public string serverAdress = "localhost";
+
+    public string ServerAdress { get { return serverAdress; } set { serverAdress = value; } }
+
     //public string ID;
     public UnityEvent onConnect, onDisconnect;
 
@@ -57,6 +58,9 @@ public class GameClient : MonoBehaviour
 
     private void Update()
     {
+        if (NetworkManager.IsServer)
+            return;
+
         //bool sentSomeData = actionQueue.Count > 0;
 
         if (ws == null)// || !ws.IsAlive)
@@ -99,6 +103,7 @@ public class GameClient : MonoBehaviour
         {
             var item = ItemManager.Manager.active[removeItem];
 
+            //ItemManager.Manager.RemoveItem(item);
             item.DestroyItem();
         }
 
@@ -233,6 +238,12 @@ public class GameClient : MonoBehaviour
 
     public void Connect()
     {
+        if (NetworkManager.IsServer)
+        {
+            Debug.Log("this isn't a client");
+            return;
+        }
+
         if (ws != null)
             return;
 
@@ -382,14 +393,14 @@ public class GameClient : MonoBehaviour
                             {
                                 newItems.Add(itemData);
 
-                                Debug.Log($"recieved new dirItem {itemData.ItemId}");
+                                Debug.Log($"recieved new item {itemData.ItemId}");
                             }
 
                             foreach (var itemData in message.GameState.UpdateItems)
                             {
                                 updateItems.Add(itemData);
 
-                                Debug.Log($"recieved update for dirItem {itemData.ItemId}");
+                                Debug.Log($"recieved update for item {itemData.ItemId}");
                             }
 
                             foreach (var removeItem in message.GameState.RemoveItems)
@@ -408,7 +419,7 @@ public class GameClient : MonoBehaviour
                                     NetworkManager.Manager.DataToBullet(bullet, character,bunch.StartTime);
                                 }
 
-                                //NetworkManager.XPlatformLog(
+                                //Debug.Log(
                                 //    $"was told to spawn {bunch.Bullets.Count} bullet(s) by server from character {bunch.CharacterId}"
                                 //    );
                             }
@@ -483,7 +494,6 @@ public class GameClient : MonoBehaviour
         bytesThisFrame += data.Length;
 
         if (logBitRate)
-            Console.WriteLine($"sent {data.Length} bytes to server");
+            Debug.Log($"sent {data.Length} bytes to server");
     }
-#endif
 }

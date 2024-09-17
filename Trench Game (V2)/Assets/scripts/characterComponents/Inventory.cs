@@ -310,7 +310,7 @@ public class Inventory : MonoBehaviour
 
         if (sync)
         {
-            NetworkManager.Manager.DropItem(pos);
+            NetworkManager.Manager.DropItemClient(pos);
         }
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;

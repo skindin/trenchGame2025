@@ -44,15 +44,15 @@ public class CharacterGUI : MonoBehaviour
         //if (!character)
             character = CharacterManager.Manager.localPlayerCharacter;
 
-        if (!character)
-            return;
+        //if (!character)
+        //    return;
 
         var scaleFactor = Screen.height * scale;
 
         var boxStyle = GetBoxStyle();
 
         if (drawItemsUI)
-            DrawNearbyItemsUI(boxStyle,scaleFactor);
+            DrawItems(boxStyle,scaleFactor);
 
         if (drawCharactersUI)
             DrawAllCharacterUI(boxStyle,scaleFactor);
@@ -186,9 +186,18 @@ public class CharacterGUI : MonoBehaviour
         GUI.Label(rect, text, style);
     }
 
-    public void DrawNearbyItemsUI (GUIStyle style, float scaleFactor)
+    public void DrawItems (GUIStyle style, float scaleFactor)
     {
-        if (!character) return;
+        if (!character)
+        {
+            foreach (var pair in ItemManager.Manager.active)
+            {
+                var item = pair.Value;
+                DrawTextBox(item.itemModel.name, item.transform.position, style, itemBoxOffset * scaleFactor);
+            }
+
+            return;
+        }
 
         foreach (var item in character.inventory.withinRadius)
         {

@@ -78,16 +78,18 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-#if UNITY_SERVER && !UNITY_EDITOR //|| true
+
     private void Start() //this code relies on other things being set up, so it's best to put in start
     {
+        if (!NetworkManager.IsServer)
+            return;
+
         if (spawnItemDrops)
             StartItemDropRoutine();
 
         if (spawnBots)
             FillCharacterCapWithBots();
     }
-#endif
 
     public abstract class SpawnObject<T>
     {
@@ -253,7 +255,23 @@ public class SpawnManager : MonoBehaviour
         }
 
         if (amountSpawned > 0)
-            Console.WriteLine($"Spawned {log}");
+            Debug.Log($"Spawned {log}");
+    }
+
+    public Item SpawnNewItem (Item prefab, Vector2 pos)
+    {
+        foreach (var spawnGroup in itemGroups)
+        {
+            foreach (var item in spawnGroup.spawnItems)
+            {
+                if (item.prefab == prefab)
+                {
+                    return item.Get(pos);
+                }
+            }
+        }
+
+        throw new Exception($"spawn manager didn't have spawn object for prefab {prefab}");
     }
 
     public Ammo GetAmo(AmmoType type, int amount, Vector2 pos = default)
@@ -301,6 +319,7 @@ public class SpawnManager : MonoBehaviour
                 if (spawnItem.Contains(item))
                 {
                     spawnItem.Remove(item);
+                    NetworkManager.Manager.ServerRemoveItem(item);
                     return;
                 }
             }
