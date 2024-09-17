@@ -56,7 +56,7 @@ public class GameClient : MonoBehaviour
     //    startTimeTick = DateTime.UtcNow
     //}
 
-    private void Update()
+    private void LateUpdate()
     {
         if (NetworkManager.IsServer)
             return;
@@ -359,25 +359,7 @@ public class GameClient : MonoBehaviour
 
                                     //GeoUtils.MarkPoint(pos, 1, Color.red);
 
-                                    bool foundChar = false;
-
-                                    foreach (var otherChar in updateChars.List)
-                                    {
-                                        if (otherChar.CharacterID == updateChar.CharacterID)
-                                        {
-                                            if (message.Time >= latestMsgStamp) //this is fucking stuff up
-                                                DataManager.CombineCharData(otherChar, updateChar);
-
-                                            if (updateChar.HasItemId)
-                                                otherChar.ItemId = updateChar.ItemId;
-
-                                            foundChar = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (!foundChar)
-                                        updateChars.List.Add(updateChar);
+                                    DataManager.CombineCharDataList(updateChar, updateChars);
                                 }
                             }
 

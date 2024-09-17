@@ -100,6 +100,11 @@ public static class DataManager
         {
             a.Hp = b.Hp; 
         }
+
+        if (b.HasItemId)
+        {
+            a.ItemId = b.ItemId;
+        }
     }
 
     public static void CombineCharDataList(CharacterData charData, CharDataList list)

@@ -142,7 +142,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
             if (currentItem.ItemId == item.id)
             {
                 server.currentItems.RemoveAt(i);
-                XPlatformLog($"removed item data {item.id}");
+                Debug.Log($"removed item data {item.id}");
                 i--;
                 break;
             }
@@ -193,7 +193,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
     {
         if (source.inventory.ActiveItem == null || source.inventory.ActiveItem is not Gun gun)
         {
-            XPlatformLog($"source {source.id} is not holding a gun");
+            Debug.Log($"source {source.id} is not holding a gun");
             return null;
         }    
 
@@ -230,21 +230,21 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
     }
 
-    public static void XPlatformLog(string log)
-    {
-#if UNITY_EDITOR// && false
-        Debug.Log(log);
-#else
-        System.Console.WriteLine(log);
-#endif
-    }
+//    public static void XPlatformLog(string log)
+//    {
+//#if UNITY_EDITOR// && false
+//        Debug.Log(log);
+//#else
+//        System.Console.WriteLine(log);
+//#endif
+//    }
 
-    public static void XPlatformLogError (string error)
-    {
-#if UNITY_EDITOR// && false
-        Debug.LogError(error);
-#else
-        System.Console.WriteLine(error);
-#endif
-    }
+//    public static void XPlatformLogError (string error)
+//    {
+//#if UNITY_EDITOR// && false
+//        Debug.LogError(error);
+//#else
+//        System.Console.WriteLine(error);
+//#endif
+//    }
 }

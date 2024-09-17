@@ -1436,7 +1436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2b7c0cd1d138304b96f459a46c2701d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  editorIsServer: 1
+  editorIsServer: 0
   client: {fileID: 1377846333}
   server: {fileID: 950176246}
   NetTime: 0
@@ -1839,14 +1839,14 @@ MonoBehaviour:
       currentAmount: 0
       spawnCap: 10
       chance: 0
-    chance: 3
+    chance: 0
   - Name: tier 2
     spawnItems:
     - name: auto amo
       prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
       currentAmount: 0
       spawnCap: 3
-      chance: 1
+      chance: 0
     - name: auto gun
       prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
       currentAmount: 0
@@ -1856,8 +1856,8 @@ MonoBehaviour:
       prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
       currentAmount: 0
       spawnCap: 5
-      chance: 2
-    chance: 0
+      chance: 0
+    chance: 1
   itemsPerDrop: 3
   itemDropRadius: 5
   itemDropInterval: 20
@@ -4017,7 +4017,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  logBitRate: 1
+  logBitRate: 0
   averageBitRateFrames: 20
   averageBitRate: 0
 --- !u!1 &1430281415

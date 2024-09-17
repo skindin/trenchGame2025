@@ -1,15 +1,10 @@
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using Unity.VisualScripting;
-using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
-using UnityEngine.InputSystem;
 
 //using UnityEngine.Android;
 using WebSocketSharp;
@@ -124,6 +119,8 @@ public class GameServer : MonoBehaviour
                 var id = SpawnManager.Manager.NewCharId;
 
                 var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
+
+                newCharacter.characterName = client.newPlayer.Name;
 
                 Debug.Log($"spawned remote character {id} named {client.newPlayer.Name}");
 
@@ -392,7 +389,8 @@ public class GameServer : MonoBehaviour
 
                 foreach (var updateItem in updateItems)
                 {
-                    gameState.UpdateItems.Add(updateItem);
+                    if (!client.character.inventory.ActiveItem || client.character.inventory.ActiveItem.id != updateItem.ItemId)
+                        gameState.UpdateItems.Add(updateItem);
                 }
 
                 foreach (var removeItem in removeItemList)
