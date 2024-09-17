@@ -135,13 +135,12 @@ public class Character : MonoBehaviour
 
         this.hp = hp;
 
-#if !UNITY_SERVER || UNITY_EDITOR
-        return;
-#endif
+        if (!NetworkManager.IsServer)
+            return;
 
         NetworkManager.Manager.SetHealth(this,hp);
 
-        //Console.WriteLine($"set character {id} hp to {hp}");
+        //Debug.Log($"set character {id} hp to {hp}");
     }
 
     //private void OnEnable()
@@ -164,16 +163,17 @@ public class Character : MonoBehaviour
         if (constantlyUpdateChunk)
         {
             UpdateChunk();
-            inventory.DetectItems();
+            if (type != CharacterType.remote)
+                inventory.DetectItems();
         }
 
-#if !UNITY_SERVER || UNITY_EDITOR
+//#if !UNITY_SERVER || UNITY_EDITOR
 
-        //if (type == CharacterType.localPlayer)
-        //    SetPos(transform.position); //just for network testing
+//        //if (type == CharacterType.localPlayer)
+//        //    SetPos(transform.position); //just for network testing
 
-#endif
-        //lastPos = tran
+//#endif
+//        //lastPos = tran
     }
 
     //private void LateUpdate()
@@ -279,7 +279,7 @@ public class Character : MonoBehaviour
             reserve.DropEverything(deathDropRadius);
 
         if (inventory)
-            inventory.DropAllItems();
+            inventory.DropAllItems(true);
 
         CharacterManager.Manager.KillCharacter(this);
     }
