@@ -6,6 +6,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
 //using UnityEngine.Android;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -158,7 +159,13 @@ public class GameServer : MonoBehaviour
                 foreach (var droppedItem in client.droppedItems)
                 {
                     updateItems.Add(droppedItem);
-                    var item = ItemManager.Manager.active[droppedItem.ItemId];
+
+                    if (!ItemManager.Manager.active.TryGetValue(droppedItem.ItemId, out var item))
+                    {
+                        Debug.Log($"not item with id {client.update.ItemId}");
+                        break;
+                    }
+
                     var pos = DataManager.ConvertDataToVector(droppedItem.Pos);
                     client.character.inventory.DropItem(item, pos);
 
@@ -176,18 +183,33 @@ public class GameServer : MonoBehaviour
 
                 if (client.update.HasItemId)
                 {
-                    var item = ItemManager.Manager.active[client.update.ItemId];
+                    var prevItem = character.inventory.ActiveItem;
+
+                    //var item = ItemManager.Manager.active[client.update.ItemId];
+
+                    if (!ItemManager.Manager.active.TryGetValue(client.update.ItemId, out var item))
+                    {
+                        Debug.Log($"not item with id {client.update.ItemId}");
+                        break;
+                    }
+
                     character.inventory.PickupItem(item, item.transform.position);
+
+                    //if (prevItem && prevItem != character.inventory.ActiveItem)
+                    //{
+                    //    UpdateItemData(new ItemData { ItemId = prevItem.id, Pos = client.lookPos });
+                    //}
 
                     foreach (var itemData in currentItems)
                     {
                         if (itemData.ItemId == item.id)
                         {
                             itemData.Pos = null;
+                            break;
                         }
                     }
 
-                    currentData.ItemId = client.update.ItemId; //i could make combinedata do this but idc rn
+                    //currentData.ItemId = client.update.ItemId; //i could make combinedata do this but idc rn
                     //hopefully adding the previous item to the dropped list makes the drop pos work when switching items...
                 }
 
@@ -649,27 +671,17 @@ public class GameServer : MonoBehaviour
                                     else
                                         update = charData;
 
-                                    switch (message.Input.ItemCase)
+                                    if (message.Input.HasPickupItem)
                                     {
-                                        //case PlayerInput.ItemOneofCase.Action:
-                                        //    break;
-
-                                        //case PlayerInput.ItemOneofCase.SecondaryAction: break;
-
-                                        //case PlayerInput.ItemOneofCase.DirectionalAction: break;
-
-                                        case PlayerInput.ItemOneofCase.DropItem:
-                                            droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id, Pos = message.Input.LookPos });
-                                            break;
-
-                                        case PlayerInput.ItemOneofCase.PickupItem:
-                                            update.ItemId = message.Input.PickupItem;
-                                            if (character.inventory.ActiveItem) //if the character is holding an item,
-                                            {
-                                                droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id, Pos = message.Input.LookPos });
-                                            }
-                                            break;
+                                        update.ItemId = message.Input.PickupItem;
                                     }
+
+                                    if (message.Input.DropItem != null)
+                                    {
+                                        droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id, Pos = message.Input.DropItem });
+                                    }
+
+                                    //lookPos = message.Input.LookPos;
 
                                     //Debug.Log($"server recieved input");
                                 }

@@ -42,6 +42,7 @@ public class CharacterGUI : MonoBehaviour
     void OnGUI()
     {
         //if (!character)
+        if (!NetworkManager.IsServer)
             character = CharacterManager.Manager.localPlayerCharacter;
 
         //if (!character)

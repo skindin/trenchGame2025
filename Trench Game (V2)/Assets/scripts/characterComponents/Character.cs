@@ -298,13 +298,13 @@ public class Character : MonoBehaviour
         //reset code
         digging = filling = shooting = false;
 
+        if (reserve)
+            reserve.Clear();
+
         if (clearItems)
         {
             if (inventory)
                 inventory.ResetInventory(true);
-
-            if (reserve)
-                reserve.Clear();
         }
 
         collider.ResetCollider();

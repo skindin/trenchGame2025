@@ -261,6 +261,8 @@ public class Inventory : MonoBehaviour
 
         if (true || withinRadius.Contains(item))
         {
+            var prevItem = ActiveItem;
+
             item.Pickup(character, out var pickedUp, out var destroyed);
             if (pickedUp)
                 withinRadius.Remove(item);
@@ -276,7 +278,12 @@ public class Inventory : MonoBehaviour
 
             if (sync)
             {
-                NetworkManager.Manager.PickupItem(item,dropPos); //bruh not everything is picked up this way facepalm emoji
+                if (prevItem && prevItem != ActiveItem)
+                    NetworkManager.Manager.PickupItem(item, dropPos); //bruh not everything is picked up this way facepalm emoji
+                else
+                {
+                    NetworkManager.Manager.PickupItem(item);
+                }
             }
 
             //if (item is Gun

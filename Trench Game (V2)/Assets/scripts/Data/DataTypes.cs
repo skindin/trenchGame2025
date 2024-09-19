@@ -37,28 +37,28 @@ public static partial class DataTypesReflection {
           "TGlzdBITCgtyZW1vdmVDaGFycxgDIAMoBRIgCgpuZXdCdWxsZXRzGAQgAygL",
           "MgwuQnVsbGV0QnVuY2gSGwoIbmV3SXRlbXMYBSADKAsyCS5JdGVtRGF0YRIe",
           "Cgt1cGRhdGVJdGVtcxgGIAMoCzIJLkl0ZW1EYXRhEhMKC3JlbW92ZUl0ZW1z",
-          "GAcgAygFIiMKC1ZlY3RvcjJEYXRhEgkKAXgYASABKAISCQoBeRgCIAEoAiLS",
-          "AQoLUGxheWVySW5wdXQSGQoDcG9zGAEgASgLMgwuVmVjdG9yMkRhdGESHQoH",
-          "bG9va1BvcxgCIAEoCzIMLlZlY3RvcjJEYXRhEhIKBWFuZ2xlGAMgASgCSAGI",
-          "AQESEQoEbmFtZRgEIAEoCUgCiAEBEhIKCERyb3BJdGVtGAUgASgISAASFAoK",
-          "UGlja3VwSXRlbRgGIAEoBUgAEh0KB2J1bGxldHMYByABKAsyDC5CdWxsZXRC",
-          "dW5jaEIGCgRJdGVtQggKBl9hbmdsZUIHCgVfbmFtZSKxAQoNQ2hhcmFjdGVy",
-          "RGF0YRITCgtjaGFyYWN0ZXJJRBgBIAEoBRIZCgNwb3MYAiABKAsyDC5WZWN0",
-          "b3IyRGF0YRIRCgRuYW1lGAMgASgJSACIAQESDwoCaHAYBCABKAJIAYgBARIT",
-          "CgZpdGVtSWQYBSABKAVIAogBARISCgVhbmdsZRgGIAEoAkgDiAEBQgcKBV9u",
-          "YW1lQgUKA19ocEIJCgdfaXRlbUlkQggKBl9hbmdsZSIsCgxDaGFyRGF0YUxp",
-          "c3QSHAoEbGlzdBgBIAMoCzIOLkNoYXJhY3RlckRhdGEipAEKC0J1bGxldEJ1",
-          "bmNoEhIKBXJhbmdlGAEgASgCSACIAQESEgoFc3BlZWQYAiABKAJIAYgBARIc",
-          "CgdidWxsZXRzGAMgAygLMgsuQnVsbGV0RGF0YRIRCglzdGFydFRpbWUYBCAB",
-          "KAISGAoLY2hhcmFjdGVySWQYBSABKAVIAogBAUIICgZfcmFuZ2VCCAoGX3Nw",
-          "ZWVkQg4KDF9jaGFyYWN0ZXJJZCJKCgpCdWxsZXREYXRhEh4KCHN0YXJ0cG9z",
-          "GAEgASgLMgwuVmVjdG9yMkRhdGESHAoGZW5kcG9zGAIgASgLMgwuVmVjdG9y",
-          "MkRhdGEilwEKCEl0ZW1EYXRhEg4KBml0ZW1JZBgBIAEoBRIVCghwcmVmYWJJ",
-          "ZBgCIAEoBUgBiAEBEhkKA3BvcxgDIAEoCzIMLlZlY3RvcjJEYXRhEhcKA2d1",
-          "bhgEIAEoCzIILkd1bkRhdGFIABIbCgVzdGFjaxgFIAEoCzIKLlN0YWNrRGF0",
-          "YUgAQgYKBFR5cGVCCwoJX3ByZWZhYklkIkMKB0d1bkRhdGESEAoDYW1vGAEg",
-          "ASgFSACIAQESEwoGcmVsb2FkGAIgASgCSAGIAQFCBgoEX2Ftb0IJCgdfcmVs",
-          "b2FkIhsKCVN0YWNrRGF0YRIOCgZhbW91bnQYASABKAViBnByb3RvMw=="));
+          "GAcgAygFIiMKC1ZlY3RvcjJEYXRhEgkKAXgYASABKAISCQoBeRgCIAEoAiLJ",
+          "AQoLUGxheWVySW5wdXQSGQoDcG9zGAEgASgLMgwuVmVjdG9yMkRhdGESEgoF",
+          "YW5nbGUYAyABKAJIAIgBARIRCgRuYW1lGAQgASgJSAGIAQESHgoIZHJvcEl0",
+          "ZW0YBSABKAsyDC5WZWN0b3IyRGF0YRIXCgpQaWNrdXBJdGVtGAYgASgFSAKI",
+          "AQESHQoHYnVsbGV0cxgHIAEoCzIMLkJ1bGxldEJ1bmNoQggKBl9hbmdsZUIH",
+          "CgVfbmFtZUINCgtfUGlja3VwSXRlbSKxAQoNQ2hhcmFjdGVyRGF0YRITCgtj",
+          "aGFyYWN0ZXJJRBgBIAEoBRIZCgNwb3MYAiABKAsyDC5WZWN0b3IyRGF0YRIR",
+          "CgRuYW1lGAMgASgJSACIAQESDwoCaHAYBCABKAJIAYgBARITCgZpdGVtSWQY",
+          "BSABKAVIAogBARISCgVhbmdsZRgGIAEoAkgDiAEBQgcKBV9uYW1lQgUKA19o",
+          "cEIJCgdfaXRlbUlkQggKBl9hbmdsZSIsCgxDaGFyRGF0YUxpc3QSHAoEbGlz",
+          "dBgBIAMoCzIOLkNoYXJhY3RlckRhdGEipAEKC0J1bGxldEJ1bmNoEhIKBXJh",
+          "bmdlGAEgASgCSACIAQESEgoFc3BlZWQYAiABKAJIAYgBARIcCgdidWxsZXRz",
+          "GAMgAygLMgsuQnVsbGV0RGF0YRIRCglzdGFydFRpbWUYBCABKAISGAoLY2hh",
+          "cmFjdGVySWQYBSABKAVIAogBAUIICgZfcmFuZ2VCCAoGX3NwZWVkQg4KDF9j",
+          "aGFyYWN0ZXJJZCJKCgpCdWxsZXREYXRhEh4KCHN0YXJ0cG9zGAEgASgLMgwu",
+          "VmVjdG9yMkRhdGESHAoGZW5kcG9zGAIgASgLMgwuVmVjdG9yMkRhdGEilwEK",
+          "CEl0ZW1EYXRhEg4KBml0ZW1JZBgBIAEoBRIVCghwcmVmYWJJZBgCIAEoBUgB",
+          "iAEBEhkKA3BvcxgDIAEoCzIMLlZlY3RvcjJEYXRhEhcKA2d1bhgEIAEoCzII",
+          "Lkd1bkRhdGFIABIbCgVzdGFjaxgFIAEoCzIKLlN0YWNrRGF0YUgAQgYKBFR5",
+          "cGVCCwoJX3ByZWZhYklkIkMKB0d1bkRhdGESEAoDYW1vGAEgASgFSACIAQES",
+          "EwoGcmVsb2FkGAIgASgCSAGIAQFCBgoEX2Ftb0IJCgdfcmVsb2FkIhsKCVN0",
+          "YWNrRGF0YRIOCgZhbW91bnQYASABKAViBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -67,7 +67,7 @@ public static partial class DataTypesReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::NewPlayerGrant), global::NewPlayerGrant.Parser, new[]{ "NewPlayer", "CurrentChars", "CurrentItems" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GameState), global::GameState.Parser, new[]{ "NewRemoteChars", "UpdateChars", "RemoveChars", "NewBullets", "NewItems", "UpdateItems", "RemoveItems" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Vector2Data), global::Vector2Data.Parser, new[]{ "X", "Y" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Pos", "LookPos", "Angle", "Name", "DropItem", "PickupItem", "Bullets" }, new[]{ "Item", "Angle", "Name" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Pos", "Angle", "Name", "DropItem", "PickupItem", "Bullets" }, new[]{ "Angle", "Name", "PickupItem" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CharacterData), global::CharacterData.Parser, new[]{ "CharacterID", "Pos", "Name", "Hp", "ItemId", "Angle" }, new[]{ "Name", "Hp", "ItemId", "Angle" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CharDataList), global::CharDataList.Parser, new[]{ "List" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::BulletBunch), global::BulletBunch.Parser, new[]{ "Range", "Speed", "Bullets", "StartTime", "CharacterId" }, new[]{ "Range", "Speed", "CharacterId" }, null, null, null),
@@ -1753,19 +1753,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   public PlayerInput(PlayerInput other) : this() {
     _hasBits0 = other._hasBits0;
     pos_ = other.pos_ != null ? other.pos_.Clone() : null;
-    lookPos_ = other.lookPos_ != null ? other.lookPos_.Clone() : null;
     angle_ = other.angle_;
     name_ = other.name_;
+    dropItem_ = other.dropItem_ != null ? other.dropItem_.Clone() : null;
+    pickupItem_ = other.pickupItem_;
     bullets_ = other.bullets_ != null ? other.bullets_.Clone() : null;
-    switch (other.ItemCase) {
-      case ItemOneofCase.DropItem:
-        DropItem = other.DropItem;
-        break;
-      case ItemOneofCase.PickupItem:
-        PickupItem = other.PickupItem;
-        break;
-    }
-
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -1784,18 +1776,6 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     get { return pos_; }
     set {
       pos_ = value;
-    }
-  }
-
-  /// <summary>Field number for the "lookPos" field.</summary>
-  public const int LookPosFieldNumber = 2;
-  private global::Vector2Data lookPos_;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public global::Vector2Data LookPos {
-    get { return lookPos_; }
-    set {
-      lookPos_ = value;
     }
   }
 
@@ -1848,28 +1828,41 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     name_ = null;
   }
 
-  /// <summary>Field number for the "DropItem" field.</summary>
+  /// <summary>Field number for the "dropItem" field.</summary>
   public const int DropItemFieldNumber = 5;
+  private global::Vector2Data dropItem_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool DropItem {
-    get { return itemCase_ == ItemOneofCase.DropItem ? (bool) item_ : false; }
+  public global::Vector2Data DropItem {
+    get { return dropItem_; }
     set {
-      item_ = value;
-      itemCase_ = ItemOneofCase.DropItem;
+      dropItem_ = value;
     }
   }
 
   /// <summary>Field number for the "PickupItem" field.</summary>
   public const int PickupItemFieldNumber = 6;
+  private int pickupItem_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int PickupItem {
-    get { return itemCase_ == ItemOneofCase.PickupItem ? (int) item_ : 0; }
+    get { if ((_hasBits0 & 2) != 0) { return pickupItem_; } else { return 0; } }
     set {
-      item_ = value;
-      itemCase_ = ItemOneofCase.PickupItem;
+      _hasBits0 |= 2;
+      pickupItem_ = value;
     }
+  }
+  /// <summary>Gets whether the "PickupItem" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasPickupItem {
+    get { return (_hasBits0 & 2) != 0; }
+  }
+  /// <summary>Clears the value of the "PickupItem" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearPickupItem() {
+    _hasBits0 &= ~2;
   }
 
   /// <summary>Field number for the "bullets" field.</summary>
@@ -1882,27 +1875,6 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     set {
       bullets_ = value;
     }
-  }
-
-  private object item_;
-  /// <summary>Enum of possible cases for the "Item" oneof.</summary>
-  public enum ItemOneofCase {
-    None = 0,
-    DropItem = 5,
-    PickupItem = 6,
-  }
-  private ItemOneofCase itemCase_ = ItemOneofCase.None;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public ItemOneofCase ItemCase {
-    get { return itemCase_; }
-  }
-
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void ClearItem() {
-    itemCase_ = ItemOneofCase.None;
-    item_ = null;
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1921,13 +1893,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       return true;
     }
     if (!object.Equals(Pos, other.Pos)) return false;
-    if (!object.Equals(LookPos, other.LookPos)) return false;
     if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Angle, other.Angle)) return false;
     if (Name != other.Name) return false;
-    if (DropItem != other.DropItem) return false;
+    if (!object.Equals(DropItem, other.DropItem)) return false;
     if (PickupItem != other.PickupItem) return false;
     if (!object.Equals(Bullets, other.Bullets)) return false;
-    if (ItemCase != other.ItemCase) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -1936,13 +1906,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
   public override int GetHashCode() {
     int hash = 1;
     if (pos_ != null) hash ^= Pos.GetHashCode();
-    if (lookPos_ != null) hash ^= LookPos.GetHashCode();
     if (HasAngle) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Angle);
     if (HasName) hash ^= Name.GetHashCode();
-    if (itemCase_ == ItemOneofCase.DropItem) hash ^= DropItem.GetHashCode();
-    if (itemCase_ == ItemOneofCase.PickupItem) hash ^= PickupItem.GetHashCode();
+    if (dropItem_ != null) hash ^= DropItem.GetHashCode();
+    if (HasPickupItem) hash ^= PickupItem.GetHashCode();
     if (bullets_ != null) hash ^= Bullets.GetHashCode();
-    hash ^= (int) itemCase_;
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -1965,10 +1933,6 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       output.WriteRawTag(10);
       output.WriteMessage(Pos);
     }
-    if (lookPos_ != null) {
-      output.WriteRawTag(18);
-      output.WriteMessage(LookPos);
-    }
     if (HasAngle) {
       output.WriteRawTag(29);
       output.WriteFloat(Angle);
@@ -1977,11 +1941,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       output.WriteRawTag(34);
       output.WriteString(Name);
     }
-    if (itemCase_ == ItemOneofCase.DropItem) {
-      output.WriteRawTag(40);
-      output.WriteBool(DropItem);
+    if (dropItem_ != null) {
+      output.WriteRawTag(42);
+      output.WriteMessage(DropItem);
     }
-    if (itemCase_ == ItemOneofCase.PickupItem) {
+    if (HasPickupItem) {
       output.WriteRawTag(48);
       output.WriteInt32(PickupItem);
     }
@@ -2003,10 +1967,6 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       output.WriteRawTag(10);
       output.WriteMessage(Pos);
     }
-    if (lookPos_ != null) {
-      output.WriteRawTag(18);
-      output.WriteMessage(LookPos);
-    }
     if (HasAngle) {
       output.WriteRawTag(29);
       output.WriteFloat(Angle);
@@ -2015,11 +1975,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       output.WriteRawTag(34);
       output.WriteString(Name);
     }
-    if (itemCase_ == ItemOneofCase.DropItem) {
-      output.WriteRawTag(40);
-      output.WriteBool(DropItem);
+    if (dropItem_ != null) {
+      output.WriteRawTag(42);
+      output.WriteMessage(DropItem);
     }
-    if (itemCase_ == ItemOneofCase.PickupItem) {
+    if (HasPickupItem) {
       output.WriteRawTag(48);
       output.WriteInt32(PickupItem);
     }
@@ -2040,19 +2000,16 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     if (pos_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Pos);
     }
-    if (lookPos_ != null) {
-      size += 1 + pb::CodedOutputStream.ComputeMessageSize(LookPos);
-    }
     if (HasAngle) {
       size += 1 + 4;
     }
     if (HasName) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
     }
-    if (itemCase_ == ItemOneofCase.DropItem) {
-      size += 1 + 1;
+    if (dropItem_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(DropItem);
     }
-    if (itemCase_ == ItemOneofCase.PickupItem) {
+    if (HasPickupItem) {
       size += 1 + pb::CodedOutputStream.ComputeInt32Size(PickupItem);
     }
     if (bullets_ != null) {
@@ -2076,17 +2033,20 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       }
       Pos.MergeFrom(other.Pos);
     }
-    if (other.lookPos_ != null) {
-      if (lookPos_ == null) {
-        LookPos = new global::Vector2Data();
-      }
-      LookPos.MergeFrom(other.LookPos);
-    }
     if (other.HasAngle) {
       Angle = other.Angle;
     }
     if (other.HasName) {
       Name = other.Name;
+    }
+    if (other.dropItem_ != null) {
+      if (dropItem_ == null) {
+        DropItem = new global::Vector2Data();
+      }
+      DropItem.MergeFrom(other.DropItem);
+    }
+    if (other.HasPickupItem) {
+      PickupItem = other.PickupItem;
     }
     if (other.bullets_ != null) {
       if (bullets_ == null) {
@@ -2094,15 +2054,6 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       }
       Bullets.MergeFrom(other.Bullets);
     }
-    switch (other.ItemCase) {
-      case ItemOneofCase.DropItem:
-        DropItem = other.DropItem;
-        break;
-      case ItemOneofCase.PickupItem:
-        PickupItem = other.PickupItem;
-        break;
-    }
-
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
 
@@ -2125,13 +2076,6 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
           input.ReadMessage(Pos);
           break;
         }
-        case 18: {
-          if (lookPos_ == null) {
-            LookPos = new global::Vector2Data();
-          }
-          input.ReadMessage(LookPos);
-          break;
-        }
         case 29: {
           Angle = input.ReadFloat();
           break;
@@ -2140,8 +2084,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
           Name = input.ReadString();
           break;
         }
-        case 40: {
-          DropItem = input.ReadBool();
+        case 42: {
+          if (dropItem_ == null) {
+            DropItem = new global::Vector2Data();
+          }
+          input.ReadMessage(DropItem);
           break;
         }
         case 48: {
@@ -2177,13 +2124,6 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
           input.ReadMessage(Pos);
           break;
         }
-        case 18: {
-          if (lookPos_ == null) {
-            LookPos = new global::Vector2Data();
-          }
-          input.ReadMessage(LookPos);
-          break;
-        }
         case 29: {
           Angle = input.ReadFloat();
           break;
@@ -2192,8 +2132,11 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
           Name = input.ReadString();
           break;
         }
-        case 40: {
-          DropItem = input.ReadBool();
+        case 42: {
+          if (dropItem_ == null) {
+            DropItem = new global::Vector2Data();
+          }
+          input.ReadMessage(DropItem);
           break;
         }
         case 48: {

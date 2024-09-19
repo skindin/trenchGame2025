@@ -49,14 +49,10 @@ message Vector2Data
 message PlayerInput
 {
     Vector2Data pos = 1;
-    Vector2Data lookPos = 2;
     optional float angle = 3;
     optional string name = 4;
-    oneof Item
-    {
-        bool DropItem = 5;
-        int32 PickupItem = 6;
-    }
+    Vector2Data dropItem = 5;
+    optional int32 PickupItem = 6;
     BulletBunch bullets = 7;
 }
 

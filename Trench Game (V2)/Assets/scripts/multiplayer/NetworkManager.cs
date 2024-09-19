@@ -84,13 +84,29 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         var posData = DataManager.VectorToData(dropPos);
 
-        var input = new PlayerInput { PickupItem = item.id , LookPos = posData};
+        var input = new PlayerInput { PickupItem = item.id, DropItem = posData};
 
         var message = new MessageForServer {Input = input};
 
         client.SendData(message.ToByteArray());
 
         Debug.Log($"told server it picked up item {item.id}");
+    }
+
+    public void PickupItem (Item item)
+    {
+        if (IsServer)
+            return;
+
+        var input = new PlayerInput { PickupItem = item.id };
+
+        //Item prevItem = CharacterManager.Manager.localPlayerCharacter.inventory.ActiveItem;
+
+        var message = new MessageForServer { Input = input };
+
+        client.SendData(message.ToByteArray());
+
+        Debug.Log($"told server it picked up item {item.id}");// {(prevItem ? $" and dropped item {prevItem.id}" : "")}");
     }
 
     //public void DropItemServer(Item item, Vector2 dropPos)
@@ -107,7 +123,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         var posData = DataManager.VectorToData (pos);
 
-        var input = new PlayerInput { DropItem = true , LookPos = posData };
+        var input = new PlayerInput { DropItem = posData};
 
         var message = new MessageForServer { Input = input };
 
@@ -121,7 +137,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
         if (!IsServer)
             return;
 
-        server.removeItemList.Add(item.id);
+        //server.removeItemList.Add(item.id);
 
         for (int i = 0; i < server.updateItems.Count; i++)
         {
