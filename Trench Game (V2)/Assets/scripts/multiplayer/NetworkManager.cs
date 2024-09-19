@@ -77,22 +77,6 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
     }
 
-    public void PickupItem(Item item, Vector2 dropPos)
-    {
-        if (IsServer)
-            return;
-
-        var posData = DataManager.VectorToData(dropPos);
-
-        var input = new PlayerInput { PickupItem = item.id, DropItem = posData};
-
-        var message = new MessageForServer {Input = input};
-
-        client.SendData(message.ToByteArray());
-
-        Debug.Log($"told server it picked up item {item.id}");
-    }
-
     public void PickupItem (Item item)
     {
         if (IsServer)
@@ -107,6 +91,44 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
 
         Debug.Log($"told server it picked up item {item.id}");// {(prevItem ? $" and dropped item {prevItem.id}" : "")}");
+    }
+
+    public void RequestAmo (Ammo ammo, int amount)
+    {
+        if (IsServer)
+            return;
+
+        var player = CharacterManager.Manager.localPlayerCharacter;
+
+        int index = 0;
+        bool found = false;
+
+        for (int i = 0; i < player.reserve.ammoPools.Count; i++)
+        {
+            var pool = player.reserve.ammoPools[i];
+
+            if (pool.type == ammo.AmoModel.type)
+            {
+                index = i;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            Debug.LogError($"local player doesn't have amo slot for type {ammo.AmoModel.type.name}");
+        }
+
+        var ammoData = new AmmoData { Index = index, Amount = amount };
+
+        var request = new AmmoRequest { Ammo = ammoData, ItemId = ammo.id };
+
+        var input = new PlayerInput {AmmoRequest = request };
+
+        var message = new MessageForServer { Input = input };
+
+        client.SendData(message.ToByteArray());
     }
 
     //public void DropItemServer(Item item, Vector2 dropPos)

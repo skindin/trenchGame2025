@@ -21,7 +21,7 @@ public class MedPack : Item
         }
     }
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
+    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync = false)
     {
         base.Pickup(character, out wasPickedUp, out wasDestroyed);
 

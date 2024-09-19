@@ -98,7 +98,7 @@ public class Item : MonoBehaviour
         Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
     }
 
-    public virtual void Pickup (Character character, out bool wasPickedUp, out bool wasDestroyed)
+    public virtual void Pickup (Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync = false)
     {
         if (wielder != character)
         {
@@ -106,6 +106,8 @@ public class Item : MonoBehaviour
             transform.parent = character.transform;
             transform.localPosition = Vector3.zero;
         }
+
+        NetworkManager.Manager.PickupItem(this);
 
         Chunk = null;
         wasDestroyed = false;

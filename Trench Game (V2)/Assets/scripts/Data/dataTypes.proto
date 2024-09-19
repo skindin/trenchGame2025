@@ -38,6 +38,7 @@ message GameState
     repeated ItemData newItems = 5;
     repeated ItemData updateItems = 6;
     repeated int32 removeItems = 7;
+    CharacterData updatePlayer = 8;
 }
 
 message Vector2Data
@@ -54,6 +55,7 @@ message PlayerInput
     Vector2Data dropItem = 5;
     optional int32 PickupItem = 6;
     BulletBunch bullets = 7;
+    AmmoRequest ammoRequest = 8;
 }
 
 message CharacterData
@@ -64,6 +66,7 @@ message CharacterData
     optional float hp = 4;
     optional int32 itemId = 5;
     optional float angle = 6;
+    repeated AmmoData reserve = 7;
 }
 
 message CharDataList
@@ -101,10 +104,27 @@ message ItemData
 message GunData
 {
     optional int32 amo = 1;
-    optional float reload = 2;
+    optional float reloadStart = 2;
 }
 
 message StackData
 {
     int32 amount = 1;
+}
+
+message ReserveData
+{
+    repeated AmmoData ammo = 1;
+}
+
+message AmmoData
+{
+    int32 index = 1;
+    int32 amount = 2;
+}
+
+message AmmoRequest
+{
+    int32 itemId = 1;
+    AmmoData ammo = 2;
 }

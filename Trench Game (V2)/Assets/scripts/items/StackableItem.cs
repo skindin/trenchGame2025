@@ -42,7 +42,7 @@ public class StackableItem : Item
             amount = Mathf.Clamp(amount, 0, StackableModel.maxAmount);
     }
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed)
+    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync = false)
     {
         wasPickedUp = false;
         CombineWithItems(character.inventory.items, out wasDestroyed, false);

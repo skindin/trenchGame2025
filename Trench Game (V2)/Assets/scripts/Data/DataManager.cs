@@ -105,6 +105,18 @@ public static class DataManager
         {
             a.ItemId = b.ItemId;
         }
+
+        //if (b.Reserve != null) nvm this too complicated rn
+        //{
+        //    if (a.Reserve != null)
+        //    {
+
+        //    }
+        //    else
+        //    {
+        //        foreach (var)
+        //    }
+        //}
     }
 
     public static void CombineCharDataList(CharacterData charData, CharDataList list)
@@ -163,9 +175,9 @@ public static class DataManager
                             a.Gun.Amo = b.Gun.Amo;
                         }
 
-                        if (b.Gun.HasReload)
+                        if (b.Gun.HasReloadStart)
                         {
-                            a.Gun.Reload = b.Gun.Reload;
+                            a.Gun.ReloadStart = b.Gun.ReloadStart;
                         }
                     }
                 }

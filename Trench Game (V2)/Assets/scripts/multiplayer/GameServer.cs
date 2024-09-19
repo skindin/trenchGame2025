@@ -160,26 +160,27 @@ public class GameServer : MonoBehaviour
                 {
                     updateItems.Add(droppedItem);
 
-                    if (!ItemManager.Manager.active.TryGetValue(droppedItem.ItemId, out var item))
+                    if (ItemManager.Manager.active.TryGetValue(droppedItem.ItemId, out var item))
                     {
-                        Debug.Log($"not item with id {client.update.ItemId}");
-                        break;
-                    }
+                        var pos = DataManager.ConvertDataToVector(droppedItem.Pos);
+                        client.character.inventory.DropItem(item, pos);
 
-                    var pos = DataManager.ConvertDataToVector(droppedItem.Pos);
-                    client.character.inventory.DropItem(item, pos);
-
-                    foreach (var currentItem in currentItems)
-                    {
-                        if (currentItem.ItemId == droppedItem.ItemId)
+                        foreach (var currentItem in currentItems)
                         {
-                            currentItem.Pos = droppedItem.Pos;
+                            if (currentItem.ItemId == droppedItem.ItemId)
+                            {
+                                currentItem.Pos = droppedItem.Pos;
+                            }
                         }
+                    }
+                    else
+                    {
+                        Debug.Log($"not item with id {droppedItem.ItemId}");
                     }
                 }
 
                 if (client.droppedItems.Count > 0)
-                    currentData.ClearItemId();
+                    currentData.ClearItemId(); //this and the foreach probably should be outside of the if update block...
 
                 if (client.update.HasItemId)
                 {
@@ -187,26 +188,27 @@ public class GameServer : MonoBehaviour
 
                     //var item = ItemManager.Manager.active[client.update.ItemId];
 
-                    if (!ItemManager.Manager.active.TryGetValue(client.update.ItemId, out var item))
+                    if (ItemManager.Manager.active.TryGetValue(client.update.ItemId, out var item))
+                    {
+                        character.inventory.PickupItem(item, item.transform.position);
+
+                        //if (prevItem && prevItem != character.inventory.ActiveItem)
+                        //{
+                        //    UpdateItemData(new ItemData { ItemId = prevItem.id, Pos = client.lookPos });
+                        //}
+
+                        foreach (var itemData in currentItems)
+                        {
+                            if (itemData.ItemId == item.id)
+                            {
+                                itemData.Pos = null;
+                                break;
+                            }
+                        }
+                    }
+                    else
                     {
                         Debug.Log($"not item with id {client.update.ItemId}");
-                        break;
-                    }
-
-                    character.inventory.PickupItem(item, item.transform.position);
-
-                    //if (prevItem && prevItem != character.inventory.ActiveItem)
-                    //{
-                    //    UpdateItemData(new ItemData { ItemId = prevItem.id, Pos = client.lookPos });
-                    //}
-
-                    foreach (var itemData in currentItems)
-                    {
-                        if (itemData.ItemId == item.id)
-                        {
-                            itemData.Pos = null;
-                            break;
-                        }
                     }
 
                     //currentData.ItemId = client.update.ItemId; //i could make combinedata do this but idc rn
@@ -219,11 +221,20 @@ public class GameServer : MonoBehaviour
                 {
                     var gunModel = gun.GunModel;
 
+                    while (client.bullets.Bullets.Count > gun.rounds)
+                    {
+                        client.bullets.Bullets.RemoveAt(client.bullets.Bullets.Count - 1);
+                    }
+
                     foreach (var bullet in client.bullets.Bullets)
                     {
-                        if (gun.rounds > 0)
-                        NetworkManager.Manager.DataToBullet(bullet, character, client.bullets.StartTime);
-                        gun.rounds--;
+                        //if (gun.rounds > 0) //shouldn't need this since I'm removing them with the while loop
+                        //{
+                            NetworkManager.Manager.DataToBullet(bullet, character, client.bullets.StartTime);
+                            gun.rounds--;
+                        //}
+                        //else
+                        //    break;
                     }
 
                     if (client.bullets.Bullets.Count > 0)
@@ -239,7 +250,6 @@ public class GameServer : MonoBehaviour
 
                     newBullets.Add(client.bullets);
                 }
-
                 //client.droppedItems.Clear();
 
                 //if (!character.inventory.ActiveItem)
@@ -298,6 +308,67 @@ public class GameServer : MonoBehaviour
                 }
 
                 Debug.Log($"removed character {character.id}, {currentCharData.List.Count} characters left");
+            }
+
+            if (client.ammoRequest != null)
+            {
+                if (ItemManager.Manager.active.TryGetValue(client.ammoRequest.ItemId, out var item))
+                {
+                    if (item is Ammo ammo)
+                    {
+                        var pool = client.character.reserve.ammoPools[client.ammoRequest.Ammo.Index];
+                        var requestAmmoType = pool.type;
+
+                        if (requestAmmoType == ammo.AmoModel.type)
+                        {
+                            var reqAmount = client.ammoRequest.Ammo.Amount;
+
+                            var amtTaken = Mathf.Min(ammo.amount, reqAmount, pool.maxRounds - pool.rounds);
+
+                            var amtLeft = Mathf.Max(ammo.amount - amtTaken, 0);
+
+                            ammo.amount = amtLeft;
+
+                            if (amtLeft > 0)
+                            {
+                                var stackData = new StackData { Amount = amtLeft };
+
+                                var itemData = new ItemData { ItemId = ammo.id, Stack = stackData };
+
+                                //client.ammoRequest.Ammo.Amount = amtTaken;
+
+                                UpdateItemData(itemData);
+                            }
+                            else
+                            {
+                                removeItemList.Add(ammo.id);
+                                ammo.DestroyItem();
+                            }
+
+                            //if (amtTaken > 0) //nvm, should probably send this back anyways
+
+                            pool.AddAmo(amtTaken);
+
+                            var ammoData = new AmmoData { Index = client.ammoRequest.Ammo.Index, Amount = pool.rounds };
+
+                            client.localData = new CharacterData() { CharacterID = client.character.id};
+
+                            client.localData.Reserve.Add(ammoData);
+                        }
+                        else
+                        {
+                            Debug.Log($"ammo request failed: item {ammo.id} is the wrong ammo type");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log($"ammo request failed: item {item.id} is not ammo");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"ammo request failed: there is no items with id {client.ammoRequest.ItemId}");
+                }
             }
         }
 
@@ -374,25 +445,25 @@ public class GameServer : MonoBehaviour
                     newBullets.Remove(client.bullets);
                 }
 
-                foreach (var dropItem in client.droppedItems)
-                {
-                    bool found = false;
-                    for (int i = 0; i < updateItems.Count; i++)
-                    {
-                        var updateItem = updateItems[i];
+                //foreach (var dropItem in client.droppedItems) //not sure what the point of this was
+                //{
+                //    bool found = false;
+                //    for (int i = 0; i < updateItems.Count; i++)
+                //    {
+                //        var updateItem = updateItems[i];
 
-                        if (dropItem.ItemId == updateItem.ItemId)
-                        {
-                            updateItems.RemoveAt(i);
-                            i--;
-                            found = true;
-                            break;
-                        }
-                    }
+                //        if (dropItem.ItemId == updateItem.ItemId)
+                //        {
+                //            updateItems.RemoveAt(i);
+                //            i--;
+                //            found = true;
+                //            break;
+                //        }
+                //    }
 
-                    if (found)
-                        break;
-                }
+                //    if (found)
+                //        break;
+                //}
 
                 gameState.UpdateChars = updateCharData.List.Count > 0 ? updateCharData : null;
 
@@ -412,7 +483,23 @@ public class GameServer : MonoBehaviour
                 foreach (var updateItem in updateItems)
                 {
                     if (!client.character.inventory.ActiveItem || client.character.inventory.ActiveItem.id != updateItem.ItemId)
-                        gameState.UpdateItems.Add(updateItem);
+                    {
+                        bool found = false;
+
+                        foreach (var dropped in client.droppedItems)
+                        {
+                            if (dropped.ItemId == updateItem.ItemId)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            gameState.UpdateItems.Add(updateItem); //if you couldn't find this item in dropped items, update it
+                        }
+                    }
                 }
 
                 foreach (var removeItem in removeItemList)
@@ -424,6 +511,9 @@ public class GameServer : MonoBehaviour
                 {
                     gameState.NewBullets.Add(bunch);
                 }
+
+                if (client.localData != null)
+                    gameState.UpdatePlayer = client.localData;
 
                 //if (newBullets.Count > 0)
                 //{
@@ -464,6 +554,10 @@ public class GameServer : MonoBehaviour
                 client.bullets = null;
 
                 client.update = client.remove = client.newPlayer = null;
+
+                client.localData = null;
+
+                client.ammoRequest = null;
             }
             //LogLists();
         }
@@ -585,7 +679,9 @@ public class GameServer : MonoBehaviour
     {
         public static GameServer server;
 
-        public CharacterData remove, update, newPlayer;
+        public CharacterData remove, update, newPlayer, localData;
+
+        public AmmoRequest ammoRequest;
 
         public List<ItemData> droppedItems = new(); //GOTTA MAKE THIS LIST THE ITEMS IT'S DROPPING
 
@@ -679,6 +775,11 @@ public class GameServer : MonoBehaviour
                                     if (message.Input.DropItem != null)
                                     {
                                         droppedItems.Add(new ItemData { ItemId = character.inventory.ActiveItem.id, Pos = message.Input.DropItem });
+                                    }
+
+                                    if (message.Input.AmmoRequest != null)
+                                    {
+                                        ammoRequest = message.Input.AmmoRequest;
                                     }
 
                                     //lookPos = message.Input.LookPos;

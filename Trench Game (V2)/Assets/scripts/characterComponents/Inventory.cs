@@ -261,30 +261,25 @@ public class Inventory : MonoBehaviour
 
         if (true || withinRadius.Contains(item))
         {
-            var prevItem = ActiveItem;
+            //var prevItem = ActiveItem;
 
-            item.Pickup(character, out var pickedUp, out var destroyed);
+            item.Pickup(character, out var pickedUp, out var destroyed, sync);
             if (pickedUp)
                 withinRadius.Remove(item);
 
             if (pickedUp && !destroyed)
             {
                 if (ActiveItem)
-                    DropItem(ActiveItem, dropPos); //DO NOT SYNC HERE, pickup message should take care of it
+                    DropItem(ActiveItem, dropPos, true); //DO NOT SYNC HERE, pickup message should take care of it
 
                 items.Add(item);
                 ActiveItem = item;
             }
 
-            if (sync)
-            {
-                if (prevItem && prevItem != ActiveItem)
-                    NetworkManager.Manager.PickupItem(item, dropPos); //bruh not everything is picked up this way facepalm emoji
-                else
-                {
-                    NetworkManager.Manager.PickupItem(item);
-                }
-            }
+            //if (sync)
+            //{
+            //    NetworkManager.Manager.PickupItem(item);
+            //}
 
             //if (item is Gun
             //    //|| item is MedPack

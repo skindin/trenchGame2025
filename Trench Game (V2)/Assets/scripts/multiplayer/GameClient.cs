@@ -101,10 +101,18 @@ public class GameClient : MonoBehaviour
 
         foreach (var removeItem in removeItems)
         {
-            var item = ItemManager.Manager.active[removeItem];
+            //var item = ItemManager.Manager.active[removeItem];
+
+            if (!ItemManager.Manager.active.TryGetValue(removeItem, out var item))
+            {
+                Debug.Log($"could not remove item, no item with id {removeItem} was found");
+                continue;
+            }
 
             //ItemManager.Manager.RemoveItem(item);
             item.DestroyItem();
+
+            Debug.Log($"server said to remove item {removeItem}");
         }
 
         foreach (var newRemoteChar in newRemoteChars.List)
@@ -178,6 +186,14 @@ public class GameClient : MonoBehaviour
                     dirItem.Aim(direction);
                     //Debug.Log($"recieved angle {updateChar.Angle}")
                 }
+
+                if (updateChar.Reserve != null)
+                {
+                    foreach (var ammo in updateChar.Reserve)
+                    {
+                        character.reserve.ammoPools[ammo.Index].rounds = ammo.Amount;
+                    }
+                }
             }
             else
             {
@@ -212,6 +228,7 @@ public class GameClient : MonoBehaviour
 
         newItems.Clear();
         updateItems.Clear();
+        removeItems.Clear();
 
         //SendData(new byte[1]);
     }
@@ -404,6 +421,11 @@ public class GameClient : MonoBehaviour
                                 //Debug.Log(
                                 //    $"was told to spawn {bunch.Bullets.Count} bullet(s) by server from character {bunch.CharacterId}"
                                 //    );
+                            }
+
+                            if (message.GameState.UpdatePlayer != null)
+                            {
+                                updateChars.List.Add(message.GameState.UpdatePlayer);
                             }
 
                             break;

@@ -30,7 +30,7 @@ public class Ammo : StackableItem
     /// <param name="character"></param>
     /// <param name="wasPickedup"></param>
     /// <param name="wasDestroyed"></param>
-    public override void Pickup (Character character, out bool wasPickedup, out bool wasDestroyed)
+    public override void Pickup (Character character, out bool wasPickedup, out bool wasDestroyed, bool sync = false)
     {
         //base.Pickup(character, out wasPickedup, out wasDestroyed);
 
@@ -38,16 +38,35 @@ public class Ammo : StackableItem
 
         if (character.reserve)
         {
-            //var prevAmount = amount;
-            amount = character.reserve.AddAmo(AmoModel.type, amount);
+
 
             //if (prevAmount != amount)
             //    wasPickedup = true;
 
-            if (amount <= 0)//shouldn't be less then, but just a percaution
+            if (NetworkManager.IsServer)//shouldn't be less then, but just a percaution
             {
-                DestroyItem();
-                wasPickedup = wasDestroyed = true;
+                //DestroyItem();
+
+                amount = character.reserve.AddAmo(AmoModel.type, amount);
+
+                if (amount <= 0)
+                {
+                    wasPickedup = wasDestroyed = true;
+                    DestroyItem();
+                }
+                //amount = newAmt;
+            }
+
+            if (sync)
+            {
+                //var prevAmt = amount;
+
+                //var prevAmount = amount;
+
+                var pool = character.reserve.GetPool(AmoModel.type);
+
+                NetworkManager.Manager.RequestAmo(this, pool.maxRounds - pool.rounds);
+
             }
             //else
             //{
