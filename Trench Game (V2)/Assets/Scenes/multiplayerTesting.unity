@@ -1439,7 +1439,6 @@ MonoBehaviour:
   editorIsServer: 1
   client: {fileID: 1377846333}
   server: {fileID: 950176246}
-  NetTime: 0
 --- !u!1 &478373407
 GameObject:
   m_ObjectHideFlags: 0
@@ -1850,7 +1849,7 @@ MonoBehaviour:
     - name: auto gun
       prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
       currentAmount: 0
-      spawnCap: 3
+      spawnCap: 1
       chance: 1
     - name: med pack
       prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
@@ -1858,7 +1857,7 @@ MonoBehaviour:
       spawnCap: 5
       chance: 0
     chance: 1
-  itemsPerDrop: 3
+  itemsPerDrop: 4
   itemDropRadius: 5
   itemDropInterval: 20
   itemDropTimer: 0

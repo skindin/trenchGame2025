@@ -38,33 +38,34 @@ public static partial class DataTypesReflection {
           "MgwuQnVsbGV0QnVuY2gSGwoIbmV3SXRlbXMYBSADKAsyCS5JdGVtRGF0YRIe",
           "Cgt1cGRhdGVJdGVtcxgGIAMoCzIJLkl0ZW1EYXRhEhMKC3JlbW92ZUl0ZW1z",
           "GAcgAygFEiQKDHVwZGF0ZVBsYXllchgIIAEoCzIOLkNoYXJhY3RlckRhdGEi",
-          "IwoLVmVjdG9yMkRhdGESCQoBeBgBIAEoAhIJCgF5GAIgASgCIuwBCgtQbGF5",
+          "IwoLVmVjdG9yMkRhdGESCQoBeBgBIAEoAhIJCgF5GAIgASgCIpYCCgtQbGF5",
           "ZXJJbnB1dBIZCgNwb3MYASABKAsyDC5WZWN0b3IyRGF0YRISCgVhbmdsZRgD",
           "IAEoAkgAiAEBEhEKBG5hbWUYBCABKAlIAYgBARIeCghkcm9wSXRlbRgFIAEo",
           "CzIMLlZlY3RvcjJEYXRhEhcKClBpY2t1cEl0ZW0YBiABKAVIAogBARIdCgdi",
           "dWxsZXRzGAcgASgLMgwuQnVsbGV0QnVuY2gSIQoLYW1tb1JlcXVlc3QYCCAB",
-          "KAsyDC5BbW1vUmVxdWVzdEIICgZfYW5nbGVCBwoFX25hbWVCDQoLX1BpY2t1",
-          "cEl0ZW0izQEKDUNoYXJhY3RlckRhdGESEwoLY2hhcmFjdGVySUQYASABKAUS",
-          "GQoDcG9zGAIgASgLMgwuVmVjdG9yMkRhdGESEQoEbmFtZRgDIAEoCUgAiAEB",
-          "Eg8KAmhwGAQgASgCSAGIAQESEwoGaXRlbUlkGAUgASgFSAKIAQESEgoFYW5n",
-          "bGUYBiABKAJIA4gBARIaCgdyZXNlcnZlGAcgAygLMgkuQW1tb0RhdGFCBwoF",
-          "X25hbWVCBQoDX2hwQgkKB19pdGVtSWRCCAoGX2FuZ2xlIiwKDENoYXJEYXRh",
-          "TGlzdBIcCgRsaXN0GAEgAygLMg4uQ2hhcmFjdGVyRGF0YSKkAQoLQnVsbGV0",
-          "QnVuY2gSEgoFcmFuZ2UYASABKAJIAIgBARISCgVzcGVlZBgCIAEoAkgBiAEB",
-          "EhwKB2J1bGxldHMYAyADKAsyCy5CdWxsZXREYXRhEhEKCXN0YXJ0VGltZRgE",
-          "IAEoAhIYCgtjaGFyYWN0ZXJJZBgFIAEoBUgCiAEBQggKBl9yYW5nZUIICgZf",
-          "c3BlZWRCDgoMX2NoYXJhY3RlcklkIkoKCkJ1bGxldERhdGESHgoIc3RhcnRw",
-          "b3MYASABKAsyDC5WZWN0b3IyRGF0YRIcCgZlbmRwb3MYAiABKAsyDC5WZWN0",
-          "b3IyRGF0YSKXAQoISXRlbURhdGESDgoGaXRlbUlkGAEgASgFEhUKCHByZWZh",
-          "YklkGAIgASgFSAGIAQESGQoDcG9zGAMgASgLMgwuVmVjdG9yMkRhdGESFwoD",
-          "Z3VuGAQgASgLMgguR3VuRGF0YUgAEhsKBXN0YWNrGAUgASgLMgouU3RhY2tE",
-          "YXRhSABCBgoEVHlwZUILCglfcHJlZmFiSWQiTQoHR3VuRGF0YRIQCgNhbW8Y",
-          "ASABKAVIAIgBARIYCgtyZWxvYWRTdGFydBgCIAEoAkgBiAEBQgYKBF9hbW9C",
-          "DgoMX3JlbG9hZFN0YXJ0IhsKCVN0YWNrRGF0YRIOCgZhbW91bnQYASABKAUi",
-          "JgoLUmVzZXJ2ZURhdGESFwoEYW1tbxgBIAMoCzIJLkFtbW9EYXRhIikKCEFt",
-          "bW9EYXRhEg0KBWluZGV4GAEgASgFEg4KBmFtb3VudBgCIAEoBSI2CgtBbW1v",
-          "UmVxdWVzdBIOCgZpdGVtSWQYASABKAUSFwoEYW1tbxgCIAEoCzIJLkFtbW9E",
-          "YXRhYgZwcm90bzM="));
+          "KAsyDC5BbW1vUmVxdWVzdBIYCgtzdGFydFJlbG9hZBgJIAEoAkgDiAEBQggK",
+          "Bl9hbmdsZUIHCgVfbmFtZUINCgtfUGlja3VwSXRlbUIOCgxfc3RhcnRSZWxv",
+          "YWQizQEKDUNoYXJhY3RlckRhdGESEwoLY2hhcmFjdGVySUQYASABKAUSGQoD",
+          "cG9zGAIgASgLMgwuVmVjdG9yMkRhdGESEQoEbmFtZRgDIAEoCUgAiAEBEg8K",
+          "AmhwGAQgASgCSAGIAQESEwoGaXRlbUlkGAUgASgFSAKIAQESEgoFYW5nbGUY",
+          "BiABKAJIA4gBARIaCgdyZXNlcnZlGAcgAygLMgkuQW1tb0RhdGFCBwoFX25h",
+          "bWVCBQoDX2hwQgkKB19pdGVtSWRCCAoGX2FuZ2xlIiwKDENoYXJEYXRhTGlz",
+          "dBIcCgRsaXN0GAEgAygLMg4uQ2hhcmFjdGVyRGF0YSKkAQoLQnVsbGV0QnVu",
+          "Y2gSEgoFcmFuZ2UYASABKAJIAIgBARISCgVzcGVlZBgCIAEoAkgBiAEBEhwK",
+          "B2J1bGxldHMYAyADKAsyCy5CdWxsZXREYXRhEhEKCXN0YXJ0VGltZRgEIAEo",
+          "AhIYCgtjaGFyYWN0ZXJJZBgFIAEoBUgCiAEBQggKBl9yYW5nZUIICgZfc3Bl",
+          "ZWRCDgoMX2NoYXJhY3RlcklkIkoKCkJ1bGxldERhdGESHgoIc3RhcnRwb3MY",
+          "ASABKAsyDC5WZWN0b3IyRGF0YRIcCgZlbmRwb3MYAiABKAsyDC5WZWN0b3Iy",
+          "RGF0YSKXAQoISXRlbURhdGESDgoGaXRlbUlkGAEgASgFEhUKCHByZWZhYklk",
+          "GAIgASgFSAGIAQESGQoDcG9zGAMgASgLMgwuVmVjdG9yMkRhdGESFwoDZ3Vu",
+          "GAQgASgLMgguR3VuRGF0YUgAEhsKBXN0YWNrGAUgASgLMgouU3RhY2tEYXRh",
+          "SABCBgoEVHlwZUILCglfcHJlZmFiSWQiTQoHR3VuRGF0YRIQCgNhbW8YASAB",
+          "KAVIAIgBARIYCgtyZWxvYWRTdGFydBgCIAEoAkgBiAEBQgYKBF9hbW9CDgoM",
+          "X3JlbG9hZFN0YXJ0IhsKCVN0YWNrRGF0YRIOCgZhbW91bnQYASABKAUiJgoL",
+          "UmVzZXJ2ZURhdGESFwoEYW1tbxgBIAMoCzIJLkFtbW9EYXRhIikKCEFtbW9E",
+          "YXRhEg0KBWluZGV4GAEgASgFEg4KBmFtb3VudBgCIAEoBSI2CgtBbW1vUmVx",
+          "dWVzdBIOCgZpdGVtSWQYASABKAUSFwoEYW1tbxgCIAEoCzIJLkFtbW9EYXRh",
+          "YgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -73,7 +74,7 @@ public static partial class DataTypesReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::NewPlayerGrant), global::NewPlayerGrant.Parser, new[]{ "NewPlayer", "CurrentChars", "CurrentItems" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GameState), global::GameState.Parser, new[]{ "NewRemoteChars", "UpdateChars", "RemoveChars", "NewBullets", "NewItems", "UpdateItems", "RemoveItems", "UpdatePlayer" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Vector2Data), global::Vector2Data.Parser, new[]{ "X", "Y" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Pos", "Angle", "Name", "DropItem", "PickupItem", "Bullets", "AmmoRequest" }, new[]{ "Angle", "Name", "PickupItem" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInput), global::PlayerInput.Parser, new[]{ "Pos", "Angle", "Name", "DropItem", "PickupItem", "Bullets", "AmmoRequest", "StartReload" }, new[]{ "Angle", "Name", "PickupItem", "StartReload" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CharacterData), global::CharacterData.Parser, new[]{ "CharacterID", "Pos", "Name", "Hp", "ItemId", "Angle", "Reserve" }, new[]{ "Name", "Hp", "ItemId", "Angle" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::CharDataList), global::CharDataList.Parser, new[]{ "List" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::BulletBunch), global::BulletBunch.Parser, new[]{ "Range", "Speed", "Bullets", "StartTime", "CharacterId" }, new[]{ "Range", "Speed", "CharacterId" }, null, null, null),
@@ -1814,6 +1815,7 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     pickupItem_ = other.pickupItem_;
     bullets_ = other.bullets_ != null ? other.bullets_.Clone() : null;
     ammoRequest_ = other.ammoRequest_ != null ? other.ammoRequest_.Clone() : null;
+    startReload_ = other.startReload_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -1945,6 +1947,31 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     }
   }
 
+  /// <summary>Field number for the "startReload" field.</summary>
+  public const int StartReloadFieldNumber = 9;
+  private float startReload_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public float StartReload {
+    get { if ((_hasBits0 & 4) != 0) { return startReload_; } else { return 0F; } }
+    set {
+      _hasBits0 |= 4;
+      startReload_ = value;
+    }
+  }
+  /// <summary>Gets whether the "startReload" field is set</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool HasStartReload {
+    get { return (_hasBits0 & 4) != 0; }
+  }
+  /// <summary>Clears the value of the "startReload" field</summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearStartReload() {
+    _hasBits0 &= ~4;
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -1967,6 +1994,7 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     if (PickupItem != other.PickupItem) return false;
     if (!object.Equals(Bullets, other.Bullets)) return false;
     if (!object.Equals(AmmoRequest, other.AmmoRequest)) return false;
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(StartReload, other.StartReload)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -1981,6 +2009,7 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     if (HasPickupItem) hash ^= PickupItem.GetHashCode();
     if (bullets_ != null) hash ^= Bullets.GetHashCode();
     if (ammoRequest_ != null) hash ^= AmmoRequest.GetHashCode();
+    if (HasStartReload) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(StartReload);
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -2027,6 +2056,10 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       output.WriteRawTag(66);
       output.WriteMessage(AmmoRequest);
     }
+    if (HasStartReload) {
+      output.WriteRawTag(77);
+      output.WriteFloat(StartReload);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -2065,6 +2098,10 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
       output.WriteRawTag(66);
       output.WriteMessage(AmmoRequest);
     }
+    if (HasStartReload) {
+      output.WriteRawTag(77);
+      output.WriteFloat(StartReload);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -2095,6 +2132,9 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
     }
     if (ammoRequest_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(AmmoRequest);
+    }
+    if (HasStartReload) {
+      size += 1 + 4;
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -2140,6 +2180,9 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
         AmmoRequest = new global::AmmoRequest();
       }
       AmmoRequest.MergeFrom(other.AmmoRequest);
+    }
+    if (other.HasStartReload) {
+      StartReload = other.StartReload;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -2196,6 +2239,10 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
           input.ReadMessage(AmmoRequest);
           break;
         }
+        case 77: {
+          StartReload = input.ReadFloat();
+          break;
+        }
       }
     }
   #endif
@@ -2249,6 +2296,10 @@ public sealed partial class PlayerInput : pb::IMessage<PlayerInput>
             AmmoRequest = new global::AmmoRequest();
           }
           input.ReadMessage(AmmoRequest);
+          break;
+        }
+        case 77: {
+          StartReload = input.ReadFloat();
           break;
         }
       }

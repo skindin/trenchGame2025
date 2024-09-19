@@ -257,7 +257,18 @@ public static class DataManager
                 {
                     if (item is Gun gun)
                     {
-                        gun.rounds = data.Gun.Amo;
+                        if (data.Gun.HasAmo)
+                        {
+                            gun.rounds = data.Gun.Amo;
+                        }
+
+                        if (data.Gun.HasReloadStart)
+                        {
+                            if (NetworkManager.NetTime - data.Gun.ReloadStart > gun.GunModel.reloadTime)
+                                data.Gun.ClearReloadStart();
+                            else
+                                gun.StartReload(data.Gun.ReloadStart);
+                        }
                     }
                     else
                     {

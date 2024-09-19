@@ -200,33 +200,43 @@ public class Gun : Weapon
 
     public override void Action()
     {
-        reloadRoutine ??= StartCoroutine(Reload());
+        reloadRoutine ??= StartCoroutine(Reload(0, true));
+    }
 
-        IEnumerator Reload()
+    IEnumerator Reload(float progress = 0, bool sync = false)
+    {
+        if (reloading || reserve == null) yield break;
+
+        if (!sync || (rounds < GunModel.maxRounds && reserve.GetAmoAmount(GunModel.amoType) > 0))
         {
-            if (reloading || reserve == null) yield break;
+            reloading = true;
 
-            if (rounds < GunModel.maxRounds && reserve.GetAmoAmount(GunModel.amoType) > 0)
+            if (sync)
             {
-                float elapsedTime = 0;
-
-                reloading = true;
-
-                while (elapsedTime < GunModel.reloadTime)
-                {
-                    yield return null;
-
-                    elapsedTime += Time.deltaTime;
-                    var angle = ((GunModel.reloadTime - elapsedTime) / GunModel.reloadTime) * reloadAnimRots * 360;
-                    transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
-                }
-
-                reloading = false;
-                rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
+                NetworkManager.Manager.StartReload();
             }
 
-            reloadRoutine = null;
+            while (progress < GunModel.reloadTime)
+            {
+                yield return null;
+
+                progress += Time.deltaTime;
+                var angle = ((GunModel.reloadTime - progress) / GunModel.reloadTime) * reloadAnimRots * 360;
+                transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
+            }
+
+            reloading = false;
+            rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
         }
+
+        reloadRoutine = null;
+    }
+
+    public void StartReload (float startTime)
+    {
+        var progress = NetworkManager.NetTime - startTime;
+
+        reloadRoutine ??= StartCoroutine(Reload(progress, false));
     }
 
     public Bullet Fire ()

@@ -67,7 +67,7 @@ public class GameClient : MonoBehaviour
             return;
 
         if (startTimeTick > 0)
-            NetworkManager.Manager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
+            NetworkManager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
 
         while (actionQueue.Count > 0)
         {

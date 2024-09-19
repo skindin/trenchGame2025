@@ -56,6 +56,7 @@ message PlayerInput
     optional int32 PickupItem = 6;
     BulletBunch bullets = 7;
     AmmoRequest ammoRequest = 8;
+    optional float startReload = 9;
 }
 
 message CharacterData

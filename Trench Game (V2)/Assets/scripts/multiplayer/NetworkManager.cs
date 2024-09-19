@@ -26,7 +26,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
     public GameServer server;
 
     //float time;
-    public float NetTime;
+    public static float NetTime;
 
     public void SetPos(Vector2 pos, int id)
     {
@@ -216,6 +216,18 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
 
         //XPlatformLog($"told server to spawn a bullet");
+    }
+
+    public void StartReload ()
+    {
+        if (IsServer)
+            return;
+
+        var input = new PlayerInput { StartReload = NetTime };
+
+        var message = new MessageForServer { Input = input };
+
+        client.SendData(message.ToByteArray());
     }
 
     //private void Update()

@@ -6,11 +6,10 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
-
 //using UnityEngine.Android;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using static UnityEngine.EventSystems.EventTrigger;
+
 
 public class GameServer : MonoBehaviour
 {
@@ -94,7 +93,7 @@ public class GameServer : MonoBehaviour
         if (!NetworkManager.IsServer)
             return;
 
-        NetworkManager.Manager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTick);
+        NetworkManager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTick);
 
         //bool sentSomeData = actionQueue.Count > 0;
 
@@ -111,6 +110,92 @@ public class GameServer : MonoBehaviour
         foreach (var pair in clients)
         {
             var client = pair.Value;
+
+            foreach (var droppedItem in client.droppedItems)
+            {
+                UpdateItemData(droppedItem);
+
+                if (ItemManager.Manager.active.TryGetValue(droppedItem.ItemId, out var item))
+                {
+                    var pos = DataManager.ConvertDataToVector(droppedItem.Pos);
+                    client.character.inventory.DropItem(item, pos);
+
+                    foreach (var currentItem in currentItems)
+                    {
+                        if (currentItem.ItemId == droppedItem.ItemId)
+                        {
+                            currentItem.Pos = droppedItem.Pos;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log($"not item with id {droppedItem.ItemId}");
+                }
+            }
+
+            CharacterData currentData = null;
+            
+            if (client.character)
+                currentCharData.List.FirstOrDefault(charData => charData.CharacterID == client.character.id);
+
+            if (currentData != null && client.droppedItems.Count > 0)
+                currentData.ClearItemId(); //this and the foreach probably should be outside of the if update block...
+
+            foreach (var updatedItem in client.updatedItems)
+            {
+                if (!ItemManager.Manager.active.TryGetValue(updatedItem.ItemId, out var item))
+                {
+                    Debug.Log($"server couldn't update an item, no item with id {updatedItem.ItemId}");
+                    break;
+                }
+                
+                UpdateItemData(updatedItem);
+
+                DataManager.UpdateItemWithData(updatedItem);
+            }
+
+            var character = client.character;
+
+            if (character && character.inventory.ActiveWeapon != null
+    && character.inventory.ActiveWeapon is Gun gun
+    && client.bullets != null && client.bullets.Bullets.Count > 0 && gun.rounds > 0 && !gun.reloading)
+            {
+                var gunModel = gun.GunModel;
+
+                while (client.bullets.Bullets.Count > gun.rounds)
+                {
+                    client.bullets.Bullets.RemoveAt(client.bullets.Bullets.Count - 1);
+                }
+
+                foreach (var bullet in client.bullets.Bullets)
+                {
+                    //if (gun.rounds > 0) //shouldn't need this since I'm removing them with the while loop
+                    //{
+                    client.bullets.StartTime = UnityEngine.Mathf.Clamp(client.bullets.StartTime,
+                        NetworkManager.NetTime - 1,
+                    NetworkManager.NetTime);
+
+                    NetworkManager.Manager.DataToBullet(bullet, character, client.bullets.StartTime);
+                    gun.rounds--;
+                    //}
+                    //else
+                    //    break;
+                }
+
+                if (client.bullets.Bullets.Count > 0)
+                {
+                    var gunData = new GunData { Amo = gun.rounds };
+
+                    var itemData = new ItemData { ItemId = gun.id, Gun = gunData };
+
+                    UpdateItemData(itemData);
+                }
+
+                //Debug.Log($"spawned {client.bullets.Bullets.Count} bullet(s)");
+
+                newBullets.Add(client.bullets);
+            }
 
             if (client.newPlayer != null)
             {
@@ -138,12 +223,9 @@ public class GameServer : MonoBehaviour
             {
                 updateCharData.List.Add(client.update);
 
-                var character = playerCharacters[client.ID];
+                //var character = playerCharacters[client.ID]; //hope this doesn't cause problems
 
-                var currentData = currentCharData.List.FirstOrDefault(charData => charData.CharacterID == client.update.CharacterID);
-
-                if (currentData != null)
-                    DataManager.CombineCharData(currentData, client.update); //i hope this part works properly
+                DataManager.CombineCharDataList(client.update, currentCharData);
 
                 if (client.update.HasName)
                 {
@@ -155,32 +237,6 @@ public class GameServer : MonoBehaviour
                     var pos = DataManager.ConvertDataToVector(client.update.Pos);
                     character.SetPos(pos, false);
                 }
-
-                foreach (var droppedItem in client.droppedItems)
-                {
-                    updateItems.Add(droppedItem);
-
-                    if (ItemManager.Manager.active.TryGetValue(droppedItem.ItemId, out var item))
-                    {
-                        var pos = DataManager.ConvertDataToVector(droppedItem.Pos);
-                        client.character.inventory.DropItem(item, pos);
-
-                        foreach (var currentItem in currentItems)
-                        {
-                            if (currentItem.ItemId == droppedItem.ItemId)
-                            {
-                                currentItem.Pos = droppedItem.Pos;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log($"not item with id {droppedItem.ItemId}");
-                    }
-                }
-
-                if (client.droppedItems.Count > 0)
-                    currentData.ClearItemId(); //this and the foreach probably should be outside of the if update block...
 
                 if (client.update.HasItemId)
                 {
@@ -214,42 +270,6 @@ public class GameServer : MonoBehaviour
                     //currentData.ItemId = client.update.ItemId; //i could make combinedata do this but idc rn
                     //hopefully adding the previous item to the dropped list makes the drop pos work when switching items...
                 }
-
-                if (character.inventory.ActiveWeapon != null
-                    && character.inventory.ActiveWeapon is Gun gun
-                    && client.bullets != null && client.bullets.Bullets.Count > 0)
-                {
-                    var gunModel = gun.GunModel;
-
-                    while (client.bullets.Bullets.Count > gun.rounds)
-                    {
-                        client.bullets.Bullets.RemoveAt(client.bullets.Bullets.Count - 1);
-                    }
-
-                    foreach (var bullet in client.bullets.Bullets)
-                    {
-                        //if (gun.rounds > 0) //shouldn't need this since I'm removing them with the while loop
-                        //{
-                            NetworkManager.Manager.DataToBullet(bullet, character, client.bullets.StartTime);
-                            gun.rounds--;
-                        //}
-                        //else
-                        //    break;
-                    }
-
-                    if (client.bullets.Bullets.Count > 0)
-                    {
-                        var gunData = new GunData { Amo = gun.rounds };
-
-                        var itemData = new ItemData { ItemId = gun.id, Gun = gunData };
-
-                        UpdateItemData(itemData);
-                    }
-
-                    //Debug.Log($"spawned {client.bullets.Bullets.Count} bullet(s)");
-
-                    newBullets.Add(client.bullets);
-                }
                 //client.droppedItems.Clear();
 
                 //if (!character.inventory.ActiveItem)
@@ -268,7 +288,7 @@ public class GameServer : MonoBehaviour
             else if (client.remove != null)
             {
 
-                var character = playerCharacters[client.ID];
+                //var character = playerCharacters[client.ID];
 
                 removeCharList.Add(character.id);
 
@@ -550,6 +570,7 @@ public class GameServer : MonoBehaviour
                     newBullets.Add(client.bullets);
 
                 client.droppedItems.Clear();
+                client.updatedItems.Clear();
 
                 client.bullets = null;
 
@@ -683,7 +704,7 @@ public class GameServer : MonoBehaviour
 
         public AmmoRequest ammoRequest;
 
-        public List<ItemData> droppedItems = new(); //GOTTA MAKE THIS LIST THE ITEMS IT'S DROPPING
+        public List<ItemData> droppedItems = new(), updatedItems = new(); //GOTTA MAKE THIS LIST THE ITEMS IT'S DROPPING
 
         public Character character;
 
@@ -780,6 +801,47 @@ public class GameServer : MonoBehaviour
                                     if (message.Input.AmmoRequest != null)
                                     {
                                         ammoRequest = message.Input.AmmoRequest;
+                                    }
+
+                                    if (message.Input.HasStartReload)
+                                    {
+                                        if (character.inventory.ActiveItem is Gun gun)
+                                        {
+                                            if (gun.rounds < gun.GunModel.maxRounds)
+                                            {
+                                                var pool = character.reserve.GetPool(gun.GunModel.amoType);
+
+                                                if (pool != null)
+                                                {
+                                                    if (pool.rounds > 0)
+                                                    {
+                                                        var gunData = new GunData { ReloadStart = message.Input.StartReload };
+
+                                                        var itemData = new ItemData {ItemId = gun.id, Gun = gunData };
+
+                                                        updatedItems.Add(itemData);
+                                                    }
+                                                    else
+                                                    {
+                                                        Debug.Log($"reload failed: character {character.id} doesn't have any more amo");
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Debug.Log(
+                                                        $"reload failed: character {character.id} doesn't have a reserver for {gun.GunModel.amoType}" +
+                                                        $"");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Debug.Log($"reload failed: gun {gun.id} is full");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Debug.Log($"reload failed: character {character.id} isn't holding a gun");
+                                        }
                                     }
 
                                     //lookPos = message.Input.LookPos;
