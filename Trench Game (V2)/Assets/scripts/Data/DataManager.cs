@@ -37,7 +37,7 @@ public static class DataManager
         return new() { X = pos.x, Y = pos.y };
     }
 
-    public static Vector2 ConvertDataToVector(Vector2Data data)
+    public static Vector2 DataToVector(Vector2Data data)
     {
         return new Vector2(data.X,data.Y);
     }
@@ -106,6 +106,11 @@ public static class DataManager
             a.ItemId = b.ItemId;
         }
 
+        if (b.HasLimbo)
+        {
+            a.Limbo = b.Limbo;
+        }
+
         //if (b.Reserve != null) nvm this too complicated rn
         //{
         //    if (a.Reserve != null)
@@ -143,7 +148,7 @@ public static class DataManager
     /// </summary>
     /// <param name="a"></param>
     /// <param name="b"></param>
-    public static void CombineItemData (ItemData a, ItemData b)
+    public static void CombineItemData (ItemData a, ItemData b) //this is great, but should really remove data when they reach the default value
     {
         if (a == null)
         {
@@ -195,6 +200,19 @@ public static class DataManager
                     }
                 }
                 break;
+
+            case ItemData.TypeOneofCase.Consumable:
+                {
+                    if (a.Consumable == null)
+                    {
+                        a.Consumable = b.Consumable;
+                    }
+                    else
+                    {
+                        a.Consumable.ConsumeStart = b.Consumable.ConsumeStart;
+                    }
+                }
+                break;
         }
     }
 
@@ -217,7 +235,7 @@ public static class DataManager
         var newItem = ItemManager.Manager.NewItem(data.PrefabId, data.ItemId);
         if (data.Pos != null)
         {
-            var pos = ConvertDataToVector(data.Pos);
+            var pos = DataToVector(data.Pos);
             newItem.Drop(pos);
         }
 
@@ -232,7 +250,7 @@ public static class DataManager
 
         if (data.Pos != null)
         {
-            var pos = ConvertDataToVector(data.Pos);
+            var pos = DataToVector(data.Pos);
 
             if (item.wielder)
             {
@@ -286,6 +304,19 @@ public static class DataManager
                     else
                     {
                         Debug.LogError($"item {item.id} was given stack data, but it is not a stack");
+                    }
+                }
+                break;
+
+            case ItemData.TypeOneofCase.Consumable:
+                {
+                    if (item is MedPack medPack)
+                    {
+                        medPack.StartHeal(data.Consumable.ConsumeStart);
+                    }
+                    else
+                    {
+                        Debug.LogError($"item {item.id} was given medpack/consumable data, but it is neither");
                     }
                 }
                 break;

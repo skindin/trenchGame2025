@@ -177,7 +177,7 @@ MonoBehaviour:
   id: -1
   rank: 0
   life: 0
-  Name: 
+  characterName: 
   userController: {fileID: 8968939273650880824}
   aiController: {fileID: 9129561575884848698}
   sprite: {fileID: 2843638735860869320}

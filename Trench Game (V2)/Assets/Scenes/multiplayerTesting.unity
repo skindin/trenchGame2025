@@ -781,6 +781,7 @@ Transform:
   - {fileID: 1054766972}
   - {fileID: 896552507}
   - {fileID: 534257686}
+  - {fileID: 978235425}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &99598701
@@ -1827,7 +1828,7 @@ MonoBehaviour:
       prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
       currentAmount: 0
       spawnCap: 3
-      chance: 0
+      chance: 2
     - name: basic gun
       prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       currentAmount: 0
@@ -1838,7 +1839,7 @@ MonoBehaviour:
       currentAmount: 0
       spawnCap: 10
       chance: 0
-    chance: 0
+    chance: 2
   - Name: tier 2
     spawnItems:
     - name: auto amo
@@ -1849,15 +1850,15 @@ MonoBehaviour:
     - name: auto gun
       prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
       currentAmount: 0
-      spawnCap: 1
+      spawnCap: 2
       chance: 1
     - name: med pack
       prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
       currentAmount: 0
-      spawnCap: 5
-      chance: 0
+      spawnCap: 3
+      chance: 2
     chance: 1
-  itemsPerDrop: 4
+  itemsPerDrop: 5
   itemDropRadius: 5
   itemDropInterval: 20
   itemDropTimer: 0
@@ -3161,6 +3162,104 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!1 &978235424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 978235425}
+  - component: {fileID: 978235426}
+  m_Layer: 0
+  m_Name: testSpawnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &978235425
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978235424}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 62624779}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &978235426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978235424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2194a8dca4f6e2440948b7307355af01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemGroups:
+  - Name: tier 1
+    spawnItems:
+    - name: basic amo
+      prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      currentAmount: 0
+      spawnCap: 3
+      chance: 2
+    - name: basic gun
+      prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
+      currentAmount: 0
+      spawnCap: 3
+      chance: 1
+    - name: basic shovel
+      prefab: {fileID: 4392698207926738930, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
+      currentAmount: 0
+      spawnCap: 10
+      chance: 0
+    chance: 0
+  - Name: tier 2
+    spawnItems:
+    - name: auto amo
+      prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
+      currentAmount: 0
+      spawnCap: 3
+      chance: 1
+    - name: auto gun
+      prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
+      currentAmount: 0
+      spawnCap: 2
+      chance: 1
+    - name: med pack
+      prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
+      currentAmount: 0
+      spawnCap: 3
+      chance: 2
+    chance: 1
+  itemsPerDrop: 5
+  itemDropRadius: 5
+  itemDropInterval: 5
+  itemDropTimer: 0
+  startDropAreaRadius: 30
+  dropAreaOffsetSpeed: 5
+  dropAreaJitter: 100
+  spawnItemDrops: 1
+  debugLines: 0
+  dropAreaCenter: {x: 0, y: 0}
+  dropAreaRadius: 0
+  spawnCharacter:
+    name: 
+    prefab: {fileID: 0}
+    currentAmount: 0
+    spawnCap: 3
+  spawnBots: 0
 --- !u!1 &1054766971
 GameObject:
   m_ObjectHideFlags: 0

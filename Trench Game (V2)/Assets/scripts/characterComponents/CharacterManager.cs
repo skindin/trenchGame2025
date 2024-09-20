@@ -264,16 +264,18 @@ public class CharacterManager : MonoBehaviour
 
             character.Chunk = null;
 
+            NetworkManager.Manager.ToggleLimbo(character, true);
+
             yield return new WaitForSeconds(respawnWait);
 
             active.Add(character);
 
             //active.Add(character);
 
-
+            NetworkManager.Manager.ToggleLimbo(character, false);
 
             character.gameObject.SetActive(true);
-            character.SetPos(ChunkManager.Manager.GetRandomPos());
+            character.SetPos(ChunkManager.Manager.GetRandomPos()); //these are still sloppy af but work for now
             //Debug.Log($"updated pos, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
 
             character.SetHP(character.maxHp); //i think this is a fine place to put it shrugging emoji

@@ -5,7 +5,7 @@ using UnityEngine;
 public class MedPack : Item
 {
     public float animRots = 3;
-    bool healing = false;
+    public bool healing = false;
     Coroutine healRoutine;
 
     MedPackModel cachedModel;
@@ -43,46 +43,60 @@ public class MedPack : Item
         base.Action();
 
         healRoutine ??= StartCoroutine(Heal());
+
+        if (healRoutine != null)
+        {
+            NetworkManager.Manager.StartConsume();
+        }
     }
 
-    IEnumerator Heal()
+    IEnumerator Heal(float progress = 0)
     {
         if (!wielder || wielder.hp >= wielder.maxHp) yield break;
 
-        float healingTimer = 0;
+        //float progress = 0;
 
         healing = true;
 
-        while (healingTimer < MedPackModel.healingTime)
+        while (progress < MedPackModel.healingTime)
         {
             yield return null;
-            healingTimer += Time.deltaTime;
-            var angle = ((MedPackModel.healingTime - healingTimer) / MedPackModel.healingTime) * animRots * 360;
+            progress += Time.deltaTime;
+            var angle = ((MedPackModel.healingTime - progress) / MedPackModel.healingTime) * animRots * 360;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
 
-        wielder?.Heal(MedPackModel.hp);
-        wielder?.inventory?.RemoveItem(this);
-        DestroyItem();
+        if (NetworkManager.IsServer)
+        {
+            wielder?.Heal(MedPackModel.hp);
+            //wielder?.inventory?.RemoveItem(this);
+            DestroyItem();
+        }
+    }
+
+    public void StartHeal (float startTime)
+    {
+        var progress = NetworkManager.NetTime - startTime;
+
+        healRoutine ??= StartCoroutine(Heal(progress));
     }
 
     public override void DropLogic(Vector2 pos, out bool wasDestroyed)
     {
         base.DropLogic(pos, out wasDestroyed);
-
-        healing = false;
-
-        if (healRoutine != null)
-        {
-            StopCoroutine(healRoutine);
-            healRoutine = null;
-        }
+        
+        CancelHeal();
     }
 
     public override void ResetItem()
     {
         base.ResetItem();
 
+        CancelHeal();
+    }
+
+    void CancelHeal ()
+    {
         healing = false;
 
         if (healRoutine != null)

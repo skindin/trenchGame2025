@@ -132,6 +132,7 @@ public class ProjectileManager : MonoBehaviour
             {
                 foreach (var collider in chunk.colliders)
                 {
+                    if (!collider.gameObject.activeInHierarchy) continue;
                     if (bullet.source && bullet.source.collider == collider) continue;
                     if (!collider.vulnerable) continue;
 

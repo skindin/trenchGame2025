@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 //using UnityEngine.Events;
 //using static UnityEditor.Progress;
@@ -155,6 +156,11 @@ public class Item : MonoBehaviour
             SpawnManager.Manager.RemoveItem(this);
         else
             ItemManager.Manager.RemoveItem(this);
+
+        if (wielder)
+        {
+            wielder.inventory.RemoveItem(this);
+        }
     }
 
     public virtual void ResetItem ()

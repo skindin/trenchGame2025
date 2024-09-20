@@ -238,7 +238,7 @@ public class Inventory : MonoBehaviour
 
         if (item.passivePickup && dist <= passivePickupRad)
         {
-            item.Pickup(character, out var pickedUp, out _);
+            item.Pickup(character, out var pickedUp, out _, true);
             if (!pickedUp)
             {
                 withinRadius.Add(item);
@@ -312,7 +312,8 @@ public class Inventory : MonoBehaviour
 
         if (sync)
         {
-            NetworkManager.Manager.DropItemClient(pos);
+            NetworkManager.Manager.DropItemClient(pos); //the contents will only run if it is a client
+            NetworkManager.Manager.DropItemServer(item, pos); //the contents will only run if it is a server
         }
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;

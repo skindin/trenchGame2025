@@ -154,12 +154,24 @@ public class NetworkManager : ManagerBase<NetworkManager>
         Debug.Log($"told server it dropped current item");
     }
 
+    public void DropItemServer (Item item, Vector2 pos)
+    {
+        if (!IsServer)
+            return;
+
+        var posData = DataManager.VectorToData(pos);
+
+        var itemData = new ItemData { ItemId = item.id, Pos = posData };
+
+        server.DropItemData(itemData);
+    }
+
     public void ServerRemoveItem (Item item)
     {
         if (!IsServer)
             return;
 
-        //server.removeItemList.Add(item.id);
+        server.removeItemList.Add(item.id);
 
         for (int i = 0; i < server.updateItems.Count; i++)
         {
@@ -183,6 +195,23 @@ public class NetworkManager : ManagerBase<NetworkManager>
                 Debug.Log($"removed item data {item.id}");
                 i--;
                 break;
+            }
+        }
+
+        foreach (var currentChar in server.currentCharData.List) 
+            //for some reason debuggin revealed that two characters had the same itemid very early in the game
+        {
+            if (currentChar.HasItemId && currentChar.ItemId == item.id)
+            {
+                currentChar.ClearItemId();
+            }
+        }
+
+        foreach (var updateChar in server.updateCharData.List)
+        {
+            if (updateChar.HasItemId && updateChar.ItemId == item.id)
+            {
+                updateChar.ClearItemId();
             }
         }
     }
@@ -230,6 +259,18 @@ public class NetworkManager : ManagerBase<NetworkManager>
         client.SendData(message.ToByteArray());
     }
 
+    public void StartConsume ()
+    {
+        if (IsServer)
+            return;
+
+        var input = new PlayerInput { StartConsume = NetTime };
+
+        var message = new MessageForServer { Input = input };
+
+        client.SendData(message.ToByteArray());
+    }
+
     //private void Update()
     //{
     //    if (PosSyncsPerFrame > 0)
@@ -249,9 +290,9 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         var gunModel = gun.GunModel;
 
-        var startpos = DataManager.ConvertDataToVector(data.Startpos);
+        var startpos = DataManager.DataToVector(data.Startpos);
 
-        var endPos = DataManager.ConvertDataToVector(data.Endpos);
+        var endPos = DataManager.DataToVector(data.Endpos);
 
         var velocity = (endPos - startpos).normalized * gunModel.bulletSpeed;
 
@@ -278,6 +319,16 @@ public class NetworkManager : ManagerBase<NetworkManager>
         var message = new MessageForServer { Input = input };
 
         client.SendData(message.ToByteArray());
+    }
+
+    public void ToggleLimbo (Character character, bool toggle)
+    {
+        if (!IsServer)
+            return;
+
+        var data = new CharacterData { CharacterID = character.id, Limbo = toggle };
+
+        server.UpdateCharData(data);
     }
 
 //    public static void XPlatformLog(string log)

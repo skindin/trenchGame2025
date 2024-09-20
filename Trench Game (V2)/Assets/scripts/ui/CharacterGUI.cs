@@ -243,7 +243,7 @@ public class CharacterGUI : MonoBehaviour
 
             foreach (var character in chunk.characters)
             {
-                if (character == this.character)
+                if (character == this.character || !character.gameObject.activeInHierarchy)
                     continue;
 
                 DrawCharacterUI(character, style, scaleFactor);

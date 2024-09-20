@@ -82,7 +82,7 @@ public class GameClient : MonoBehaviour
         //add remote chars for new player
         if (!CharacterManager.Manager.localPlayerCharacter && newPlayer != null)
         {
-            var pos = DataManager.ConvertDataToVector(newPlayer.Pos);
+            var pos = DataManager.DataToVector(newPlayer.Pos);
 
             var id = SpawnManager.Manager.SpawnLocalPlayer(pos, newPlayer.CharacterID).id;
 
@@ -118,7 +118,7 @@ public class GameClient : MonoBehaviour
         foreach (var newRemoteChar in newRemoteChars.List)
         {
             var id = newRemoteChar.CharacterID;
-            var pos = DataManager.ConvertDataToVector(newRemoteChar.Pos);
+            var pos = DataManager.DataToVector(newRemoteChar.Pos);
             var name = newRemoteChar.Name;
 
             var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
@@ -144,6 +144,11 @@ public class GameClient : MonoBehaviour
                 newCharacter.SetHP(newRemoteChar.Hp);
             }
 
+            if (newRemoteChar.HasLimbo && newRemoteChar.Limbo)
+            {
+                newCharacter.gameObject.SetActive(false);
+            }
+
             Debug.Log($"spawned remote character {id} named {name} at {pos}{(newRemoteChar.HasItemId ? $" holding item {newRemoteChar.ItemId}" : "")}");
         }
 
@@ -157,7 +162,7 @@ public class GameClient : MonoBehaviour
             {
                 if (updateChar.Pos != null)
                 {
-                    var pos = DataManager.ConvertDataToVector(updateChar.Pos);
+                    var pos = DataManager.DataToVector(updateChar.Pos);
                     character.SetPos(pos, false);
                 }
 
@@ -193,6 +198,15 @@ public class GameClient : MonoBehaviour
                     {
                         character.reserve.ammoPools[ammo.Index].rounds = ammo.Amount;
                     }
+                }
+
+                if (updateChar.HasLimbo)
+                {
+                    character.gameObject.SetActive(!updateChar.Limbo);
+
+                    character.reserve.Clear(); //cbb
+
+
                 }
             }
             else

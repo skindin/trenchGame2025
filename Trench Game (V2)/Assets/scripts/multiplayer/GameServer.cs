@@ -113,25 +113,7 @@ public class GameServer : MonoBehaviour
 
             foreach (var droppedItem in client.droppedItems)
             {
-                UpdateItemData(droppedItem);
-
-                if (ItemManager.Manager.active.TryGetValue(droppedItem.ItemId, out var item))
-                {
-                    var pos = DataManager.ConvertDataToVector(droppedItem.Pos);
-                    client.character.inventory.DropItem(item, pos);
-
-                    foreach (var currentItem in currentItems)
-                    {
-                        if (currentItem.ItemId == droppedItem.ItemId)
-                        {
-                            currentItem.Pos = droppedItem.Pos;
-                        }
-                    }
-                }
-                else
-                {
-                    Debug.Log($"not item with id {droppedItem.ItemId}");
-                }
+                DropItemData(droppedItem);
             }
 
             CharacterData currentData = null;
@@ -234,7 +216,7 @@ public class GameServer : MonoBehaviour
 
                 if (client.update.Pos != null)
                 {
-                    var pos = DataManager.ConvertDataToVector(client.update.Pos);
+                    var pos = DataManager.DataToVector(client.update.Pos);
                     character.SetPos(pos, false);
                 }
 
@@ -361,7 +343,8 @@ public class GameServer : MonoBehaviour
                             }
                             else
                             {
-                                removeItemList.Add(ammo.id);
+                                //removeItemList.Add(ammo.id);
+                                //not sure why this was here and and again in the network.serverremoveitem but commented out
                                 ammo.DestroyItem();
                             }
 
@@ -639,6 +622,38 @@ public class GameServer : MonoBehaviour
         currentCharData.List.Add(data);
     }
 
+    public void DropItemData(ItemData droppedItem)
+    {
+        UpdateItemData(droppedItem);
+
+        if (ItemManager.Manager.active.TryGetValue(droppedItem.ItemId, out var item))
+        {
+            if (item.wielder)
+            {
+                var pos = DataManager.DataToVector(droppedItem.Pos);
+                item.wielder.inventory.DropItem(item, pos); //forgot to clamp drop pos lol
+                var clampedPosData = DataManager.VectorToData(item.transform.position);
+                droppedItem.Pos = clampedPosData;
+
+                foreach (var currentItem in currentItems)
+                {
+                    if (currentItem.ItemId == droppedItem.ItemId)
+                    {
+                        currentItem.Pos = droppedItem.Pos;
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log($"drop failed: item {item.id} is not being held");
+            }
+        }
+        else
+        {
+            Debug.Log($"drop failed: no item with id {droppedItem.ItemId}");
+        }
+    }
+
     public void UpdateItemData (ItemData data)
     {
         DataManager.CombineItemDataList(data,currentItems);
@@ -841,6 +856,36 @@ public class GameServer : MonoBehaviour
                                         else
                                         {
                                             Debug.Log($"reload failed: character {character.id} isn't holding a gun");
+                                        }
+                                    }
+
+                                    if (message.Input.HasStartConsume)
+                                    {
+                                        if (character.inventory.ActiveItem)
+                                        {
+                                            if (character.inventory.ActiveItem is MedPack medpack)
+                                            {
+                                                if (!medpack.healing)
+                                                {
+                                                    var consumableData = new ConsumableData { ConsumeStart = message.Input.StartConsume };
+
+                                                    var itemData = new ItemData { ItemId = medpack.id, Consumable = consumableData };
+
+                                                    updatedItems.Add(itemData);
+                                                }
+                                                else
+                                                {
+                                                    Debug.Log($"consume failed: character {character.id} already started healing");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Debug.Log($"consume failed: character {character.id} is not holding a medpack");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Debug.Log($"consume failed: character {character.id} is not holding an item");
                                         }
                                     }
 

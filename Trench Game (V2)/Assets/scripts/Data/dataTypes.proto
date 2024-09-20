@@ -57,6 +57,7 @@ message PlayerInput
     BulletBunch bullets = 7;
     AmmoRequest ammoRequest = 8;
     optional float startReload = 9;
+    optional float startConsume = 10;
 }
 
 message CharacterData
@@ -68,6 +69,7 @@ message CharacterData
     optional int32 itemId = 5;
     optional float angle = 6;
     repeated AmmoData reserve = 7;
+    optional bool limbo = 8;
 }
 
 message CharDataList
@@ -99,6 +101,7 @@ message ItemData
     {
         GunData gun = 4;
         StackData stack = 5;
+        ConsumableData consumable = 6;
     }
 }
 
@@ -111,6 +114,11 @@ message GunData
 message StackData
 {
     int32 amount = 1;
+}
+
+message ConsumableData
+{
+    float consumeStart = 1;
 }
 
 message ReserveData

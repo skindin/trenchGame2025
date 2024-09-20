@@ -52,12 +52,12 @@ public class StackableItem : Item
     public override void DropLogic(Vector2 pos, out bool destroyedSelf)
     {
         base.DropLogic(pos, out _);
-        if (NetworkManager.IsServer)
-            CombineAll(out destroyedSelf);
-        else
-        {
+        //if (NetworkManager.IsServer) //just gonna disable this for now because I might just completely remove it anyway and it's a pain in the a
+        //    CombineAll(out destroyedSelf);
+        //else
+        //{
             destroyedSelf = false;
-        }
+        //}
     }
 
     public bool CombineAll(out bool destroyedSelf)
