@@ -21,9 +21,9 @@ public class MedPack : Item
         }
     }
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync = false)
+    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync)
     {
-        base.Pickup(character, out wasPickedUp, out wasDestroyed);
+        base.Pickup(character, out wasPickedUp, out wasDestroyed, sync);
 
         //Action();
     }
@@ -42,12 +42,13 @@ public class MedPack : Item
     {
         base.Action();
 
-        healRoutine ??= StartCoroutine(Heal());
-
-        if (healRoutine != null)
+        if (healRoutine == null)
         {
+            healRoutine = StartCoroutine(Heal());
             NetworkManager.Manager.StartConsume();
         }
+
+        //healRoutine ??= 
     }
 
     IEnumerator Heal(float progress = 0)

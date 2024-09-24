@@ -15,7 +15,8 @@ public class CharacterManager : MonoBehaviour
     public List<Character> active = new();
     public Character prefab;
     public Transform container;
-    public float scoreStopWatch = 0, highScore = 0, respawnWait = 1;
+    public float scoreStopWatch = 0, personalRecord = 0, respawnWait = 1;
+    public KeyValuePair<string, float> serverRecord = new();
     //public int botsPerSquad = 5, spawnCap = 10;
     //float squadSpawnTimer = 0;
     Coroutine stopWatchRoutine, scoreboardRoutine;
@@ -57,7 +58,7 @@ public class CharacterManager : MonoBehaviour
         SetupPool();
         //squadSpawnRoutine = StartCoroutine(BotSpawn());
 
-        StartStopWatch();
+        //StartStopWatch();
 
 //#if !DEDICATED_SERVER
 //        Debug.Log("This program is not a dedicated server... " + symbolTest);
@@ -66,7 +67,7 @@ public class CharacterManager : MonoBehaviour
 //#endif
     }
 
-    void StartStopWatch ()
+    public void StartStopWatch (float startTime = 0)
     {
         if (stopWatchRoutine != null)
             StopCoroutine(stopWatchRoutine);
@@ -74,11 +75,23 @@ public class CharacterManager : MonoBehaviour
 
         IEnumerator StopWatch()
         {
-            scoreStopWatch = 0;
+            while (active.Count < 1 || active[0].KillCount < 1)
+            {
+                scoreStopWatch = 0;
+                yield return null;
+            }
+            scoreStopWatch = startTime;
 
             while (true)
             {
                 yield return null;
+
+                if (active.Count < 1 || active[0].KillCount < 1)
+                {
+                    StartStopWatch(scoreStopWatch);
+                    yield break;
+                }
+
                 scoreStopWatch += Time.deltaTime;
             }
         }
@@ -104,6 +117,8 @@ public class CharacterManager : MonoBehaviour
         {
             RemoveCharacter(active[0]);
         }
+
+        serverRecord = new();
     }
 
     void SetupPool ()
@@ -127,65 +142,60 @@ public class CharacterManager : MonoBehaviour
 
 
     Character prevTop;
-    public void UpdateScoreBoard ()
+    int prevCharCount, prevKills;
+    public void UpdateScoreBoard (float progress = 0)
     {
-        //sortCharactersThisFrame = true;
-        scoreboardRoutine ??= StartCoroutine(UpdateScoreNextFrame());
+        if (!NetworkManager.IsServer)
+            return;
 
-        IEnumerator UpdateScoreNextFrame ()
-        {
-            yield return null;
+        //sortCharactersThisFrame = true;
+        //scoreboardRoutine ??= StartCoroutine(UpdateScoreNextFrame());
+
+        //IEnumerator UpdateScoreNextFrame ()
+        //{
+            //yield return null;
 
             if (active.Count < 1)
             {
                 scoreboardRoutine = null;
-                yield break;
+                return;
+                //yield break;
             }
 
             LogicAndMath.SortHighestToLowest(active, character => character.KillCount);
             LogicAndMath.AssignIndexes(active, (character, index) => character.rank = index + 1);
 
             var currentTop = active[0];
+            var prevTop = this.prevTop;
 
-            if (currentTop != prevTop)
+            if ((
+            prevCharCount != active.Count ||
+            currentTop != prevTop) && prevKills > 0)
             {
-                if (
-                    prevTop && prevTop.controlType == Character.CharacterType.localPlayer &&
-                    scoreStopWatch > highScore
-                    )
-                {
-                    highScore = scoreStopWatch;
-                }
+                //if ( //shit doesn't work, no clue why
+                //    prevTop && prevTop.controlType == Character.CharacterType.localPlayer &&
+                //    scoreStopWatch > serverRecord.Value
+                //    )
+                //{
+                //    personalRecord = scoreStopWatch;
+                //}
 
-                StartStopWatch();
+                if (prevTop && scoreStopWatch > serverRecord.Value)
+                    serverRecord = new (prevTop.characterName,scoreStopWatch);
             }
 
-            prevTop = currentTop;
+            if (currentTop != prevTop)
+                StartStopWatch(progress);
+        
+            NetworkManager.Manager.UpdateScoreboard();
+
+            this.prevTop = currentTop;
+            prevCharCount = active.Count;
+            prevKills = currentTop.KillCount;
 
             scoreboardRoutine = null;
-        }
+        //}
     }
-
-    //private void LateUpdate()
-    //{ 
-    //    if (sortCharactersThisFrame)
-    //    {
-    //        SortByScore();
-    //    }
-    //}
-
-    //private void Update()
-    //{
-    //    if (spawnSquads)
-    //    {
-    //        if (Time.time - lastSquadStamp > squadSpawnInterval || (Time.time == 0 && spawnSquadOnStart))
-    //        {
-    //            var pos = ChunkManager.Manager.GetRandomPos(squadRadius);
-    //            SpawnBotSquad(pos);
-    //            lastSquadStamp = Time.time;
-    //        }
-    //    }
-    //}
 
     public Character NewCharacter (Vector2 pos, Character.CharacterType type, int id)
     {
@@ -216,6 +226,8 @@ public class CharacterManager : MonoBehaviour
     {
         active.Remove(character);
 
+        UpdateScoreBoard();
+
         pool.AddToPool(character);
         character.Chunk = null;
 
@@ -228,8 +240,6 @@ public class CharacterManager : MonoBehaviour
         }
 
         character.inventory.DropAllItems();
-
-        UpdateScoreBoard();
     }
 
     public void KillCharacter(Character character)
@@ -242,10 +252,11 @@ public class CharacterManager : MonoBehaviour
         else
         {
             SpawnManager.Manager.RemoveCharacter(character); //kind of cringe that this is removing the character from spawn manager, which then removes it from this...
+            UpdateScoreBoard();
         }
 
         character.life++;
-        UpdateScoreBoard();
+        //UpdateScoreBoard();
     }
 
     void StartRespawn (Character character)
@@ -258,17 +269,24 @@ public class CharacterManager : MonoBehaviour
             var type = character.Type;
 
             character.gameObject.SetActive(false);
+
+
             character.ResetSelf();
 
-            active.Remove(character);
+            active.Remove(character); //just to reorder them to give newer players a chance when they tie
+            active.Add(character);
+
+            NetworkManager.Manager.SetKills(character, 0);
 
             character.Chunk = null;
 
             NetworkManager.Manager.ToggleLimbo(character, true);
 
+            UpdateScoreBoard();
+
             yield return new WaitForSeconds(respawnWait);
 
-            active.Add(character);
+            //active.Add(character);
 
             //active.Add(character);
 
@@ -285,7 +303,6 @@ public class CharacterManager : MonoBehaviour
             character.UpdateChunk();
 
 
-            UpdateScoreBoard();
             //UpdateScoreBoard();
         }
     }

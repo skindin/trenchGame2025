@@ -13,7 +13,7 @@ public class Minimap : MonoBehaviour
     public Color defaultColor = Color.white, playerColor = Color.white;
     public RectTransform mapImage;
     public ObjectPool<Image> characterIconPool;
-    public bool debugLines = false;//, logPosRatios = false;
+    public bool showItemDrops = true, debugLines = false;//, logPosRatios = false;
 
     private void Awake()
     {
@@ -23,7 +23,12 @@ public class Minimap : MonoBehaviour
     private void Update()
     {
         UpdateCharIcons();
-        UpdateDropArea();
+
+        if (showItemDrops)
+            UpdateDropArea();
+
+        dropTimeText.gameObject.SetActive(showItemDrops);
+        itemDropIcon.gameObject.SetActive(showItemDrops);
     }
 
     void UpdateCharIcons ()
@@ -59,6 +64,9 @@ public class Minimap : MonoBehaviour
             var icon = charIcons[i];
             var character = CharacterManager.Manager.active[i];
             var posRatio = ChunkManager.Manager.GetPosRatio(character.transform.position);
+
+            icon.gameObject.SetActive(character.gameObject.activeInHierarchy);
+
             icon.transform.position = posRatio * scaleFactor + mapMin;
 
             icon.color = (character.Type == Character.CharacterType.localPlayer) ? playerColor : defaultColor;

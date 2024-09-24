@@ -331,6 +331,43 @@ public class NetworkManager : ManagerBase<NetworkManager>
         server.UpdateCharData(data);
     }
 
+    public void SetKills(Character character, int kills)
+    {
+        if (!IsServer)
+            return;
+
+        var data = new CharacterData { CharacterID = character.id, Kills = kills };
+
+        server.UpdateCharData(data);
+    }
+
+    public void UpdateScoreboard ()
+    {
+        if (!IsServer)
+            return;
+        
+        var update = new ScoreBoardUpdate { StopWatchStart = NetTime - CharacterManager.Manager.scoreStopWatch};
+
+        if (CharacterManager.Manager.serverRecord.Value > 0)
+        {
+            var recordPair = CharacterManager.Manager.serverRecord;
+
+            var serverRecord = new Record { Name = recordPair.Key, Time = recordPair.Value };
+
+            update.ServerRecord = serverRecord;
+        }
+
+        //var index = 0;
+        foreach (var character in CharacterManager.Manager.active)
+        {
+            update.Order.Add(character.id);
+            //index++;
+        }
+
+        server.scoreboardUpdate = server.currentScoreboard = update;
+    }
+
+
 //    public static void XPlatformLog(string log)
 //    {
 //#if UNITY_EDITOR// && false

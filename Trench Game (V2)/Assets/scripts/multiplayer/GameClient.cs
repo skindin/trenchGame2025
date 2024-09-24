@@ -41,6 +41,8 @@ public class GameClient : MonoBehaviour
 
     public RepeatedField<BulletBunch> newBullets = new();
 
+    ScoreBoardUpdate scoreboardUpdate = null;
+
     float latestMsgStamp = 0;
 
     long startTimeTick = 0;
@@ -91,6 +93,12 @@ public class GameClient : MonoBehaviour
 
         foreach (var newItemData in newItems)
         {
+            if (newItemData.ItemId == 0)
+            {
+                Debug.LogError("nooo one of these items has id set to zero");
+                continue;
+            }
+
             DataManager.CreateItemWithData(newItemData);
         }
 
@@ -144,9 +152,19 @@ public class GameClient : MonoBehaviour
                 newCharacter.SetHP(newRemoteChar.Hp);
             }
 
+            //if (newRemoteChar.HasLimbo || newRemoteChar.HasKills)
+            //{
+            //    CharacterManager.Manager.UpdateScoreBoard(latestMsgStamp);
+            //}
+
             if (newRemoteChar.HasLimbo && newRemoteChar.Limbo)
             {
                 newCharacter.gameObject.SetActive(false);
+            }
+
+            if (newRemoteChar.HasKills)
+            {
+                newCharacter.KillCount = newRemoteChar.Kills;
             }
 
             Debug.Log($"spawned remote character {id} named {name} at {pos}{(newRemoteChar.HasItemId ? $" holding item {newRemoteChar.ItemId}" : "")}");
@@ -204,10 +222,23 @@ public class GameClient : MonoBehaviour
                 {
                     character.gameObject.SetActive(!updateChar.Limbo);
 
-                    character.reserve.Clear(); //cbb
-
-
+                    character.reserve.Clear(); //cbb, tecnhically going to send this twice
                 }
+
+                if (!updateChar.HasLimbo)
+                {
+                    character.gameObject.SetActive(true); //because I was ghosting on anthony's computer...?
+                }
+
+                if (updateChar.HasKills)
+                {
+                    character.KillCount = updateChar.Kills;
+                }
+
+                //if (updateChar.HasLimbo || updateChar.HasKills)
+                //{
+                //    CharacterManager.Manager.UpdateScoreBoard(latestMsgStamp);
+                //}
             }
             else
             {
@@ -229,7 +260,22 @@ public class GameClient : MonoBehaviour
             }
         }
 
+        if (scoreboardUpdate != null)
+        {
+            if (scoreboardUpdate.ServerRecord != null) //probably would be better somewhere else 
+            {
+                var record = scoreboardUpdate.ServerRecord;
+                CharacterManager.Manager.serverRecord = new(record.Name, record.Time);
+            }
 
+            if (scoreboardUpdate.HasStopWatchStart)
+                CharacterManager.Manager.StartStopWatch(NetworkManager.NetTime - scoreboardUpdate.StopWatchStart);
+
+            LogicAndMath.AssignIndexesByIntCollection(CharacterManager.Manager.active, scoreboardUpdate.Order, character => character.id);
+            LogicAndMath.AssignIndexes(CharacterManager.Manager.active, (character, index) => character.rank = index + 1);
+
+            scoreboardUpdate = null;
+        }
 
         //remove chars
         //add new remoteChars
@@ -444,6 +490,11 @@ public class GameClient : MonoBehaviour
 
                             break;
                         }
+                }
+
+                if (message.ScoreBoardUpdate != null)
+                {
+                    scoreboardUpdate = message.ScoreBoardUpdate;
                 }
 
                 latestMsgStamp = Mathf.Max(latestMsgStamp, message.Time);

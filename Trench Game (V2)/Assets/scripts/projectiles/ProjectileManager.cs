@@ -50,7 +50,7 @@ public class ProjectileManager : MonoBehaviour
         newBullet.range = range;
         newBullet.source = source;
         newBullet.hit = false;
-        newBullet.playerLife = source.life;
+        newBullet.shooterLife = source.life;
 
         activeBullets.Add(newBullet);
         //activeCount = activeBullets.Count;

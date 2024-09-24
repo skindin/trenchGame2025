@@ -99,7 +99,7 @@ public class Item : MonoBehaviour
         Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
     }
 
-    public virtual void Pickup (Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync = false)
+    public virtual void Pickup (Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync)
     {
         if (wielder != character)
         {
@@ -108,16 +108,17 @@ public class Item : MonoBehaviour
             transform.localPosition = Vector3.zero;
         }
 
-        NetworkManager.Manager.PickupItem(this);
+        if (sync) 
+            NetworkManager.Manager.PickupItem(this);
 
         Chunk = null;
         wasDestroyed = false;
         wasPickedUp = true;
     }
 
-    public void Pickup (Character character) //not overidable, becase it's just a shorthand
+    public void Pickup (Character character, bool sync) //not overidable, becase it's just a shorthand
     {
-        Pickup(character, out _, out _);
+        Pickup(character, out _, out _, sync);
     }
 
 

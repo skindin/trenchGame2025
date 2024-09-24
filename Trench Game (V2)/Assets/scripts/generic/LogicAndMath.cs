@@ -405,6 +405,34 @@ public static class LogicAndMath
         return list;
     }
 
+    public static List<T> AssignIndexesByIntCollection<T> (List<T> itemList, IEnumerable<int> indexColl, Func<T, int> getProperty)
+    {
+        var itemListClone = new List<T>(itemList);
+        itemList.Clear();
+
+        foreach (var index in indexColl)
+        {
+            for (var i =  0; i < itemListClone.Count; i++)
+            {
+                var item = itemListClone[i];
+
+                if (getProperty(item) == index)
+                {
+                    itemList.Add(item);
+                    itemListClone.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
+        foreach (var clone in itemListClone)
+        {
+            itemList.Add(clone); //im so fucking lazy
+        }
+
+        return itemList;
+    }
+
     public static float TicksToSeconds(long ticks)
     {
         return ticks / 10000000f;

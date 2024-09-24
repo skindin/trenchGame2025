@@ -238,6 +238,7 @@ public class Inventory : MonoBehaviour
 
         if (item.passivePickup && dist <= passivePickupRad)
         {
+            //Debug.Log($"attempting auto pickup...");
             item.Pickup(character, out var pickedUp, out _, true);
             if (!pickedUp)
             {
@@ -270,7 +271,7 @@ public class Inventory : MonoBehaviour
             if (pickedUp && !destroyed)
             {
                 if (ActiveItem)
-                    DropItem(ActiveItem, dropPos, true); //DO NOT SYNC HERE, pickup message should take care of it
+                    DropItem(ActiveItem, dropPos, sync); //DO NOT SYNC HERE, pickup message should take care of it
 
                 items.Add(item);
                 ActiveItem = item;

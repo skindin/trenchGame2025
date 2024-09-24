@@ -17,7 +17,7 @@ public class Projectile
         destroy = false;
     public float damage = 1;
 
-    public int playerLife = 0;
+    public int shooterLife = 0;
 
     //public Chunk Chunk
     //{

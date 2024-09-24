@@ -241,7 +241,7 @@ public class SpawnManager : MonoBehaviour
         {
             amountSpawned += pair.Item2;
 
-            log += $"{pair.Item1.prefab.itemModel.name} x{pair.Item2}, ";
+            log += $"{pair.Item1.prefab.itemModel.name} x{pair.Item2} (";
 
             for (var i = 0; i < pair.Item2; i++)
             {
@@ -251,7 +251,10 @@ public class SpawnManager : MonoBehaviour
                 //var spawnDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
                 newItem.Drop(itemPos);
                 //newItem.Spawn(Vector2.zero, spawnDelay, spawnScaleDuration);
+                log += $"{(i > 0 ? ", " : "")}{newItem.id}";
             }
+
+            log += "), ";
         }
 
         if (amountSpawned > 0)
@@ -286,6 +289,12 @@ public class SpawnManager : MonoBehaviour
                     {
                         var newAmo = spawnItem.Get(pos) as Ammo;
                         newAmo.amount = amount;
+
+                        var stackData = new StackData { Amount = amount};
+                        var itemData = new ItemData { ItemId = newAmo.id, Stack = stackData};
+
+                        NetworkManager.Manager.server.UpdateItemData(itemData); //literally the sloppiest code you've ever seen
+
                         return newAmo;
                     }
                 }

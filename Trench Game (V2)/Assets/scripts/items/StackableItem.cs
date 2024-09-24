@@ -42,11 +42,11 @@ public class StackableItem : Item
             amount = Mathf.Clamp(amount, 0, StackableModel.maxAmount);
     }
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync = false)
+    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync)
     {
         wasPickedUp = false;
         CombineWithItems(character.inventory.items, out wasDestroyed, false);
-        if (!wasDestroyed) base.Pickup(character, out wasPickedUp, out wasDestroyed);
+        if (!wasDestroyed) base.Pickup(character, out wasPickedUp, out wasDestroyed, sync);
     }
 
     public override void DropLogic(Vector2 pos, out bool destroyedSelf)

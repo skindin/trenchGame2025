@@ -43,11 +43,13 @@ public class Ammo : StackableItem
             //if (prevAmount != amount)
             //    wasPickedup = true;
 
+            var pool = character.reserve.GetPool(AmoModel.type);
+            var amtTaken = Mathf.Min(amount, pool.maxRounds - pool.rounds);
+            amount = pool.AddAmo(amount);
+
             if (NetworkManager.IsServer)//shouldn't be less then, but just a percaution
             {
                 //DestroyItem();
-
-                amount = character.reserve.AddAmo(AmoModel.type, amount);
 
                 if (amount <= 0)
                 {
@@ -56,16 +58,23 @@ public class Ammo : StackableItem
                 }
                 //amount = newAmt;
             }
-
-            if (sync)
+            else if (sync)
             {
                 //var prevAmt = amount;
 
                 //var prevAmount = amount;
 
-                var pool = character.reserve.GetPool(AmoModel.type);
+                //Debug.Log($"ammo amount is now {amount}");
 
-                NetworkManager.Manager.RequestAmo(this, pool.maxRounds - pool.rounds);
+                if (amtTaken > 0)
+                {
+                    NetworkManager.Manager.RequestAmo(this, amtTaken);
+                }
+                
+                if (amount <= 0)
+                {
+                    gameObject.SetActive(false);
+                }
 
             }
             //else

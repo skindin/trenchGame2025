@@ -227,6 +227,15 @@ public class Gun : Weapon
 
             reloading = false;
             rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
+
+            if (NetworkManager.IsServer)
+            {
+                var gunData = new GunData { Amo = rounds};
+
+                var itemData = new ItemData { ItemId = id, Gun = gunData };
+
+                NetworkManager.Manager.server.UpdateItemData(itemData);
+            }
         }
 
         reloadRoutine = null;
@@ -311,9 +320,9 @@ public class Gun : Weapon
     //    }
     //}
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync = false)
+    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync)
     {
-        base.Pickup(character,out wasPickedUp, out wasDestroyed);
+        base.Pickup(character,out wasPickedUp, out wasDestroyed, sync);
 
         reserve = character.reserve;
     }

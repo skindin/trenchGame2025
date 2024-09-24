@@ -111,6 +111,11 @@ public static class DataManager
             a.Limbo = b.Limbo;
         }
 
+        if (b.HasKills)
+        {
+            a.Kills = b.Kills;
+        }
+
         //if (b.Reserve != null) nvm this too complicated rn
         //{
         //    if (a.Reserve != null)
@@ -238,6 +243,10 @@ public static class DataManager
             var pos = DataToVector(data.Pos);
             newItem.Drop(pos);
         }
+        else
+        {
+            Debug.Log($"item {data.ItemId} wasn't given pos data?");
+        }
 
         ModifyItemWithData(newItem, data);
 
@@ -246,7 +255,17 @@ public static class DataManager
 
     public static Item UpdateItemWithData (ItemData data)
     {
-        var item = ItemManager.Manager.active[data.ItemId];
+        if (data.ItemId == 0)
+        {
+            Debug.Log("womp womp");
+            return null;
+        }
+
+        if (!ItemManager.Manager.active.TryGetValue(data.ItemId, out var item))
+        {
+            Debug.LogError($"no item was found with id {data.ItemId}");
+            return null;
+        }
 
         if (data.Pos != null)
         {
@@ -300,6 +319,11 @@ public static class DataManager
                     if (item is StackableItem stack)
                     {
                         stack.amount = data.Stack.Amount;
+
+                        if (!NetworkManager.IsServer && stack.amount > 0)
+                        {
+                            stack.gameObject.SetActive(true);
+                        }
                     }
                     else
                     {
@@ -321,8 +345,7 @@ public static class DataManager
                 }
                 break;
         }
-    }
-}
+    }}
 
 //public static class DataManager //might be better for all these data types to be structs...? but idk
 //{

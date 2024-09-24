@@ -134,23 +134,32 @@ public class CharacterGUI : MonoBehaviour
 
         string text = "-scoreboard-";
 
+        if (charManager.scoreStopWatch > 0)
+            text += $" ({GameUI.GetTimeText(charManager.scoreStopWatch)})";
+
+        if (charManager.serverRecord.Value > 0)
+            text = $"-server record-\n{charManager.serverRecord.Key} ({GameUI.GetTimeText(charManager.serverRecord.Value)})\n" + text;
+
+        //if (charManager.personalRecord > 0) //this won't work idk why and ddon't give a fuck
+        //    text = $"personal record: ({GameUI.GetTimeText(charManager.personalRecord)})\n" + text;
+
         var visibleCharacterCount = Mathf.Min(charManager.active.Count, maxVisibleCharacters);
 
         bool mainInTopGroup = false;
 
         static string GetScoreboardLine (Character character)
         {
-            return $"\n#{character.rank} -{character.characterName}- {character.KillCount} kills";
+            return $"\n#{character.rank} {character.characterName} {character.KillCount} kill(s)";
         }
 
         for (int i = 0; i < visibleCharacterCount; i++)
         {
             var character = charManager.active[i];
 
-            text += GetScoreboardLine(character);
+            if (!character.gameObject.activeInHierarchy)
+                continue;
 
-            if (i == 0)
-                text += $" ({GameUI.GetTimeText(charManager.scoreStopWatch)})";
+            text += GetScoreboardLine(character);
 
             if (character == this.character) mainInTopGroup = true;
         }
@@ -159,9 +168,6 @@ public class CharacterGUI : MonoBehaviour
             text += GetScoreboardLine(character);
         else
             text += "\n";
-
-        if (charManager.highScore > 0)
-            text += $"\nhigh score ({GameUI.GetTimeText(charManager.highScore)})";
 
         GUIStyle style = new();
 
@@ -202,7 +208,8 @@ public class CharacterGUI : MonoBehaviour
 
         foreach (var item in character.inventory.withinRadius)
         {
-            if (!item || item == character.inventory.SelectedItem) continue;
+            if (!item || item == character.inventory.SelectedItem) 
+                continue;
 
             if (item.Chunk == null)
             {

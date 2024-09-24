@@ -9,6 +9,7 @@ message MessageForClient
     }
     optional float time = 3;
     optional int64 startTick = 4;
+    ScoreBoardUpdate scoreBoardUpdate = 5;
 }
 
 message MessageForServer
@@ -20,6 +21,13 @@ message MessageForServer
     }
     optional float time = 3;
     optional int64 tick = 4;
+}
+
+message ScoreBoardUpdate
+{
+    repeated int32 order = 1;
+    Record serverRecord = 2;
+    optional float stopWatchStart = 3;
 }
 
 message NewPlayerGrant
@@ -70,6 +78,7 @@ message CharacterData
     optional float angle = 6;
     repeated AmmoData reserve = 7;
     optional bool limbo = 8;
+    optional int32 kills = 9;
 }
 
 message CharDataList
@@ -136,4 +145,10 @@ message AmmoRequest
 {
     int32 itemId = 1;
     AmmoData ammo = 2;
+}
+
+message Record
+{
+    string name = 1;
+    float time = 2;
 }

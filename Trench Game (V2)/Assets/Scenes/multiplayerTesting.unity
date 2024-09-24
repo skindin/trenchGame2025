@@ -2386,7 +2386,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &797495611
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2432,6 +2432,7 @@ MonoBehaviour:
   characterIconPool:
     minPooled: 0
     maxPooled: 10
+  showItemDrops: 0
   debugLines: 0
 --- !u!114 &797495613
 MonoBehaviour:
@@ -2983,7 +2984,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkSize: 10
-  maxWorldSize: 10
+  maxWorldSize: 50
   worldSize: 0
   chunkArraySize: 0
   chunkPool:
@@ -3059,7 +3060,7 @@ MonoBehaviour:
   prefab: {fileID: 7562934035425285329, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
   container: {fileID: 1284647723}
   scoreStopWatch: 0
-  highScore: 0
+  personalRecord: 0
   respawnWait: 1
   playerName: player
 --- !u!1 &950176244
@@ -5525,7 +5526,7 @@ MonoBehaviour:
   drawItemsUI: 1
   drawCharactersUI: 1
   drawPlayerUI: 1
-  drawScoreboardUI: 0
+  drawScoreboardUI: 1
 --- !u!4 &2113553811
 Transform:
   m_ObjectHideFlags: 0

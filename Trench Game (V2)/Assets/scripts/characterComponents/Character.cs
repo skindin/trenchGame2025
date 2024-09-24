@@ -96,7 +96,7 @@ public class Character : MonoBehaviour
         //    //Debug.Log(gameObject.name + " was hit");
         //});
 
-        collider.onHit = bullet => Damage(bullet.damage,bullet.source);
+        collider.onHit = bullet => Damage(bullet.damage,bullet.source, bullet.shooterLife);
     }
 
     //private void Update()
@@ -110,15 +110,23 @@ public class Character : MonoBehaviour
     //    }
     //}
 
-    public void Damage (float hp, Character killer)
+    public void Damage (float hp, Character killer, int killerLife)
     {
         SetHP(MathF.Max(this.hp - hp,0));
 
         if (this.hp == 0)
         {
-            KillThis();
+            if (killer.life == killerLife)
+            {
+                killer.killCount++;
 
-            killer.killCount++;
+                if (NetworkManager.IsServer)
+                {
+                    NetworkManager.Manager.SetKills(killer, killer.killCount);
+                }
+            }
+
+            KillThis();
         }
 
         //SetHP(newHp);
