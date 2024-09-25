@@ -85,9 +85,34 @@ public class GameUI : MonoBehaviour
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
 
-        // Format as "HH:mm:ss"
-        string timeText = timeSpan.ToString(@"mm\:ss");
+        //string timeText = "";
 
-        return timeText;
+        //string formattedTime = "";
+
+        //// Append only the components that are 1 or greater, formatted with colons
+        //if (timeSpan.Days >= 1)
+        //{
+        //    formattedTime += $"{timeSpan.Days}:";
+        //}
+        //if (timeSpan.Hours >= 1 || timeSpan.Days >= 1)
+        //{
+        //    formattedTime += $"{timeSpan.Hours:D2}:";
+        //}
+        //if (timeSpan.Minutes >= 1 || timeSpan.Hours >= 1 || timeSpan.Days >= 1)
+        //{
+        //    formattedTime += $"{timeSpan.Minutes:D2}:";
+        //}
+
+        string formattedTime = "";
+
+        if (timeSpan.Days >= 1)
+            formattedTime += $"{timeSpan.Days:D2}:";
+        if (timeSpan.Days >= 1 || timeSpan.Hours >= 1)
+            formattedTime += $"{timeSpan.Hours:D2}:";
+
+        // Always include seconds with two digits
+        formattedTime += $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
+
+        return formattedTime;
     }
 }
