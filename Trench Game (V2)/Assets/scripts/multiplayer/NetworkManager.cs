@@ -77,58 +77,66 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
     }
 
-    public void PickupItem (Item item)
+    public void PickupItem (Character character, Item item)
     {
-        if (IsServer)
-            return;
+        if (!IsServer)
+        {
+            var input = new PlayerInput { PickupItem = item.id };
 
-        var input = new PlayerInput { PickupItem = item.id };
+            //Item prevItem = CharacterManager.Manager.localPlayerCharacter.inventory.ActiveItem;
 
-        //Item prevItem = CharacterManager.Manager.localPlayerCharacter.inventory.ActiveItem;
+            var message = new MessageForServer { Input = input };
 
-        var message = new MessageForServer { Input = input };
+            client.SendData(message.ToByteArray());
 
-        client.SendData(message.ToByteArray());
+            Debug.Log($"told server it picked up item {item.id}");// {(prevItem ? $" and dropped item {prevItem.id}" : "")}");
+        }
+        else
+        {
+            server.PickupItem(character, item);
 
-        Debug.Log($"told server it picked up item {item.id}");// {(prevItem ? $" and dropped item {prevItem.id}" : "")}");
+            var characterData = new CharacterData { CharacterID = character.id, ItemId = item.id };
+
+            server.UpdateCharData(characterData);
+        }
     }
 
     public void RequestAmo (Ammo ammo, int amount)
     {
-        if (IsServer)
-            return;
-
-        var player = CharacterManager.Manager.localPlayerCharacter;
-
-        int index = 0;
-        bool found = false;
-
-        for (int i = 0; i < player.reserve.ammoPools.Count; i++)
+        if (!IsServer)
         {
-            var pool = player.reserve.ammoPools[i];
+            var player = CharacterManager.Manager.localPlayerCharacter;
 
-            if (pool.type == ammo.AmoModel.type)
+            int index = 0;
+            bool found = false;
+
+            for (int i = 0; i < player.reserve.ammoPools.Count; i++)
             {
-                index = i;
-                found = true;
-                break;
+                var pool = player.reserve.ammoPools[i];
+
+                if (pool.type == ammo.AmoModel.type)
+                {
+                    index = i;
+                    found = true;
+                    break;
+                }
             }
+
+            if (!found)
+            {
+                Debug.LogError($"local player doesn't have amo slot for type {ammo.AmoModel.type.name}");
+            }
+
+            var ammoData = new AmmoData { Index = index, Amount = amount };
+
+            var request = new AmmoRequest { Ammo = ammoData, ItemId = ammo.id };
+
+            var input = new PlayerInput {AmmoRequest = request };
+
+            var message = new MessageForServer { Input = input };
+
+            client.SendData(message.ToByteArray());
         }
-
-        if (!found)
-        {
-            Debug.LogError($"local player doesn't have amo slot for type {ammo.AmoModel.type.name}");
-        }
-
-        var ammoData = new AmmoData { Index = index, Amount = amount };
-
-        var request = new AmmoRequest { Ammo = ammoData, ItemId = ammo.id };
-
-        var input = new PlayerInput {AmmoRequest = request };
-
-        var message = new MessageForServer { Input = input };
-
-        client.SendData(message.ToByteArray());
     }
 
     //public void DropItemServer(Item item, Vector2 dropPos)
@@ -138,32 +146,29 @@ public class NetworkManager : ManagerBase<NetworkManager>
     //    var itemData = new ItemData { ItemId = item.id , Pos = posData};
     //}
 
-    public void DropItemClient (Vector2 pos)
+    public void DropItem (Item item, Vector2 pos)
     {
         if (IsServer)
-            return;
+        {
+            var posData = DataManager.VectorToData(pos);
 
-        var posData = DataManager.VectorToData (pos);
+            var itemData = new ItemData { ItemId = item.id, Pos = posData };
 
-        var input = new PlayerInput { DropItem = posData};
+            server.DropItemData(itemData);
+        }
+        else
+        {
+            var posData = DataManager.VectorToData (pos);
 
-        var message = new MessageForServer { Input = input };
+            var input = new PlayerInput { DropItem = posData};
 
-        client.SendData(message.ToByteArray());
+            var message = new MessageForServer { Input = input };
 
-        Debug.Log($"told server it dropped current item");
-    }
+            client.SendData(message.ToByteArray());
 
-    public void DropItemServer (Item item, Vector2 pos)
-    {
-        if (!IsServer)
-            return;
+            Debug.Log($"told server it dropped current item");
+        }
 
-        var posData = DataManager.VectorToData(pos);
-
-        var itemData = new ItemData { ItemId = item.id, Pos = posData };
-
-        server.DropItemData(itemData);
     }
 
     public void ServerRemoveItem (Item item)
@@ -226,11 +231,8 @@ public class NetworkManager : ManagerBase<NetworkManager>
         server.UpdateCharData(charData);
     }
 
-    public void SpawnBullet(Bullet bullet)
+    public void SpawnBullet(Gun gun, Bullet bullet)
     {
-        if (IsServer)
-            return;
-
         var bunch = new BulletBunch { StartTime = NetTime};
 
         var startPosData = DataManager.VectorToData(bullet.startPos);
@@ -238,47 +240,67 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         bunch.Bullets.Add(new BulletData { Startpos = startPosData, Endpos = endPosData });
 
-        var input = new PlayerInput { Bullets = bunch };
+        if (!IsServer)
+        {
+            var input = new PlayerInput { Bullets = bunch };
 
-        var message = new MessageForServer { Input = input, Time = NetTime };
+            var message = new MessageForServer { Input = input, Time = NetTime };
 
-        client.SendData(message.ToByteArray());
+            client.SendData(message.ToByteArray());
+        }
+        else
+        {
+            bunch.CharacterId = gun.wielder.id;
+            server.newBullets.Add(bunch);
+
+            var gunData = new GunData { Amo = gun.rounds };
+
+            var itemData = new ItemData { ItemId = gun.id, Gun = gunData };
+
+            server.UpdateItemData(itemData);
+        }
 
         //XPlatformLog($"told server to spawn a bullet");
     }
 
-    public void StartReload ()
+    public void StartReload (Gun gun)
     {
-        if (IsServer)
-            return;
+        if (!IsServer)
+        {
 
-        var input = new PlayerInput { StartReload = NetTime };
+            var input = new PlayerInput { StartReload = NetTime };
 
-        var message = new MessageForServer { Input = input };
+            var message = new MessageForServer { Input = input };
 
-        client.SendData(message.ToByteArray());
+            client.SendData(message.ToByteArray());
+        }
+        else
+        {
+            var gunData = new GunData { ReloadStart = NetTime };
+            var itemData = new ItemData { ItemId  = gun.id, Gun = gunData};
+
+            server.UpdateItemData(itemData);
+        }
     }
 
-    public void StartConsume ()
+    public void StartConsume (MedPack consumable)
     {
-        if (IsServer)
-            return;
+        if (!IsServer)
+        {
+            var input = new PlayerInput { StartConsume = NetTime };
 
-        var input = new PlayerInput { StartConsume = NetTime };
+            var message = new MessageForServer { Input = input };
 
-        var message = new MessageForServer { Input = input };
+            client.SendData(message.ToByteArray());
+        }
+        else
+        {
+            var consumableData = new ConsumableData { ConsumeStart = NetTime };
+            var itemData = new ItemData {ItemId = consumable.id, Consumable = consumableData};
 
-        client.SendData(message.ToByteArray());
+            server.UpdateItemData(itemData);
+        }
     }
-
-    //private void Update()
-    //{
-    //    if (PosSyncsPerFrame > 0)
-    //    {
-    //        Debug.Log($"positions were synced {PosSyncsPerFrame} times this frame");
-    //        PosSyncsPerFrame = 0;
-    //    }
-    //}
 
     public Bullet DataToBullet (BulletData data, Character source, float time)
     {
@@ -307,18 +329,24 @@ public class NetworkManager : ManagerBase<NetworkManager>
         return bullet;
     }
 
-    public void SyncDirection (Vector2 direction)
+    public void SyncDirection (Character character, Vector2 direction)
     {
-        if (IsServer)
-            return;
-
         float angle = Quaternion.LookRotation(Vector3.forward, direction).eulerAngles.z;
 
-        var input = new PlayerInput { Angle = angle };
+        if (!IsServer)
+        {
+            var input = new PlayerInput { Angle = angle };
 
-        var message = new MessageForServer { Input = input };
+            var message = new MessageForServer { Input = input };
 
-        client.SendData(message.ToByteArray());
+            client.SendData(message.ToByteArray());
+        }
+        else
+        {
+            var charData = new CharacterData { CharacterID = character.id, Angle = angle };
+
+            server.UpdateCharData(charData);
+        }
     }
 
     public void ToggleLimbo (Character character, bool toggle)
@@ -366,23 +394,4 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
         server.scoreboardUpdate = server.currentScoreboard = update;
     }
-
-
-//    public static void XPlatformLog(string log)
-//    {
-//#if UNITY_EDITOR// && false
-//        Debug.Log(log);
-//#else
-//        System.Console.WriteLine(log);
-//#endif
-//    }
-
-//    public static void XPlatformLogError (string error)
-//    {
-//#if UNITY_EDITOR// && false
-//        Debug.LogError(error);
-//#else
-//        System.Console.WriteLine(error);
-//#endif
-//    }
 }

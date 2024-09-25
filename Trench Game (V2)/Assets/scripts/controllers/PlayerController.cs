@@ -91,7 +91,6 @@ public class PlayerController : MonoBehaviour
 
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mouseDir = mousePos - transform.position;
-        NetworkManager.Manager.SyncDirection(mouseDir);
 
         if (Input.GetMouseButton(0))
         {

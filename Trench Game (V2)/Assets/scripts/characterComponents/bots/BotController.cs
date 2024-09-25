@@ -469,7 +469,7 @@ public class BotController : MonoBehaviour
         if (closestItem)
         {
             var dropPos = UnityEngine.Random.insideUnitCircle * character.inventory.selectionRad + (Vector2)closestItem.transform.position;
-            character.inventory.PickupItem(closestItem,dropPos);
+            character.inventory.PickupItem(closestItem,dropPos,true);
         }
 
         return closestItem;

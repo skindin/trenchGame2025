@@ -196,6 +196,8 @@ public class Gun : Weapon
 
         var angle = Vector2.SignedAngle(Vector2.up, direction);
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        NetworkManager.Manager.SyncDirection(wielder,direction);
     }
 
     public override void Action()
@@ -213,7 +215,7 @@ public class Gun : Weapon
 
             if (sync)
             {
-                NetworkManager.Manager.StartReload();
+                NetworkManager.Manager.StartReload(this);
             }
 
             while (progress < GunModel.reloadTime)
@@ -256,7 +258,7 @@ public class Gun : Weapon
             GunModel.DamagePerBullet,
             wielder);
 
-        NetworkManager.Manager.SpawnBullet(bullet);
+        NetworkManager.Manager.SpawnBullet(this,bullet);
 
         return bullet;
     }

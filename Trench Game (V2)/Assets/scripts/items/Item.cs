@@ -109,7 +109,7 @@ public class Item : MonoBehaviour
         }
 
         if (sync) 
-            NetworkManager.Manager.PickupItem(this);
+            NetworkManager.Manager.PickupItem(wielder, this);
 
         Chunk = null;
         wasDestroyed = false;

@@ -1860,7 +1860,7 @@ MonoBehaviour:
     chance: 1
   itemsPerDrop: 5
   itemDropRadius: 5
-  itemDropInterval: 20
+  itemDropInterval: 5
   itemDropTimer: 0
   startDropAreaRadius: 30
   dropAreaOffsetSpeed: 5
@@ -1874,7 +1874,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     currentAmount: 0
     spawnCap: 3
-  spawnBots: 0
+  spawnBots: 1
 --- !u!1 &575497487
 GameObject:
   m_ObjectHideFlags: 0

@@ -313,8 +313,8 @@ public class Inventory : MonoBehaviour
 
         if (sync)
         {
-            NetworkManager.Manager.DropItemClient(pos); //the contents will only run if it is a client
-            NetworkManager.Manager.DropItemServer(item, pos); //the contents will only run if it is a server
+            //NetworkManager.Manager.DropItemClient(pos); //the contents will only run if it is a client
+            NetworkManager.Manager.DropItem(item, pos); //the contents will only run if it is a server
         }
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;

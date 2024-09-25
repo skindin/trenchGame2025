@@ -45,7 +45,7 @@ public class MedPack : Item
         if (healRoutine == null)
         {
             healRoutine = StartCoroutine(Heal());
-            NetworkManager.Manager.StartConsume();
+            NetworkManager.Manager.StartConsume(this);
         }
 
         //healRoutine ??= 

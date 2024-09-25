@@ -230,21 +230,7 @@ public class GameServer : MonoBehaviour
 
                     if (ItemManager.Manager.active.TryGetValue(client.update.ItemId, out var item))
                     {
-                        character.inventory.PickupItem(item, item.transform.position);
-
-                        //if (prevItem && prevItem != character.inventory.ActiveItem)
-                        //{
-                        //    UpdateItemData(new ItemData { ItemId = prevItem.id, Pos = client.lookPos });
-                        //}
-
-                        foreach (var itemData in currentItems)
-                        {
-                            if (itemData.ItemId == item.id)
-                            {
-                                itemData.Pos = null;
-                                break;
-                            }
-                        }
+                        PickupItem(character, item);
                     }
                     else
                     {
@@ -550,7 +536,7 @@ public class GameServer : MonoBehaviour
                     if (scoreboardUpdate != null)
                     {
                         message.ScoreBoardUpdate = scoreboardUpdate;
-                        Debug.Log($"sending {scoreboardUpdate}");
+                        //Debug.Log($"sending {scoreboardUpdate}");
                     }
 
                     client.SendData(message.ToByteArray());
@@ -647,6 +633,31 @@ public class GameServer : MonoBehaviour
         var pos = DataManager.VectorToData(character.transform.position);
         var data = new CharacterData { CharacterID = character.id, Pos = pos, Name = character.characterName };
         currentCharData.List.Add(data);
+    }
+
+
+    /// <summary>
+    /// doesn't update character data
+    /// </summary>
+    /// <param name="character"></param>
+    /// <param name="item"></param>
+    public void PickupItem (Character character, Item item)
+    {
+        character.inventory.PickupItem(item, item.transform.position);
+
+        //if (prevItem && prevItem != character.inventory.ActiveItem)
+        //{
+        //    UpdateItemData(new ItemData { ItemId = prevItem.id, Pos = client.lookPos });
+        //}
+
+        foreach (var itemData in currentItems)
+        {
+            if (itemData.ItemId == item.id)
+            {
+                itemData.Pos = null;
+                break;
+            }
+        }
     }
 
     public void DropItemData(ItemData droppedItem)

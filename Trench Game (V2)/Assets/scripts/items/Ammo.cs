@@ -47,7 +47,7 @@ public class Ammo : StackableItem
             var amtTaken = Mathf.Min(amount, pool.maxRounds - pool.rounds);
             amount = pool.AddAmo(amount);
 
-            if (NetworkManager.IsServer)//shouldn't be less then, but just a percaution
+            if (NetworkManager.IsServer)
             {
                 //DestroyItem();
 
@@ -55,6 +55,12 @@ public class Ammo : StackableItem
                 {
                     wasPickedup = wasDestroyed = true;
                     DestroyItem();
+                }
+                else
+                {
+                    var ammoData = new StackData { Amount = amount }; //shouldn't be here but mehhhhh
+                    var itemData = new ItemData { ItemId = id, Stack = ammoData };
+                    NetworkManager.Manager.server.UpdateItemData(itemData);
                 }
                 //amount = newAmt;
             }
