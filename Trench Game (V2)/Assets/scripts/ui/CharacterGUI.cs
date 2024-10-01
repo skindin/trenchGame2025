@@ -214,13 +214,13 @@ public class CharacterGUI : MonoBehaviour
             if (item.Chunk == null)
             {
                 //Debug.LogError($"{(transform.parent ? $"{transform.parent.gameObject} " : "unheld ")}{item.name} is not in a chunk");
-                return;
+                continue;
             }
 
             if (!item.gameObject.activeSelf)
             {
                 //Debug.LogError($"{item.name} is disabled");
-                return;
+                continue;
             }
             
             DrawTextBox(item.itemModel.name, item.transform.position, style, itemBoxOffset * scaleFactor);

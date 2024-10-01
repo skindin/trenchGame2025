@@ -58,7 +58,7 @@ public class GameClient : MonoBehaviour
     //    startTimeTick = DateTime.UtcNow
     //}
 
-    private void LateUpdate()
+    private void Update()
     {
         if (NetworkManager.IsServer)
             return;
@@ -67,9 +67,6 @@ public class GameClient : MonoBehaviour
 
         if (ws == null)// || !ws.IsAlive)
             return;
-
-        if (startTimeTick > 0)
-            NetworkManager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
 
         while (actionQueue.Count > 0)
         {
@@ -80,6 +77,10 @@ public class GameClient : MonoBehaviour
             }
             action?.Invoke();
         }
+
+        if (startTimeTick > 0)
+            NetworkManager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
+
 
         //add remote chars for new player
         if (!CharacterManager.Manager.localPlayerCharacter && newPlayer != null)
@@ -260,7 +261,7 @@ public class GameClient : MonoBehaviour
             }
         }
 
-        if (scoreboardUpdate != null)
+        if (scoreboardUpdate != null && startTimeTick > 0)
         {
             if (scoreboardUpdate.ServerRecord != null) //probably would be better somewhere else 
             {

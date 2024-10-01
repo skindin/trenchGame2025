@@ -94,10 +94,10 @@ public class GameServer : MonoBehaviour
     {
         if (!NetworkManager.IsServer)
             return;
-
-        NetworkManager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTick);
-
         //bool sentSomeData = actionQueue.Count > 0;
+
+
+        NetworkManager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTick); //just rying this
 
         while (actionQueue.Count > 0)
         {
@@ -108,6 +108,7 @@ public class GameServer : MonoBehaviour
             }
             action?.Invoke();
         }
+
 
         foreach (var pair in clients)
         {
@@ -425,7 +426,7 @@ public class GameServer : MonoBehaviour
                 if (currentScoreboard != null)
                 {
                     message.ScoreBoardUpdate = currentScoreboard;
-                    Debug.Log($"sending {currentScoreboard}");
+                    //Debug.Log($"sending {currentScoreboard}");
                 }
 
                 client.SendData(message.ToByteArray());
@@ -441,6 +442,7 @@ public class GameServer : MonoBehaviour
                 continue;
             }
             //if this is an established player...
+            if (client.finishedSetup)
             {
                 var gameState = new GameState();
 
@@ -766,6 +768,8 @@ public class GameServer : MonoBehaviour
 
         public long connStartTick;
 
+        public bool finishedSetup = false;
+
         //public ClientBehavior (GameServer server)
         //{
         //    ClientBehavior.server = server;
@@ -962,6 +966,8 @@ public class GameServer : MonoBehaviour
                         var startTickMessage = new MessageForClient { StartTick = remoteStartTick };
 
                         SendData(startTickMessage.ToByteArray());
+
+                        finishedSetup = true;
                     }
                 }
             }

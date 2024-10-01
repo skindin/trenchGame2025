@@ -10,12 +10,12 @@ public class CharacterManager : MonoBehaviour
     //    public string symbolTest = "suck a co**";
     //#endif
     public Character localPlayerCharacter;
-    public bool spawnSquads = true;
+    public bool spawnSquads = true, challengeComplete = false;
     public ObjectPool<Character> pool;
     public List<Character> active = new();
     public Character prefab;
     public Transform container;
-    public float scoreStopWatch = 0, personalRecord = 0, respawnWait = 1;
+    public float scoreStopWatch = 0, personalRecord = 0, respawnWait = 1, challengeDuration = 24;
     public KeyValuePair<string, float> serverRecord = new();
     //public int botsPerSquad = 5, spawnCap = 10;
     //float squadSpawnTimer = 0;
@@ -56,6 +56,8 @@ public class CharacterManager : MonoBehaviour
         manager = this;
 
         SetupPool();
+
+        //StartChallenge();
         //squadSpawnRoutine = StartCoroutine(BotSpawn());
 
         //StartStopWatch();
@@ -65,6 +67,33 @@ public class CharacterManager : MonoBehaviour
 //#else
 //        Debug.Log("This program is a dedicated server");
 //#endif
+    }
+
+    public void StartChallenge ()
+    {
+        if (!NetworkManager.IsServer)
+            return;
+
+        StartCoroutine(RunChallenge());
+
+        IEnumerator RunChallenge ()
+        {
+            float durationInSeconds;
+
+            Debug.Log("challenge started");
+
+
+            do
+            {
+                yield return null;
+
+                durationInSeconds = challengeDuration * 60 * 60;
+            }
+            while (NetworkManager.NetTime < durationInSeconds);
+
+            Debug.Log($"challenge ended, {serverRecord.Key} is the winner");
+            challengeComplete = true;
+        }
     }
 
     public void StartStopWatch (float startTime = 0)
@@ -93,6 +122,12 @@ public class CharacterManager : MonoBehaviour
                 }
 
                 scoreStopWatch += Time.deltaTime;
+
+                if (newLeader && scoreStopWatch >= serverRecord.Value)
+                {
+                    UpdateScoreBoard(scoreStopWatch, true);
+                    newLeader = false;
+                }
             }
         }
     }
@@ -143,7 +178,8 @@ public class CharacterManager : MonoBehaviour
 
     Character prevTop;
     int prevCharCount, prevKills;
-    public void UpdateScoreBoard (float progress = 0)
+    bool newLeader = true;
+    public void UpdateScoreBoard (float progress = 0, bool @override = false)
     {
         if (!NetworkManager.IsServer)
             return;
@@ -170,7 +206,7 @@ public class CharacterManager : MonoBehaviour
 
             if ((
             prevCharCount != active.Count ||
-            currentTop != prevTop) && prevKills > 0)
+            currentTop != prevTop || @override) && prevKills > 0)
             {
                 //if ( //shit doesn't work, no clue why
                 //    prevTop && prevTop.controlType == Character.CharacterType.localPlayer &&
@@ -180,13 +216,16 @@ public class CharacterManager : MonoBehaviour
                 //    personalRecord = scoreStopWatch;
                 //}
 
-                if (prevTop && scoreStopWatch > serverRecord.Value)
+                if (!challengeComplete && prevTop && scoreStopWatch > serverRecord.Value)
                     serverRecord = new (prevTop.characterName,scoreStopWatch);
             }
 
             if (currentTop != prevTop)
+            {
                 StartStopWatch(progress);
-        
+                newLeader = true;
+            }      
+
             NetworkManager.Manager.UpdateScoreboard();
 
             this.prevTop = currentTop;
@@ -244,7 +283,7 @@ public class CharacterManager : MonoBehaviour
 
     public void KillCharacter(Character character)
     {
-        if (character.controlType != Character.CharacterType.localBot || SpawnManager.Manager.spawnCharacter.CapDiff >= 0)
+        if (true || character.controlType != Character.CharacterType.localBot || SpawnManager.Manager.spawnCharacter.CapDiff >= 0)
             //if this character is not a bot, or the spawn cap is unmet...
         {
             StartRespawn(character);

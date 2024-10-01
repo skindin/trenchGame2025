@@ -54,7 +54,7 @@ public class GameUI : MonoBehaviour
         //if (secsPerBullet == Mathf.Infinity)
         //    secsPerBullet = 0;
 
-        var text = $"FPS({fps}) bullets({bulletCount})\n{GetTimeText(NetworkManager.NetTime)}";//\n({DateTime.UtcNow.Ticks})";
+        var text = $"FPS({fps}) bullets({bulletCount})\nrun time: {GetTimeText(NetworkManager.NetTime)}";//\n({DateTime.UtcNow.Ticks})";
 
         GUI.Label(rect, text, style);
     }
