@@ -197,11 +197,14 @@ public class Character : MonoBehaviour
         Vector3 dir = Vector2.ClampMagnitude(direction, MoveSpeed * Time.deltaTime);
 
         SetPos(transform.position + dir);
+        onMove.Invoke(direction);
     }
 
     public void MoveToPos (Vector2 pos)
     {
         SetPos(Vector2.MoveTowards(transform.position, pos, MoveSpeed * Time.deltaTime));
+
+        onMove.Invoke(pos - (Vector2)transform.position);
 
         //transform.position += d * Time.deltaTime;
     }
@@ -213,9 +216,7 @@ public class Character : MonoBehaviour
     {
         //if ((Vector2)transform.position == pos) return;
 
-        var direction = pos - (Vector2)transform.position; //sloppy af I know
-
-        onMove.Invoke(direction);
+        //var direction = pos - (Vector2)transform.position; //sloppy af I know
 
         transform.position = pos;
 

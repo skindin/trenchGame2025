@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class SpriteAnimAssist : MonoBehaviour
 {
-    public UnityEvent onMove, onMoveLeft, onMoveRight, onStop;
+    public UnityEvent onMove, onMoveLeft, onMoveRight, onMoveDown, onMoveUp, onStop;
     public SpriteRenderer sprite;//, shadowSprite;
 
     Coroutine moveCheckRoutine;
@@ -41,6 +41,15 @@ public class SpriteAnimAssist : MonoBehaviour
         else if (direction.x < 0)
         {
             onMoveLeft.Invoke();
+        }
+
+        if (direction.y > 0)
+        {
+            onMoveUp.Invoke();
+        }
+        else if (direction.y < 0)
+        {
+            onMoveDown.Invoke();
         }
 
         IEnumerator CheckForStop ()
