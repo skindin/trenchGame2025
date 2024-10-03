@@ -11,10 +11,9 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 
 
-public class GameServer : MonoBehaviour
+public class GameServer : WSServerBase
 {
-    private WebSocketServer wssv;
-    public Dictionary<string, ClientBehavior> clients = new();
+
     public Dictionary<string, Character> playerCharacters = new();
     public Queue<string> disconnected = new();
 
@@ -28,58 +27,7 @@ public class GameServer : MonoBehaviour
 
     long startTick = 0;
 
-    private void Awake()
-    {
-        if (!NetworkManager.IsServer)
-            return;
 
-        startTick = DateTime.UtcNow.Ticks;
-
-        //|| true
-        ClientBehavior.server = this;
-
-        try
-        {
-            // Initialize the WebSocket server
-            wssv = new WebSocketServer("ws://0.0.0.0:8080");
-            // or for dual-stack (both IPv4 and IPv6)
-            // wssv = new WebSocketServer("ws://[::]:8080");
-
-            wssv.AddWebSocketService<ClientBehavior>("/ClientBehavior");
-
-            wssv.Start();
-
-            if (wssv.IsListening)
-            {
-                Debug.Log("WebSocket Server listening on port " + wssv.Port + ", and providing WebSocket services:");
-                foreach (var path in wssv.WebSocketServices.Paths)
-                {
-                    Debug.Log("- " + path);
-                }
-            }
-        }
-        catch (TypeInitializationException ex)
-        {
-            Debug.Log("Type Initialization Exception: " + ex.Message);
-            if (ex.InnerException != null)
-            {
-                Debug.Log("Inner Exception: " + ex.InnerException.Message);
-                Debug.Log("Stack Trace: " + ex.InnerException.StackTrace);
-            }
-            else
-            {
-                Debug.Log("No Inner Exception.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.Log("General Exception: " + ex.Message);
-            Debug.Log("Stack Trace: " + ex.StackTrace);
-        }
-
-        Application.targetFrameRate = targetFramerate;
-        Debug.Log($"Target framerate set to {targetFramerate}");
-    }
 
     public CharDataList newPlayerData = new(), updateCharData = new(), currentCharData = new();
     public RepeatedField<int> removeCharList = new(), removeItemList = new();
