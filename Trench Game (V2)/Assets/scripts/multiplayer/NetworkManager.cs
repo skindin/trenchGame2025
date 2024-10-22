@@ -114,7 +114,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
             {
                 var pool = player.reserve.ammoPools[i];
 
-                if (pool.type == ammo.AmoModel.type)
+                if (pool.type == ammo.type)
                 {
                     index = i;
                     found = true;
@@ -124,7 +124,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
 
             if (!found)
             {
-                Debug.LogError($"local player doesn't have amo slot for type {ammo.AmoModel.type.name}");
+                Debug.LogError($"local player doesn't have amo slot for type {ammo.type.name}");
             }
 
             var ammoData = new AmmoData { Index = index, Amount = amount };
@@ -150,11 +150,12 @@ public class NetworkManager : ManagerBase<NetworkManager>
     {
         if (IsServer)
         {
-            var posData = DataManager.VectorToData(pos);
+            //var posData = DataManager.VectorToData(pos);
 
-            var itemData = new ItemData { ItemId = item.id, Pos = posData };
+            //var itemData = new ItemData { ItemId = item.id, Pos = posData };
 
-            server.DropItemData(itemData);
+            //server.DropItemData(itemData); 
+            //it was removing items from inventory twice lol. Leaving this commented until i redesign network logic
         }
         else
         {
@@ -310,19 +311,17 @@ public class NetworkManager : ManagerBase<NetworkManager>
             return null;
         }    
 
-        var gunModel = gun.GunModel;
-
         var startpos = DataManager.DataToVector(data.Startpos);
 
         var endPos = DataManager.DataToVector(data.Endpos);
 
-        var velocity = (endPos - startpos).normalized * gunModel.bulletSpeed;
+        var velocity = (endPos - startpos).normalized * gun.bulletSpeed;
 
         var delta = NetTime - time;
 
         //var progress = bullet.Progress + (delta * velocity.magnitude / gunModel.range);
 
-        var bullet = ProjectileManager.Manager.NewBullet(startpos, velocity, gunModel.range, gunModel.DamagePerBullet, source);
+        var bullet = ProjectileManager.Manager.NewBullet(startpos, velocity, gun.range, gun.DamagePerBullet, source);
 
         ProjectileManager.Manager.UpdateBullet(bullet,delta, out _);
 

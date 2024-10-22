@@ -301,7 +301,7 @@ public static class DataManager
 
                         if (data.Gun.HasReloadStart)
                         {
-                            if (NetworkManager.NetTime - data.Gun.ReloadStart > gun.GunModel.reloadTime)
+                            if (NetworkManager.NetTime - data.Gun.ReloadStart > gun.reloadTime)
                                 data.Gun.ClearReloadStart();
                             else
                                 gun.StartReload(data.Gun.ReloadStart);

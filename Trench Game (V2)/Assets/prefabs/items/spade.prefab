@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 7678977931179959433}
   - component: {fileID: 4392698207926738930}
   m_Layer: 0
-  m_Name: shovel
+  m_Name: spade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -130,12 +130,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a53c90918540d5244a7b6da72ee93185, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemName: spade
   id: 0
+  prefabId: 0
   defaultContainer: {fileID: 0}
-  itemModel: {fileID: 11400000, guid: d9767a5e9a7841e46bde0168c2043338, type: 2}
   wielder: {fileID: 0}
   passivePickup: 0
   integrity: 0
+  digRadius: 1
+  digSpeedFactor: 0.8
 --- !u!1 &4839155834968144279
 GameObject:
   m_ObjectHideFlags: 0

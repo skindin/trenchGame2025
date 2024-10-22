@@ -241,7 +241,7 @@ public class SpawnManager : MonoBehaviour
         {
             amountSpawned += pair.Item2;
 
-            log += $"{pair.Item1.prefab.itemModel.name} x{pair.Item2} (";
+            log += $"{pair.Item1.prefab.itemName} x{pair.Item2} (";
 
             for (var i = 0; i < pair.Item2; i++)
             {
@@ -285,7 +285,7 @@ public class SpawnManager : MonoBehaviour
             {
                 if (spawnItem.prefab is Ammo amoPrefab)
                 {
-                    if (amoPrefab.AmoModel.type == type)
+                    if (amoPrefab.type == type)
                     {
                         var newAmo = spawnItem.Get(pos) as Ammo;
                         newAmo.amount = amount;

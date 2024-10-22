@@ -3,25 +3,14 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
 
-public class Shovel : Weapon, ISecondaryAction
+public class Spade : Weapon, ISecondaryAction
 {
     public float integrity;
     //float elapsedRadius = 0;
 
-    ShovelModel cachedModel;
-
-    public ShovelModel ShovelModel
-    {
-        get
-        {
-            if (!cachedModel && itemModel is ShovelModel model)
-            {
-                cachedModel = model;
-            }
-
-            return cachedModel;
-        }
-    }
+    public float
+        //maxIntegrity = 10, 
+        digRadius = 1, digSpeedFactor = .8f;
 
     public override string Verb => "dig";
     public string SecondaryVerb => "fill";
@@ -59,8 +48,8 @@ public class Shovel : Weapon, ISecondaryAction
     {
         var itemInfo = base.InfoString(separator);
         //itemInfo += $"{separator}{integrity:F1}/{ShovelModel.maxIntegrity:F1} sqr m"
-        itemInfo += $"{separator} {ShovelModel.digRadius:F1} m";
-        itemInfo += $"{separator} x{ShovelModel.digSpeedFactor:F1} m/s";
+        itemInfo += $"{separator} {digRadius:F1} m";
+        itemInfo += $"{separator} x{digSpeedFactor:F1} m/s";
 
         return itemInfo;
     }

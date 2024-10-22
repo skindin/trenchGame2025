@@ -54,16 +54,32 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7900382087798075005, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
       propertyPath: m_Name
-      value: auto amo Variant
+      value: auto ammo
       objectReference: {fileID: 0}
+    - target: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      propertyPath: type
+      value: 
+      objectReference: {fileID: 11400000, guid: e00f29eaed6cdfe4d88a2f7e27c40203, type: 2}
     - target: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
       propertyPath: model
       value: 
       objectReference: {fileID: 11400000, guid: e86e8254cc3f2874282748a56fc77c43, type: 2}
     - target: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      propertyPath: ItemName
+      value: auto ammo
+      objectReference: {fileID: 0}
+    - target: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      propertyPath: itemName
+      value: auto ammo
+      objectReference: {fileID: 0}
+    - target: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
       propertyPath: itemModel
       value: 
       objectReference: {fileID: 11400000, guid: e86e8254cc3f2874282748a56fc77c43, type: 2}
+    - target: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      propertyPath: maxAmount
+      value: 200
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

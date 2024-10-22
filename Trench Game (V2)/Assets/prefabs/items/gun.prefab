@@ -45,9 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b9a3c47948680f4c88770e3eea24543, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemName: basic gun
   id: 0
+  prefabId: 0
   defaultContainer: {fileID: 0}
-  itemModel: {fileID: 11400000, guid: 06016e4aa7d1214418b0540caeab9b97, type: 2}
   wielder: {fileID: 0}
   passivePickup: 0
   reserve: {fileID: 0}
@@ -61,6 +62,16 @@ MonoBehaviour:
   startFull: 1
   fired: 0
   drawBerrelPos: 0
+  bulletSpeed: 100
+  range: 20
+  firingRate: 1
+  reloadTime: 2
+  damageRate: 5
+  maxPerFrame: 5
+  maxRounds: 10
+  amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
+  autoFire: 1
+  autoReload: 1
 --- !u!1 &6316052255433128907
 GameObject:
   m_ObjectHideFlags: 0

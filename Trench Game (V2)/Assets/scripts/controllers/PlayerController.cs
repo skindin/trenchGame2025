@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public ControllerType type = ControllerType.keyboard;
     //public GameObject touchCursor;
     public bool overrideToTouchControls = false;
+    public int scrollSensitivity = 1;
     //public TouchController touchController;
 
     // Start is called before the first frame update
@@ -128,7 +129,12 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            character.inventory.DropPrevItem(mousePos);
+            character.inventory.DropActiveItem(mousePos);
+        }
+
+        if (character.inventory && Input.mouseScrollDelta.y != 0)
+        {
+            character.inventory.CurrentSlot += (int)(Input.mouseScrollDelta.y * scrollSensitivity);
         }
 
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -193,7 +199,7 @@ public class PlayerController : MonoBehaviour
             }
             else if (inputType == MultiuseTouchCursor.UseType.placeObject && touchCursor.released)
             {
-                character.inventory.DropPrevItem(cursorWorldPos);
+                character.inventory.DropActiveItem(cursorWorldPos);
             }
 
             if (character.inventory.ActiveItem &&

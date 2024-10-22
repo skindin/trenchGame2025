@@ -122,7 +122,7 @@ public class BotController : MonoBehaviour
 
             if (gun.rounds <= 0) //and your gun is out of amo...
             {
-                if (!gun.reloading && character.reserve.GetAmoAmount(gun.GunModel.amoType) > 0) //and you didn't arlready start reloading and you have amo in the reserve...
+                if (!gun.reloading && character.reserve.GetAmoAmount(gun.amoType) > 0) //and you didn't arlready start reloading and you have amo in the reserve...
                     gun.Action(); //start reloading the gun
             }
             else //and your gun has amo...
@@ -133,7 +133,7 @@ public class BotController : MonoBehaviour
 
                     var dist = Vector2.Distance(gun.BarrelPos, targetCollider.transform.position) + targetCollider.WorldSize/2;
 
-                    var range = gun.GunModel.range;
+                    var range = gun.range;
 
                     if (debugLines)
                         GeoUtils.DrawCircle(gun.BarrelPos, range, UnityEngine.Color.red, 8);
@@ -217,16 +217,16 @@ public class BotController : MonoBehaviour
 
             if (!targetItem && closestAmo)
             {
-                var pool = character.reserve.GetPool(closestAmo.AmoModel.type);
+                var pool = character.reserve.GetPool(closestAmo.type);
                 if (pool.rounds < pool.maxRounds) //if there's room...
                     pickupAmo = true;
             }
 
             if (gun && character.reserve)
             {
-                var deficit = gun.GunModel.maxRounds - gun.rounds;
+                var deficit = gun.maxRounds - gun.rounds;
 
-                if (deficit > 0 && character.reserve.GetAmoAmount(gun.GunModel.amoType) > 0)
+                if (deficit > 0 && character.reserve.GetAmoAmount(gun.amoType) > 0)
                 {
                     gun.Action();
                 }

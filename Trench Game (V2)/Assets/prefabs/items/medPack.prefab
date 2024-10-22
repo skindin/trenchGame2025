@@ -131,13 +131,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 232db03a2dccd6f449d6efb134fa398d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemName: med pack
   id: 0
   prefabId: 0
   defaultContainer: {fileID: 0}
-  itemModel: {fileID: 11400000, guid: ced93238e5679314a8b3bdc61090632c, type: 2}
   wielder: {fileID: 0}
   passivePickup: 0
   animRots: 2
+  healing: 0
+  hp: 5
+  healingTime: 2
 --- !u!1 &7997774657667501754
 GameObject:
   m_ObjectHideFlags: 0

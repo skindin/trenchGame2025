@@ -9,51 +9,85 @@ public class Inventory : MonoBehaviour
 {
     public Character character;
     public float passivePickupRad = 1, activePickupRad = 2, selectionRad = .5f; //passive should be smaller than active
-    public List<Item> items = new();
+    public int slotCount = 2;
+    int currentSlot = 0;
+    public Item[] itemSlots;
+    public bool inventoryFull = false;
     public List<Item> withinRadius = new();
     public Chunk[,] chunks = new Chunk[0,0];
     Item selectedItem;
     public Action<Item> onItemAdded, onItemRemoved;
-    Item cachedActiveItem;
-    Weapon cachedActiveWeapon;
 
     public Weapon ActiveWeapon
     {
         get
         {
-            return cachedActiveWeapon;
+            if (ActiveItem is Weapon weapon)
+                return weapon;
+            else
+                return null;
         }
 
         private set
         {
-            cachedActiveWeapon = value;
+            ActiveItem = value;
         }
     }
 
-    public Item ActiveItem
+    public Item ActiveItem //i gotta be careful with this fs
     {
         set
         {
-            if (value is Weapon weapon)
-            {
-                ActiveWeapon = weapon;
-            }
-            else
-            {
-                ActiveWeapon = null;
-            }
-
-            cachedActiveItem = value;
+            itemSlots[currentSlot] = value;
         }
 
         get
         {
-            return cachedActiveItem;
+            return itemSlots[currentSlot];
         }
+    }
+
+    public int CurrentSlot
+    {
+        get
+        {
+            return currentSlot;
+        }
+
+        set
+        {
+            var prevSlot = currentSlot;
+            currentSlot = (int)Mathf.Repeat(value, slotCount);
+
+            if (prevSlot != currentSlot)
+            {
+                if (itemSlots[prevSlot])
+                    itemSlots[prevSlot].ToggleActive(false);
+                if (itemSlots[currentSlot])
+                    itemSlots[currentSlot].ToggleActive(true);
+            }
+
+
+        }
+    }
+
+    int GetEmptySlot ()
+    {
+        for (int i = 0; i < slotCount; i++)
+        {
+            if (itemSlots[i] == null)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     private void Awake()
     {
+        itemSlots = new Item[slotCount];
+
         onItemAdded = item => DetectItem(item);
         onItemRemoved = item => withinRadius.Remove(item);
     }
@@ -215,15 +249,26 @@ public class Inventory : MonoBehaviour
     /// <param name="item"></param>
     public void RemoveItem (Item item)
     {
-        if (!items.Contains(item)) //if the item is not in the inventory, do nothing
-            return;
-
-        if (item == ActiveItem)
+        for (var i = 0; i < slotCount; i++)
         {
-            ActiveItem = null;
+            var slotItem = itemSlots[i];
+
+            if (item == slotItem)
+            {
+                if (item == ActiveItem)
+                {
+                    ActiveItem = null;
+                }
+
+                itemSlots[i] = null;
+
+                //Debug.Log($"item was removed from inventory");
+
+                return;
+            }
         }
 
-        items.Remove(item);
+        Debug.LogError($"character {character.id} {character.characterName} does not have item {item.id} {item.itemName} in their inventory");
         //withinRadius.Add(item);
     }
 
@@ -234,6 +279,7 @@ public class Inventory : MonoBehaviour
         var dist = Vector2.Distance(transform.position, item.transform.position);
 
         if (dist > activePickupRad) //bruh the first time i've ever had to do ipsilon addition
+            //i have no idea what i meant by this
             return;
 
         if (item.passivePickup && dist <= passivePickupRad)
@@ -264,17 +310,36 @@ public class Inventory : MonoBehaviour
         {
             //var prevItem = ActiveItem;
 
-            item.Pickup(character, out var pickedUp, out var destroyed, sync);
-            if (pickedUp)
-                withinRadius.Remove(item);
-
-            if (pickedUp && !destroyed)
+            if (item.CanPickUp(character))
             {
-                if (ActiveItem)
-                    DropItem(ActiveItem, dropPos, sync); //DO NOT SYNC HERE, pickup message should take care of it
+                item.Pickup(character, out var pickedUp, out var wasDestroyed, sync);
+                if (pickedUp && !wasDestroyed)
+                {
+                    withinRadius.Remove(item);
 
-                items.Add(item);
-                ActiveItem = item;
+
+                    if (ActiveItem)
+                    {
+                        var emptySlot = GetEmptySlot();
+                        if (emptySlot > -1) //if there is an empty slot
+                        {
+                            itemSlots[emptySlot] = item;
+                            item.ToggleActive(false);
+                            //CurrentSlot = emptySlot;
+                        }
+                        else //if there isn't an empty slot
+                        {
+                            DropItem(ActiveItem, dropPos, sync); //DO NOT SYNC HERE, pickup message should take care of it
+
+                            ActiveItem = item;
+                        }
+                    }
+                    else
+                    {
+                        ActiveItem = item;
+                    }
+
+                }
             }
 
             //if (sync)
@@ -302,7 +367,6 @@ public class Inventory : MonoBehaviour
     public void DropItem (Item item)
     {
         DropItem(item, transform.position);
-        //withinRadius.Add(item); //its already being added by the chunk event dipshit
     }
 
     public void DropItem(Item item, Vector2 pos, bool sync = false)
@@ -313,8 +377,7 @@ public class Inventory : MonoBehaviour
 
         if (sync)
         {
-            //NetworkManager.Manager.DropItemClient(pos); //the contents will only run if it is a client
-            NetworkManager.Manager.DropItem(item, pos); //the contents will only run if it is a server
+            NetworkManager.Manager.DropItem(item, pos);
         }
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;
@@ -322,16 +385,18 @@ public class Inventory : MonoBehaviour
 
         RemoveItem(item);
 
+        item.ToggleActive(true);
     }
 
     public void DropAllItems(bool sync = false)
     {
-        for (int i = 0; i < items.Count; i++)
+        for (int i = 0; i < itemSlots.Length; i++)
         {
-            var item = items[0];
+            var item = itemSlots[i];
+
+            if (!item) continue;
 
             DropItem(item, transform.position, sync);
-            i--;
         }
     }
 
@@ -342,9 +407,9 @@ public class Inventory : MonoBehaviour
 
     public void DropPrevItem()
     {
-        if (items.Count > 0)
+        if (itemSlots.Length > 0)
         {
-            var item = items[^1];
+            var item = itemSlots[^1];
             DropItem(item);
         }
     }
@@ -354,12 +419,12 @@ public class Inventory : MonoBehaviour
     /// WARNING: ALWAYS SYNCS
     /// </summary>
     /// <param name="pos"></param>
-    public void DropPrevItem(Vector2 pos)
+    public void DropActiveItem(Vector2 pos)
     {
-        if (items.Count > 0)
+        if (ActiveItem)
         {
-            var item = items[^1];
-            DropItem(item, pos, true);
+            //var item = ActiveItem
+            DropItem(ActiveItem, pos, true);
         }
     }
 

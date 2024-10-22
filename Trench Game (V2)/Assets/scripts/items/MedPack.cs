@@ -8,18 +8,7 @@ public class MedPack : Item
     public bool healing = false;
     Coroutine healRoutine;
 
-    MedPackModel cachedModel;
-
-    public MedPackModel MedPackModel
-    {
-        get
-        {
-            if (!cachedModel && itemModel is MedPackModel model)
-                cachedModel = model;
-
-            return cachedModel;
-        }
-    }
+    public float hp = 5, healingTime = 2;
 
     public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync)
     {
@@ -59,17 +48,17 @@ public class MedPack : Item
 
         healing = true;
 
-        while (progress < MedPackModel.healingTime)
+        while (progress < healingTime)
         {
             yield return null;
             progress += Time.deltaTime;
-            var angle = ((MedPackModel.healingTime - progress) / MedPackModel.healingTime) * animRots * 360;
+            var angle = ((healingTime - progress) / healingTime) * animRots * 360;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
 
         if (NetworkManager.IsServer)
         {
-            wielder?.Heal(MedPackModel.hp);
+            wielder?.Heal(hp);
             //wielder?.inventory?.RemoveItem(this);
             DestroyItem();
         }
@@ -96,6 +85,14 @@ public class MedPack : Item
         CancelHeal();
     }
 
+    public override void ToggleActive(bool active)
+    {
+        base.ToggleActive(active);
+
+        if (active)
+            CancelHeal();
+    }
+
     void CancelHeal ()
     {
         healing = false;
@@ -115,8 +112,8 @@ public class MedPack : Item
             text = $"(healing...)" + separator;
 
         text += base.InfoString(separator);
-        text += separator + $"{MedPackModel.hp:F1} hp";
-        text += separator + $"{MedPackModel.healingTime:F1} s";
+        text += separator + $"{hp:F1} hp";
+        text += separator + $"{healingTime:F1} s";
 
         return text;
     }

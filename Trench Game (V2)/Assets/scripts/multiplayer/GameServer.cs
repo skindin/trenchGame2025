@@ -11,13 +11,17 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 
 
-public class GameServer : WSServerBase
+public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna work lol
 {
+    WebSocketServer wssv;
 
     public Dictionary<string, Character> playerCharacters = new();
+    public Dictionary<string, ClientBehavior> clients = new();
+
     public Queue<string> disconnected = new();
 
     public Queue<Action> actionQueue = new();
+
 
     public bool logBitRate = false;
     public int averageBitRateFrames = 20, averageBitRate = 0, targetFramerate = 200;
@@ -94,8 +98,6 @@ public class GameServer : WSServerBase
     && character.inventory.ActiveWeapon is Gun gun
     && client.bullets != null && client.bullets.Bullets.Count > 0 && gun.rounds > 0 && !gun.reloading)
             {
-                var gunModel = gun.GunModel;
-
                 while (client.bullets.Bullets.Count > gun.rounds)
                 {
                     client.bullets.Bullets.RemoveAt(client.bullets.Bullets.Count - 1);
@@ -260,7 +262,7 @@ public class GameServer : WSServerBase
                         var pool = client.character.reserve.ammoPools[client.ammoRequest.Ammo.Index];
                         var requestAmmoType = pool.type;
 
-                        if (requestAmmoType == ammo.AmoModel.type)
+                        if (requestAmmoType == ammo.type)
                         {
                             var reqAmount = client.ammoRequest.Ammo.Amount;
 
@@ -700,6 +702,17 @@ public class GameServer : WSServerBase
         }
     }
 
+    public void SpawnLocalPlayer ()
+    {
+        if (NetworkManager.IsServer)
+        {
+            var pos = ChunkManager.Manager.GetRandomPos();
+            var id = SpawnManager.Manager.NewCharId;
+
+            SpawnManager.Manager.SpawnLocalPlayer(pos,id);
+        }
+    }
+
     public class ClientBehavior : WebSocketBehavior
     {
         public static GameServer server;
@@ -815,9 +828,9 @@ public class GameServer : WSServerBase
                                     {
                                         if (character.inventory.ActiveItem is Gun gun)
                                         {
-                                            if (gun.rounds < gun.GunModel.maxRounds)
+                                            if (gun.rounds < gun.maxRounds)
                                             {
-                                                var pool = character.reserve.GetPool(gun.GunModel.amoType);
+                                                var pool = character.reserve.GetPool(gun.amoType);
 
                                                 if (pool != null)
                                                 {
@@ -837,7 +850,7 @@ public class GameServer : WSServerBase
                                                 else
                                                 {
                                                     Debug.Log(
-                                                        $"reload failed: character {character.id} doesn't have a reserver for {gun.GunModel.amoType}" +
+                                                        $"reload failed: character {character.id} doesn't have a reserver for {gun.amoType}" +
                                                         $"");
                                                 }
                                             }

@@ -3,25 +3,9 @@ using UnityEngine;
 
 public class StackableItem : Item
 {
-    StackableItemModel cachedModel;
-
-    public StackableItemModel StackableModel
-    {
-        get
-        {
-            if (cachedModel == null && itemModel is StackableItemModel stackableModel)
-            {
-                cachedModel = stackableModel;
-            }
-
-            return cachedModel;
-        }
-
-        set
-        {
-            cachedModel = value;
-        }
-    }
+    public bool limitAmount = false;
+    public int maxAmount = 10;
+    public float combineRadius = .5f;
 
     public int amount = 1;
     public bool startFull = false;
@@ -37,16 +21,17 @@ public class StackableItem : Item
         base.ItemAwake();
 
         if (startFull)
-            amount = StackableModel.maxAmount;
+            amount = maxAmount;
         else
-            amount = Mathf.Clamp(amount, 0, StackableModel.maxAmount);
+            amount = Mathf.Clamp(amount, 0, maxAmount);
     }
 
-    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync)
+    public override void Pickup(Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync) //had errors because items is an array now
     {
-        wasPickedUp = false;
-        CombineWithItems(character.inventory.items, out wasDestroyed, false);
-        if (!wasDestroyed) base.Pickup(character, out wasPickedUp, out wasDestroyed, sync);
+        //wasPickedUp = false;
+        //CombineWithItems(character.inventory.items, out wasDestroyed, false);
+        //if (!wasDestroyed)
+            base.Pickup(character, out wasPickedUp, out wasDestroyed, sync);
     }
 
     public override void DropLogic(Vector2 pos, out bool destroyedSelf)
@@ -62,8 +47,8 @@ public class StackableItem : Item
 
     public bool CombineAll(out bool destroyedSelf)
     {
-        var min = transform.position - Vector3.one * StackableModel.combineRadius;
-        var max = transform.position + Vector3.one * StackableModel.combineRadius;
+        var min = transform.position - Vector3.one * combineRadius;
+        var max = transform.position + Vector3.one * combineRadius;
 
         var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
 
@@ -89,19 +74,19 @@ public class StackableItem : Item
 
             if (item is not StackableItem stackItem) continue;
 
-            if (StackableModel != stackItem.StackableModel) continue;
+            if (prefabId != stackItem.prefabId) continue;
 
             if (testDist)
             {
                 var dist = Vector2.Distance(item.transform.position, transform.position);
-                if (dist > StackableModel.combineRadius) 
+                if (dist > combineRadius) 
                     continue;
             }
 
             int addend;
-            if (StackableModel.limitAmount)
+            if (limitAmount)
             {
-                var spaceLeft = StackableModel.maxAmount - stackItem.amount;
+                var spaceLeft = maxAmount - stackItem.amount;
                 addend = Mathf.Min(amount, spaceLeft);
             }
             else

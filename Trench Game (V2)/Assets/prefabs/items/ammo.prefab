@@ -129,10 +129,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aabd46b6c7b35242b595d4dc89fa63a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemName: basic ammo
   id: 0
+  prefabId: 0
   defaultContainer: {fileID: 0}
-  itemModel: {fileID: 11400000, guid: 24f9bd8ec869d2a47aa29820275c38da, type: 2}
   wielder: {fileID: 0}
   passivePickup: 1
+  limitAmount: 0
+  maxAmount: 50
+  combineRadius: 0.5
   amount: 1
   startFull: 1
+  type: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}

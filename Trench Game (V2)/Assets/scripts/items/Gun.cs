@@ -28,21 +28,17 @@ public class Gun : Weapon
         }
     }
 
-    private GunModel cachedGunModel;
-    public GunModel GunModel
+    public float bulletSpeed, range, firingRate, reloadTime = 2, damageRate = 5;
+    public int maxPerFrame = 5, maxRounds = 10;//, reloadAnimRots = 3;
+    public AmmoType amoType;
+    public bool autoFire = true, autoReload = false;
+    //public bool released = true;
+
+    public float DamagePerBullet
     {
         get
         {
-            if (cachedGunModel == null || cachedGunModel != itemModel)
-            {
-                cachedGunModel = (GunModel)itemModel;
-            }
-            return cachedGunModel;
-        }
-        set
-        {
-            itemModel = value;
-            cachedGunModel = value; // Update the cache when the model changes
+            return damageRate / firingRate;
         }
     }
 
@@ -62,12 +58,37 @@ public class Gun : Weapon
         reserve = null;
     }
 
+    public override void ToggleActive(bool active)
+    {
+        base.ToggleActive(active);
+
+        if (!active)
+        {
+            //StopAllCoroutines(); //should suffice for now
+                                 //fireRoutine = 
+            if (reloadRoutine != null)
+            {
+                StopCoroutine(reloadRoutine);
+                reloadRoutine = null;
+            }
+            reloading = false; //maaan idk how to design the delay. using the cooldown is way to long, requiring click is too hard
+        }
+        //else
+        //{
+        //    released = false;
+        //}
+        //else //requiring mouse lift makes a lot more sense
+        //{
+        //    StartShootRoutine(true);
+        //}
+    }
+
     public override void ItemAwake()
     {
         base.ItemAwake();
 
         if (startFull)
-            rounds = GunModel.maxRounds;
+            rounds = maxRounds;
         else
             rounds = 0;
     }
@@ -136,53 +157,73 @@ public class Gun : Weapon
 
         holdingTrigger = true;
 
-        fireRoutine ??= StartCoroutine(Shoot());
+        StartShootRoutine();
+    }
 
-        IEnumerator Shoot()
+    void StartShootRoutine (bool coolDownFirst = false)
+    {
+        //if (released)
+        fireRoutine ??= StartCoroutine(Shoot(coolDownFirst));
+
+        IEnumerator Shoot(bool cooldownFirst = false)
         {
-            var secsPerBullet = 1 / GunModel.firingRate;
+            var secsPerBullet = 1 / firingRate;
 
             while (true)
             {
-                if (!holdingTrigger)
+                if (!cooldownFirst)
                 {
-                    fireRoutine = null;
-                    yield break;
-                }
-
-                if (!reloading)
-                {
-                    if (rounds > 0)
+                    if (!holdingTrigger)
                     {
-
-                        var bulletCount = Mathf.FloorToInt(GunModel.firingRate * Time.deltaTime);
-
-                        bulletCount = Mathf.Max(bulletCount, 1);
-
-                        bulletCount = Mathf.Min(bulletCount, rounds);
-
-                        for (int i = 0; i < bulletCount; i++)
-                        {
-                            Fire();
-                        }
-
-                        rounds -= bulletCount;
-                    }
-                    else
-                    {
-                        if (!reloading && GunModel.autoReload)
-                            Action();
-
+                        //released = true;
                         fireRoutine = null;
                         yield break;
                     }
+
+                    if (!reloading)
+                    {
+                        if (rounds > 0)
+                        {
+
+                            var bulletCount = Mathf.FloorToInt(firingRate * Time.deltaTime);
+
+                            bulletCount = Mathf.Max(bulletCount, 1);
+
+                            bulletCount = Mathf.Min(bulletCount, rounds);
+
+                            for (int i = 0; i < bulletCount; i++)
+                            {
+                                Fire();
+                            }
+
+                            rounds -= bulletCount;
+                        }
+                        else
+                        {
+                            if (!reloading && autoReload) //inconsistant af to only test reloading property here
+                                Action();
+
+                            fireRoutine = null;
+                            yield break;
+                        }
+                    }
+
+                    if (!autoFire) break;
+
+                    holdingTrigger = false; //makes sure that something else says it's pulling the trigger before it repeats
                 }
+                else
+                    cooldownFirst = false;
 
-                if (!GunModel.autoFire) break;
+                float startTime = Time.time;
 
-                holdingTrigger = false; //makes sure that something else says it's pulling the trigger before it repeats
+                do
+                {
+                    yield return null;
+                }
+                while (Time.time - startTime < secsPerBullet); //accounts for being paused
 
-                yield return new WaitForSeconds(secsPerBullet);
+                //yield return new WaitForSeconds(secsPerBullet);
             }
 
         }
@@ -209,7 +250,7 @@ public class Gun : Weapon
     {
         if (reloading || reserve == null) yield break;
 
-        if (!sync || (rounds < GunModel.maxRounds && reserve.GetAmoAmount(GunModel.amoType) > 0))
+        if (!sync || (rounds < maxRounds && reserve.GetAmoAmount(amoType) > 0))
         {
             reloading = true;
 
@@ -218,17 +259,17 @@ public class Gun : Weapon
                 NetworkManager.Manager.StartReload(this);
             }
 
-            while (progress < GunModel.reloadTime)
+            while (progress < reloadTime)
             {
                 yield return null;
 
                 progress += Time.deltaTime;
-                var angle = ((GunModel.reloadTime - progress) / GunModel.reloadTime) * reloadAnimRots * 360;
+                var angle = ((reloadTime - progress) / reloadTime) * reloadAnimRots * 360;
                 transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
             }
 
             reloading = false;
-            rounds += reserve.RemoveAmo(GunModel.amoType, GunModel.maxRounds - rounds);
+            rounds += reserve.RemoveAmo(amoType, maxRounds - rounds);
 
             if (NetworkManager.IsServer)
             {
@@ -253,9 +294,9 @@ public class Gun : Weapon
     public Bullet Fire ()
     {
         var bullet = ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos,
-            (direction.normalized * GunModel.bulletSpeed) + velocity,
-            GunModel.range,
-            GunModel.DamagePerBullet,
+            (direction.normalized * bulletSpeed) + velocity,
+            range,
+            DamagePerBullet,
             wielder);
 
         NetworkManager.Manager.SpawnBullet(this,bullet);
@@ -292,13 +333,13 @@ public class Gun : Weapon
     {
         var itemInfo = $"{(reloading ? "(reloading...)" + separator : "")}" + base.InfoString();
 
-        var roundRatio = $"{rounds}/{GunModel.maxRounds}";
-        var range = $"{GunModel.range:F1} m range";
-        var bulletSpeed = $"{GunModel.bulletSpeed:F1} m/s";
-        var fireRate = $"{GunModel.firingRate:F1} rounds/s";
-        var damageRate = $"{GunModel.damageRate:F1} hp/s";
-        var reload = $"{ GunModel.reloadTime:F1} s reload";
-        var amoType = GunModel.amoType.name;
+        var roundRatio = $"{rounds}/{maxRounds}";
+        var range = $"{this.range:F1} m range";
+        var bulletSpeed = $"{this.bulletSpeed:F1} m/s";
+        var fireRate = $"{firingRate:F1} rounds/s";
+        var damageRate = $"{this.damageRate:F1} hp/s";
+        var reload = $"{ reloadTime:F1} s reload";
+        var amoType = this.amoType.name;
 
         var array = new string[] {itemInfo, roundRatio, fireRate, damageRate, range, bulletSpeed, reload, amoType};
 

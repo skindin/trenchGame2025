@@ -5,18 +5,7 @@ using System.Linq;
 
 public class Ammo : StackableItem
 {
-    AmmoModel cachedAmmoModel;
-    public AmmoModel AmoModel
-    {
-        get
-        {
-            if (cachedAmmoModel == null)
-            {
-                cachedAmmoModel = (AmmoModel)itemModel;
-            }
-            return cachedAmmoModel;
-        }
-    }
+    public AmmoType type;
 
     //public override void ItemAwake()
     //{
@@ -43,7 +32,7 @@ public class Ammo : StackableItem
             //if (prevAmount != amount)
             //    wasPickedup = true;
 
-            var pool = character.reserve.GetPool(AmoModel.type);
+            var pool = character.reserve.GetPool(type);
             var amtTaken = Mathf.Min(amount, pool.maxRounds - pool.rounds);
             amount = pool.AddAmo(amount);
 

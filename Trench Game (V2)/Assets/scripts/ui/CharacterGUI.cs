@@ -42,7 +42,7 @@ public class CharacterGUI : MonoBehaviour
     void OnGUI()
     {
         //if (!character)
-        if (!NetworkManager.IsServer)
+        //if (!NetworkManager.IsServer)
             character = CharacterManager.Manager.localPlayerCharacter;
 
         //if (!character)
@@ -200,7 +200,7 @@ public class CharacterGUI : MonoBehaviour
             foreach (var pair in ItemManager.Manager.active)
             {
                 var item = pair.Value;
-                DrawTextBox(item.itemModel.name, item.transform.position, style, itemBoxOffset * scaleFactor);
+                DrawTextBox(item.itemName, item.transform.position, style, itemBoxOffset * scaleFactor);
             }
 
             return;
@@ -223,7 +223,7 @@ public class CharacterGUI : MonoBehaviour
                 continue;
             }
             
-            DrawTextBox(item.itemModel.name, item.transform.position, style, itemBoxOffset * scaleFactor);
+            DrawTextBox(item.itemName, item.transform.position, style, itemBoxOffset * scaleFactor);
         }
 
         if (character.inventory.SelectedItem != null)

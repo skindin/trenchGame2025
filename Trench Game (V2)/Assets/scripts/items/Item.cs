@@ -7,9 +7,9 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
+    public string itemName;
     public int id, prefabId;
     public Transform defaultContainer;
-    public ItemModel itemModel;
     public Character wielder;
     //public bool currentlyHeld = false;
     public static List<Item> all = new();
@@ -94,6 +94,11 @@ public class Item : MonoBehaviour
 
     }
 
+    public virtual bool CanPickUp (Character character)
+    {
+        return true;
+    }
+
     public void UpdateChunk()
     {
         Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
@@ -170,6 +175,11 @@ public class Item : MonoBehaviour
         wielder = null;
     }
 
+    public virtual void ToggleActive (bool active)
+    {
+        gameObject.SetActive(active);
+    }
+
     public void DeParent()
     {
         transform.SetParent(defaultContainer);
@@ -177,7 +187,7 @@ public class Item : MonoBehaviour
 
     public virtual string InfoString(string separator = " ")
     {
-        return itemModel.name;// { $"Tier {model.tier}" };
+        return itemName;// { $"Tier {model.tier}" };
     }
 
     //public virtual DataDict<object> PublicData //to be used when observing an item that another character is holding

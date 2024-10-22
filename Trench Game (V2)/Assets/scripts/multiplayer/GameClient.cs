@@ -2,18 +2,10 @@ using Google.Protobuf;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-//using Unity.VisualScripting.FullSerializer;
-//using UnityEditor.U2D.Animation;
 using UnityEngine;
-//using UnityEngine.Rendering.PostProcessing;
 using WebSocketSharp;
 using UnityEngine.Events;
-using UnityEngine.Rendering.PostProcessing;
 using Google.Protobuf.Collections;
-using UnityEngine.TextCore.Text;
-using Unity.VisualScripting.Dependencies.NCalc;
-//using Google.Protobuf.Collections;
-//using UnityEditor.SearchService;
 
 public class GameClient : MonoBehaviour
 {
@@ -25,7 +17,7 @@ public class GameClient : MonoBehaviour
     //public string ID;
     public UnityEvent onConnect, onDisconnect;
 
-    readonly Queue<Action> actionQueue = new Queue<Action>();
+    readonly Queue<Action> actionQueue = new();
 
     public bool logBitRate = false;
     public int averageBitRateFrames = 20, averageBitRate = 0;
