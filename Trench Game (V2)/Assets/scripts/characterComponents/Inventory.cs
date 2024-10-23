@@ -9,7 +9,6 @@ public class Inventory : MonoBehaviour
 {
     public Character character;
     public float passivePickupRad = 1, activePickupRad = 2, selectionRad = .5f; //passive should be smaller than active
-    public int slotCount = 2;
     int currentSlot = 0;
     public Item[] itemSlots;
     public bool inventoryFull = false;
@@ -57,7 +56,7 @@ public class Inventory : MonoBehaviour
         set
         {
             var prevSlot = currentSlot;
-            currentSlot = (int)Mathf.Repeat(value, slotCount);
+            currentSlot = (int)Mathf.Repeat(value, itemSlots.Length);
 
             if (prevSlot != currentSlot)
             {
@@ -73,7 +72,7 @@ public class Inventory : MonoBehaviour
 
     int GetEmptySlot ()
     {
-        for (int i = 0; i < slotCount; i++)
+        for (int i = 0; i < itemSlots.Length; i++)
         {
             if (itemSlots[i] == null)
             {
@@ -86,7 +85,7 @@ public class Inventory : MonoBehaviour
 
     private void Awake()
     {
-        itemSlots = new Item[slotCount];
+        //itemSlots = new Item[slotCount];
 
         onItemAdded = item => DetectItem(item);
         onItemRemoved = item => withinRadius.Remove(item);
@@ -249,7 +248,7 @@ public class Inventory : MonoBehaviour
     /// <param name="item"></param>
     public void RemoveItem (Item item)
     {
-        for (var i = 0; i < slotCount; i++)
+        for (var i = 0; i < itemSlots.Length; i++)
         {
             var slotItem = itemSlots[i];
 
@@ -477,6 +476,22 @@ public class Inventory : MonoBehaviour
         }
 
         SelectedItem = null;
+    }
+
+    public string GetSlotsString ()
+    {
+        string slots = "";
+
+        for (int i = 0; i < itemSlots.Length; i++)
+        {
+            var item = itemSlots[i];
+
+            var activeSlot = currentSlot == i;
+
+            slots += $"{(activeSlot ? "[" : " ")}{(item ? item.itemName : "-")}{(activeSlot ? "]" : " ")}";
+        }
+
+        return slots;
     }
 
     //private void OnDestroy()

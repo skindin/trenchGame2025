@@ -125,7 +125,7 @@ public class CharacterGUI : MonoBehaviour
 
         style.alignment = TextAnchor.LowerCenter;
 
-        GUI.Label(rect, character.InfoString(), style);
+        GUI.Label(rect, character.InfoString() +"\n" + character.inventory.GetSlotsString(), style);
     }
 
     public void DrawScoreboard (float scaleFactor)

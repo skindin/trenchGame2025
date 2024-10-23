@@ -93,6 +93,28 @@ public class PlayerController : MonoBehaviour
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mouseDir = mousePos - transform.position;
 
+        character.inventory.SelectClosest(mousePos);
+
+        if (Input.GetMouseButton(1))
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                character.inventory.PickupClosest(mousePos);
+            }
+            else
+            {
+
+            }
+        }
+
+        if (character.inventory && Input.mouseScrollDelta.y != 0)
+        {
+            character.inventory.CurrentSlot -= (int)(Input.mouseScrollDelta.y * scrollSensitivity);
+        }
+
+        if (character.inventory.ActiveWeapon)
+            character.inventory.ActiveWeapon.Aim(mouseDir); //this had been in late update...
+
         if (Input.GetMouseButton(0))
         {
             if (Input.GetMouseButtonDown(0))
@@ -108,20 +130,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        character.inventory.SelectClosest(mousePos);
-
-        if (Input.GetMouseButton(1))
-        {
-            if (Input.GetMouseButtonDown(1))
-            {
-                character.inventory.PickupClosest(mousePos);
-            }
-            else
-            {
-
-            }
-        }
-
         if (character.inventory.ActiveWeapon && Input.GetKeyDown(KeyCode.E))
         {
             character.inventory.ActiveWeapon.Action();
@@ -132,15 +140,8 @@ public class PlayerController : MonoBehaviour
             character.inventory.DropActiveItem(mousePos);
         }
 
-        if (character.inventory && Input.mouseScrollDelta.y != 0)
-        {
-            character.inventory.CurrentSlot += (int)(Input.mouseScrollDelta.y * scrollSensitivity);
-        }
-
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //var mouseDir = mousePos - transform.position;
-        if (character.inventory.ActiveWeapon) 
-            character.inventory.ActiveWeapon.Aim(mouseDir); //this had been in late update...
     }
 
     public void TouchControls()

@@ -704,7 +704,7 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
 
     public void SpawnLocalPlayer ()
     {
-        if (NetworkManager.IsServer)
+        if (NetworkManager.IsServer && !CharacterManager.Manager.localPlayerCharacter)
         {
             var pos = ChunkManager.Manager.GetRandomPos();
             var id = SpawnManager.Manager.NewCharId;

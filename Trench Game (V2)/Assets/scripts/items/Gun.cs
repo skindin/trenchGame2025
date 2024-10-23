@@ -28,7 +28,7 @@ public class Gun : Weapon
         }
     }
 
-    public float bulletSpeed, range, firingRate, reloadTime = 2, damageRate = 5;
+    public float bulletSpeed, range, firingRate, reloadTime = 2, damageRate = 5, swapDelay = .2f;
     public int maxPerFrame = 5, maxRounds = 10;//, reloadAnimRots = 3;
     public AmmoType amoType;
     public bool autoFire = true, autoReload = false;
@@ -58,6 +58,8 @@ public class Gun : Weapon
         reserve = null;
     }
 
+    float timeDeactivated;
+
     public override void ToggleActive(bool active)
     {
         base.ToggleActive(active);
@@ -72,6 +74,20 @@ public class Gun : Weapon
                 reloadRoutine = null;
             }
             reloading = false; //maaan idk how to design the delay. using the cooldown is way to long, requiring click is too hard
+
+            if (fireRoutine != null)
+            {
+                StopCoroutine(fireRoutine);
+                fireRoutine = null;
+            }
+
+            timeDeactivated = Time.time;
+        }
+        else
+        {
+            var secsPerBullet = 1 / firingRate;
+            var rateDelay = Mathf.Max(secsPerBullet - Time.time - timeDeactivated, 0);
+            StartShootRoutine(swapDelay + rateDelay);
         }
         //else
         //{
@@ -160,60 +176,60 @@ public class Gun : Weapon
         StartShootRoutine();
     }
 
-    void StartShootRoutine (bool coolDownFirst = false)
+    void StartShootRoutine (float delay = 0)
     {
         //if (released)
-        fireRoutine ??= StartCoroutine(Shoot(coolDownFirst));
+        fireRoutine ??= StartCoroutine(Shoot(delay));
 
-        IEnumerator Shoot(bool cooldownFirst = false)
+        IEnumerator Shoot(float delay = 0)
         {
+            if (delay > 0)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+
             var secsPerBullet = 1 / firingRate;
 
             while (true)
             {
-                if (!cooldownFirst)
+                if (!holdingTrigger)
                 {
-                    if (!holdingTrigger)
+                    //released = true;
+                    fireRoutine = null;
+                    yield break;
+                }
+
+                if (!reloading)
+                {
+                    if (rounds > 0)
                     {
-                        //released = true;
+
+                        var bulletCount = Mathf.FloorToInt(firingRate * Time.deltaTime);
+
+                        bulletCount = Mathf.Max(bulletCount, 1);
+
+                        bulletCount = Mathf.Min(bulletCount, rounds);
+
+                        for (int i = 0; i < bulletCount; i++)
+                        {
+                            Fire();
+                        }
+
+                        rounds -= bulletCount;
+                    }
+                    else
+                    {
+                        if (!reloading && autoReload) //inconsistant af to only test reloading property here
+                            Action();
+
                         fireRoutine = null;
                         yield break;
                     }
-
-                    if (!reloading)
-                    {
-                        if (rounds > 0)
-                        {
-
-                            var bulletCount = Mathf.FloorToInt(firingRate * Time.deltaTime);
-
-                            bulletCount = Mathf.Max(bulletCount, 1);
-
-                            bulletCount = Mathf.Min(bulletCount, rounds);
-
-                            for (int i = 0; i < bulletCount; i++)
-                            {
-                                Fire();
-                            }
-
-                            rounds -= bulletCount;
-                        }
-                        else
-                        {
-                            if (!reloading && autoReload) //inconsistant af to only test reloading property here
-                                Action();
-
-                            fireRoutine = null;
-                            yield break;
-                        }
-                    }
-
-                    if (!autoFire) break;
-
-                    holdingTrigger = false; //makes sure that something else says it's pulling the trigger before it repeats
                 }
-                else
-                    cooldownFirst = false;
+
+                if (!autoFire) break;
+
+                holdingTrigger = false; //makes sure that something else says it's pulling the trigger before it repeats
 
                 float startTime = Time.time;
 

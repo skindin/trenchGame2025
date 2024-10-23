@@ -49,8 +49,9 @@ MonoBehaviour:
   passivePickupRad: 2
   activePickupRad: 5
   selectionRad: 1
-  slotCount: 2
-  itemSlots: []
+  itemSlots:
+  - {fileID: 0}
+  - {fileID: 0}
   inventoryFull: 0
   withinRadius: []
   debugLines: 0
