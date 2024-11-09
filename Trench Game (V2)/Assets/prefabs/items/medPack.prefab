@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5524963248028339766}
   - component: {fileID: 8348423297173515079}
+  - component: {fileID: 1989906505745174026}
   m_Layer: 0
   m_Name: sprites
   m_TagString: Untagged
@@ -86,6 +87,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1989906505745174026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471133370349396711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCenterPoint: {x: 0, y: -0.5}
+  drawPoint: 0
+  sprite: {fileID: 8348423297173515079}
+  localOrder: 1
+  parent: {fileID: 0}
+  children: []
+  container: {fileID: 1526905709983834323}
 --- !u!1 &3562899794262530257
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,6 +171,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8711842951331718665}
   - component: {fileID: 5011956228783135991}
+  - component: {fileID: 3677773401435525975}
   m_Layer: 0
   m_Name: crossLine
   m_TagString: Untagged
@@ -225,6 +246,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &3677773401435525975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7997774657667501754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCenterPoint: {x: 0, y: 0}
+  drawPoint: 0
+  sprite: {fileID: 5011956228783135991}
+  localOrder: 1
+  parent: {fileID: 1989906505745174026}
+  children: []
+  container: {fileID: 1526905709983834323}
 --- !u!1 &8881084842866228380
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,6 +275,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8810023564655234330}
   - component: {fileID: 3332444744484434129}
+  - component: {fileID: 3679507228256447074}
   m_Layer: 0
   m_Name: crossLine (1)
   m_TagString: Untagged
@@ -309,3 +350,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &3679507228256447074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8881084842866228380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCenterPoint: {x: 0, y: 0}
+  drawPoint: 0
+  sprite: {fileID: 3332444744484434129}
+  localOrder: 1
+  parent: {fileID: 1989906505745174026}
+  children: []
+  container: {fileID: 1526905709983834323}

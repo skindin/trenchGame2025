@@ -278,7 +278,7 @@ public class CharacterManager : MonoBehaviour
             CamFollow.main.Reset();
         }
 
-        character.inventory.DropAllItems();
+        character.inventory.DropAllItems(character.deathDropRadius); //meh
     }
 
     public void KillCharacter(Character character)

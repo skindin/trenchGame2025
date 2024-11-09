@@ -42,6 +42,11 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
 
     public ScoreBoardUpdate scoreboardUpdate, currentScoreboard;
 
+    private void Awake()
+    {
+        startTick = DateTime.UtcNow.Ticks;
+    }
+
     private void LateUpdate()
     {
         if (!NetworkManager.IsServer)

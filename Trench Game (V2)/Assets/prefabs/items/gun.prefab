@@ -67,6 +67,7 @@ MonoBehaviour:
   firingRate: 1
   reloadTime: 2
   damageRate: 5
+  swapDelay: 0.2
   maxPerFrame: 5
   maxRounds: 10
   amoType: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
@@ -82,6 +83,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5901701701853898434}
   - component: {fileID: 835423500552572068}
+  - component: {fileID: 2016147361199169214}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -156,3 +158,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2016147361199169214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6316052255433128907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCenterPoint: {x: 0, y: -0.5}
+  drawPoint: 0
+  sprite: {fileID: 835423500552572068}
+  localOrder: 1
+  parent: {fileID: 0}
+  children: []
+  container: {fileID: 5747975507980502927}

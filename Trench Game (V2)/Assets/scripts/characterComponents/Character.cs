@@ -287,7 +287,7 @@ public class Character : MonoBehaviour
             reserve.DropEverything(deathDropRadius);
 
         if (inventory)
-            inventory.DropAllItems(true);
+            inventory.DropAllItems(deathDropRadius, true);
 
         CharacterManager.Manager.KillCharacter(this);
     }

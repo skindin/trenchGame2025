@@ -10,24 +10,34 @@ public class SpriteOrderTool : MonoBehaviour
     static readonly List<SpriteOrderTool> all = new();
     static SpriteOrderTool main;
     public SpriteRenderer sprite;
+    public int localOrder = 0;
+    public SpriteOrderTool parent;
+    public List<SpriteOrderTool> children = new();
+    Transform lastParent;
+    public Transform container;
 
-    private void OnEnable()
+    public int LocalOrder {  get { return localOrder; } set { localOrder = value; } }
+
+    private void Awake()
     {
+        FindParentTool();
         all.Add(this);
-    }
 
-    private void OnDisable()
-    {
-        all.Remove(this);
-    }
-
-    private void OnDestroy()
-    {
-        all.Remove(this);
+        if (!children.Contains(this))
+        {
+            children.Add(this);
+        }
     }
 
     private void Update()
     {
+        if (container.parent != lastParent)
+        {
+            FindParentTool();
+
+            lastParent = container.parent;
+        }
+
         if (main == null || !main.enabled || !main.gameObject.activeInHierarchy || main.gameObject.IsDestroyed())
         {
             main = this;
@@ -36,8 +46,140 @@ public class SpriteOrderTool : MonoBehaviour
         if (main == this)
         {
             LogicAndMath.SortHighestToLowest(all, tool => tool.transform.TransformPoint(tool.groundCenterPoint).y);
-            LogicAndMath.AssignIndexes(all, (tool, index) => tool.sprite.sortingOrder = index);
+
+            var order = 0;
+
+            foreach (var spriteTool in all)
+            {
+                AssignChildrenOrder(spriteTool, ref order);
+            }
+
+            //LogicAndMath.AssignIndexes(all, (tool, index) => tool.sprite.sortingOrder = index);
         }
+    }
+
+    void AssignChildrenOrder (SpriteOrderTool sprite, ref int currentOrder)
+    {
+        currentOrder++;
+
+        for (int i = 0; i < sprite.children.Count; i++)
+        {
+            var child = sprite.children[i];
+
+            child.sprite.sortingOrder = currentOrder + i;
+
+            if (child != sprite)
+                AssignChildrenOrder(child, ref currentOrder);
+        }
+    }
+
+    public void AddChild (SpriteOrderTool newChild)
+    {
+        bool added = false;
+
+        for (int i = 0; i < children.Count; i++)
+        {
+            var child = children[i];
+                
+            if ((child != this && newChild.localOrder < child.localOrder) || (child == this && newChild.localOrder < 0))
+            {
+                children.Insert(i, newChild);
+                added = true;
+                break;
+            }
+        }
+
+        if (!added)
+        {
+            children.Add(newChild);
+        }
+    }
+
+    public void RemoveChild (SpriteOrderTool child)
+    {
+        children.Remove(child);
+    }
+
+
+    //private void OnTransformParentChanged()
+    //{
+    //    FindParentTool();
+    //}
+
+    void FindParentTool()
+    {
+        bool hadParent = false;
+
+        if (parent)
+        {
+            parent.RemoveChild(this);
+            hadParent = true;
+        }
+
+        var currentParent = transform.parent;
+
+        while (currentParent)
+        {
+            var foundTool = currentParent.GetComponent<SpriteOrderTool>();
+
+            if (foundTool)
+            {
+                parent = foundTool;
+                parent.AddChild(this);
+                break;
+            }
+            else
+            {
+                currentParent = currentParent.parent;
+            }
+        }
+
+        if (!currentParent)
+        {
+            parent = null;
+        }
+
+        if (!currentParent && hadParent)
+        {
+            all.Add(this);
+        }
+        else if (currentParent && !hadParent)
+        {
+            all.Remove(this);
+        }
+    }
+
+    public void SetLocalOrder (int order)
+    {
+        localOrder = order;
+
+        if (parent)
+        {
+            parent.RemoveChild (this);
+            parent.AddChild (this);
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (parent)
+            all.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        if (parent)
+            all.Remove(this);
+    }
+
+    private void OnDestroy()
+    {
+        if (parent)
+        {
+            parent.children.Remove(this);
+        }
+
+        all.Remove(this);
     }
 
     private void OnDrawGizmos()

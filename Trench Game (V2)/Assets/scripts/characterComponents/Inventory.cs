@@ -136,7 +136,7 @@ public class Inventory : MonoBehaviour
     //    DetectItems();
     //}
 
-    public void ResetInventory (bool dropAllItems = false)
+    public void ResetInventory (bool dropAllItems = false, float dropRadius = 0)
     {
         SelectedItem = null;
         var emptyChunkArray = new Chunk[0,0];
@@ -145,7 +145,7 @@ public class Inventory : MonoBehaviour
 
         if (dropAllItems)
         {
-            DropAllItems();
+            DropAllItems(dropRadius);
         }
 
         withinRadius.Clear();
@@ -380,14 +380,14 @@ public class Inventory : MonoBehaviour
         }
 
         //var pos = UnityEngine.Random.insideUnitCircle * activePickupRad;
+        item.ToggleActive(true);
+
         item.Drop(clampedPos, out _);
 
         RemoveItem(item);
-
-        item.ToggleActive(true);
     }
 
-    public void DropAllItems(bool sync = false)
+    public void DropAllItems(float dropRadius, bool sync = false)
     {
         for (int i = 0; i < itemSlots.Length; i++)
         {
@@ -395,7 +395,9 @@ public class Inventory : MonoBehaviour
 
             if (!item) continue;
 
-            DropItem(item, transform.position, sync);
+            var dropPos = UnityEngine.Random.insideUnitCircle * dropRadius + (Vector2)transform.position;
+
+            DropItem(item, dropPos, sync);
         }
     }
 
