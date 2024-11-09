@@ -109,7 +109,7 @@ public class Item : MonoBehaviour
         if (wielder != character)
         {
             wielder = character;
-            transform.parent = character.transform;
+            transform.parent = character.inventory.itemContainer;
             transform.localPosition = Vector3.zero;
         }
 

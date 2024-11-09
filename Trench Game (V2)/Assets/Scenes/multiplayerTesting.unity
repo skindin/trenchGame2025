@@ -784,67 +784,6 @@ Transform:
   - {fileID: 978235425}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &89661475
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1029159826405028024, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8796109463886426131, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_Name
-      value: character
-      objectReference: {fileID: 0}
-    - target: {fileID: 8796109463886426131, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a5c190df75122c747bb32818c0ff1908, type: 3}
 --- !u!1 &99598701
 GameObject:
   m_ObjectHideFlags: 0
@@ -3034,7 +2973,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkSize: 10
-  maxWorldSize: 50
+  maxWorldSize: 30
   worldSize: 0
   chunkArraySize: 0
   chunkPool:
@@ -3260,43 +3199,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemGroups:
-  - Name: tier 1
-    spawnItems:
-    - name: basic amo
-      prefab: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
-      currentAmount: 0
-      spawnCap: 3
-      chance: 2
-    - name: basic gun
-      prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
-      currentAmount: 0
-      spawnCap: 3
-      chance: 1
-    - name: basic shovel
-      prefab: {fileID: 4392698207926738930, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
-      currentAmount: 0
-      spawnCap: 10
-      chance: 0
-    chance: 0
   - Name: tier 2
     spawnItems:
-    - name: auto amo
-      prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
+    - name: gun
+      prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       currentAmount: 0
-      spawnCap: 3
-      chance: 1
-    - name: auto gun
-      prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
-      currentAmount: 0
-      spawnCap: 2
-      chance: 1
-    - name: med pack
-      prefab: {fileID: 9180302628864614839, guid: ca13b6b8287dc70488cedaea9b7ecc4a, type: 3}
-      currentAmount: 0
-      spawnCap: 3
+      spawnCap: 1
       chance: 2
     chance: 1
-  itemsPerDrop: 5
+  itemsPerDrop: 1
   itemDropRadius: 5
   itemDropInterval: 5
   itemDropTimer: 0
@@ -5729,7 +5640,7 @@ MonoBehaviour:
   backgroundColor: {r: 0, g: 0, b: 0, a: 0.8}
   importantColor: {r: 0.33296537, g: 1, b: 0, a: 1}
   itemBoxOffset: {x: 0, y: -5}
-  characterBoxOffset: {x: 0, y: 10}
+  characterBoxOffset: {x: 0, y: 15}
   scale: 0.015
   infoBoxPadding: 0.5
   screenPadding: 1
@@ -6404,4 +6315,3 @@ SceneRoots:
   - {fileID: 1526754501}
   - {fileID: 1284647723}
   - {fileID: 820955971}
-  - {fileID: 89661475}

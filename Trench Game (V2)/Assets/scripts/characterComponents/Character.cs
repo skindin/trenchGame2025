@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
+using UnityEngine.Events;
 
 public class Character : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class Character : MonoBehaviour
     public float baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1, hp = 10, maxHp = 10;
 
     int killCount;
+
+    public UnityEvent<Vector2> onMove, onLook;
 
     public int KillCount
     {
@@ -189,16 +192,30 @@ public class Character : MonoBehaviour
     //    lastPos = transform.position;
     //}
 
+    public void LookInDirection (Vector2 direction)
+    {
+        onLook.Invoke(direction);
+
+        if (inventory.ActiveWeapon)
+        {
+            inventory.ActiveWeapon.Aim(direction);
+        }
+    }
+
     public void MoveInDirection(Vector2 direction)
     {
         Vector3 dir = Vector2.ClampMagnitude(direction, MoveSpeed * Time.deltaTime);
 
         SetPos(transform.position + dir);
+
+        onMove.Invoke(direction);
     }
 
     public void MoveToPos (Vector2 pos)
     {
-        SetPos(Vector2.MoveTowards(transform.position, pos, MoveSpeed * Time.deltaTime));
+        //SetPos(Vector2.MoveTowards(transform.position, pos, MoveSpeed * Time.deltaTime));
+
+        MoveInDirection(pos - (Vector2)transform.position);
 
         //transform.position += d * Time.deltaTime;
     }

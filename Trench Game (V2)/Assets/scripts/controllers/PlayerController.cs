@@ -112,8 +112,10 @@ public class PlayerController : MonoBehaviour
             character.inventory.CurrentSlot -= (int)(Input.mouseScrollDelta.y * scrollSensitivity);
         }
 
-        if (character.inventory.ActiveWeapon)
-            character.inventory.ActiveWeapon.Aim(mouseDir); //this had been in late update...
+        character.LookInDirection(mouseDir);
+
+        //if (character.inventory.ActiveWeapon)
+        //    character.inventory.ActiveWeapon.Aim(mouseDir); //this had been in late update...
 
         if (Input.GetMouseButton(0))
         {

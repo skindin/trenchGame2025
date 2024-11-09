@@ -16,6 +16,7 @@ public class Inventory : MonoBehaviour
     public Chunk[,] chunks = new Chunk[0,0];
     Item selectedItem;
     public Action<Item> onItemAdded, onItemRemoved;
+    public Transform itemContainer;
 
     public Weapon ActiveWeapon
     {

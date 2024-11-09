@@ -204,6 +204,8 @@ public class BotController : MonoBehaviour
             {
                 Evade();
             }
+
+            TargetPointerPos = TargetPos - (Vector2)transform.position;
         }
 
         if (!closestEnemy)
@@ -309,8 +311,8 @@ public class BotController : MonoBehaviour
             }
         }
 
-        if (gun)
-            gun.Aim(pointerPos);
+        //if (gun)
+            character.LookInDirection(pointerPos);
     }
 
     Vector2[,] wanderPoints = new Vector2[0,0];
