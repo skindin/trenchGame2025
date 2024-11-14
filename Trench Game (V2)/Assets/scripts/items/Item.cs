@@ -13,6 +13,8 @@ public class Item : MonoBehaviour
     public Character wielder;
     //public bool currentlyHeld = false;
     public static List<Item> all = new();
+    public Vector3 groundRot, heldRot, heldPos;
+
     Chunk chunk = null;
     public Chunk Chunk
     {
@@ -109,7 +111,9 @@ public class Item : MonoBehaviour
         if (wielder != character)
         {
             wielder = character;
+            var prevScale = transform.localScale;
             transform.parent = character.inventory.itemContainer;
+            transform.localScale = prevScale;
             transform.localPosition = Vector3.zero;
         }
 
@@ -119,6 +123,9 @@ public class Item : MonoBehaviour
         Chunk = null;
         wasDestroyed = false;
         wasPickedUp = true;
+
+        transform.localRotation = Quaternion.Euler(heldRot);
+        transform.localPosition = heldPos;
     }
 
     public void Pickup (Character character, bool sync) //not overidable, becase it's just a shorthand
@@ -134,11 +141,15 @@ public class Item : MonoBehaviour
     {
         wielder = null;
 
-        transform.SetParent(defaultContainer);
+        transform.parent = defaultContainer;
         transform.position = pos;
-        transform.rotation = Quaternion.identity;
+        //transform.rotation = Quaternion.identity;
         //UpdateChunk();
         destroyedSelf = false;
+
+        transform.localScale = Vector3.one;
+
+        transform.rotation = Quaternion.Euler(groundRot);
 
         //Debug.Log($"Item {this} {this.gameObject.GetInstanceID()} was dropped");
     }

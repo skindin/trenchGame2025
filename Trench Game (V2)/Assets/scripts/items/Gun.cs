@@ -24,7 +24,7 @@ public class Gun : Weapon
     {
         get 
         {
-            return transform.rotation * barrelPos + transform.position; //doesn't account for scale!
+            return transform.TransformPoint(barrelPos); //doesn't account for scale!
         }
     }
 
@@ -247,12 +247,13 @@ public class Gun : Weapon
 
     public override void Aim(Vector2 direction)
     {
+        direction -= (Vector2)(transform.position - wielder.transform.position);
+
         this.direction = direction;
 
         if (reloading) return;
 
-        var angle = Vector2.SignedAngle(Vector2.up, direction);
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        onAim.Invoke(direction);
 
         NetworkManager.Manager.SyncDirection(wielder,direction);
     }
@@ -275,14 +276,18 @@ public class Gun : Weapon
                 NetworkManager.Manager.StartReload(this);
             }
 
+            var initialRotation = transform.localRotation.eulerAngles.z;
+
             while (progress < reloadTime)
             {
                 yield return null;
 
                 progress += Time.deltaTime;
-                var angle = ((reloadTime - progress) / reloadTime) * reloadAnimRots * 360;
-                transform.rotation = Quaternion.FromToRotation(Vector2.up, direction) * Quaternion.AngleAxis(angle, Vector3.forward);
+                var angle = ((reloadTime - Mathf.Min(progress, reloadTime)) / reloadTime) * reloadAnimRots * 360;
+                transform.localRotation = Quaternion.AngleAxis(angle + initialRotation, Vector3.forward);
             }
+
+            //transform.localRotation = Quaternion.Euler(new(0, 0, initialRotation));
 
             reloading = false;
             rounds += reserve.RemoveAmo(amoType, maxRounds - rounds);
@@ -309,7 +314,7 @@ public class Gun : Weapon
 
     public Bullet Fire ()
     {
-        var bullet = ProjectileManager.Manager.NewBullet(transform.position + transform.rotation * barrelPos,
+        var bullet = ProjectileManager.Manager.NewBullet(BarrelPos,
             (direction.normalized * bulletSpeed) + velocity,
             range,
             DamagePerBullet,

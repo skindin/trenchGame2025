@@ -497,6 +497,21 @@ public class Inventory : MonoBehaviour
         return slots;
     }
 
+    public void Aim (Vector2 direction)
+    {
+        if (ActiveWeapon)
+        {
+            ActiveWeapon.Aim(direction);
+
+            var angle = Vector2.SignedAngle(Vector3.up, direction);
+            itemContainer.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+        else
+        {
+            itemContainer.transform.rotation = Quaternion.identity;
+        }
+    }
+
     //private void OnDestroy()
     //{
     //    foreach (var chunk in chunks)

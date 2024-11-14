@@ -196,10 +196,7 @@ public class Character : MonoBehaviour
     {
         onLook.Invoke(direction);
 
-        if (inventory.ActiveWeapon)
-        {
-            inventory.ActiveWeapon.Aim(direction);
-        }
+        inventory.Aim(direction);
     }
 
     public void MoveInDirection(Vector2 direction)

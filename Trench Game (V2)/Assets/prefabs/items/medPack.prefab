@@ -101,6 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundCenterPoint: {x: 0, y: -0.5}
   drawPoint: 0
+  includeSelf: 1
   sprite: {fileID: 8348423297173515079}
   localOrder: 1
   parent: {fileID: 0}
@@ -156,6 +157,9 @@ MonoBehaviour:
   prefabId: 0
   defaultContainer: {fileID: 0}
   wielder: {fileID: 0}
+  groundRot: {x: 0, y: 0, z: 0}
+  heldRot: {x: 0, y: 0, z: 0}
+  heldPos: {x: -0.13, y: -0.13, z: 0}
   passivePickup: 0
   animRots: 2
   healing: 0
@@ -260,6 +264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundCenterPoint: {x: 0, y: 0}
   drawPoint: 0
+  includeSelf: 1
   sprite: {fileID: 5011956228783135991}
   localOrder: 1
   parent: {fileID: 1989906505745174026}
@@ -364,6 +369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundCenterPoint: {x: 0, y: 0}
   drawPoint: 0
+  includeSelf: 1
   sprite: {fileID: 3332444744484434129}
   localOrder: 1
   parent: {fileID: 1989906505745174026}
