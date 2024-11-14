@@ -114,7 +114,7 @@ public class Item : MonoBehaviour
             var prevScale = transform.localScale;
             transform.parent = character.inventory.itemContainer;
             transform.localScale = prevScale;
-            transform.localPosition = Vector3.zero;
+            //transform.localPosition = Vector3.zero;
         }
 
         if (sync) 
