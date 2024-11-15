@@ -159,7 +159,7 @@ MonoBehaviour:
   wielder: {fileID: 0}
   groundRot: {x: 0, y: 0, z: 0}
   heldRot: {x: 0, y: 0, z: 0}
-  heldPos: {x: -0.13, y: -0.13, z: 0}
+  heldPos: {x: -0.13, y: 0, z: 0}
   passivePickup: 0
   animRots: 2
   healing: 0

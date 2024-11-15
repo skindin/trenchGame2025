@@ -124,6 +124,11 @@ public class Item : MonoBehaviour
         wasDestroyed = false;
         wasPickedUp = true;
 
+        HeldOrientation();
+    }
+
+    void HeldOrientation ()
+    {
         transform.localRotation = Quaternion.Euler(heldRot);
         transform.localPosition = heldPos;
     }
@@ -189,6 +194,8 @@ public class Item : MonoBehaviour
     public virtual void ToggleActive (bool active)
     {
         gameObject.SetActive(active);
+
+        HeldOrientation();
     }
 
     public void DeParent()

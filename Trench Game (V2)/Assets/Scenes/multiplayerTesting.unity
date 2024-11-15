@@ -1464,10 +1464,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 1029702624}
     m_Modifications:
     - target: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
-      propertyPath: safetyOff
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
       propertyPath: drawBerrelPos
       value: 1
       objectReference: {fileID: 0}
@@ -1510,14 +1506,6 @@ PrefabInstance:
     - target: {fileID: 4293550383946639234, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4690659167313568682, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.152
-      objectReference: {fileID: 0}
-    - target: {fileID: 4690659167313568682, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.036
       objectReference: {fileID: 0}
     - target: {fileID: 9145254085115544554, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
       propertyPath: m_Name
@@ -2179,7 +2167,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     currentAmount: 0
     spawnCap: 3
-  spawnBots: 1
+  spawnBots: 0
 --- !u!1 &575497487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3823,7 +3811,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.25
       objectReference: {fileID: 0}
     - target: {fileID: 5747975507980502927, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       propertyPath: m_LocalPosition.y

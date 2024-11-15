@@ -87,7 +87,7 @@ public class CustomBuildWindow : EditorWindow
         CustomBuildWindow window = GetWindow<CustomBuildWindow>("Custom Build Window");
         window.LoadPrefs();
         window.Show();
-        window.DeletePrefs();
+        //window.DeletePrefs();
     }
 
     private void OnEnable()
