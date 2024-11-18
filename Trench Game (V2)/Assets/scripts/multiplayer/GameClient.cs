@@ -79,7 +79,7 @@ public class GameClient : MonoBehaviour
         {
             var pos = DataManager.DataToVector(newPlayer.Pos);
 
-            var id = SpawnManager.Manager.SpawnLocalPlayer(pos, newPlayer.CharacterID).id;
+            var id = CharacterManager.Manager.NewLocalPlayer(pos, newPlayer.CharacterID).id;
 
             Debug.Log($"spawned local player, character {id}");
         }
@@ -122,7 +122,7 @@ public class GameClient : MonoBehaviour
             var pos = DataManager.DataToVector(newRemoteChar.Pos);
             var name = newRemoteChar.Name;
 
-            var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
+            var newCharacter = CharacterManager.Manager.NewRemoteCharacter(pos, id);
 
             newCharacter.characterName = name;
 

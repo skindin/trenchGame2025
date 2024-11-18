@@ -142,9 +142,11 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
                 newPlayerData.List.Add(client.newPlayer);
 
                 var pos = ChunkManager.Manager.GetRandomPos();
-                var id = SpawnManager.Manager.NewCharId;
+                //var id = SpawnManager.Manager.NewCharId;
 
-                var newCharacter = SpawnManager.Manager.SpawnRemoteCharacter(pos, id);
+                var newCharacter = CharacterManager.Manager.NewRemoteCharacterNewId(pos);
+
+                var id = newCharacter.id;
 
                 newCharacter.characterName = client.newPlayer.Name;
 
@@ -714,9 +716,9 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
         if (NetworkManager.IsServer && !CharacterManager.Manager.localPlayerCharacter)
         {
             var pos = ChunkManager.Manager.GetRandomPos();
-            var id = SpawnManager.Manager.NewCharId;
+            //var id = SpawnManager.Manager.NewCharId;
 
-            SpawnManager.Manager.SpawnLocalPlayer(pos,id);
+            CharacterManager.Manager.NewLocalPlayerNewId(pos);
         }
     }
 

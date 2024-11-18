@@ -44,17 +44,6 @@ public class SpawnManager : MonoBehaviour
     //    }
     //}
 
-    int nextCharId = 0;
-    public int NewCharId
-    {
-        get
-        {
-            nextCharId++;
-            //Debug.Log($"requested id {nextId}");
-            return nextCharId;
-        }
-    }
-
     public float TimeToNextDrop
     {
         get
@@ -67,7 +56,7 @@ public class SpawnManager : MonoBehaviour
     {
         get
         {
-            return spawnCharacter.currentAmount;
+            return spawnCharacter.active.Count;
         }
     }
 
@@ -75,7 +64,7 @@ public class SpawnManager : MonoBehaviour
     {
         get
         {
-            return (int)LogicAndMath.GetListValueTotal(itemGroups.ToArray(), group => LogicAndMath.GetListValueTotal(group.spawnItems.ToArray(), spawnItem => spawnItem.currentAmount));
+            return (int)LogicAndMath.GetListValueTotal(itemGroups.ToArray(), group => LogicAndMath.GetListValueTotal(group.spawnItems.ToArray(), spawnItem => spawnItem.active.Count));
         }
     }
 
@@ -100,7 +89,9 @@ public class SpawnManager : MonoBehaviour
         public List<T> active = new();
 
         //public bool capSpawning = true;
-        public int currentAmount, spawnCap = 10;
+        public int 
+            //currentAmount, 
+            spawnCap = 10;
 
         public virtual int CapDiff
         {
@@ -115,8 +106,8 @@ public class SpawnManager : MonoBehaviour
         public T Get(Vector2 pos)
         {
             var newObj = SpawnLogic(pos);
-            active.Add(newObj);
-            currentAmount = active.Count;
+            //active.Add(newObj);
+            //currentAmount = active.Count;
             return newObj;
         }
 
@@ -130,8 +121,8 @@ public class SpawnManager : MonoBehaviour
         public void Remove(T obj)
         {
             RemoveLogic(obj);
-            active.Remove(obj);
-            currentAmount = active.Count;
+            //active.Remove(obj);
+            //currentAmount = active.Count;
         }
 
         public abstract void RemoveLogic(T obj);
@@ -248,7 +239,7 @@ public class SpawnManager : MonoBehaviour
             {
                 var itemPos = UnityEngine.Random.insideUnitCircle * itemDropRadius + dropPos;
                 //itemPos = Vector2.zero;
-                var newItem = pair.Item1.SpawnNewItem(itemPos);
+                var newItem = pair.Item1.Get(itemPos);
                 //var spawnDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
                 newItem.Drop(itemPos);
                 //newItem.Spawn(Vector2.zero, spawnDelay, spawnScaleDuration);
@@ -271,7 +262,8 @@ public class SpawnManager : MonoBehaviour
                 if (prefabs.prefab.prefabId == newItem.prefabId)
                 {
                     prefabs.active.Add(newItem);
-                    prefabs.currentAmount++;
+                    //prefabs.currentAmount++;
+                    return;
                 }
             }
         }
@@ -286,7 +278,8 @@ public class SpawnManager : MonoBehaviour
                 if (prefabs.prefab.prefabId == item.prefabId)
                 {
                     prefabs.active.Remove(item);
-                    prefabs.currentAmount--;
+                    //prefabs.currentAmount--;
+                    return;
                 }
             }
         }
@@ -383,14 +376,14 @@ public class SpawnManager : MonoBehaviour
             return item;
         }
 
-        public Item SpawnNewItem (Vector2 pos)
-        {
-            return ItemManager.Manager.NewItemNewId(prefab);
-        }
+        //public Item SpawnNewItem (Vector2 pos)
+        //{
+        //    return ItemManager.Manager.NewItemNewId(prefab);
+        //}
 
         public override void RemoveLogic(Item item)
         {
-            ItemManager.Manager.RemoveItem(item, prefab);
+            //ItemManager.Manager.RemoveItem(item, prefab);
         }
     }
 
@@ -422,32 +415,38 @@ public class SpawnManager : MonoBehaviour
 
         public override void RemoveLogic(Character character)
         {
-            CharacterManager.Manager.RemoveCharacter(character);
+            //CharacterManager.Manager.RemoveCharacter(character);
         }
     }
 
     public SpawnCharacter spawnCharacter;
     public bool spawnBots = true;
 
-    public Character SpawnBot(Vector2 pos, int id)
-    {
-        return spawnCharacter.SpawnWithType(pos, Character.CharacterType.localBot, id);
-    }
+    //public Character SpawnBot(Vector2 pos, int id)
+    //{
+    //    return spawnCharacter.SpawnWithType(pos, Character.CharacterType.localBot, id);
+    //}
 
-    public Character SpawnLocalPlayer(Vector2 pos, int id)
-    {
-        var pc = spawnCharacter.SpawnWithType(pos, Character.CharacterType.localPlayer, id);
-        return pc;
-    }
+    //public Character SpawnLocalPlayer(Vector2 pos, int id)
+    //{
+    //    var pc = spawnCharacter.SpawnWithType(pos, Character.CharacterType.localPlayer, id);
+    //    return pc;
+    //}
 
-    public Character SpawnRemoteCharacter(Vector2 pos, int id)
+    //public Character SpawnRemoteCharacter(Vector2 pos, int id)
+    //{
+    //    return spawnCharacter.SpawnWithType(pos, Character.CharacterType.remote, id);
+    //}
+
+    public void AddCharacter (Character character)
     {
-        return spawnCharacter.SpawnWithType(pos, Character.CharacterType.remote, id);
+        spawnCharacter.active.Add(character);
+        //spawnCharacter.currentAmount
     }
 
     public void RemoveCharacter (Character character)
     {
-        spawnCharacter.Remove(character);
+        spawnCharacter.active.Remove(character);
     }
 
     public void FillCharacterCapWithBots()
@@ -458,7 +457,7 @@ public class SpawnManager : MonoBehaviour
         {
             var botPos = ChunkManager.Manager.GetRandomPos();
 
-            var newBot = SpawnBot(botPos, NewCharId);
+            var newBot = CharacterManager.Manager.NewLocalBotNewId(botPos);
 
             //newBot.characterName += i;
             newBot.characterName = $"bot{i}";

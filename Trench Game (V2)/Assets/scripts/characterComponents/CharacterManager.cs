@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+//using Unity.VisualScripting;
 using UnityEngine;
-using System;
+using UnityEngine.Events;
+//using System;
 
 public class CharacterManager : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class CharacterManager : MonoBehaviour
     //bool sortCharactersThisFrame = false;
 
     public string playerName = "";
+
+    public UnityEvent<Character> onNewCharacter, onRemoveCharacter;
 
     //public float TimeToSquadSpawn
     //{
@@ -48,6 +51,17 @@ public class CharacterManager : MonoBehaviour
                 //}
             }
             return manager;
+        }
+    }
+
+    int nextCharId = 0;
+    public int NewCharId
+    {
+        get
+        {
+            nextCharId++;
+            //Debug.Log($"requested id {nextId}");
+            return nextCharId;
         }
     }
 
@@ -258,6 +272,8 @@ public class CharacterManager : MonoBehaviour
 
         UpdateScoreBoard();
 
+        onNewCharacter.Invoke(newCharacter);
+
         return newCharacter;
     }
 
@@ -274,6 +290,21 @@ public class CharacterManager : MonoBehaviour
     public Character NewRemoteCharacter(Vector2 pos, int id)
     {
         return NewCharacter(pos, Character.CharacterType.remote, id);
+    }
+
+    public Character NewLocalPlayerNewId (Vector2 pos)
+    {
+        return NewLocalPlayer(pos, NewCharId);
+    }
+
+    public Character NewLocalBotNewId(Vector2 pos)
+    {
+        return NewLocalBot(pos, NewCharId);
+    }
+
+    public Character NewRemoteCharacterNewId(Vector2 pos)
+    {
+        return NewRemoteCharacter(pos, NewCharId);
     }
 
     public void RemoveCharacter(Character character)
@@ -294,6 +325,8 @@ public class CharacterManager : MonoBehaviour
         }
 
         character.inventory.DropAllItems(character.deathDropRadius); //meh
+
+        onRemoveCharacter.Invoke(character);
     }
 
     public void KillCharacter(Character character)

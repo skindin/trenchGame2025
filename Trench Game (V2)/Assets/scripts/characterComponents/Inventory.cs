@@ -505,6 +505,8 @@ public class Inventory : MonoBehaviour
 
             var angle = Vector2.SignedAngle(Vector3.up, direction);
             itemContainer.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+            //Debug.DrawRay(itemContainer.position, direction.normalized, Color.red);
         }
         else
         {

@@ -247,7 +247,9 @@ public class Gun : Weapon
 
     public override void Aim(Vector2 direction)
     {
-        direction -= (Vector2)(transform.position - wielder.transform.position);
+        //direction = (Vector2)(transform.position - wielder.transform.position);
+
+        //Debug.DrawRay(transform.position, direction.normalized * 1.5f, Color.blue);
 
         this.direction = direction;
 
