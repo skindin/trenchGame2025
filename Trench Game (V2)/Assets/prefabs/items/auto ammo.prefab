@@ -80,6 +80,10 @@ PrefabInstance:
       propertyPath: maxAmount
       value: 200
       objectReference: {fileID: 0}
+    - target: {fileID: 8959939770543743887, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      propertyPath: combineRadius
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

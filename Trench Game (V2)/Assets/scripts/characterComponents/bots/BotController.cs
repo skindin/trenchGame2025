@@ -51,7 +51,7 @@ public class BotController : MonoBehaviour
             value = ChunkManager.Manager.ClampToWorld(value);
             targetPosOffset = (Vector2)UnityEngine.Random.insideUnitSphere * maxTargetOffset;
             targetPos = value;
-            path.Add(transform.position);
+            //path.Add(transform.position);
         }
     }
 
@@ -66,7 +66,7 @@ public class BotController : MonoBehaviour
     public Item targetItem;
     public Collider targetCollider;
     public Character closestEnemy;
-    List<Vector2> path = new();
+    //List<Vector2> path = new();
 
     private void Update()
     {
@@ -281,7 +281,7 @@ public class BotController : MonoBehaviour
         //var moveDirection = Vector2.MoveTowards(transform.position, TargetPos, 10) - (Vector2)transform.position;
 
         character.MoveToPos(TargetPos);
-        path[^1] = transform.position;
+        //path[^1] = transform.position;
 
         pointerPos = Vector2.MoveTowards(pointerPos,TargetPointerPos,Time.deltaTime * pointerSpeed);
 
@@ -290,7 +290,7 @@ public class BotController : MonoBehaviour
             GeoUtils.MarkPoint(targetPointerPos + (Vector2)transform.position, 1, UnityEngine.Color.red);
             GeoUtils.MarkPoint(pointerPos + (Vector2)transform.position, 1, UnityEngine.Color.blue);
 
-            GeoUtils.DrawLine(path, UnityEngine.Color.black);
+            //GeoUtils.DrawLine(path, UnityEngine.Color.black);
         }
 
         for (int i = 0; i < unexploredPoints.Count; i++)

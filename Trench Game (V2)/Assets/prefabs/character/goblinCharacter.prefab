@@ -194,7 +194,7 @@ MonoBehaviour:
   aiController: {fileID: 9178249837958229984}
   sprite: {fileID: 4108761352474424341}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
-  baseMoveSpeed: 5
+  baseMoveSpeed: 8
   digMoveSpeed: 1
   initialDigSpeed: 5
   deathDropRadius: 1
@@ -271,7 +271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 7115039898630128601}
-  visionBox: {x: 10, y: 10}
+  visionBox: {x: 16, y: 16}
   wandering: 0
   dodging: 0
   debugLines: 0

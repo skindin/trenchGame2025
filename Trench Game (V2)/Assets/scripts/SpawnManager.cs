@@ -93,7 +93,7 @@ public class SpawnManager : MonoBehaviour
 
     public abstract class SpawnObject<T>
     {
-        public string name;
+        //public string name;
         public T prefab;
 
         readonly List<T> active = new();

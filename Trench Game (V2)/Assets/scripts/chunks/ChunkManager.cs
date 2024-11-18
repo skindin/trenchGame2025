@@ -31,8 +31,7 @@ public class ChunkManager : MonoBehaviour
 
     //public float worldSize = 100;
     //public int chunkArraySize = 5, mapSize = 10;
-    public float chunkSize = 10, maxWorldSize = 100;
-    public float worldSize;
+    public float worldSize = 100, minChunkSize = 10, chunkSize = 10;
     public int chunkArraySize;
 
     public Chunk[,] chunks;
@@ -85,8 +84,9 @@ public class ChunkManager : MonoBehaviour
 
     public void InstantiateChunks ()
     {
-        chunkArraySize = Mathf.FloorToInt(maxWorldSize / chunkSize);
-        worldSize = chunkArraySize * chunkSize;
+        chunkArraySize = Mathf.CeilToInt(worldSize / minChunkSize);
+        chunkSize = worldSize / chunkArraySize;
+        //worldSize = chunkArraySize * chunkSize;
         chunks = new Chunk[chunkArraySize, chunkArraySize];
     }
 

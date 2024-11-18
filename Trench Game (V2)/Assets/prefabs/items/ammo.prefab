@@ -97,8 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundCenterPoint: {x: 0, y: 0}
+  groundCenterPoint: {x: 0, y: -0.92}
   drawPoint: 0
+  includeSelf: 1
   sprite: {fileID: 2661514139613991663}
   localOrder: 1
   parent: {fileID: 0}
@@ -154,10 +155,13 @@ MonoBehaviour:
   prefabId: 0
   defaultContainer: {fileID: 0}
   wielder: {fileID: 0}
+  groundRot: {x: 0, y: 0, z: 0}
+  heldRot: {x: 0, y: 0, z: 0}
+  heldPos: {x: 0, y: 0, z: 0}
   passivePickup: 1
   limitAmount: 0
   maxAmount: 50
-  combineRadius: 0.5
+  combineRadius: 0
   amount: 1
   startFull: 1
   type: {fileID: 11400000, guid: a80c3bee02c1c9846a14c0e505bdb40a, type: 2}
