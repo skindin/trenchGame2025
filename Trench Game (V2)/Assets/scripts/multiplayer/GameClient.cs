@@ -265,7 +265,7 @@ public class GameClient : MonoBehaviour
                 CharacterManager.Manager.StartStopWatch(NetworkManager.NetTime - scoreboardUpdate.StopWatchStart);
 
             LogicAndMath.AssignIndexesByIntCollection(CharacterManager.Manager.active, scoreboardUpdate.Order, character => character.id);
-            LogicAndMath.AssignIndexes(CharacterManager.Manager.active, (character, index) => character.rank = index + 1);
+            LogicAndMath.AssignIntPropToIndex(CharacterManager.Manager.active, (character, index) => character.rank = index + 1);
 
             scoreboardUpdate = null;
         }

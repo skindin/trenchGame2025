@@ -655,13 +655,15 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
         DataManager.CombineItemDataList(data,updateItems);
     }
 
-    public void AddItem(Item item)
+    public ItemData AddItem(Item item)
     {
         var pos = DataManager.VectorToData(item.transform.position);
         var data = new ItemData { ItemId = item.id, PrefabId = item.prefabId, Pos = pos };
 
         newItems.Add(data);
         currentItems.Add(data);
+
+        return data;
     }
 
     public void Broadcast(byte[] message)

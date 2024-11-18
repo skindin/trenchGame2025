@@ -174,10 +174,7 @@ public class Item : MonoBehaviour
     public void DestroyItem ()
     {
         //destroy logic here shruggin emoji
-        if (NetworkManager.IsServer)
-            SpawnManager.Manager.RemoveItem(this);
-        else
-            ItemManager.Manager.RemoveItem(this);
+        ItemManager.Manager.RemoveItem(this);
 
         if (wielder)
         {

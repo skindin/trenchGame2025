@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 //using static UnityEditor.PlayerSettings;
 
@@ -67,9 +63,10 @@ public class ChunkManager : MonoBehaviour
             DrawChunk(chunk, UnityEngine.Color.black);
         }
 
-        foreach (var chunk in this.chunks)
+        foreach (var chunk in chunks)
         {
-            if (chunk != null) DrawChunk(chunk, UnityEngine.Color.green);
+            if (chunk != null) 
+                DrawChunk(chunk, UnityEngine.Color.green);
         }
 
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -336,7 +333,7 @@ public class ChunkManager : MonoBehaviour
         if (chunks == default)
             chunks = ChunksFromBoxPosSize(pos, size);
 
-        var flattenedChunks = LogicAndMath.FlattenArray<Chunk>(chunks);
+        var flattenedChunks = LogicAndMath.FlattenArray(chunks);
 
         T[][] jaggedArray = new T[flattenedChunks.Length][];
 

@@ -25,14 +25,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 773299950840964071}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.5, w: 0.8660254}
+  m_LocalRotation: {x: 0, y: 0, z: -0.86602545, w: 0.49999994}
   m_LocalPosition: {x: 0, y: 0, z: -0.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3839804388786095015}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 60}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -120}
 --- !u!114 &7689898669054720115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47,12 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: basic gun
   id: 0
-  prefabId: 0
+  prefabId: 3
   defaultContainer: {fileID: 0}
   wielder: {fileID: 0}
-  groundRot: {x: 0, y: 0, z: 60}
+  groundRot: {x: 0, y: 0, z: -120}
   heldRot: {x: 0, y: 0, z: 0}
-  heldPos: {x: 0, y: 0.36, z: 0}
+  heldPos: {x: 0, y: 0.56, z: 0}
   passivePickup: 0
   onAim:
     m_PersistentCalls:
@@ -336,8 +336,8 @@ Transform:
   m_GameObject: {fileID: 8201470388454812636}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.12, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.15, y: 0, z: 0}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5901701701853898434}
@@ -356,7 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundCenterPoint: {x: -0.43, y: 0}
+  groundCenterPoint: {x: 0.45, y: 0}
   drawPoint: 0
   includeSelf: 0
   sprite: {fileID: 0}

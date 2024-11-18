@@ -314,7 +314,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8817981326351878258}
   - {fileID: 3601179740865583544}
@@ -374,6 +374,7 @@ Transform:
   m_Children:
   - {fileID: 1071860159927485119}
   - {fileID: 5574566355974835070}
+  - {fileID: 4807126925712258797}
   m_Father: {fileID: 1029159826405028024}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7535461020808578193
@@ -476,7 +477,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 0
   onMoveRight:
     m_PersistentCalls:
@@ -491,7 +492,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 0
   onMoveDown:
     m_PersistentCalls:
@@ -617,7 +618,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1029159826405028024}
+  m_Father: {fileID: 199965962901162664}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3003283932457251019
 MonoBehaviour:
@@ -758,7 +759,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 199965962901162664}
-  - {fileID: 4807126925712258797}
   - {fileID: 3129428109218732079}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -782,7 +782,7 @@ MonoBehaviour:
   aiController: {fileID: 9129561575884848698}
   sprite: {fileID: 7535461020808578193}
   dangerColor: {r: 1, g: 1, b: 1, a: 1}
-  baseMoveSpeed: 5
+  baseMoveSpeed: 8
   digMoveSpeed: 1
   initialDigSpeed: 5
   deathDropRadius: 1

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
@@ -32,16 +33,16 @@ public class SpawnManager : MonoBehaviour
     public bool spawnItemDrops = true, debugLines = false;
     Coroutine itemDropRoutine;
 
-    int nextItemId = 0;
-    public int NewItemId
-    {
-        get
-        {
-            nextItemId++;
-            //Debug.Log($"requested id {nextId}");
-            return nextItemId;
-        }
-    }
+    //int nextItemId = 0;
+    //public int NewItemId
+    //{
+    //    get
+    //    {
+    //        nextItemId++;
+    //        //Debug.Log($"requested id {nextId}");
+    //        return nextItemId;
+    //    }
+    //}
 
     int nextCharId = 0;
     public int NewCharId
@@ -96,7 +97,7 @@ public class SpawnManager : MonoBehaviour
         //public string name;
         public T prefab;
 
-        readonly List<T> active = new();
+        public List<T> active = new();
 
         //public bool capSpawning = true;
         public int currentAmount, spawnCap = 10;
@@ -247,7 +248,7 @@ public class SpawnManager : MonoBehaviour
             {
                 var itemPos = UnityEngine.Random.insideUnitCircle * itemDropRadius + dropPos;
                 //itemPos = Vector2.zero;
-                var newItem = pair.Item1.Get(itemPos);
+                var newItem = pair.Item1.SpawnNewItem(itemPos);
                 //var spawnDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
                 newItem.Drop(itemPos);
                 //newItem.Spawn(Vector2.zero, spawnDelay, spawnScaleDuration);
@@ -261,81 +262,112 @@ public class SpawnManager : MonoBehaviour
             Debug.Log($"Spawned {log}");
     }
 
-    public Item SpawnNewItem (Item prefab, Vector2 pos)
+    public void AddItem(Item newItem)
     {
         foreach (var spawnGroup in itemGroups)
         {
-            foreach (var item in spawnGroup.spawnItems)
+            foreach (var prefabs in spawnGroup.spawnItems)
             {
-                if (item.prefab == prefab)
+                if (prefabs.prefab.prefabId == newItem.prefabId)
                 {
-                    return item.Get(pos);
+                    prefabs.active.Add(newItem);
+                    prefabs.currentAmount++;
                 }
             }
         }
-
-        throw new Exception($"spawn manager didn't have spawn object for prefab {prefab}");
     }
 
-    public Ammo GetAmo(AmmoType type, int amount, Vector2 pos = default)
+    public void RemoveItem (Item item)
     {
-        foreach (var group in itemGroups)
+        foreach (var spawnGroup in itemGroups)
         {
-            foreach (var spawnItem in group.spawnItems)
+            foreach (var prefabs in spawnGroup.spawnItems)
             {
-                if (spawnItem.prefab is Ammo amoPrefab)
+                if (prefabs.prefab.prefabId == item.prefabId)
                 {
-                    if (amoPrefab.type == type)
-                    {
-                        var newAmo = spawnItem.Get(pos) as Ammo;
-                        newAmo.amount = amount;
-
-                        var stackData = new StackData { Amount = amount};
-                        var itemData = new ItemData { ItemId = newAmo.id, Stack = stackData};
-
-                        NetworkManager.Manager.server.UpdateItemData(itemData); //literally the sloppiest code you've ever seen
-
-                        return newAmo;
-                    }
+                    prefabs.active.Remove(item);
+                    prefabs.currentAmount--;
                 }
             }
         }
-
-        return null;
     }
 
-    public Ammo DropAmo(AmmoType type, int amount, Vector2 pos)
-    {
-        //startPos = endPos = Vector2.zero;
 
-        var newAmo = GetAmo(type, amount, pos);
+    //public Item SpawnNewItem (Item prefab, Vector2 pos)
+    //{
+    //    foreach (var spawnGroup in itemGroups)
+    //    {
+    //        foreach (var item in spawnGroup.spawnItems)
+    //        {
+    //            if (item.prefab == prefab)
+    //            {
+    //                return item.Get(pos);
+    //            }
+    //        }
+    //    }
 
-        if (newAmo != null)
-        {
-            newAmo.Drop(pos);
-            return newAmo;
-        }
+    //    throw new Exception($"spawn manager didn't have spawn object for prefab {prefab}");
+    //}
 
-        return null;
-    }
+    //public Ammo GetAmo(AmmoType type, int amount, Vector2 pos = default)
+    //{
+    //    foreach (var group in itemGroups)
+    //    {
+    //        foreach (var spawnItem in group.spawnItems)
+    //        {
+    //            if (spawnItem.prefab is Ammo amoPrefab)
+    //            {
+    //                if (amoPrefab.type == type)
+    //                {
+    //                    var newAmo = spawnItem.Get(pos) as Ammo;
+    //                    newAmo.amount = amount;
 
-    public void RemoveItem(Item item)
-    {
-        foreach (var group in itemGroups)
-        {
-            foreach (var spawnItem in group.spawnItems)
-            {
-                if (spawnItem.Contains(item))
-                {
-                    spawnItem.Remove(item);
-                    NetworkManager.Manager.ServerRemoveItem(item);
-                    return;
-                }
-            }
-        }
+    //                    var stackData = new StackData { Amount = amount};
+    //                    var itemData = new ItemData { ItemId = newAmo.id, Stack = stackData};
 
-        throw new System.Exception($"No spawn groups contained {item}");
-    }
+    //                    NetworkManager.Manager.server.UpdateItemData(itemData); //literally the sloppiest code you've ever seen
+
+    //                    return newAmo;
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //    return null;
+    //}
+
+    //public Ammo DropAmo(AmmoType type, int amount, Vector2 pos)
+    //{
+    //    //startPos = endPos = Vector2.zero;
+
+    //    var newAmo = GetAmo(type, amount, pos);
+
+    //    if (newAmo != null)
+    //    {
+    //        newAmo.Drop(pos);
+    //        return newAmo;
+    //    }
+
+    //    return null;
+    //}
+
+    //public void RemoveItem(Item item)
+    //{
+    //    foreach (var group in itemGroups)
+    //    {
+    //        foreach (var spawnItem in group.spawnItems)
+    //        {
+    //            if (spawnItem.Contains(item))
+    //            {
+    //                spawnItem.Remove(item);
+    //                NetworkManager.Manager.ServerRemoveItem(item);
+    //                return;
+    //            }
+    //        }
+    //    }
+
+    //    throw new System.Exception($"No spawn groups contained {item}");
+    //}
 
     [System.Serializable]
     public class SpawnItem : SpawnObject<Item>
@@ -344,11 +376,16 @@ public class SpawnManager : MonoBehaviour
 
         public override Item SpawnLogic(Vector2 pos)
         {
-            var item = ItemManager.Manager.NewItem(prefab, Manager.NewItemId);
-            item.transform.position = pos;
-            //item.id = Manager.NewItemId;
-            NetworkManager.Manager.server.AddItem(item);
+            var item = ItemManager.Manager.NewItemNewId(prefab);
+            //item.transform.position = pos;
+            ////item.id = Manager.NewItemId;
+            //NetworkManager.Manager.server.AddItem(item);
             return item;
+        }
+
+        public Item SpawnNewItem (Vector2 pos)
+        {
+            return ItemManager.Manager.NewItemNewId(prefab);
         }
 
         public override void RemoveLogic(Item item)

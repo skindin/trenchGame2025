@@ -477,7 +477,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 66e4a217034b94d4380965fc75550b49, type: 3}
   m_Color: {r: 0.49076894, g: 0.709, b: 0.43249, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 2}
@@ -681,7 +681,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1393441897014514951}
         m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
@@ -720,7 +720,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 1393441897014514951}
         m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine

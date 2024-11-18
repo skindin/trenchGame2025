@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 384923391019267938, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      propertyPath: groundCenterPoint.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 384923391019267938, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
+      propertyPath: groundCenterPoint.y
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1576218239673379020, guid: f2a051dc87824d54cb3dc11af1e8fe17, type: 3}
       propertyPath: m_LocalScale.x
       value: 2.08

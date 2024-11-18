@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundCenterPoint: {x: 0, y: -0.5}
+  groundCenterPoint: {x: 0, y: 0.5}
   drawPoint: 0
   includeSelf: 1
   sprite: {fileID: 8348423297173515079}
@@ -154,12 +154,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: med pack
   id: 0
-  prefabId: 0
+  prefabId: 4
   defaultContainer: {fileID: 0}
   wielder: {fileID: 0}
   groundRot: {x: 0, y: 0, z: 0}
   heldRot: {x: 0, y: 0, z: 0}
-  heldPos: {x: -0.13, y: 0, z: 0}
+  heldPos: {x: 0.13, y: 0, z: 0}
   passivePickup: 0
   animRots: 2
   healing: 0

@@ -74,7 +74,8 @@ public static class LogicAndMath
             allPairs[i].Item2 = occurances;
         }
 
-        if (!onlyReturnApplicable) return allPairs;
+        if (!onlyReturnApplicable) 
+            return allPairs;
 
         return GetItems(allPairs, x => x.Item2 > 0);
     }
@@ -215,7 +216,9 @@ public static class LogicAndMath
     public static T GetRandomItemFromListValues<T> (float ratio, List<T> list, Func<T, float> predicate)
     {
         var index = GetRandomIndexFromListValues(ratio, list, predicate);
-        if (index < list.Count) return list[index];
+        if (index < list.Count) 
+            return list[index];
+
         return default;
     }
 
@@ -224,7 +227,7 @@ public static class LogicAndMath
         return Vector2.Distance(pos, getPos(item));
     }
 
-    static void OnPosSelected<T> (T item, Func<T, Vector2> getPos)
+    static void OnPosSelected<T> (T item, Func<T, Vector2> getPos) //no idea what I was gonna use this for
     {
         GeoUtils.MarkPoint(getPos(item), .5f, Color.green);
     }
@@ -395,7 +398,7 @@ public static class LogicAndMath
         return list;
     }
 
-    public static List<T> AssignIndexes<T> (List<T> list, Action<T, int> setIndex) where T : class
+    public static List<T> AssignIntPropToIndex<T> (List<T> list, Action<T, int> setIndex) where T : class
     {
         for (int i = 0; i < list.Count; i++)
         {

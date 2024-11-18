@@ -3,6 +3,8 @@ using UnityEngine;
 //using System.Linq;
 //using JetBrains.Annotations;
 using System;
+using UnityEngine.Events;
+using System.Runtime.InteropServices.WindowsRuntime;
 //using static UnityEditor.Progress;
 
 public class ItemManager : MonoBehaviour
@@ -21,13 +23,31 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    public bool spawnDrops = true;
+    //public bool spawnDrops = true;
     public List<ItemPool> itemPools = new();
     public Transform container;
-    public float grabDur = .1f;
-    public float deleteDur = .1f;
+
+    public UnityEvent<Item> onNewItem, onRemoveItem;
+    //public float grabDur = .1f;
+    //public float deleteDur = .1f;
 
     public Dictionary<int, Item> active = new();
+
+    int nextItemId = 0;
+    int NewItemId
+    {
+        get
+        {
+            if (NetworkManager.IsServer)
+            {
+                nextItemId++;
+                //Debug.Log($"requested id {nextId}");
+                return nextItemId;
+            }
+
+            throw new Exception("client attempted to get new item id");
+        }
+    }
 
     private void Awake()
     {
@@ -36,7 +56,7 @@ public class ItemManager : MonoBehaviour
         foreach (var pool in itemPools)
         {
             pool.Setup(pool.prefab);
-            pool.index = index;
+            pool.prefab.prefabId = index;
             index++;
         }
 
@@ -107,10 +127,7 @@ public class ItemManager : MonoBehaviour
 
         if (itemPool != null)
         {
-            var item = itemPool.NewItem();
-            item.id = id;
-            active[id]  = item;
-            return item;
+            return NewItem(itemPool, id);
         }
 
         throw new Exception($"item cachedManager does not have pool setup for {prefab}");
@@ -120,14 +137,69 @@ public class ItemManager : MonoBehaviour
     {
         if (itemPools.Count > prefabId)
         {
-            var newItem = itemPools[prefabId].NewItem();
-            newItem.id = itemId;
-            active[itemId] = newItem;
-            //newItem.id = itemId;
-            return newItem;
+            return NewItem(itemPools[prefabId], itemId);
         }
 
-        throw new Exception($"item manager does not have pool at index {prefabId}");
+        throw new Exception($"item manager does not have an item pool at index {prefabId}");
+    }
+
+    Item NewItem (ItemPool pool, int itemId)
+    {
+        var newItem = pool.NewItem();
+        newItem.id = itemId;
+        active.Add(itemId, newItem);
+        //newItem.id = itemId;
+        onNewItem.Invoke(newItem);
+
+        //idk where network logic should go, because this doesn't position the item, and that should always be included in the data
+
+        return newItem;
+    }
+
+    public Item NewItemNewId(Item prefab)
+    {
+        return NewItem(prefab, NewItemId);
+    }
+
+    public Item newItemNewId (int prefabId)
+    {
+        return NewItem(prefabId, NewItemId);
+    }
+
+    Item DropNewItem (Item prefab, Vector2 pos, int id, bool sync)
+    {
+        var newItem = NewItem(prefab, id);
+        newItem.Drop(pos);
+
+        if (sync && NetworkManager.IsServer)
+        {
+            NetworkManager.Manager.server.AddItem(newItem);
+        }
+
+        return newItem;
+    }
+
+    public Ammo DropAmmo (AmmoType type, Vector2 pos, int amount) //thinking the dropped ammo won't spawn on client until the server says to
+    {
+        if (!NetworkManager.IsServer)
+            throw new Exception("client attempted to call drop ammo");
+
+        foreach (var pool in itemPools)
+        {
+            if (pool.prefab is Ammo ammo && ammo.type == type)
+            {
+                var newAmmo = NewItem(pool, NewItemId) as Ammo;
+                newAmmo.amount = amount;
+
+                newAmmo.Drop(pos);
+
+                
+
+                return newAmmo;
+            }
+        }
+
+        throw new Exception($"wuh oh there's no ammo of type {type.name} in the prefab list");
     }
 
     public void RemoveItem(Item item, Item prefab)
@@ -142,6 +214,7 @@ public class ItemManager : MonoBehaviour
             }
             itemPool.MoveTo(item);
             active.Remove(item.id);
+            onRemoveItem?.Invoke(item);
         }
         else
             throw new Exception($"Item manager does not have server pool setup for {prefab}");
@@ -156,6 +229,8 @@ public class ItemManager : MonoBehaviour
                 item.wielder.inventory.DropItem(item);
             }
             itemPools[item.prefabId].MoveTo(item);
+
+            onRemoveItem?.Invoke(item);
 
             if (clearActive)
                 active.Remove(item.id);
@@ -256,7 +331,7 @@ public class ItemManager : MonoBehaviour
         public ObjectPool<Item> pool;
         public Transform container;
 
-        public int index;
+        //public int index;
 
         public void MoveTo(Item item)
         {
@@ -276,6 +351,8 @@ public class ItemManager : MonoBehaviour
         {
             container = new GameObject(prefab ? prefab.itemName : "").transform;
             container.parent = Manager.container;
+
+            //prefab.prefabId = index;
 
             pool = new ObjectPool<Item>(
                 minPooled: pool?.minPooled ?? 5,
@@ -307,7 +384,7 @@ public class ItemManager : MonoBehaviour
             var item = pool.GetFromPool();
             //active.Add(item);
             item.defaultContainer = container;
-            item.prefabId = index;
+            //item.prefabId = index;
             //item.Drop(pos);
             return item;
         }

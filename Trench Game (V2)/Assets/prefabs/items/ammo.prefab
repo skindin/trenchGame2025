@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundCenterPoint: {x: 0, y: -0.92}
+  groundCenterPoint: {x: 0.51, y: 0.53}
   drawPoint: 0
   includeSelf: 1
   sprite: {fileID: 2661514139613991663}

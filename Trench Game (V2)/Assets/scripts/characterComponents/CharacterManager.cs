@@ -199,7 +199,7 @@ public class CharacterManager : MonoBehaviour
             }
 
             LogicAndMath.SortHighestToLowest(active, character => character.KillCount);
-            LogicAndMath.AssignIndexes(active, (character, index) => character.rank = index + 1);
+            LogicAndMath.AssignIntPropToIndex(active, (character, index) => character.rank = index + 1);
 
             var currentTop = active[0];
             var prevTop = this.prevTop;
@@ -259,6 +259,21 @@ public class CharacterManager : MonoBehaviour
         UpdateScoreBoard();
 
         return newCharacter;
+    }
+
+    public Character NewLocalPlayer (Vector2 pos, int id)
+    {
+        return NewCharacter(pos, Character.CharacterType.localPlayer, id);
+    }
+
+    public Character NewLocalBot (Vector2 pos, int id)
+    {
+        return NewCharacter(pos, Character.CharacterType.localBot,id);
+    }
+
+    public Character NewRemoteCharacter(Vector2 pos, int id)
+    {
+        return NewCharacter(pos, Character.CharacterType.remote, id);
     }
 
     public void RemoveCharacter(Character character)
