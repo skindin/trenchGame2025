@@ -2147,8 +2147,8 @@ MonoBehaviour:
   spawnCharacter:
     prefab: {fileID: 0}
     active: []
-    spawnCap: 10
-  spawnBots: 0
+    spawnCap: 3
+  spawnBots: 1
 --- !u!1 &575497487
 GameObject:
   m_ObjectHideFlags: 0
@@ -4686,7 +4686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40d8750cc4d4214cb94d203cab5a43c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugLines: 0
+  debugLines: 1
   bulletPool:
     minPooled: 0
     maxPooled: 100

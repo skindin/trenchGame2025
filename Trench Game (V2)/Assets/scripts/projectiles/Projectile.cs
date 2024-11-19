@@ -14,8 +14,7 @@ public class Projectile
     public bool
         //withinTrench, 
         hit = false,
-        destroy = false,
-        finished = false;
+        destroy = false;
     public float damage = 1;
 
     public int shooterLife = 0;

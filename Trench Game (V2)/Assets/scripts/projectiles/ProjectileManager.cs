@@ -51,7 +51,7 @@ public class ProjectileManager : MonoBehaviour
         newBullet.velocity = velocity;
         newBullet.range = range;
         newBullet.source = source;
-        newBullet.hit = newBullet.finished = false;
+        newBullet.hit = false;
         newBullet.shooterLife = source.life;
 
         activeBullets.Add(newBullet);
@@ -114,7 +114,8 @@ public class ProjectileManager : MonoBehaviour
         //var closestPoint = nextPos;
         Collider closestCollider = null;
         float shortestDistance = nextDirection.magnitude;
-        Vector2 closestPoint = Vector2.zero;
+        var ogDistance = shortestDistance;
+        Vector2 closestPoint = nextPos;
 
         //float furthestTrenchDist = nextDelta.magnitude;
         //bool leavingTrench = false;
@@ -128,7 +129,7 @@ public class ProjectileManager : MonoBehaviour
         //    }
         //}
 
-        if (!bullet.hit && !bullet.finished)
+        if (!bullet.hit)
         {
             var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, false, debugLines);
 
@@ -142,11 +143,12 @@ public class ProjectileManager : MonoBehaviour
 
                     var radius = collider.WorldSize / 2;
                     var point = GeoUtils.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
+                    GeoUtils.DrawCircle(collider.transform.position, radius, UnityEngine.Color.green);
                     if (point.x == Mathf.Infinity) continue;
 
-                    var pointDist = (point - bullet.startPos).magnitude;
+                    var pointDist = (point - bullet.pos).magnitude;
 
-                    if (pointDist < nextDirection.magnitude)
+                    if (pointDist < shortestDistance)
                     {
                         closestCollider = collider;
                         bullet.range = (point - bullet.startPos).magnitude;
@@ -192,15 +194,15 @@ public class ProjectileManager : MonoBehaviour
                 }
             }
 
-            if (shortestDistance < nextDirection.magnitude)
+            if (shortestDistance < ogDistance)
             {
                 bullet.hit = true;
                 bullet.range = (closestPoint - bullet.startPos).magnitude;
             }
         }
 
-        if (!bullet.finished && !ChunkManager.Manager.IsPointInWorld(nextPos))
-            bullet.finished = true;
+        if (!bullet.hit && !ChunkManager.Manager.IsPointInWorld(nextPos))
+            bullet.hit = true;
 
         //if (bullet.withinTrench && leavingTrench)
         //{
