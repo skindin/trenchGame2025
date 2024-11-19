@@ -114,6 +114,8 @@ public class PlayerController : MonoBehaviour
 
         character.LookInDirection(mouseDir);
 
+        //Debug.DrawRay(transform.position, mouseDir);
+
         //if (character.inventory.ActiveWeapon)
         //    character.inventory.ActiveWeapon.Aim(mouseDir); //this had been in late update...
 

@@ -35,11 +35,13 @@ public class ChunkManager : MonoBehaviour
     //readonly List<Chunk> chunkPool = new();
     public ObjectPool<Chunk> chunkPool;
 
-    public bool logOutOfBounds = false, drawChunks = false;
+    public bool logOutOfBounds = false, drawChunks = false, drawLineTest = false;
 
     private void Awake()
     {
         chunkPool = new(
+            minPooled: chunkPool.minPooled,
+            maxPooled: chunkPool.maxPooled,
         newFunc: () => new Chunk(),
         resetAction: chunk => chunk.Reset(),
         disableAction: null,
@@ -51,7 +53,13 @@ public class ChunkManager : MonoBehaviour
 
     private void Update()
     {
-        if (drawChunks) DrawChunks();
+        if (drawChunks)
+            DrawChunks();
+
+        if (drawLineTest)
+        {
+            ChunksFromLine(Vector2.zero, transform.position, false, true);
+        }
     }
 
     List<Chunk> reusableChunkList = new();
@@ -277,27 +285,73 @@ public class ChunkManager : MonoBehaviour
         max = -min;
     }
 
-    public List<Chunk> ChunksFromLine (Vector2 pointA, Vector2 pointB, List<Chunk> chunkList, bool newIfNone = false, bool debugLines = false, bool clearList = true)
+    public List<Chunk> ChunksFromLine(Vector2 pointA, Vector2 pointB, bool newIfNone = false, bool debugLines = false)
     {
-        if (clearList) chunkList.Clear();
+        //if (clearList) chunkList.Clear();
 
-        var min = Vector2.Min(pointA, pointB);
-        var max = Vector2.Max(pointA, pointB);
+        //var min = Vector2.Min(pointA, pointB);
+        //var max = Vector2.Max(pointA, pointB);
 
-        var adresses = AdressesFromBox(min, max);
+        //var adresses = AdressesFromBox(min, max);
 
-        foreach (var adress in adresses)
+        //foreach (var adress in adresses)
+        //{
+        //    GetChunkBox(adress, out var chunkMin, out var chunkMax);
+        //    if (GeoUtils.DoesLineIntersectBox(pointA,pointB,chunkMin,chunkMax,debugLines))
+        //    {
+        //        var chunk = ChunkFromAdress(adress, newIfNone);
+        //        if (chunk != null && !chunkList.Contains(chunk))
+        //            chunkList.Add(chunk);
+        //    }
+        //}
+
+        //return chunkList;
+
+        GetWorldBox(out var worldMin, out _);
+
+        if (debugLines)
         {
-            GetChunkBox(adress, out var chunkMin, out var chunkMax);
-            if (GeoUtils.DoesLineIntersectBox(pointA,pointB,chunkMin,chunkMax,debugLines))
-            {
-                var chunk = ChunkFromAdress(adress, newIfNone);
-                if (chunk != null && !chunkList.Contains(chunk))
-                    chunkList.Add(chunk);
-            }
+            Debug.DrawLine(pointA, pointB, Color.green);
         }
 
-        return chunkList;
+        pointA -= worldMin;
+        pointB -= worldMin;
+
+        List<Chunk> chunks = new();
+
+        //float hue = 0;
+
+        //Color color;
+
+        Action<Vector2Int> action = adress =>
+        {
+            var chunk = ChunkFromAdress(adress);
+
+            GetChunkBox(adress, out var chunkMin, out var chunkMax);
+
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+
+                if (debugLines)
+                {
+                    GeoUtils.DrawBoxMinMax(chunkMin, chunkMax, Color.green);
+                }
+            }
+            else if (debugLines)
+            {
+                //hue = Mathf.Repeat(hue, 1);
+                //color = Color.HSVToRGB(hue, 1, 1);
+
+                GeoUtils.DrawBoxMinMax(chunkMin, chunkMax, Color.blue);
+            }
+
+            //hue += .02f;
+        };
+
+        GeoUtils.GetLineGridIntersections(pointA, pointB, chunkSize, action, debugLines);
+
+        return chunks;
     }
 
     public void DrawChunk (Chunk chunk, UnityEngine.Color color)

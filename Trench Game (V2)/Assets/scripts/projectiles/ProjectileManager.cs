@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Net;
 using UnityEngine;
 
 public class ProjectileManager : MonoBehaviour
@@ -49,7 +51,7 @@ public class ProjectileManager : MonoBehaviour
         newBullet.velocity = velocity;
         newBullet.range = range;
         newBullet.source = source;
-        newBullet.hit = false;
+        newBullet.hit = newBullet.finished = false;
         newBullet.shooterLife = source.life;
 
         activeBullets.Add(newBullet);
@@ -107,9 +109,12 @@ public class ProjectileManager : MonoBehaviour
 
         //var nextDelta = delta + (bullet.velocity * seconds);
         //bullet.destroy = (bullet.pos - bullet.startPos).magnitude >= bullet.range * destructRangeFactor;
-        var nextPos = bullet.pos + bullet.velocity * seconds;
+        var nextDirection = bullet.velocity * seconds;
+        var nextPos = bullet.pos + nextDirection;
         //var closestPoint = nextPos;
         Collider closestCollider = null;
+        float shortestDistance = nextDirection.magnitude;
+        Vector2 closestPoint = Vector2.zero;
 
         //float furthestTrenchDist = nextDelta.magnitude;
         //bool leavingTrench = false;
@@ -123,10 +128,9 @@ public class ProjectileManager : MonoBehaviour
         //    }
         //}
 
-        if (!bullet.hit)
+        if (!bullet.hit && !bullet.finished)
         {
-
-            var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, chunkList, false, debugLines);
+            var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, false, debugLines);
 
             foreach (var chunk in chunks)
             {
@@ -139,26 +143,64 @@ public class ProjectileManager : MonoBehaviour
                     var radius = collider.WorldSize / 2;
                     var point = GeoUtils.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
                     if (point.x == Mathf.Infinity) continue;
-                    var pointDist = (point - bullet.startPos).magnitude;
-                    //if (bullet.withinTrench && !collider.vulnerable)
-                    //{
-                    //    if (pointDist > furthestTrenchDist) continue;
-                    //}
-                    var startToNext = bullet.startPos - nextPos;
-                    var clampedNext = Vector2.ClampMagnitude(startToNext, bullet.range);
-                    //var nextDist = (nextPos - bullet.pos).magnitude;
 
-                    if (clampedNext.magnitude > pointDist)
+                    var pointDist = (point - bullet.startPos).magnitude;
+
+                    if (pointDist < nextDirection.magnitude)
                     {
-                        bullet.hit = true;
-                        //nextPos = point;
-                        bullet.range = (point - bullet.startPos).magnitude;
                         closestCollider = collider;
-                        //closestPoint = point;
+                        bullet.range = (point - bullet.startPos).magnitude;
+                        shortestDistance = pointDist;
+                        closestPoint = point;
                     }
+
+
+                    ////if (bullet.withinTrench && !collider.vulnerable)
+                    ////{
+                    ////    if (pointDist > furthestTrenchDist) continue;
+                    ////}
+                    //var startToNext = bullet.startPos - nextPos;
+                    //var clampedNext = Vector2.ClampMagnitude(startToNext, bullet.range);
+                    ////var nextDist = (nextPos - bullet.pos).magnitude;
+
+                    //if (clampedNext.magnitude > pointDist)
+                    //{
+
+                    //    bullet.hit = true;
+                    //    //nextPos = point;
+                    //    bullet.range = (point - bullet.startPos).magnitude;
+                    //    closestCollider = collider;
+                    //    //closestPoint = point;
+                    //}
                 }
             }
+
+            bool exceededRange = ((closestPoint) - bullet.startPos).magnitude > bullet.range;
+
+            if (exceededRange)
+            {
+                var fullPath = bullet.velocity.normalized * bullet.range;
+
+                var exceedPoint = bullet.startPos + fullPath;
+
+                var distToRange = (exceedPoint - bullet.pos).magnitude;
+
+                if (distToRange < shortestDistance)
+                {
+                    closestCollider = null;
+                    shortestDistance = distToRange;
+                }
+            }
+
+            if (shortestDistance < nextDirection.magnitude)
+            {
+                bullet.hit = true;
+                bullet.range = (closestPoint - bullet.startPos).magnitude;
+            }
         }
+
+        if (!bullet.finished && !ChunkManager.Manager.IsPointInWorld(nextPos))
+            bullet.finished = true;
 
         //if (bullet.withinTrench && leavingTrench)
         //{
@@ -167,8 +209,8 @@ public class ProjectileManager : MonoBehaviour
 
         if (debugLines)
         {
-            GeoUtils.DrawCircle(bullet.startPos, bullet.range, Color.red, 10);
-            Debug.DrawLine(bullet.pos, nextPos, Color.red);
+            GeoUtils.DrawCircle(bullet.startPos, bullet.range, UnityEngine.Color.red, 10);
+            Debug.DrawLine(bullet.pos, nextPos, UnityEngine.Color.red);
         }
 
         //bullet.lastPos = bullet.pos;

@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public static class GeoUtils
 {
@@ -496,6 +498,113 @@ public static class GeoUtils
         return TestBoxMinMax(min, max, point, debugLines );
     }
 
+
+    /// <summary>
+    /// efficent af
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="action"></param>
+    /// <param name="logTotal"></param>
+    public static void GetLineGridIntersections(Vector2 start, Vector2 end, float cellSize, Action<Vector2Int> action, bool logTotal = false)
+    {
+        // Convert world coordinates to grid coordinates
+        Vector2 current = start / cellSize;
+        Vector2 goal = end / cellSize;
+
+        // Get the starting and ending cell indices (rounded down)
+        int x0 = Mathf.FloorToInt(current.x);
+        int y0 = Mathf.FloorToInt(current.y);
+        int x1 = Mathf.FloorToInt(goal.x);
+        int y1 = Mathf.FloorToInt(goal.y);
+
+        // Initial action for the starting cell
+        action(new Vector2Int(x0, y0));
+
+        // Calculate differences between target and start positions
+        float dx = Mathf.Abs(goal.x - current.x);
+        float dy = Mathf.Abs(goal.y - current.y);
+
+        // Avoid division by zero for vertical or horizontal lines
+        if (dx == 0 && dy == 0)
+        {
+            if (logTotal) Debug.Log("Line is a single cell.");
+            return;
+        }
+
+        // Directional steps
+        int stepX = current.x < goal.x ? 1 : (current.x > goal.x ? -1 : 0);
+        int stepY = current.y < goal.y ? 1 : (current.y > goal.y ? -1 : 0);
+
+        // Time to the next grid line in each direction (helps in deciding which direction to step in)
+        float tDeltaX = dx > 0 ? 1f / dx : float.MaxValue; // Max value for vertical lines
+        float tDeltaY = dy > 0 ? 1f / dy : float.MaxValue; // Max value for horizontal lines
+
+        // The time to cross the current grid cell
+        float tMaxX = stepX > 0 ? Mathf.Ceil(current.x) - current.x : current.x - Mathf.Floor(current.x);
+        float tMaxY = stepY > 0 ? Mathf.Ceil(current.y) - current.y : current.y - Mathf.Floor(current.y);
+
+        tMaxX /= Mathf.Max(dx, 1e-6f); // Avoid zero for vertical lines
+        tMaxY /= Mathf.Max(dy, 1e-6f); // Avoid zero for horizontal lines
+
+        // A small threshold to handle floating-point imprecision
+        float threshold = 0.001f;
+
+        // The number of cells we calculate
+        int cellsCalculated = 1;
+
+        // Loop through the grid until we reach the destination cell
+        while (true)
+        {
+            // Check if we’ve crossed the target cell boundaries
+            if ((stepX > 0 && x0 > x1) || (stepX < 0 && x0 < x1) ||
+                (stepY > 0 && y0 > y1) || (stepY < 0 && y0 < y1))
+            {
+                break;
+            }
+
+            // Move to the next cell based on which direction the line is traveling
+            if (tMaxX < tMaxY)
+            {
+                tMaxX += tDeltaX;
+                x0 += stepX;
+            }
+            else
+            {
+                tMaxY += tDeltaY;
+                y0 += stepY;
+            }
+
+            // Execute the action (e.g., logging or processing the cell)
+            action(new Vector2Int(x0, y0));
+            cellsCalculated++;
+
+            // If we've reached the destination cell (handling near-perfect alignments)
+            if (x0 == x1 && y0 == y1)
+            {
+                break;
+            }
+        }
+
+        // Ensure the final cell is included if the line ends on the grid cell boundary
+        if ((x0 == x1 && y0 == y1) ||
+            (stepX > 0 && x0 >= x1) || (stepX < 0 && x0 <= x1) ||
+            (stepY > 0 && y0 >= y1) || (stepY < 0 && y0 <= y1))
+        {
+            action(new Vector2Int(x1, y1));
+            cellsCalculated++;
+        }
+
+        // Optional logging of total cells processed
+        if (logTotal)
+        {
+            Debug.Log($"Total cells calculated: {cellsCalculated}");
+        }
+    }
+
+
+
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {
         Vector3 lastPoint = Vector2.up * radius;
@@ -550,7 +659,7 @@ public static class GeoUtils
 
     public static Vector2 RandomPosInBoxMinMax (Vector2 min , Vector2 max)
     {
-        return new Vector2(Random.Range(min.x,max.x),Random.Range(min.y,max.y));
+        return new Vector2(UnityEngine.Random.Range(min.x,max.x),UnityEngine.Random.Range(min.y,max.y));
     }
 
     public static Vector2 RandomPosInBoxPosSize (Vector2 pos, Vector2 size)
@@ -560,8 +669,8 @@ public static class GeoUtils
 
     public static Vector2 RandomInsideRing (Vector2 center, float minRad, float maxRad)
     {
-        var dist = Random.Range(minRad, maxRad);
-        return (Vector2)(Quaternion.AngleAxis(Random.Range(0, 360), Vector3.forward) * Vector3.up * dist + (Vector3)center);
+        var dist = UnityEngine.Random.Range(minRad, maxRad);
+        return (Vector2)(Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.forward) * Vector3.up * dist + (Vector3)center);
     }
 
     public static Vector2[,] DistributePointsInBoxPosSize(Vector2 pos, Vector2 size, Vector2 distributeSize)

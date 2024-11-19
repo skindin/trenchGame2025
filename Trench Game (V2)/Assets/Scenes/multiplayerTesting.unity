@@ -2148,7 +2148,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     active: []
     spawnCap: 10
-  spawnBots: 1
+  spawnBots: 0
 --- !u!1 &575497487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3319,7 +3319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 52
+  worldSize: 50
   minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0
@@ -3328,6 +3328,7 @@ MonoBehaviour:
     maxPooled: 10
   logOutOfBounds: 0
   drawChunks: 0
+  drawLineTest: 0
 --- !u!4 &893604346
 Transform:
   m_ObjectHideFlags: 0
