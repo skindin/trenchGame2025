@@ -35,7 +35,7 @@ public class Chunk
     public Chunk (Vector2Int adress, int mapSize)
     {
         this.adress = adress;
-        map = new(mapSize);
+        //map = new(mapSize);
     }
 
     public Chunk() { }

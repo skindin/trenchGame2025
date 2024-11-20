@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
@@ -203,7 +204,7 @@ public static class GeoUtils
         return false;
     }
 
-    public static bool DoesLineIntersectBox (Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, bool debugLines = false)
+    public static bool DoesLineIntersectBoxMinMax (Vector2 pointA, Vector2 pointB, Vector2 boxMin, Vector2 boxMax, bool debugLines = false)
     {
         if (debugLines) Debug.DrawLine(pointA, pointB, Color.green);
 
@@ -229,6 +230,16 @@ public static class GeoUtils
 
         //realized there is no scenario where you would have to test all four lines if you're already testing if it's within
 
+    }
+
+    public static bool DoesLineIntersectBoxPosSize (Vector2 pointA, Vector2 pointB, Vector2 boxPos, Vector2 boxSize, bool debugLines = false)
+    {
+        var edge = boxSize / 2;
+        var direction = Vector2.one * edge;
+        var min = boxPos - direction;
+        var max = boxPos + direction;
+
+        return DoesLineIntersectBoxMinMax(pointA, pointB, min, max, debugLines);
     }
 
     public static bool DoesLineIntersectX (Vector2 pointA, Vector2 pointB, Vector2 bottomLeft, Vector2 topLeft, Vector2 topRight, Vector2 bottomRight,
@@ -603,28 +614,95 @@ public static class GeoUtils
         }
     }
 
-    public static bool TestPointWithinTaperedCapsule (Vector2 testPoint, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB)
+    public static bool TestPointWithinTaperedCapsule (Vector2 testPoint, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB
+        //,out Vector2 closestPoint, out float thickness
+        , bool debugLines = false
+        )
     {
         var closestPoint = ClosestPointToLineSegment(testPoint, pointA, pointB, out var ratio);
         var thickness = radiusA - ((radiusA - radiusB) * ratio);
 
+        if (debugLines)
+        {
+            DrawCircle(closestPoint, thickness, Color.magenta);
+            Debug.DrawLine(closestPoint,testPoint,Color.magenta);
+        }
+
         return (closestPoint-testPoint).magnitude <= thickness;
     }
 
-    public static bool TestBoxTouchesTaperedCapsule(Vector2 boxCenter, float boxSize, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB)
+    //i just realilzed this will only work if the box is small enough. it could have the entire capsule inside of it lol
+    public static bool TestBoxTouchesTaperedCapsule(Vector2 boxPos, Vector2 boxSize, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB,
+        bool debugLines = false)
     {
-        var cornerArray = GetBoxCornersPosSize(boxCenter, boxSize);
+        //if (TestPointWithinTaperedCapsule(boxPos, pointA, radiusA, pointB, radiusB
+        //    //, out var point, out var thickness
+        //    ))
+        //    return true;
+
+        //if (TestBoxPosSizeTouchesCircle(boxPos, boxSize, point, thickness))
+        //    return true;
+
+        //if (TestBoxPosSize((boxPos - pointA).normalized * radiusA + pointA, boxPos, boxSize))
+        //    return true;
+
+        //Debug.DrawRay(pointB, Vector2.ClampMagnitude(boxPos - pointB, radiusB), Color.blue);
+        //DrawCircle(boxPos,radiusB, Color.blue);
+
+        //if (TestBoxPosSize(boxPos, boxSize, Vector2.ClampMagnitude(boxPos - pointA, radiusA) + pointA, debugLines))
+        //    return true;
+
+        //if (TestBoxPosSize(boxPos, boxSize, Vector2.ClampMagnitude(boxPos - pointB, radiusB) + pointB, debugLines))
+        //    return true;
+
+
+        if (DoesLineIntersectBoxPosSize(pointA, pointB, boxPos, boxSize))
+            return true;
+
+        var cornerArray = GetBoxCornersPosSize(boxPos, boxSize);
 
         foreach (var corner in cornerArray)
         {
-            if (TestPointWithinTaperedCapsule(corner,pointA,radiusA,pointB,radiusB))
-            {
+            if (TestPointWithinTaperedCapsule(corner, pointA, radiusA, pointB, radiusB,debugLines))
                 return true;
-            }
         }
+
+        //var cornerArray = GetBoxCornersPosSize(boxPos, boxSize);
+
+        //foreach (var corner in cornerArray) //tests if the any corners are within the circle
+        //{
+        //    //if ((corner - circlePos).magnitude <= circleRadius)
+        //    //if (TestBoxPosSize(boxPos,boxSize,ClosestPointToLineSegment(corner,boxPos,circlePos)))
+        //    //if (boxPos.x == 0)
+        //    var cornerClosestPoint = ClosestPointToLineSegment()
+        //}
+
+        //var cornerArray = GetBoxCornersPosSize(boxCenter, boxSize);
+
+        //foreach (var corner in cornerArray)
+        //{
+        //    if (TestPointWithinTaperedCapsule(corner,pointA,radiusA,pointB,radiusB))
+        //    {
+        //        return true;
+        //    }
+        //}
 
         return false;
     }
+
+    //public static bool TestBoxPosSizeTouchesCircle (Vector2 boxPos, Vector2 boxSize, Vector2 circlePos, float circleRadius)
+    //{
+    //    //if (TestBoxPosSize(boxPos, boxSize, circlePos)) //tests if the center is within the box
+    //    //    return true;
+
+    //    //if ((boxPos - circlePos).magnitude <= circleRadius) //tests if the box center is within the circle
+    //    //    return true;
+
+    //    if (TestBoxPosSize(boxPos, boxSize, (boxPos - circlePos).normalized * circleRadius + circlePos))
+    //        return true;
+
+    //    return false;
+    //}
 
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {
@@ -690,15 +768,15 @@ public static class GeoUtils
     /// <param name="pos"></param>
     /// <param name="size"></param>
     /// <returns></returns>
-    public static Vector2[] GetBoxCornersPosSize (Vector2 pos, float size)
+    public static Vector2[] GetBoxCornersPosSize (Vector2 pos, Vector2 size)
     {
         var halfSize = size / 2;
 
         return new Vector2[] {
-            pos + new Vector2(-halfSize,-halfSize),
-            pos + new Vector2(-halfSize,halfSize),
-            pos + new Vector2(halfSize,halfSize),
-            pos + new Vector2(halfSize, -halfSize)
+            pos + new Vector2(-halfSize.x,-halfSize.y),
+            pos + new Vector2(-halfSize.x,halfSize.y),
+            pos + new Vector2(halfSize.x,halfSize.y),
+            pos + new Vector2(halfSize.x, -halfSize.y)
         };
     }
 

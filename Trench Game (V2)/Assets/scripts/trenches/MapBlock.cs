@@ -3,9 +3,6 @@ public class MapBlock
     public byte Byte1 { private set; get; }
     public byte Byte2 { private set; get; }
 
-    public bool isEmpty { private set; get; }
-    public bool isFull { private set; get; }
-
     // Get a 4x4 boolean 2D array from byte1 and byte2
     public bool[,] GetArray()
     {
@@ -57,31 +54,20 @@ public class MapBlock
 
         Byte1 = tempByte1;
         Byte2 = tempByte2;
-
-        if (TestFull())
-        {
-            isFull = true;
-            isEmpty = false;
-        }
-        else if (TestEmtpy())
-        {
-            isFull = false;
-            isEmpty = true;
-        }
     }
 
-    bool TestFull()
+    public bool TestFull()
     {
         return Byte1 == 0xFF && Byte2 == 0xFF; // 0xFF = 11111111 in binary
     }
 
     // Check if all bits are 0
-    bool TestEmtpy()
+    public bool TestEmtpy()
     {
         return Byte1 == 0x00 && Byte2 == 0x00; // 0x00 = 00000000 in binary
     }
 
-    bool TestWhole (bool value)
+    public bool TestWhole (bool value)
     {
         return value ? TestFull() : TestEmtpy();
     }
