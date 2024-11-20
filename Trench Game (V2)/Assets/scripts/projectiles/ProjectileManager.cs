@@ -141,9 +141,7 @@ public class ProjectileManager : MonoBehaviour
                     if (bullet.source && bullet.source.collider == collider) continue;
                     if (!collider.vulnerable) continue;
 
-                    var radius = collider.WorldSize / 2;
-                    var point = GeoUtils.GetCircleLineIntersection(collider.transform.position, radius, bullet.pos, nextPos);
-                    GeoUtils.DrawCircle(collider.transform.position, radius, UnityEngine.Color.green);
+                    var point = collider.TestRay(bullet.pos, nextPos,debugLines);
                     if (point.x == Mathf.Infinity) continue;
 
                     var pointDist = (point - bullet.pos).magnitude;

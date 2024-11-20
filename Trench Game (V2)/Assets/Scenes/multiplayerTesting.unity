@@ -4686,7 +4686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40d8750cc4d4214cb94d203cab5a43c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugLines: 1
+  debugLines: 0
   bulletPool:
     minPooled: 0
     maxPooled: 100

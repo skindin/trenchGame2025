@@ -603,7 +603,28 @@ public static class GeoUtils
         }
     }
 
+    public static bool TestPointWithinTaperedCapsule (Vector2 testPoint, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB)
+    {
+        var closestPoint = ClosestPointToLineSegment(testPoint, pointA, pointB, out var ratio);
+        var thickness = radiusA - ((radiusA - radiusB) * ratio);
 
+        return (closestPoint-testPoint).magnitude <= thickness;
+    }
+
+    public static bool TestBoxTouchesTaperedCapsule(Vector2 boxCenter, float boxSize, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB)
+    {
+        var cornerArray = GetBoxCornersPosSize(boxCenter, boxSize);
+
+        foreach (var corner in cornerArray)
+        {
+            if (TestPointWithinTaperedCapsule(corner,pointA,radiusA,pointB,radiusB))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {
@@ -660,6 +681,25 @@ public static class GeoUtils
     public static Vector2 RandomPosInBoxMinMax (Vector2 min , Vector2 max)
     {
         return new Vector2(UnityEngine.Random.Range(min.x,max.x),UnityEngine.Random.Range(min.y,max.y));
+    }
+
+
+    /// <summary>
+    /// orders points from min in clockwise order
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    public static Vector2[] GetBoxCornersPosSize (Vector2 pos, float size)
+    {
+        var halfSize = size / 2;
+
+        return new Vector2[] {
+            pos + new Vector2(-halfSize,-halfSize),
+            pos + new Vector2(-halfSize,halfSize),
+            pos + new Vector2(halfSize,halfSize),
+            pos + new Vector2(halfSize, -halfSize)
+        };
     }
 
     public static Vector2 RandomPosInBoxPosSize (Vector2 pos, Vector2 size)

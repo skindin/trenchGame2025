@@ -48,6 +48,18 @@ public class Collider : MonoBehaviour
     //    all.Remove(this);
     //}
 
+    public Vector2 TestRay(Vector2 start, Vector2 end, bool debugLines = false)
+    {
+        var radius = WorldSize / 2;
+
+        if (debugLines)
+        {
+            GeoUtils.DrawCircle(transform.position, WorldSize / 2, Color.green);
+        }
+
+        return GeoUtils.GetCircleLineIntersection(transform.position, radius, start, end);
+    }
+
     private void OnDrawGizmos()
     {
         if (draw)
