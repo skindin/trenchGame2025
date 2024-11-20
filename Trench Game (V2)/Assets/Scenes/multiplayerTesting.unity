@@ -3784,8 +3784,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprite: {fileID: 0}
   spriteRenderer: {fileID: 0}
-  resolution: 1
-  scale: 10
+  resolution: 10
+  scale: 50
   illustrateMap: 1
   pointA: {fileID: 2081706293}
   pointB: {fileID: 1575661430}

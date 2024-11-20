@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Dependencies.NCalc;
+//using System.Drawing;
+//using Unity.VisualScripting;
+//using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+//using UnityEngine.Rendering.PostProcessing;
 
 public static class GeoUtils
 {
@@ -619,90 +621,63 @@ public static class GeoUtils
         , bool debugLines = false
         )
     {
+        var closestPoint = GetClosestPointOnTaperedCapsule(testPoint, pointA, radiusA, pointB, radiusB, out var thickness, debugLines);
+
+        return (closestPoint-testPoint).magnitude <= thickness;
+    }
+
+    public static Vector2 GetClosestPointOnTaperedCapsule (Vector2 testPoint, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB,
+        out float distance,
+        bool debugLines = false)
+    {
         var closestPoint = ClosestPointToLineSegment(testPoint, pointA, pointB, out var ratio);
-        var thickness = radiusA - ((radiusA - radiusB) * ratio);
+        distance = radiusA - ((radiusA - radiusB) * ratio);
 
         if (debugLines)
         {
-            DrawCircle(closestPoint, thickness, Color.magenta);
-            Debug.DrawLine(closestPoint,testPoint,Color.magenta);
+            DrawCircle(closestPoint, distance, Color.magenta);
+            Debug.DrawLine(closestPoint, testPoint, Color.magenta);
         }
 
-        return (closestPoint-testPoint).magnitude <= thickness;
+        return closestPoint;
     }
 
     //i just realilzed this will only work if the box is small enough. it could have the entire capsule inside of it lol
     public static bool TestBoxTouchesTaperedCapsule(Vector2 boxPos, Vector2 boxSize, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB,
         bool debugLines = false)
     {
-        //if (TestPointWithinTaperedCapsule(boxPos, pointA, radiusA, pointB, radiusB
-        //    //, out var point, out var thickness
-        //    ))
-        //    return true;
-
-        //if (TestBoxPosSizeTouchesCircle(boxPos, boxSize, point, thickness))
-        //    return true;
-
-        //if (TestBoxPosSize((boxPos - pointA).normalized * radiusA + pointA, boxPos, boxSize))
-        //    return true;
-
-        //Debug.DrawRay(pointB, Vector2.ClampMagnitude(boxPos - pointB, radiusB), Color.blue);
-        //DrawCircle(boxPos,radiusB, Color.blue);
-
-        //if (TestBoxPosSize(boxPos, boxSize, Vector2.ClampMagnitude(boxPos - pointA, radiusA) + pointA, debugLines))
-        //    return true;
-
-        //if (TestBoxPosSize(boxPos, boxSize, Vector2.ClampMagnitude(boxPos - pointB, radiusB) + pointB, debugLines))
-        //    return true;
-
-
-        if (DoesLineIntersectBoxPosSize(pointA, pointB, boxPos, boxSize))
+        if (TestBoxPosSize(boxPos, boxSize, pointA) || TestBoxPosSize(boxPos, boxSize, pointB))
             return true;
 
+        var point = GetClosestPointOnTaperedCapsule(boxPos, pointA, radiusA, pointB, radiusB, out var distance, debugLines);
+
+        return TestBoxPosSizeTouchesCircle(boxPos, boxSize, point, distance, debugLines);
+    }
+
+    public static bool TestBoxPosSizeTouchesCircle(Vector2 boxPos, Vector2 boxSize, Vector2 circlePos, float circleRadius, bool debugLines = false)
+    {
         var cornerArray = GetBoxCornersPosSize(boxPos, boxSize);
 
-        foreach (var corner in cornerArray)
+        var i = 0;
+
+        while (i < 4)
         {
-            if (TestPointWithinTaperedCapsule(corner, pointA, radiusA, pointB, radiusB,debugLines))
+
+            //var test = (int)Mathf.Repeat(10, 10);
+
+            var start = cornerArray[i];
+
+            var endIndex = i >= 3 ? 0 : i = i + 1;
+            var end = cornerArray[endIndex];
+            if (DoesLineIntersectCircle(circlePos, circleRadius, start, end, debugLines))
                 return true;
+
+            if (endIndex == 0)
+                break;
         }
-
-        //var cornerArray = GetBoxCornersPosSize(boxPos, boxSize);
-
-        //foreach (var corner in cornerArray) //tests if the any corners are within the circle
-        //{
-        //    //if ((corner - circlePos).magnitude <= circleRadius)
-        //    //if (TestBoxPosSize(boxPos,boxSize,ClosestPointToLineSegment(corner,boxPos,circlePos)))
-        //    //if (boxPos.x == 0)
-        //    var cornerClosestPoint = ClosestPointToLineSegment()
-        //}
-
-        //var cornerArray = GetBoxCornersPosSize(boxCenter, boxSize);
-
-        //foreach (var corner in cornerArray)
-        //{
-        //    if (TestPointWithinTaperedCapsule(corner,pointA,radiusA,pointB,radiusB))
-        //    {
-        //        return true;
-        //    }
-        //}
 
         return false;
     }
-
-    //public static bool TestBoxPosSizeTouchesCircle (Vector2 boxPos, Vector2 boxSize, Vector2 circlePos, float circleRadius)
-    //{
-    //    //if (TestBoxPosSize(boxPos, boxSize, circlePos)) //tests if the center is within the box
-    //    //    return true;
-
-    //    //if ((boxPos - circlePos).magnitude <= circleRadius) //tests if the box center is within the circle
-    //    //    return true;
-
-    //    if (TestBoxPosSize(boxPos, boxSize, (boxPos - circlePos).normalized * circleRadius + circlePos))
-    //        return true;
-
-    //    return false;
-    //}
 
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {

@@ -12,18 +12,18 @@ public class TrenchMap : MonoBehaviour
     public MapBlock[,] blocks;
     public int resolution = 8;
     public float scale = 1;
-    public bool illustrateMap = true;
+    public bool drawMap = true, debugLines = false;
     public Transform pointA, pointB;
 
     private void Update()
     {
-        if (illustrateMap)
+        if (drawMap)
         {
-            IllistrateMap();
+            DrawMap();
         }
     }
 
-    public void IllistrateMap ()
+    public void DrawMap ()
     {
         blocks = null;
 
@@ -41,7 +41,7 @@ public class TrenchMap : MonoBehaviour
         //    (Vector2)pointB.position - perpendicular * pointB.localScale.x,
         //    Color.green);
 
-        DigTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, true);
+        DigTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, debugLines);
 
         //if (blocks == null)
         //    return;
@@ -95,7 +95,7 @@ public class TrenchMap : MonoBehaviour
                 // Debug visualization for blocks that touch the capsule
                 if (debugLines)
                 {
-                    GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth, Color.green);
+                    GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth * .9f, Color.green);
                 }
 
                 // Get the 4x4 bit array from the block
