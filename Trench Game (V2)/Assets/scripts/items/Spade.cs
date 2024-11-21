@@ -15,14 +15,28 @@ public class Spade : Weapon, ISecondaryAction
     public override string Verb => "dig";
     public string SecondaryVerb => "fill";
 
+    public bool digging = true, debugLines = false;
+
+    Vector2 lastPos = Vector2.positiveInfinity;
+
+    private void LateUpdate()
+    {
+        lastPos = transform.position;
+    }
+
     public override void Action()
     {
+        if (lastPos.x == Mathf.Infinity)
+        {
+            lastPos = wielder.transform.position;
+        }
 
+        TrenchManager.Manager.SetTaperedCapsule(lastPos, digRadius, wielder.transform.position, digRadius, digging, debugLines);
     }
 
     public void SecondaryAction()
     {
-
+        digging = !digging;
     }
 
     public override void DirectionalAction(Vector2 direction)

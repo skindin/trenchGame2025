@@ -134,9 +134,12 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (character.inventory.ActiveWeapon && Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKey(KeyCode.E)) //temporary!!
         {
-            character.inventory.ActiveWeapon.Action();
+            if (character.inventory.ActiveWeapon)
+            {
+                character.inventory.ActiveWeapon.Action();
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Q))

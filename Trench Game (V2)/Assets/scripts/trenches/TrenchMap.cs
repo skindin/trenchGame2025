@@ -1,81 +1,115 @@
-using Google.Protobuf.WellKnownTypes;
+//using Google.Protobuf.WellKnownTypes;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
+//using System.Net;
 using UnityEngine;
-using UnityEngine.Profiling;
-using UnityEngine.Rendering;
+//using UnityEngine.Profiling;
+//using UnityEngine.Rendering;
 
-public class TrenchMap : MonoBehaviour
+public class TrenchMap
 {
     //public Sprite sprite;
     //public SpriteRenderer spriteRenderer;
     public MapBlock[,] blocks;
     public int resolution = 8;
     public float scale = 1;
-    public bool runTest = true, drawMap = true, debugLines = false, logBitsTested = false;
-    public Transform pointA, pointB;
+    //public Transform pointA, pointB;
     public Vector2 pos;
-    public bool testValue = true;
     public Color32 trenchColor = new(255,255,255,255), groundColor = new(255, 255, 255, 255);
     public Mesh imageMesh;
-    public Material imageMaterial;
+    public Material imageMaterial;//
     public Texture2D imageTexture;
     Color32[] pixels;
 
-    private void Awake()
+    public TrenchMap (int resolution, float scale, Color32 trenchColor, Color32 groundColor, Vector2 pos, Mesh imageMesh, Material imageMaterial)
     {
-        imageMaterial = new Material(imageMaterial);
+        this.resolution = resolution;
+
+        this.scale = scale;
+
+        this.pos = pos;
+
+        this.trenchColor = trenchColor;
+        this.groundColor = groundColor;
 
         imageTexture = new Texture2D(resolution * 4, resolution * 4);
 
-        imageMaterial.mainTexture = imageTexture;
+        this.imageMaterial = imageMaterial;
+
+        this.imageMaterial.mainTexture = imageTexture;
+
+        this.imageMesh = imageMesh;
+
+        blocks = new MapBlock[resolution, resolution];
 
         pixels = new Color32[resolution * 4 * 4 * resolution];
     }
 
-    private void Update()
-    {
-        if (runTest) //shrigging emoji
-        {
-            DrawMap();
-        }
-    }
+    //private void Awake()
+    //{
+    //    //imageMaterial = new Material(imageMaterial);
 
-    public void DrawMap ()
-    {
-        //blocks = null;
+    //    imageTexture = new Texture2D(resolution * 4, resolution * 4);
 
-        //DrawCapsule();
-        //var perpendicular = Vector2.Perpendicular(pointA.position - pointB.position).normalized;
+    //    imageMaterial.mainTexture = imageTexture;
 
-        //Debug.DrawLine(
-        //    (Vector2)pointA.position + perpendicular * pointA.localScale.x,
-        //    (Vector2)pointB.position + perpendicular * pointB.localScale.x,
-        //    Color.green);
-        //Debug.DrawLine(
-        //    (Vector2)pointA.position - perpendicular * pointA.localScale.x,
-        //    (Vector2)pointB.position - perpendicular * pointB.localScale.x,
-        //    Color.green);
+    //    pixels = new Color32[resolution * 4 * 4 * resolution];
+    //}
 
-        if (testValue)
-            DigTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, debugLines);
-        else
-            FillTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, debugLines);
+    //private void Update()
+    //{
+    //    //if (runTest) //shrigging emoji
+    //    //{
+    //    //    DrawMap();
+    //    //}
+    //}
 
-        //if (blocks == null)
-        //    return;
-    }
+    //public void DrawMap ()
+    //{
+    //    //blocks = null;
 
-    void DrawCapsule()
-    {
-        GeoUtils.DrawCircle(pointA.position, pointA.localScale.x, Color.green);
-        GeoUtils.DrawCircle(pointB.position, pointB.localScale.x, Color.green);
-        Debug.DrawLine(pointA.position, pointB.position, Color.green);
-    }
+    //    //DrawCapsule();
+    //    //var perpendicular = Vector2.Perpendicular(pointA.position - pointB.position).normalized;
+
+    //    //Debug.DrawLine(
+    //    //    (Vector2)pointA.position + perpendicular * pointA.localScale.x,
+    //    //    (Vector2)pointB.position + perpendicular * pointB.localScale.x,
+    //    //    Color.green);
+    //    //Debug.DrawLine(
+    //    //    (Vector2)pointA.position - perpendicular * pointA.localScale.x,
+    //    //    (Vector2)pointB.position - perpendicular * pointB.localScale.x,
+    //    //    Color.green);
+
+    //    //if (testValue)
+    //    //    DigTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, debugLines);
+    //    //else
+    //    //    FillTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, debugLines);
+
+    //    //if (blocks == null)
+    //    //    return;
+    //}
+
+    //void DrawCapsule()
+    //{
+    //    GeoUtils.DrawCircle(pointA.position, pointA.localScale.x, Color.green);
+    //    GeoUtils.DrawCircle(pointB.position, pointB.localScale.x, Color.green);
+    //    Debug.DrawLine(pointA.position, pointB.position, Color.green);
+    //}
 
     public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, bool debugLines = false)
     {
+        //if (blocks == null)
+        //{
+        //    if (value)
+        //    {
+        //        blocks = new MapBlock[resolution, resolution];
+        //    }
+        //    else
+        //    {
+        //        return;
+        //    }
+        //}
+
         float blockWidth = scale / resolution; // Width of each MapBlock
         float bitWidth = blockWidth / 4f;      // Width of each bit in a MapBlock
 
@@ -135,7 +169,7 @@ public class TrenchMap : MonoBehaviour
                 // If the block already fully matches the target value, skip processing
                 if (block.TestWhole(value))
                 {
-                    if (drawMap)
+                    if (debugLines)
                     {
                         GeoUtils.MarkPoint(boxPos, blockWidth/2, Color.white);
                     }
@@ -147,7 +181,7 @@ public class TrenchMap : MonoBehaviour
                 if (!GeoUtils.TestCirlceTouchesTaperedCapsule(boxPos, Vector2.one.magnitude * bitWidth * 1.5f, startPoint, startRadius, endPoint, endRadius,
                     debugLines))
                 {
-                    if (drawMap)
+                    if (debugLines)
                     {
                         GeoUtils.MarkPoint(boxPos, blockWidth / 2, Color.red);
                         GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth, Color.red);
@@ -156,7 +190,7 @@ public class TrenchMap : MonoBehaviour
                 }
 
                 // Debug visualization for blocks that touch the capsule
-                if (drawMap)
+                if (debugLines)
                 {
                     GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth, Color.green);
                 }
@@ -193,7 +227,7 @@ public class TrenchMap : MonoBehaviour
                         {
                             blockArray[bitX, bitY] = value;
                             totalBitsAtValue++;
-                            if (drawMap)
+                            if (debugLines)
                             {
                                 GeoUtils.MarkPoint(bitPos, bitWidth, Color.green);
                             }
@@ -204,7 +238,7 @@ public class TrenchMap : MonoBehaviour
 
                             pixels[arrayIndex] = value ? trenchColor : groundColor;
                         }
-                        else if (drawMap)
+                        else if (debugLines)
                         {
                             GeoUtils.MarkPoint(bitPos, bitWidth/2, Color.red);
                         }
@@ -226,10 +260,10 @@ public class TrenchMap : MonoBehaviour
             }
         }
 
-        if (logBitsTested)
-        {
-            Debug.Log($"tested {totalBlocksTested} blocks and {totalBitsTested} bits");
-        }
+        //if (logBitsTested)
+        //{
+        //    Debug.Log($"tested {totalBlocksTested} blocks and {totalBitsTested} bits");
+        //}
 
         if (somethingChanged)
         {
@@ -237,35 +271,20 @@ public class TrenchMap : MonoBehaviour
 
             imageTexture.Apply();
         }
+    }
 
+    public void Draw ()
+    {
         var transform = Matrix4x4.TRS(pos, Quaternion.identity, Vector2.one * scale);
 
-        Graphics.DrawMesh(imageMesh, transform,  imageMaterial,0);
+        Graphics.DrawMesh(imageMesh, transform, imageMaterial, 0);
     }
 
-    public void DigTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool debugLines = false)
-    {
-        if (blocks == null)
-        {
-            blocks = new MapBlock[resolution,resolution];
-        }
-
-        SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, true, debugLines);
-    }
-
-    public void FillTaperedCapsule (Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool debugLines = false)
-    {
-        if (blocks == null) //if there's no dug points, no need to calculate anything lol
-            return;
-
-        SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, false, debugLines);
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (debugLines)
-        {
-            DrawCapsule();
-        }
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    if (debugLines)
+    //    {
+    //        DrawCapsule();
+    //    }
+    //}
 }

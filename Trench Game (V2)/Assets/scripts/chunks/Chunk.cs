@@ -13,7 +13,7 @@ public class Chunk
     public readonly List<Character> characters = new();
     public readonly List<Collider> colliders = new();
     public readonly List<Item> items = new();
-    public List<Inventory> listeningInventories = new();
+    //public List<Inventory> listeningInventories = new();
 
     readonly List<Bullet> bullets = new();
     public List<Bullet> Bullets //this is not an efficient way to do this but whatever
@@ -56,10 +56,10 @@ public class Chunk
     public void AddItem(Item item)
     {
         items.Add(item);
-        foreach (var inventory in listeningInventories)
-        {
-            inventory.onItemAdded(item);
-        }
+        //foreach (var inventory in listeningInventories)
+        //{
+        //    inventory.onItemAdded(item);
+        //}
 
         //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was added to chunk {adress}");
     }
@@ -68,10 +68,10 @@ public class Chunk
     {
         items.Remove(item);
 
-        foreach (var inventory in listeningInventories)
-        {
-            inventory.onItemRemoved?.Invoke(item);
-        }
+        //foreach (var inventory in listeningInventories)
+        //{
+        //    inventory.onItemRemoved?.Invoke(item);
+        //}
 
         DestroyIfEmpty();
 
@@ -97,7 +97,7 @@ public class Chunk
         items.Clear();
         characters.Clear();
         colliders.Clear();
-        listeningInventories.Clear();
+        //listeningInventories.Clear();
     }
 
     public T[] GetItems<T>() where T : Item

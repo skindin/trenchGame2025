@@ -214,10 +214,10 @@ public class Inventory : MonoBehaviour
                 }
             }
 
-            if (!found) //if new chunk is not within old chunks
-            {
-                newChunk.listeningInventories.Add(this);
-            }
+            //if (!found) //if new chunk is not within old chunks
+            //{
+            //    newChunk.listeningInventories.Add(this);
+            //}
         }        
         
         foreach (var oldChunk in oldChunks)
@@ -235,10 +235,10 @@ public class Inventory : MonoBehaviour
                 }
             }
 
-            if (!found) //if old chunk is not in new chunks
-            {
-                oldChunk.listeningInventories.Remove(this);
-            }
+            //if (!found) //if old chunk is not in new chunks
+            //{
+            //    oldChunk.listeningInventories.Remove(this);
+            //}
         }
     }
 
@@ -471,12 +471,12 @@ public class Inventory : MonoBehaviour
 
     public void OnRemoved ()
     {
-        foreach (var chunk in chunks)
-        {
-            if (chunk == null) continue;
+        //foreach (var chunk in chunks)
+        //{
+        //    if (chunk == null) continue;
 
-            chunk.listeningInventories.Remove(this);
-        }
+        //    chunk.listeningInventories.Remove(this);
+        //}
 
         SelectedItem = null;
     }

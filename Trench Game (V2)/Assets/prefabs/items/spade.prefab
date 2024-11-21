@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9215205652936911966}
   - component: {fileID: 5204487829829496799}
+  - component: {fileID: 2994186947382337545}
   m_Layer: 0
   m_Name: Square (1)
   m_TagString: Untagged
@@ -26,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 601925726751185027}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.3, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.2, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -85,6 +86,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2994186947382337545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601925726751185027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCenterPoint: {x: 0, y: 0}
+  drawPoint: 0
+  includeSelf: 1
+  sprite: {fileID: 5204487829829496799}
+  localOrder: 0
+  parent: {fileID: 0}
+  children: []
+  container: {fileID: 0}
 --- !u!1 &2421231489847228794
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,7 +132,7 @@ Transform:
   m_GameObject: {fileID: 2421231489847228794}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.237, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -132,13 +153,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: spade
   id: 0
-  prefabId: 0
+  prefabId: 5
   defaultContainer: {fileID: 0}
   wielder: {fileID: 0}
+  groundRot: {x: 0, y: 0, z: 0}
+  heldRot: {x: 0, y: 0, z: 0}
+  heldPos: {x: 0, y: 0, z: 0}
   passivePickup: 0
+  onAim:
+    m_PersistentCalls:
+      m_Calls: []
   integrity: 0
   digRadius: 1
   digSpeedFactor: 0.8
+  digging: 1
+  debugLines: 1
 --- !u!1 &4839155834968144279
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6851082989863285745}
   - component: {fileID: 4844498587393228925}
+  - component: {fileID: 4546792322901040872}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -223,3 +253,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4546792322901040872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4839155834968144279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCenterPoint: {x: 0, y: 0}
+  drawPoint: 0
+  includeSelf: 1
+  sprite: {fileID: 4844498587393228925}
+  localOrder: 1
+  parent: {fileID: 0}
+  children: []
+  container: {fileID: 0}
