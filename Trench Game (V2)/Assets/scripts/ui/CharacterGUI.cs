@@ -243,18 +243,12 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawAllCharacterUI (GUIStyle style, float scaleFactor)
     {
-
-        foreach (var chunk in ChunkManager.Manager.chunks)
+        foreach (var character in CharacterManager.Manager.active)
         {
-            if (chunk == null) continue;
+            if (character == this.character || !character.gameObject.activeInHierarchy)
+                continue;
 
-            foreach (var character in chunk.characters)
-            {
-                if (character == this.character || !character.gameObject.activeInHierarchy)
-                    continue;
-
-                DrawCharacterUI(character, style, scaleFactor);
-            }
+            DrawCharacterUI(character, style, scaleFactor);
         }
     }
 

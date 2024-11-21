@@ -7,17 +7,32 @@ using UnityEngine.Rendering;
 
 public class TrenchMap : MonoBehaviour
 {
-    public Sprite sprite;
-    public SpriteRenderer spriteRenderer;
+    //public Sprite sprite;
+    //public SpriteRenderer spriteRenderer;
     public MapBlock[,] blocks;
     public int resolution = 8;
     public float scale = 1;
     public bool drawMap = true, debugLines = false;
     public Transform pointA, pointB;
+    public Vector2 pos;
+    public bool testValue = true;
+    public Color trenchColor = Color.gray, groundColor = Color.clear;
+    public Mesh imageMesh;
+    public Material imageMaterial;
+    public Texture2D imageTexture;
+
+    private void Awake()
+    {
+        imageMaterial = new Material(imageMaterial);
+
+        imageTexture = new Texture2D(resolution * 4, resolution * 4);
+
+        imageMaterial.mainTexture = imageTexture;
+    }
 
     private void Update()
     {
-        if (drawMap)
+        if (drawMap || debugLines) //shrigging emoji
         {
             DrawMap();
         }
@@ -25,11 +40,9 @@ public class TrenchMap : MonoBehaviour
 
     public void DrawMap ()
     {
-        blocks = null;
+        //blocks = null;
 
-        GeoUtils.DrawCircle(pointA.position, pointA.localScale.x, Color.green);
-        GeoUtils.DrawCircle(pointB.position, pointB.localScale.x, Color.green);
-        Debug.DrawLine(pointA.position, pointB.position, Color.green);
+        //DrawCapsule();
         //var perpendicular = Vector2.Perpendicular(pointA.position - pointB.position).normalized;
 
         //Debug.DrawLine(
@@ -41,10 +54,20 @@ public class TrenchMap : MonoBehaviour
         //    (Vector2)pointB.position - perpendicular * pointB.localScale.x,
         //    Color.green);
 
-        DigTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, debugLines);
+        if (testValue)
+            DigTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, debugLines);
+        else
+            FillTaperedCapsule(pointA.position, pointA.localScale.x, pointB.position, pointB.localScale.x, debugLines);
 
         //if (blocks == null)
         //    return;
+    }
+
+    void DrawCapsule()
+    {
+        GeoUtils.DrawCircle(pointA.position, pointA.localScale.x, Color.green);
+        GeoUtils.DrawCircle(pointB.position, pointB.localScale.x, Color.green);
+        Debug.DrawLine(pointA.position, pointB.position, Color.green);
     }
 
     public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, bool debugLines = false)
@@ -52,10 +75,44 @@ public class TrenchMap : MonoBehaviour
         float blockWidth = scale / resolution; // Width of each MapBlock
         float bitWidth = blockWidth / 4f;      // Width of each bit in a MapBlock
 
-        for (int blockY = 0; blockY < resolution; blockY++)
+        var startMax = Vector2.one * startRadius;
+        var endMax = Vector2.one * endRadius;
+
+        var mapMin = pos - scale / 2 * Vector2.one;
+        var mapMax = pos + scale / 2 * Vector2.one;
+
+        var capsuleMin = Vector2.Min(startPoint - startMax, endPoint - endMax);
+        capsuleMin = Vector2.Max(capsuleMin, mapMin);
+
+        var capsuleMax = Vector2.Max(startPoint + startMax, endPoint + endMax);
+        capsuleMax = Vector2.Min(capsuleMax, mapMax);
+
+        var halfVector2One = Vector2.one * .5f;
+
+        var startPos = Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
+        startPos = Vector2Int.Max(startPos, Vector2Int.zero);
+
+        var endPos = Vector2Int.CeilToInt(((capsuleMax - pos) / blockWidth) + (resolution * halfVector2One));
+
+        //GeoUtils.DrawBoxMinMax(startPos, endPos, Color.magenta);
+
+        bool somethingChanged = true;
+        //honestly probably better to switch between setting all the pixels and some of them depending on how many
+
+        Color32[] pixels = new Color32[resolution * 4 * resolution * 4];
+
+        for (int i = 0; i < resolution * 4 * resolution * 4; i++)
         {
-            for (int blockX = 0; blockX < resolution; blockX++)
+            var color = Random.ColorHSV();
+            pixels[i] = new((byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a);
+        }
+
+        for (int blockY = startPos.y; blockY < endPos.y; blockY++)
+        {
+            for (int blockX = startPos.x; blockX < endPos.x; blockX++)
             {
+                //pixels[blockX + blockY * resolution * 4] = new Color32(0,0,0,1);
+
                 var block = blocks[blockX, blockY];
 
                 // Create a block if it doesn't exist and the value is being set to true
@@ -68,15 +125,15 @@ public class TrenchMap : MonoBehaviour
                 }
 
                 // Compute the position of the block's center in world space
-                var boxPos = (new Vector2(blockX + 0.5f, blockY + 0.5f) - Vector2.one * resolution * 0.5f) * blockWidth
-                    + (Vector2)transform.position;
+                var boxPos = (new Vector2(blockX + 0.5f, blockY + 0.5f) - resolution * halfVector2One) * blockWidth
+                    + pos;
 
                 // If the block already fully matches the target value, skip processing
                 if (block.TestWhole(value))
                 {
-                    if (debugLines)
+                    if (drawMap)
                     {
-                        GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth, Color.white);
+                        GeoUtils.MarkPoint(boxPos, blockWidth/2, Color.white);
                     }
                     continue;
                 }
@@ -85,17 +142,18 @@ public class TrenchMap : MonoBehaviour
                 if (!GeoUtils.TestBoxTouchesTaperedCapsule(boxPos, Vector2.one * blockWidth, startPoint, startRadius, endPoint, endRadius,
                     debugLines))
                 {
-                    if (debugLines)
+                    if (drawMap)
                     {
+                        GeoUtils.MarkPoint(boxPos, blockWidth / 2, Color.red);
                         GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth, Color.red);
                     }
                     continue; // Skip if the block doesn't touch the capsule
                 }
 
                 // Debug visualization for blocks that touch the capsule
-                if (debugLines)
+                if (drawMap)
                 {
-                    GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth * .9f, Color.green);
+                    GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth, Color.green);
                 }
 
                 // Get the 4x4 bit array from the block
@@ -123,6 +181,16 @@ public class TrenchMap : MonoBehaviour
                         {
                             blockArray[bitX, bitY] = value;
                             totalBitsAtValue++;
+                            if (drawMap)
+                            {
+                                GeoUtils.MarkPoint(bitPos, bitWidth, Color.green);
+                            }
+
+                            somethingChanged = true;
+                        }
+                        else if (drawMap)
+                        {
+                            GeoUtils.MarkPoint(bitPos, bitWidth/2, Color.red);
                         }
                     }
                 }
@@ -139,6 +207,12 @@ public class TrenchMap : MonoBehaviour
                 }
             }
         }
+
+        imageTexture.SetPixels32(pixels);
+
+        imageTexture.Apply();
+
+        Graphics.DrawMesh(imageMesh,Matrix4x4.identity,  imageMaterial,0);
     }
 
     public void DigTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool debugLines = false)
@@ -157,5 +231,13 @@ public class TrenchMap : MonoBehaviour
             return;
 
         SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, false, debugLines);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (drawMap || debugLines)
+        {
+            DrawCapsule();
+        }
     }
 }

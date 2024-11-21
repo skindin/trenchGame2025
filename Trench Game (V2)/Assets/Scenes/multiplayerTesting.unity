@@ -3782,13 +3782,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8326c00b0208fac488c034e3ceffcc37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  resolution: 10
+  resolution: 4
   scale: 50
-  illustrateMap: 1
+  drawMap: 1
+  debugLines: 0
   pointA: {fileID: 2081706293}
   pointB: {fileID: 1575661430}
+  pos: {x: 0, y: 0}
+  testValue: 1
+  trenchColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  groundColor: {r: 0, g: 0, b: 0, a: 0}
+  imageMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  imageMaterial: {fileID: 2100000, guid: 41eb24fc18bbdad42ad19ac7362a0c20, type: 2}
+  imageTexture: {fileID: 0}
 --- !u!4 &1074577802
 Transform:
   m_ObjectHideFlags: 0
@@ -3798,12 +3804,12 @@ Transform:
   m_GameObject: {fileID: 1074577800}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.804562, y: -1.0624957, z: -0.2241915}
+  m_LocalPosition: {x: 14.8, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2081706293}
   - {fileID: 1575661430}
+  - {fileID: 2081706293}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1088128561
@@ -5401,9 +5407,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575661429}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14.3, y: 5.9, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 22, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1074577802}
@@ -6380,8 +6386,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2081706292}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -21.7, y: -7.9, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 17.8, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6480,7 +6486,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2113553810
 MonoBehaviour:
   m_ObjectHideFlags: 0

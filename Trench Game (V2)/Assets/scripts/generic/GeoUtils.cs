@@ -2,6 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 //using System.Drawing;
+using Unity.VisualScripting;
+
+
+//using System.Drawing;
 //using Unity.VisualScripting;
 //using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
@@ -617,9 +621,9 @@ public static class GeoUtils
     }
 
     public static bool TestPointWithinTaperedCapsule (Vector2 testPoint, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB
-        //,out Vector2 closestPoint, out float thickness
-        , bool debugLines = false
-        )
+    //,out Vector2 closestPoint, out float thickness
+    , bool debugLines = false
+    )
     {
         var closestPoint = GetClosestPointOnTaperedCapsule(testPoint, pointA, radiusA, pointB, radiusB, out var thickness, debugLines);
 
@@ -646,38 +650,78 @@ public static class GeoUtils
     public static bool TestBoxTouchesTaperedCapsule(Vector2 boxPos, Vector2 boxSize, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB,
         bool debugLines = false)
     {
-        if (TestBoxPosSize(boxPos, boxSize, pointA) || TestBoxPosSize(boxPos, boxSize, pointB))
+        //var cornerArray = GetBoxCornersPosSize(boxPos, boxSize);
+
+        if (TestBoxPosSizeTouchesCircle(boxPos, boxSize, pointA, radiusA, debugLines))
             return true;
 
-        var point = GetClosestPointOnTaperedCapsule(boxPos, pointA, radiusA, pointB, radiusB, out var distance, debugLines);
+        if (TestBoxPosSizeTouchesCircle(boxPos, boxSize, pointB, radiusB, debugLines))
+            return true;
 
-        return TestBoxPosSizeTouchesCircle(boxPos, boxSize, point, distance, debugLines);
-    }
+        //var point = GetClosestPointOnTaperedCapsule(boxPos, pointA, radiusA, pointB, radiusB, out var distance, debugLines);
 
-    public static bool TestBoxPosSizeTouchesCircle(Vector2 boxPos, Vector2 boxSize, Vector2 circlePos, float circleRadius, bool debugLines = false)
-    {
-        var cornerArray = GetBoxCornersPosSize(boxPos, boxSize);
+        //if (TestBoxPosSizeTouchesCircle(boxPos, boxSize, point, distance, debugLines))
+        //    return true;
 
-        var i = 0;
+        //thinking i could decrease boxcircle tests if i just make the corner lines the radius of the biggest circle
 
-        while (i < 4)
+        var maxRadius = Mathf.Max(radiusA, radiusB);
+
+        var crossLine = (boxSize.normalized * (maxRadius*2 + boxSize.magnitude)) /2;
+
+        Vector2
+            intersection = FindIntersection(pointA, pointB,
+            boxPos - crossLine,
+            boxPos + crossLine,
+            debugLines);
+
+        if (intersection != Vector2.positiveInfinity)
         {
+            var point = GetClosestPointOnTaperedCapsule(intersection, pointA, radiusA, pointB, radiusB, out var distance, debugLines);
 
-            //var test = (int)Mathf.Repeat(10, 10);
-
-            var start = cornerArray[i];
-
-            var endIndex = i >= 3 ? 0 : i = i + 1;
-            var end = cornerArray[endIndex];
-            if (DoesLineIntersectCircle(circlePos, circleRadius, start, end, debugLines))
+            if (TestBoxPosSizeTouchesCircle(boxPos, boxSize, point, distance, debugLines))
                 return true;
-
-            if (endIndex == 0)
-                break;
         }
+
+        var perpCrossLine = crossLine.Perpendicular1();
+
+        intersection = FindIntersection(pointA, pointB,
+            boxPos - perpCrossLine,
+            boxPos + perpCrossLine,
+            debugLines);
+
+        if (intersection != Vector2.positiveInfinity)
+        {
+            var point = GetClosestPointOnTaperedCapsule(intersection, pointA, radiusA, pointB, radiusB, out var distance, debugLines);
+
+            if (TestBoxPosSizeTouchesCircle(boxPos, boxSize, point, distance, debugLines))
+                return true;
+        }
+
+        //foreach (var corner in cornerArray)
+        //{
+        //    if (TestPointWithinTaperedCapsule(corner, pointA, radiusA, pointB, radiusB, debugLines))
+        //        return true;
+        //}
 
         return false;
     }
+
+    public static bool TestBoxPosSizeTouchesCircle(Vector2 boxPos, Vector2 boxSize, Vector2 circlePos, float circleRadius,
+        bool debugLines = false)
+    {
+        var clampedPoint = ClampToBoxPosSize(circlePos, boxPos, boxSize);
+
+        if (debugLines)
+            MarkPoint(clampedPoint, boxSize.x * .05f, Color.green);
+
+        if ((clampedPoint - circlePos).magnitude <= circleRadius)
+            return true;
+
+        return false;
+    }
+
+
 
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {
