@@ -16,10 +16,11 @@ public class TrenchMap : MonoBehaviour
     public Transform pointA, pointB;
     public Vector2 pos;
     public bool testValue = true;
-    public Color trenchColor = Color.gray, groundColor = Color.clear;
+    public Color32 trenchColor = new(255,255,255,255), groundColor = new(255, 255, 255, 255);
     public Mesh imageMesh;
     public Material imageMaterial;
     public Texture2D imageTexture;
+    Color32[] pixels;
 
     private void Awake()
     {
@@ -28,6 +29,8 @@ public class TrenchMap : MonoBehaviour
         imageTexture = new Texture2D(resolution * 4, resolution * 4);
 
         imageMaterial.mainTexture = imageTexture;
+
+        pixels = new Color32[resolution * 4 * 4 * resolution];
     }
 
     private void Update()
@@ -99,19 +102,18 @@ public class TrenchMap : MonoBehaviour
         bool somethingChanged = true;
         //honestly probably better to switch between setting all the pixels and some of them depending on how many
 
-        Color32[] pixels = new Color32[resolution * 4 * resolution * 4];
+        //Color32[] pixels = new Color32[resolution * 4 * resolution * 4];
 
-        for (int i = 0; i < resolution * 4 * resolution * 4; i++)
-        {
-            var color = Random.ColorHSV();
-            pixels[i] = new((byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a);
-        }
+        //for (int i = 0; i < resolution * 4 * resolution * 4; i++)
+        //{
+        //    pixels[i] = groundColor;
+        //}
 
         for (int blockY = startPos.y; blockY < endPos.y; blockY++)
         {
             for (int blockX = startPos.x; blockX < endPos.x; blockX++)
             {
-                //pixels[blockX + blockY * resolution * 4] = new Color32(0,0,0,1);
+                pixels[blockX + blockY * resolution * 4] = trenchColor;
 
                 var block = blocks[blockX, blockY];
 
@@ -212,7 +214,9 @@ public class TrenchMap : MonoBehaviour
 
         imageTexture.Apply();
 
-        Graphics.DrawMesh(imageMesh,Matrix4x4.identity,  imageMaterial,0);
+        var transform = Matrix4x4.TRS(pos, Quaternion.identity, Vector2.one * scale);
+
+        Graphics.DrawMesh(imageMesh, transform,  imageMaterial,0);
     }
 
     public void DigTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool debugLines = false)
