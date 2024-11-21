@@ -646,6 +646,28 @@ public static class GeoUtils
         return closestPoint;
     }
 
+    public static bool TestCirlceTouchesTaperedCapsule (Vector2 circlePos, float circleRadius, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB,
+        bool debugLines = false)
+    {
+        var point = GetClosestPointOnTaperedCapsule(circlePos, pointA, radiusA, pointB, radiusB, out var thickness, debugLines);
+
+        if (CirclesOverlap(circlePos, circleRadius, point, thickness))
+        {
+            if (debugLines)
+            {
+                DrawCircle(circlePos, circleRadius, Color.green);
+            }
+
+            return true;
+        }
+        else if (debugLines)
+        {
+            DrawCircle(circlePos, circleRadius, Color.red);
+        }
+
+        return false;
+    }
+
     //i just realilzed this will only work if the box is small enough. it could have the entire capsule inside of it lol
     public static bool TestBoxTouchesTaperedCapsule(Vector2 boxPos, Vector2 boxSize, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB,
         bool debugLines = false)
@@ -721,7 +743,21 @@ public static class GeoUtils
         return false;
     }
 
+    public static bool CirclesOverlap(Vector2 center1, float radius1, Vector2 center2, float radius2, bool debugLines = false)
+    {
+        var result = (center1 - center2).magnitude < radius1 + radius2;
 
+        if (debugLines)
+        {
+            var color = result ? Color.green : Color.red;
+
+            DrawCircle(center1, radius1, color);
+            DrawCircle(center2, radius2, color);
+        }
+
+        // If the squared distance is less than or equal to the squared radii sum, they overlap
+        return result;
+    }
 
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {

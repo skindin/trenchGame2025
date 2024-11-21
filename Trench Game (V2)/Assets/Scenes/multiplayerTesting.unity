@@ -1889,7 +1889,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1074577802}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &519420034
@@ -3319,7 +3320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 50
+  worldSize: 10
   minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0
@@ -3782,17 +3783,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8326c00b0208fac488c034e3ceffcc37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 50
-  scale: 50
+  resolution: 150
+  scale: 10
   drawMap: 0
-  debugLines: 0
+  debugLines: 1
+  logBitsTested: 1
   pointA: {fileID: 2081706293}
   pointB: {fileID: 1575661430}
   pos: {x: 0, y: 0}
   testValue: 1
   trenchColor:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 2483027968
   groundColor:
     serializedVersion: 2
     rgba: 16777215
@@ -3814,7 +3816,7 @@ Transform:
   m_Children:
   - {fileID: 1575661430}
   - {fileID: 2081706293}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 519420032}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1088128561
 GameObject:
@@ -5411,9 +5413,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575661429}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 22, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1074577802}
@@ -6390,8 +6392,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2081706292}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 17.8, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7137,7 +7139,6 @@ SceneRoots:
   - {fileID: 2141767690}
   - {fileID: 2113553811}
   - {fileID: 746558444}
-  - {fileID: 519420032}
   - {fileID: 62624779}
   - {fileID: 717289629}
   - {fileID: 430202880}
@@ -7145,4 +7146,4 @@ SceneRoots:
   - {fileID: 1284647723}
   - {fileID: 820955971}
   - {fileID: 914788467}
-  - {fileID: 1074577802}
+  - {fileID: 519420032}

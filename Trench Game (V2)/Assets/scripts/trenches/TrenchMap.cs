@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 public class TrenchMap : MonoBehaviour
@@ -12,7 +13,7 @@ public class TrenchMap : MonoBehaviour
     public MapBlock[,] blocks;
     public int resolution = 8;
     public float scale = 1;
-    public bool drawMap = true, debugLines = false;
+    public bool runTest = true, drawMap = true, debugLines = false, logBitsTested = false;
     public Transform pointA, pointB;
     public Vector2 pos;
     public bool testValue = true;
@@ -35,7 +36,7 @@ public class TrenchMap : MonoBehaviour
 
     private void Update()
     {
-        if (drawMap || debugLines) //shrigging emoji
+        if (runTest) //shrigging emoji
         {
             DrawMap();
         }
@@ -99,7 +100,7 @@ public class TrenchMap : MonoBehaviour
 
         //GeoUtils.DrawBoxMinMax(startPos, endPos, Color.magenta);
 
-        bool somethingChanged = true;
+        bool somethingChanged = false;
         //honestly probably better to switch between setting all the pixels and some of them depending on how many
 
         //Color32[] pixels = new Color32[resolution * 4 * resolution * 4];
@@ -108,6 +109,9 @@ public class TrenchMap : MonoBehaviour
         //{
         //    pixels[i] = groundColor;
         //}
+
+        int totalBitsTested = 0;
+        int totalBlocksTested = 0;
 
         for (int blockY = startPos.y; blockY < endPos.y; blockY++)
         {
@@ -138,8 +142,9 @@ public class TrenchMap : MonoBehaviour
                     continue;
                 }
 
+                totalBlocksTested++;
                 // Check if the block overlaps with the tapered capsule
-                if (!GeoUtils.TestBoxTouchesTaperedCapsule(boxPos, Vector2.one * blockWidth, startPoint, startRadius, endPoint, endRadius,
+                if (!GeoUtils.TestCirlceTouchesTaperedCapsule(boxPos, Vector2.one.magnitude * bitWidth * 1.5f, startPoint, startRadius, endPoint, endRadius,
                     debugLines))
                 {
                     if (drawMap)
@@ -160,11 +165,15 @@ public class TrenchMap : MonoBehaviour
                 var blockArray = block.GetArray();
                 int totalBitsAtValue = 0;
 
+                //Profiler.BeginSample("TestCircleTouchesTaperedCapsule");
+
                 for (int bitY = 0; bitY < 4; bitY++)
                 {
                     for (int bitX = 0; bitX < 4; bitX++)
                     {
                         var bitValue = blockArray[bitX, bitY];
+
+                        totalBitsTested++;
 
                         // Skip if this bit already has the desired value
                         if (bitValue == value)
@@ -175,6 +184,9 @@ public class TrenchMap : MonoBehaviour
 
                         // Compute the position of the bit in world space
                         var bitPos = boxPos + new Vector2((bitX - 1.5f) * bitWidth, (bitY - 1.5f) * bitWidth);
+
+                        //if (!GeoUtils.TestBoxMinMax(capsuleMin, capsuleMax, bitPos, debugLines))
+                        //    continue;
 
                         // Test if the bit is within the capsule
                         if (GeoUtils.TestPointWithinTaperedCapsule(bitPos, startPoint, startRadius, endPoint, endRadius))
@@ -199,6 +211,8 @@ public class TrenchMap : MonoBehaviour
                     }
                 }
 
+                //Profiler.EndSample();
+
                 // Remove the block if all bits are cleared and `value` is false
                 if (!value && totalBitsAtValue >= 16)
                 {
@@ -210,6 +224,11 @@ public class TrenchMap : MonoBehaviour
                     block.SetArray(blockArray);
                 }
             }
+        }
+
+        if (logBitsTested)
+        {
+            Debug.Log($"tested {totalBlocksTested} blocks and {totalBitsTested} bits");
         }
 
         if (somethingChanged)
@@ -244,7 +263,7 @@ public class TrenchMap : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (drawMap || debugLines)
+        if (debugLines)
         {
             DrawCapsule();
         }
