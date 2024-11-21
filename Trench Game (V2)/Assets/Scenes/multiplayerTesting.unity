@@ -3782,10 +3782,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8326c00b0208fac488c034e3ceffcc37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 10
+  resolution: 50
   scale: 50
-  drawMap: 1
-  debugLines: 1
+  drawMap: 0
+  debugLines: 0
   pointA: {fileID: 2081706293}
   pointB: {fileID: 1575661430}
   pos: {x: 0, y: 0}

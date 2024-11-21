@@ -113,8 +113,6 @@ public class TrenchMap : MonoBehaviour
         {
             for (int blockX = startPos.x; blockX < endPos.x; blockX++)
             {
-                pixels[blockX + blockY * resolution * 4] = trenchColor;
-
                 var block = blocks[blockX, blockY];
 
                 // Create a block if it doesn't exist and the value is being set to true
@@ -189,6 +187,10 @@ public class TrenchMap : MonoBehaviour
                             }
 
                             somethingChanged = true;
+
+                            var arrayIndex = bitY * resolution * 4 + bitX + blockY * 16 * resolution + blockX * 4;
+
+                            pixels[arrayIndex] = value ? trenchColor : groundColor;
                         }
                         else if (drawMap)
                         {
@@ -210,9 +212,12 @@ public class TrenchMap : MonoBehaviour
             }
         }
 
-        imageTexture.SetPixels32(pixels);
+        if (somethingChanged)
+        {
+            imageTexture.SetPixels32(pixels);
 
-        imageTexture.Apply();
+            imageTexture.Apply();
+        }
 
         var transform = Matrix4x4.TRS(pos, Quaternion.identity, Vector2.one * scale);
 
