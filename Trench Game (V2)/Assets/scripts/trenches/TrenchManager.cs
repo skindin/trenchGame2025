@@ -40,7 +40,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         var capsuleMax = Vector2.Max(startPoint + startMax, endPoint + endMax);
         //capsuleMax = Vector2.Min(capsuleMax, mapMax);
 
-        var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(capsuleMin, capsuleMax, true);
+        var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(capsuleMin, capsuleMax, value);
 
         wasModified = false;
 
