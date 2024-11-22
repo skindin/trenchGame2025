@@ -80,7 +80,7 @@ public class Chunk
 
     public void DestroyIfEmpty ()
     {
-        if (items.Count == 0 && characters.Count == 0 && ChunkManager.Manager) //should test for colliders too, but don't need to atm
+        if (items.Count == 0 && characters.Count == 0 && map == null && ChunkManager.Manager) //should test for colliders too, but don't need to atm
         {
             ChunkManager.Manager.RemoveChunk(this); //this line caused two null refference exceptions at one point...?
         }

@@ -127,18 +127,30 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (character.inventory.ActiveWeapon)
-                    character.inventory.ActiveWeapon.DirectionalAction(mouseDir);
+                if (character.inventory.ActiveWeapon is Gun gun)
+                    gun.DirectionalAction(mouseDir);
                 else if (character.inventory.ActiveItem)
                     character.inventory.ActiveItem.Action();
             }
         }
 
+
+
         if (Input.GetKey(KeyCode.E)) //temporary!!
         {
-            if (character.inventory.ActiveWeapon)
+
+            if (Input.GetKeyDown(KeyCode.E)) //temporary!!
             {
-                character.inventory.ActiveWeapon.Action();
+                if (character.inventory.ActiveWeapon is Gun gun)
+                {
+                    gun.Action();
+                }
+                else if (character.inventory.ActiveWeapon is Spade spade)
+                    spade.SecondaryAction();
+            }
+            else 
+            {
+
             }
         }
 

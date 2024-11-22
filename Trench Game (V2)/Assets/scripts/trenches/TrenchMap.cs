@@ -34,7 +34,7 @@ public class TrenchMap
 
         imageTexture = new Texture2D(resolution * 4, resolution * 4);
 
-        this.imageMaterial = imageMaterial;
+        this.imageMaterial = new(imageMaterial);
 
         this.imageMaterial.mainTexture = imageTexture;
 

@@ -12,10 +12,10 @@ public class Character : MonoBehaviour
     public string characterName;
     public PlayerController userController;
     public BotController aiController;
-    public SpriteRenderer sprite;
-    public Color dangerColor = Color.white;
+    //public SpriteRenderer sprite;
+    //public Color dangerColor = Color.white;
     Color startColor;
-    public float baseMoveSpeed = 5, digMoveSpeed = 1, initialDigSpeed = 5, deathDropRadius = 1, hp = 10, maxHp = 10;
+    public float baseMoveSpeed = 5, moveSpeed = 0, deathDropRadius = 1, hp = 10, maxHp = 10;
 
     int killCount;
 
@@ -31,17 +31,17 @@ public class Character : MonoBehaviour
         }
     }
 
-    public float MoveSpeed
-    {
-        get
-        {
-            //var speed = baseMoveSpeed;
-            if (digging || filling) 
-                return digMoveSpeed;
-            else 
-                return baseMoveSpeed;
-        }
-    }
+    //public float MoveSpeed
+    //{
+    //    get
+    //    {
+    //        //var speed = baseMoveSpeed;
+    //        if (digging || filling) 
+    //            return digMoveSpeed;
+    //        else 
+    //            return baseMoveSpeed;
+    //    }
+    //}
 
     public Chunk chunk;
     public Collider collider;
@@ -79,9 +79,10 @@ public class Character : MonoBehaviour
     void Awake()
     {
         Type = controlType;
+        moveSpeed = baseMoveSpeed;
         //all.Add(this);
         //chunkless.Add(this);
-        startColor = sprite.color;
+        //startColor = sprite.color;
         //detector.onDetect.AddListener(UpdateVulnerable);
         //detector.onDetect.AddListener(collider.ToggleSafe);
     }
@@ -201,7 +202,7 @@ public class Character : MonoBehaviour
 
     public void MoveInDirection(Vector2 direction)
     {
-        Vector3 dir = Vector2.ClampMagnitude(direction, MoveSpeed * Time.deltaTime);
+        Vector3 dir = Vector2.ClampMagnitude(direction, moveSpeed * Time.deltaTime);
 
         SetPos(transform.position + dir);
 
@@ -283,18 +284,6 @@ public class Character : MonoBehaviour
         Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
     }
 
-    public void UpdateVulnerable (bool trenchStatus)
-    {
-        if (trenchStatus)
-        {
-            sprite.color = startColor;
-        }
-        else
-        {
-            sprite.color = dangerColor;
-        }
-    }
-
     public void KillThis ()
     {
         if (reserve)
@@ -305,8 +294,6 @@ public class Character : MonoBehaviour
 
         CharacterManager.Manager.KillCharacter(this);
     }
-
-
 
     public void RemoveSelf ()
     {
@@ -334,6 +321,8 @@ public class Character : MonoBehaviour
         hp = maxHp; //shouldn't use set, because then the server sends new character data every time it resets a character object
 
         killCount = 0;
+
+        moveSpeed = baseMoveSpeed;
         //CharacterManager.Manager.UpdateScoreBoard();
 
         Type = CharacterType.none;
