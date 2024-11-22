@@ -28,7 +28,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
         }
     }
 
-    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, bool debugLines = false)
+    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, out bool wasModified,
+        bool debugLines = false)
     {
         var startMax = Vector2.one * startRadius;
         var endMax = Vector2.one * endRadius;
@@ -40,6 +41,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
         //capsuleMax = Vector2.Min(capsuleMax, mapMax);
 
         var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(capsuleMin, capsuleMax, true);
+
+        wasModified = false;
 
         foreach (var chunk in chunks)
         {
@@ -60,7 +63,14 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
             }
 
-            chunk.map.SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, value, debugLines);
+            chunk.map.SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, value, out wasModified, debugLines);
+
+            Debug.Log($"chunk {chunk.adress} has {chunk.map.totalEditedBlocks} edited blocks");
+
+            if (chunk.map.empty)
+            {
+                chunk.RemoveTrenchMap();
+            }
         }
     }
 }

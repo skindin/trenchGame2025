@@ -35,7 +35,7 @@ public class ChunkManager : MonoBehaviour
     //readonly List<Chunk> chunkPool = new();
     public ObjectPool<Chunk> chunkPool;
 
-    public bool logOutOfBounds = false, drawChunks = false, drawLineTest = false;
+    public bool logOutOfBounds = false, drawChunks = false, drawObjectChunkLinks = false, drawLineTest = false;
 
     private void Awake()
     {
@@ -55,6 +55,9 @@ public class ChunkManager : MonoBehaviour
     {
         if (drawChunks)
             DrawChunks();
+
+        if (drawObjectChunkLinks)
+            DrawObjectChunkLinks();
 
         if (drawLineTest)
         {
@@ -85,6 +88,27 @@ public class ChunkManager : MonoBehaviour
         //{
         //    if (chunk != null) DrawChunk(chunk, Color.green);
         //}
+    }
+
+    public void DrawObjectChunkLinks ()
+    {
+        foreach (var chunk in chunks)
+        {
+            if (chunk == null)
+                continue;
+
+            var center = AdressToPos(chunk.adress) + chunkSize / 2 * Vector2.one;
+
+            foreach (var item in chunk.items)
+            {
+                Debug.DrawLine(center, item.transform.position, Color.blue);
+            }
+
+            foreach (var character in chunk.characters)
+            {
+                Debug.DrawLine(center, character.transform.position, Color.blue);
+            }
+        }
     }
 
     public void InstantiateChunks ()

@@ -20,6 +20,9 @@ public class TrenchMap
     public Material imageMaterial;//
     public Texture2D imageTexture;
     Color32[] pixels;
+    public
+        int totalEditedBlocks = 0;
+    public bool empty = true;
 
     public TrenchMap (int resolution, float scale, Color32 trenchColor, Color32 groundColor, Vector2 pos, Mesh imageMesh, Material imageMaterial)
     {
@@ -43,6 +46,9 @@ public class TrenchMap
         blocks = new MapBlock[resolution, resolution];
 
         pixels = new Color32[resolution * 4 * 4 * resolution];
+
+        imageTexture.SetPixels32(pixels);
+        imageTexture.Apply();
     }
 
     //private void Awake()
@@ -96,7 +102,8 @@ public class TrenchMap
     //    Debug.DrawLine(pointA.position, pointB.position, Color.green);
     //}
 
-    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, bool debugLines = false)
+    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, out bool mapChanged,
+        bool debugLines = false)
     {
         //if (blocks == null)
         //{
@@ -133,8 +140,7 @@ public class TrenchMap
         var endPos = Vector2Int.CeilToInt(((capsuleMax - pos) / blockWidth) + (resolution * halfVector2One));
 
         //GeoUtils.DrawBoxMinMax(startPos, endPos, Color.magenta);
-
-        bool somethingChanged = false;
+        mapChanged = false;
         //honestly probably better to switch between setting all the pixels and some of them depending on how many
 
         //Color32[] pixels = new Color32[resolution * 4 * resolution * 4];
@@ -173,8 +179,12 @@ public class TrenchMap
                     {
                         GeoUtils.MarkPoint(boxPos, blockWidth/2, Color.white);
                     }
+
                     continue;
                 }
+
+                bool wasCompletelyFull = block.TestWhole(false);
+                bool blockChanged = false;
 
                 totalBlocksTested++;
                 // Check if the block overlaps with the tapered capsule
@@ -232,7 +242,7 @@ public class TrenchMap
                                 GeoUtils.MarkPoint(bitPos, bitWidth, Color.green);
                             }
 
-                            somethingChanged = true;
+                            mapChanged = blockChanged = true;
 
                             var arrayIndex = bitY * resolution * 4 + bitX + blockY * 16 * resolution + blockX * 4;
 
@@ -245,12 +255,18 @@ public class TrenchMap
                     }
                 }
 
+                if (wasCompletelyFull && blockChanged)
+                {
+                    totalEditedBlocks++;
+                }
+
                 //Profiler.EndSample();
 
                 // Remove the block if all bits are cleared and `value` is false
                 if (!value && totalBitsAtValue >= 16)
                 {
                     blocks[blockX, blockY] = null;
+                    totalEditedBlocks--;
                 }
                 else
                 {
@@ -260,12 +276,14 @@ public class TrenchMap
             }
         }
 
+        empty = totalEditedBlocks == 0;
+
         //if (logBitsTested)
         //{
         //    Debug.Log($"tested {totalBlocksTested} blocks and {totalBitsTested} bits");
         //}
 
-        if (somethingChanged)
+        if (mapChanged)
         {
             imageTexture.SetPixels32(pixels);
 

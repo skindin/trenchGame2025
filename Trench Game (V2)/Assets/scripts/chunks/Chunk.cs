@@ -77,6 +77,13 @@ public class Chunk
 
         //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was removed from chunk {adress}");
     }
+    
+    public void RemoveTrenchMap ()
+    {
+        map = null;
+
+        DestroyIfEmpty ();
+    }
 
     public void DestroyIfEmpty ()
     {

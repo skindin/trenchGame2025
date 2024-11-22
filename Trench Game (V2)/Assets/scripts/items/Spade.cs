@@ -10,17 +10,19 @@ public class Spade : Weapon, ISecondaryAction
 
     public float
         //maxIntegrity = 10, 
-        maxDigRadius = 1, movementModifier = .8f;
+        maxDigRadius = 1, movementModifier = .8f, radiusSpeedModifier = 2;
 
     float digRadius = 0;
 
     public override string Verb => "dig";
     public string SecondaryVerb => "fill";
 
-    public bool digMode = true, debugLines = false;
+    public bool digMode = true, inUse = false, debugLines = false;
 
     Vector2 lastPos = Vector2.positiveInfinity;
     float lastRadius = 0;
+
+    bool appliedMovementModifier = false;
 
     private void LateUpdate()
     {
@@ -34,7 +36,8 @@ public class Spade : Weapon, ISecondaryAction
     {
         if (digRadius < maxDigRadius)
         {
-            digRadius = Mathf.MoveTowards(digRadius, maxDigRadius, movementModifier * wielder.baseMoveSpeed * Time.deltaTime);
+            digRadius = Mathf.MoveTowards(digRadius, maxDigRadius,
+                movementModifier * wielder.baseMoveSpeed * radiusSpeedModifier* Time.deltaTime);
             //digRadius += (maxDigRadius - digRadius) * movementModifier * wielder.baseMoveSpeed * Time.deltaTime;
         }
 
@@ -48,34 +51,63 @@ public class Spade : Weapon, ISecondaryAction
             lastRadius = 0;
         }
 
-        TrenchManager.Manager.SetTaperedCapsule(lastPos, lastRadius, wielder.transform.position, digRadius, digMode, debugLines);
+        TrenchManager.Manager.SetTaperedCapsule(lastPos, lastRadius, wielder.transform.position, digRadius, digMode, out var changed, debugLines);
+
+        //if (!changed)
+        //    return;
 
         //lastRadius = digRadius;
 
         if (usedThisFrame != null)
         {
             StopCoroutine(usedThisFrame);
+
+
         }
         else
         {
-            wielder.moveSpeed *= movementModifier;
+            OnStartDigging();
         }
+
+        ToggleSpeedModifier(changed);
 
         usedThisFrame = StartCoroutine(WaitForNextFrame());
 
         IEnumerator WaitForNextFrame ()
         {
             yield return null;
+
             OnStopDigging();
+
             usedThisFrame = null;
         }
+    }
+
+    void OnStartDigging ()
+    {
+        inUse = true;
+        ToggleSpeedModifier(true);
+    }
+
+    void ToggleSpeedModifier (bool value)
+    {
+        if (value == appliedMovementModifier)
+            return;
+
+        wielder.moveSpeed *= value ? movementModifier : 1 / movementModifier;
+
+        appliedMovementModifier = value;
     }
 
     void OnStopDigging ()
     {
         digRadius = lastRadius = 0;
 
-        wielder.moveSpeed /= movementModifier;
+        if (inUse)
+        {
+            ToggleSpeedModifier(false);
+            inUse = false;
+        }
     }
 
     public void SecondaryAction()
@@ -103,6 +135,8 @@ public class Spade : Weapon, ISecondaryAction
 
         OnStopDigging();
 
+        appliedMovementModifier = false;
+
         //integrity = ShovelModel.maxIntegrity;
     }
 
@@ -128,7 +162,7 @@ public class Spade : Weapon, ISecondaryAction
             itemInfo += separator + (digMode ? "dig" : "fill");
 
         itemInfo += $"{separator} {maxDigRadius:F1} m";
-        itemInfo += $"{separator} x{movementModifier:F1} m/s";
+        itemInfo += $"{separator} speed x{movementModifier:F1}";
 
         return itemInfo;
     }
