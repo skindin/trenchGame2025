@@ -17,7 +17,7 @@ public class Spade : Weapon, ISecondaryAction
     public override string Verb => "dig";
     public string SecondaryVerb => "fill";
 
-    public bool digMode = true, inUse = false, debugLines = false;
+    public bool digMode = true, debugLines = false;
 
     Vector2 lastPos = Vector2.positiveInfinity;
     float lastRadius = 0;
@@ -26,8 +26,11 @@ public class Spade : Weapon, ISecondaryAction
 
     private void LateUpdate()
     {
-        lastPos = transform.position;
-        lastRadius = digRadius;
+        if (wielder)
+        {
+            lastPos = wielder.transform.position;
+            lastRadius = digRadius;
+        }
     }
 
     Coroutine usedThisFrame;
@@ -85,7 +88,6 @@ public class Spade : Weapon, ISecondaryAction
 
     void OnStartDigging ()
     {
-        inUse = true;
         ToggleSpeedModifier(true);
     }
 
@@ -103,11 +105,7 @@ public class Spade : Weapon, ISecondaryAction
     {
         digRadius = lastRadius = 0;
 
-        if (inUse)
-        {
-            ToggleSpeedModifier(false);
-            inUse = false;
-        }
+        ToggleSpeedModifier(false);
     }
 
     public void SecondaryAction()

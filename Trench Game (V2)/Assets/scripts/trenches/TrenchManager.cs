@@ -63,7 +63,10 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
             }
 
-            chunk.map.SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, value, out wasModified, debugLines);
+            chunk.map.SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, value, out var mapChanged, debugLines);
+
+            if (mapChanged)
+                wasModified = true;
 
             Debug.Log($"chunk {chunk.adress} has {chunk.map.totalEditedBlocks} edited blocks");
 

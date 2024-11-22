@@ -168,7 +168,6 @@ MonoBehaviour:
   movementModifier: 0.2
   radiusSpeedModifier: 2
   digMode: 1
-  inUse: 0
   debugLines: 1
 --- !u!1 &4839155834968144279
 GameObject:
