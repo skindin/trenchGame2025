@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 //using System.Net;
 using UnityEngine;
-using static Unity.Collections.AllocatorManager;
+using System;
+//using static Unity.Collections.AllocatorManager;
 //using UnityEngine.Profiling;
 //using UnityEngine.Rendering;
 
@@ -118,8 +119,10 @@ public class TrenchMap
         //    }
         //}
 
-        float blockWidth = GetBlockWidth(); // Width of each MapBlock
-        float bitWidth = GetBitWidth(blockWidth);      // Width of each bit in a MapBlock
+        var manager = TrenchManager.Manager;
+
+        float blockWidth = manager.GetBlockWidth(); // Width of each MapBlock
+        float bitWidth = manager.GetBitWidth(blockWidth);      // Width of each bit in a MapBlock
 
         var startMax = Vector2.one * startRadius;
         var endMax = Vector2.one * endRadius;
@@ -135,10 +138,10 @@ public class TrenchMap
 
         //var halfVector2One = Vector2.one * .5f;
 
-        var startPos = GetBlockAdressFloored(capsuleMin, blockWidth); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
+        var startPos = manager.GetBlockAdressFloored(capsuleMin, pos, blockWidth); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
         startPos = Vector2Int.Max(startPos, Vector2Int.zero);
 
-        var endPos = GetBlockAdressCield(capsuleMax, blockWidth);
+        var endPos = manager.GetBlockAdressCield(capsuleMax, pos, blockWidth);
             //Vector2Int.CeilToInt(((capsuleMax - pos) / blockWidth) + (resolution * halfVector2One));
 
         //GeoUtils.DrawBoxMinMax(startPos, endPos, Color.magenta);
@@ -171,7 +174,7 @@ public class TrenchMap
                 }
 
                 // Compute the position of the block's center in world space
-                var blockPos = GetBlockPos(new(blockX, blockY),blockWidth);
+                var blockPos = manager.GetBlockPos(pos, new(blockX, blockY),blockWidth);
 
                 // If the block already fully matches the target value, skip processing
                 if (block.TestWhole(value))
@@ -228,7 +231,7 @@ public class TrenchMap
                         }
 
                         // Compute the position of the bit in world space
-                        var bitPos = GetBitPos(blockPos, bitWidth, new(bitX,bitY));
+                        var bitPos = manager.GetBitPos(blockPos, bitWidth, new(bitX,bitY));
 
                         //if (!GeoUtils.TestBoxMinMax(capsuleMin, capsuleMax, bitPos, debugLines))
                         //    continue;
@@ -292,53 +295,7 @@ public class TrenchMap
         }
     }
 
-    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint)
-    {
-        var blockWidth = 
 
-        return GeoUtils.ForeachCellTouchingLine<bool>(startPoint,endPoint,)
-    }
-
-    public float GetBitWidth(float blockWidth)
-    {
-        return blockWidth / 4f;
-    }
-
-    public float GetBlockWidth()
-    {
-        return scale / resolution;
-    }
-
-    public Vector2 GetBlockPos (Vector2 blockAdress, float blockWidth)
-    {
-        return (new Vector2(blockAdress.x + 0.5f, blockAdress.y + 0.5f) - resolution * .5f * Vector2.one) * blockWidth
-                    + pos;
-    }
-
-    public Vector2 GetBitPos (Vector2 blockPos, float bitWidth, Vector2 bitAdress)
-    {
-        return blockPos + new Vector2((bitAdress.x - 1.5f) * bitWidth, (bitAdress.y - 1.5f) * bitWidth);
-    }
-
-    public Vector2 GetBlockAdressPoint (Vector2 pos, float blockWidth)
-    {
-        return ((pos - this.pos) / blockWidth) + (resolution * .5f * Vector2.one);
-    }
-
-    public Vector2Int GetBlockAdressFloored(Vector2 pos, float blockWidth)
-    {
-        return Vector2Int.FloorToInt(GetBlockAdressPoint(pos, blockWidth));
-    }
-
-    public Vector2Int GetBlockAdressCield(Vector2 pos, float blockWidth)
-    {
-        return Vector2Int.CeilToInt(GetBlockAdressPoint(pos, blockWidth));
-    }
-
-    public Vector2Int GetBlockAdressRounded (Vector2 pos, float blockWidth)
-    {
-        return Vector2Int.RoundToInt(GetBlockAdressPoint(pos, blockWidth));
-    }
 
     public void Draw ()
     {

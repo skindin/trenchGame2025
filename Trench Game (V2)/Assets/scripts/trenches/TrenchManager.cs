@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
+using UnityEngine.UIElements;
 
 public class TrenchManager : ManagerBase<TrenchManager>
 {
@@ -75,5 +78,76 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 chunk.RemoveTrenchMap();
             }
         }
+    }
+
+    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint, bool value, out Vector2 hitPoint, bool debugLines = false, bool logTotal = false)
+    {
+        //var lineMin = Vector2.Min(startPoint,endPoint);
+        //var lineMax = Vector2.Max(startPoint,endPoint);
+
+        //Func<Vector2Int, bool> returnCondition = cell =>
+        //{
+        //    var pos = 
+
+        //    var chunk = ChunkManager.Manager.ChunkFromPos(cell);
+
+        //    if (chunk == null) //if completely filled
+        //    {
+        //        return !value;
+        //    }
+        //};
+
+        //Func<Vector2Int, Vector2> getOutput = cell =>
+        //{
+
+        //};
+
+        //var blockWidth = ChunkManager.Manager.chunkSize / mapResolution;
+
+        //return GeoUtils.ForeachCellTouchingLine<Vector2>(startPoint, endPoint, blockWidth, null, returnCondition, returnCondition, out _, logTotal);
+        hitPoint = Vector2.zero;
+
+        return false;
+    }
+
+    public float GetBitWidth(float blockWidth)
+    {
+        return blockWidth / 4f;
+    }
+
+    public float GetBlockWidth()
+    {
+        return ChunkManager.Manager.chunkSize / mapResolution;
+    }
+
+    public Vector2 GetBlockPos(Vector2 mapPos, Vector2 blockAdress, float blockWidth)
+    {
+        return (new Vector2(blockAdress.x + 0.5f, blockAdress.y + 0.5f) - mapResolution * .5f * Vector2.one) * blockWidth
+                    + mapPos;
+    }
+
+    public Vector2 GetBitPos(Vector2 blockPos, float bitWidth, Vector2 bitAdress)
+    {
+        return blockPos + new Vector2((bitAdress.x - 1.5f) * bitWidth, (bitAdress.y - 1.5f) * bitWidth);
+    }
+
+    public Vector2 GetBlockAdressPoint(Vector2 pos, Vector2 mapPos, float blockWidth)
+    {
+        return ((pos - mapPos) / blockWidth) + (mapResolution * .5f * Vector2.one);
+    }
+
+    public Vector2Int GetBlockAdressFloored(Vector2 pos, Vector2 mapPos, float blockWidth)
+    {
+        return Vector2Int.FloorToInt(GetBlockAdressPoint(pos, mapPos, blockWidth));
+    }
+
+    public Vector2Int GetBlockAdressCield(Vector2 pos, Vector2 mapPos, float blockWidth)
+    {
+        return Vector2Int.CeilToInt(GetBlockAdressPoint(pos, mapPos, blockWidth));
+    }
+
+    public Vector2Int GetBlockAdressRounded(Vector2 pos, Vector2 mapPos, float blockWidth)
+    {
+        return Vector2Int.RoundToInt(GetBlockAdressPoint(pos, mapPos, blockWidth));
     }
 }

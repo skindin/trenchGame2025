@@ -544,7 +544,7 @@ public static class GeoUtils
         cellsCalculated = 1;
 
         var initialCell = new Vector2Int(x0, y0);
-        action(initialCell);
+        action?.Invoke(initialCell);
         if (returnCase(initialCell))
             return getOutput(initialCell);
 
@@ -607,7 +607,7 @@ public static class GeoUtils
 
             // Execute the action (e.g., logging or processing the cell)
             var cell = lastCell = (new Vector2Int(x0, y0));
-            action(cell);
+            action?.Invoke(cell);
             if (returnCase?.Invoke(cell) == true)
                 return getOutput(cell);
             cellsCalculated++;
@@ -625,7 +625,7 @@ public static class GeoUtils
             (stepY > 0 && y0 >= y1) || (stepY < 0 && y0 <= y1))
         {
             lastCell = new Vector2Int(x1, y1);
-            action(lastCell);
+            action?.Invoke(lastCell);
             if (returnCase?.Invoke(lastCell) == true)
                 return getOutput(lastCell);
             cellsCalculated++;
