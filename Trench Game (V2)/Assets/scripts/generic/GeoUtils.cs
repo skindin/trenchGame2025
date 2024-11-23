@@ -524,7 +524,10 @@ public static class GeoUtils
     /// <param name="cellSize"></param>
     /// <param name="action"></param>
     /// <param name="logTotal"></param>
-    public static void GetLineGridIntersections(Vector2 start, Vector2 end, float cellSize, Action<Vector2Int> action, bool logTotal = false)
+    public static TOutput ForeachCellTouchingLine<TOutput>(Vector2 start, Vector2 end, float cellSize,
+        Action<Vector2Int> action, Func<Vector2Int, TOutput> getOutput, Func<Vector2Int, bool> returnCase,
+        out int cellsCalculated,
+        bool logTotal = false)
     {
         // Convert world coordinates to grid coordinates
         Vector2 current = start / cellSize;
@@ -537,7 +540,14 @@ public static class GeoUtils
         int y1 = Mathf.FloorToInt(goal.y);
 
         // Initial action for the starting cell
-        action(new Vector2Int(x0, y0));
+
+        cellsCalculated = 1;
+
+        var initialCell = new Vector2Int(x0, y0);
+        action(initialCell);
+        if (returnCase(initialCell))
+            return getOutput(initialCell);
+
 
         // Calculate differences between target and start positions
         float dx = Mathf.Abs(goal.x - current.x);
@@ -547,7 +557,8 @@ public static class GeoUtils
         if (dx == 0 && dy == 0)
         {
             if (logTotal) Debug.Log("Line is a single cell.");
-            return;
+
+            return getOutput(initialCell);
         }
 
         // Directional steps
@@ -569,7 +580,8 @@ public static class GeoUtils
         float threshold = 0.001f;
 
         // The number of cells we calculate
-        int cellsCalculated = 1;
+
+        Vector2Int lastCell = initialCell;
 
         // Loop through the grid until we reach the destination cell
         while (true)
@@ -594,7 +606,10 @@ public static class GeoUtils
             }
 
             // Execute the action (e.g., logging or processing the cell)
-            action(new Vector2Int(x0, y0));
+            var cell = lastCell = (new Vector2Int(x0, y0));
+            action(cell);
+            if (returnCase?.Invoke(cell) == true)
+                return getOutput(cell);
             cellsCalculated++;
 
             // If we've reached the destination cell (handling near-perfect alignments)
@@ -609,7 +624,10 @@ public static class GeoUtils
             (stepX > 0 && x0 >= x1) || (stepX < 0 && x0 <= x1) ||
             (stepY > 0 && y0 >= y1) || (stepY < 0 && y0 <= y1))
         {
-            action(new Vector2Int(x1, y1));
+            lastCell = new Vector2Int(x1, y1);
+            action(lastCell);
+            if (returnCase?.Invoke(lastCell) == true)
+                return getOutput(lastCell);
             cellsCalculated++;
         }
 
@@ -618,6 +636,8 @@ public static class GeoUtils
         {
             Debug.Log($"Total cells calculated: {cellsCalculated}");
         }
+
+        return getOutput(lastCell);
     }
 
     public static bool TestPointWithinTaperedCapsule (Vector2 testPoint, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB

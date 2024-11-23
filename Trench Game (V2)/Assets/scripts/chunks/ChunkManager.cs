@@ -373,7 +373,7 @@ public class ChunkManager : MonoBehaviour
             //hue += .02f;
         };
 
-        GeoUtils.GetLineGridIntersections(pointA, pointB, chunkSize, action, debugLines);
+        //GeoUtils.ForeachCellTouchingLine(pointA, pointB, chunkSize, action, debugLines); //mehhh
 
         return chunks;
     }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 //using System.Net;
 using UnityEngine;
+using static Unity.Collections.AllocatorManager;
 //using UnityEngine.Profiling;
 //using UnityEngine.Rendering;
 
@@ -117,8 +118,8 @@ public class TrenchMap
         //    }
         //}
 
-        float blockWidth = scale / resolution; // Width of each MapBlock
-        float bitWidth = blockWidth / 4f;      // Width of each bit in a MapBlock
+        float blockWidth = GetBlockWidth(); // Width of each MapBlock
+        float bitWidth = GetBitWidth(blockWidth);      // Width of each bit in a MapBlock
 
         var startMax = Vector2.one * startRadius;
         var endMax = Vector2.one * endRadius;
@@ -132,12 +133,13 @@ public class TrenchMap
         var capsuleMax = Vector2.Max(startPoint + startMax, endPoint + endMax);
         capsuleMax = Vector2.Min(capsuleMax, mapMax);
 
-        var halfVector2One = Vector2.one * .5f;
+        //var halfVector2One = Vector2.one * .5f;
 
-        var startPos = Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
+        var startPos = GetBlockAdressFloored(capsuleMin, blockWidth); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
         startPos = Vector2Int.Max(startPos, Vector2Int.zero);
 
-        var endPos = Vector2Int.CeilToInt(((capsuleMax - pos) / blockWidth) + (resolution * halfVector2One));
+        var endPos = GetBlockAdressCield(capsuleMax, blockWidth);
+            //Vector2Int.CeilToInt(((capsuleMax - pos) / blockWidth) + (resolution * halfVector2One));
 
         //GeoUtils.DrawBoxMinMax(startPos, endPos, Color.magenta);
         mapChanged = false;
@@ -169,15 +171,14 @@ public class TrenchMap
                 }
 
                 // Compute the position of the block's center in world space
-                var boxPos = (new Vector2(blockX + 0.5f, blockY + 0.5f) - resolution * halfVector2One) * blockWidth
-                    + pos;
+                var blockPos = GetBlockPos(new(blockX, blockY),blockWidth);
 
                 // If the block already fully matches the target value, skip processing
                 if (block.TestWhole(value))
                 {
                     if (debugLines)
                     {
-                        GeoUtils.MarkPoint(boxPos, blockWidth/2, Color.white);
+                        GeoUtils.MarkPoint(blockPos, blockWidth/2, Color.white);
                     }
 
                     continue;
@@ -188,13 +189,13 @@ public class TrenchMap
 
                 totalBlocksTested++;
                 // Check if the block overlaps with the tapered capsule
-                if (!GeoUtils.TestCirlceTouchesTaperedCapsule(boxPos, Vector2.one.magnitude * bitWidth * 1.5f, startPoint, startRadius, endPoint, endRadius,
+                if (!GeoUtils.TestCirlceTouchesTaperedCapsule(blockPos, Vector2.one.magnitude * bitWidth * 1.5f, startPoint, startRadius, endPoint, endRadius,
                     debugLines))
                 {
                     if (debugLines)
                     {
-                        GeoUtils.MarkPoint(boxPos, blockWidth / 2, Color.red);
-                        GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth, Color.red);
+                        GeoUtils.MarkPoint(blockPos, blockWidth / 2, Color.red);
+                        GeoUtils.DrawBoxPosSize(blockPos, Vector2.one * blockWidth, Color.red);
                     }
                     continue; // Skip if the block doesn't touch the capsule
                 }
@@ -202,7 +203,7 @@ public class TrenchMap
                 // Debug visualization for blocks that touch the capsule
                 if (debugLines)
                 {
-                    GeoUtils.DrawBoxPosSize(boxPos, Vector2.one * blockWidth, Color.green);
+                    GeoUtils.DrawBoxPosSize(blockPos, Vector2.one * blockWidth, Color.green);
                 }
 
                 // Get the 4x4 bit array from the block
@@ -227,7 +228,7 @@ public class TrenchMap
                         }
 
                         // Compute the position of the bit in world space
-                        var bitPos = boxPos + new Vector2((bitX - 1.5f) * bitWidth, (bitY - 1.5f) * bitWidth);
+                        var bitPos = GetBitPos(blockPos, bitWidth, new(bitX,bitY));
 
                         //if (!GeoUtils.TestBoxMinMax(capsuleMin, capsuleMax, bitPos, debugLines))
                         //    continue;
@@ -289,6 +290,54 @@ public class TrenchMap
 
             imageTexture.Apply();
         }
+    }
+
+    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint)
+    {
+        var blockWidth = 
+
+        return GeoUtils.ForeachCellTouchingLine<bool>(startPoint,endPoint,)
+    }
+
+    public float GetBitWidth(float blockWidth)
+    {
+        return blockWidth / 4f;
+    }
+
+    public float GetBlockWidth()
+    {
+        return scale / resolution;
+    }
+
+    public Vector2 GetBlockPos (Vector2 blockAdress, float blockWidth)
+    {
+        return (new Vector2(blockAdress.x + 0.5f, blockAdress.y + 0.5f) - resolution * .5f * Vector2.one) * blockWidth
+                    + pos;
+    }
+
+    public Vector2 GetBitPos (Vector2 blockPos, float bitWidth, Vector2 bitAdress)
+    {
+        return blockPos + new Vector2((bitAdress.x - 1.5f) * bitWidth, (bitAdress.y - 1.5f) * bitWidth);
+    }
+
+    public Vector2 GetBlockAdressPoint (Vector2 pos, float blockWidth)
+    {
+        return ((pos - this.pos) / blockWidth) + (resolution * .5f * Vector2.one);
+    }
+
+    public Vector2Int GetBlockAdressFloored(Vector2 pos, float blockWidth)
+    {
+        return Vector2Int.FloorToInt(GetBlockAdressPoint(pos, blockWidth));
+    }
+
+    public Vector2Int GetBlockAdressCield(Vector2 pos, float blockWidth)
+    {
+        return Vector2Int.CeilToInt(GetBlockAdressPoint(pos, blockWidth));
+    }
+
+    public Vector2Int GetBlockAdressRounded (Vector2 pos, float blockWidth)
+    {
+        return Vector2Int.RoundToInt(GetBlockAdressPoint(pos, blockWidth));
     }
 
     public void Draw ()
