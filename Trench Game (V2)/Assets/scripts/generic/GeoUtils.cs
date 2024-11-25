@@ -516,129 +516,7 @@ public static class GeoUtils
     }
 
 
-    /// <summary>
-    /// efficent af
-    /// </summary>
-    /// <param name="start"></param>
-    /// <param name="end"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="action"></param>
-    /// <param name="logTotal"></param>
-    public static TOutput ForeachCellTouchingLine<TOutput>(Vector2 start, Vector2 end, float cellSize,
-        Action<Vector2Int> action, Func<Vector2Int, TOutput> getOutput, Func<Vector2Int, bool> returnCase,
-        out int cellsCalculated,
-        bool logTotal = false)
-    {
-        // Convert world coordinates to grid coordinates
-        Vector2 current = start / cellSize;
-        Vector2 goal = end / cellSize;
 
-        // Get the starting and ending cell indices (rounded down)
-        int x0 = Mathf.FloorToInt(current.x);
-        int y0 = Mathf.FloorToInt(current.y);
-        int x1 = Mathf.FloorToInt(goal.x);
-        int y1 = Mathf.FloorToInt(goal.y);
-
-        // Initial action for the starting cell
-
-        cellsCalculated = 1;
-
-        var initialCell = new Vector2Int(x0, y0);
-        action?.Invoke(initialCell);
-        if (returnCase(initialCell))
-            return getOutput(initialCell);
-
-
-        // Calculate differences between target and start positions
-        float dx = Mathf.Abs(goal.x - current.x);
-        float dy = Mathf.Abs(goal.y - current.y);
-
-        // Avoid division by zero for vertical or horizontal lines
-        if (dx == 0 && dy == 0)
-        {
-            if (logTotal) Debug.Log("Line is a single cell.");
-
-            return getOutput(initialCell);
-        }
-
-        // Directional steps
-        int stepX = current.x < goal.x ? 1 : (current.x > goal.x ? -1 : 0);
-        int stepY = current.y < goal.y ? 1 : (current.y > goal.y ? -1 : 0);
-
-        // Time to the next grid line in each direction (helps in deciding which direction to step in)
-        float tDeltaX = dx > 0 ? 1f / dx : float.MaxValue; // Max value for vertical lines
-        float tDeltaY = dy > 0 ? 1f / dy : float.MaxValue; // Max value for horizontal lines
-
-        // The time to cross the current grid cell
-        float tMaxX = stepX > 0 ? Mathf.Ceil(current.x) - current.x : current.x - Mathf.Floor(current.x);
-        float tMaxY = stepY > 0 ? Mathf.Ceil(current.y) - current.y : current.y - Mathf.Floor(current.y);
-
-        tMaxX /= Mathf.Max(dx, 1e-6f); // Avoid zero for vertical lines
-        tMaxY /= Mathf.Max(dy, 1e-6f); // Avoid zero for horizontal lines
-
-        // A small threshold to handle floating-point imprecision
-        float threshold = 0.001f;
-
-        // The number of cells we calculate
-
-        Vector2Int lastCell = initialCell;
-
-        // Loop through the grid until we reach the destination cell
-        while (true)
-        {
-            // Check if we’ve crossed the target cell boundaries
-            if ((stepX > 0 && x0 > x1) || (stepX < 0 && x0 < x1) ||
-                (stepY > 0 && y0 > y1) || (stepY < 0 && y0 < y1))
-            {
-                break;
-            }
-
-            // Move to the next cell based on which direction the line is traveling
-            if (tMaxX < tMaxY)
-            {
-                tMaxX += tDeltaX;
-                x0 += stepX;
-            }
-            else
-            {
-                tMaxY += tDeltaY;
-                y0 += stepY;
-            }
-
-            // Execute the action (e.g., logging or processing the cell)
-            var cell = lastCell = (new Vector2Int(x0, y0));
-            action?.Invoke(cell);
-            if (returnCase?.Invoke(cell) == true)
-                return getOutput(cell);
-            cellsCalculated++;
-
-            // If we've reached the destination cell (handling near-perfect alignments)
-            if (x0 == x1 && y0 == y1)
-            {
-                break;
-            }
-        }
-
-        // Ensure the final cell is included if the line ends on the grid cell boundary
-        if ((x0 == x1 && y0 == y1) ||
-            (stepX > 0 && x0 >= x1) || (stepX < 0 && x0 <= x1) ||
-            (stepY > 0 && y0 >= y1) || (stepY < 0 && y0 <= y1))
-        {
-            lastCell = new Vector2Int(x1, y1);
-            action?.Invoke(lastCell);
-            if (returnCase?.Invoke(lastCell) == true)
-                return getOutput(lastCell);
-            cellsCalculated++;
-        }
-
-        // Optional logging of total cells processed
-        if (logTotal)
-        {
-            Debug.Log($"Total cells calculated: {cellsCalculated}");
-        }
-
-        return getOutput(lastCell);
-    }
 
     public static bool TestPointWithinTaperedCapsule (Vector2 testPoint, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB
     //,out Vector2 closestPoint, out float thickness
@@ -950,5 +828,106 @@ public static class GeoUtils
         var max = pos + delta;
 
         return ClampToBoxMinMax (point, min, max);
+    }
+
+    public static IEnumerable<Vector2Int> GetLineCells(Vector2 start, Vector2 end, float cellSize)
+    {
+        start /= cellSize;
+        end /= cellSize;
+
+        // Convert start and end to grid coordinates based on the cell size
+        Vector2Int startCell = Vector2Int.RoundToInt(start);
+        Vector2Int endCell = Vector2Int.RoundToInt(end);
+
+        if (startCell.x == endCell.x)
+        {
+            var cell = startCell;
+
+            var xDelta = Mathf.Clamp(endCell.y - startCell.y, -1, 1);
+
+            while (true)
+            {
+                yield return cell;
+
+                if (cell.y == endCell.y)
+                    yield break;
+
+                cell.y += xDelta;
+            }
+        } //perfectly vertical
+        else if (startCell.y == endCell.y)
+        {
+            var cell = startCell;
+
+            var yDelta = Mathf.Clamp(endCell.x - startCell.x, -1, 1);
+
+            while (true)
+            {
+                yield return cell;
+
+                if (cell.x == endCell.x)
+                    yield break;
+
+                cell.x += yDelta;
+            }
+        } //perfectly horizontal
+
+        var delta = end - start;
+
+        var slope = delta.y / delta.x;
+
+        var yIntercept = start.y - (slope * start.x);
+
+        //MarkPoint(new Vector2(0, yIntercept) * cellSize, 1, Color.magenta);
+
+        var cellDelta = endCell - startCell;
+
+        var predictedTotal = Mathf.Abs(cellDelta.x) + Mathf.Abs(cellDelta.y) + 2;
+
+        var xDirection = delta.x > 0 ? 1 : -1;
+        var yDirection = delta.y > 0 ? 1 : -1;
+
+        //if (delta.x < 0 || delta.y < 0)
+        //    yield break;
+
+        yield return startCell;
+
+        var cellsCalculated = 1;
+
+        var currentCell = startCell;
+
+        while (cellsCalculated < predictedTotal)
+        {
+            var nextRowX = currentCell.x + .5f * xDirection;
+
+            var nextRowIntercept = slope * nextRowX + yIntercept;
+
+            //MarkPoint(new Vector2(nextRowX, nextRowIntercept) * cellSize, .2f, Color.green);
+
+            var deltaToNextRow = Mathf.Abs(nextRowIntercept - currentCell.y);
+
+            if (deltaToNextRow >= .5f)
+            {
+                var reps = Mathf.Floor(deltaToNextRow*2)/2;
+
+                for ( var y = 0; y < reps; y++)
+                {
+                    yield return currentCell += Vector2Int.up * yDirection;
+                    if (currentCell == endCell)
+                        yield break;
+                    cellsCalculated++;
+                }
+            }
+
+            yield return currentCell += Vector2Int.right * xDirection;
+            //yield return currentCell += Vector2Int.up;
+
+            if (currentCell == endCell)
+                yield break;
+
+            cellsCalculated ++;
+        }
+
+        yield break;
     }
 }

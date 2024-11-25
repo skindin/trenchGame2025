@@ -17,7 +17,7 @@ public class Spade : Weapon, ISecondaryAction
     public override string Verb => "dig";
     public string SecondaryVerb => "fill";
 
-    public bool digMode = true, onlyModifySpeedIfMapWasChanged = true, debugLines = false;
+    public bool digMode = true, onlyModifySpeedIfMapWasChanged;
 
     Vector2 lastPos = Vector2.positiveInfinity;
     float lastRadius = 0;
@@ -54,7 +54,7 @@ public class Spade : Weapon, ISecondaryAction
             lastRadius = 0;
         }
 
-        TrenchManager.Manager.SetTaperedCapsule(lastPos, lastRadius, wielder.transform.position, digRadius, digMode, out var changed, debugLines);
+        TrenchManager.Manager.SetTaperedCapsule(lastPos, lastRadius, wielder.transform.position, digRadius, digMode, out var changed);
 
         //if (!changed)
         //    return;

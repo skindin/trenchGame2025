@@ -30,6 +30,8 @@ public class ChunkManager : MonoBehaviour
     public float worldSize = 100, minChunkSize = 10, chunkSize = 10;
     public int chunkArraySize;
 
+    public Transform pointA, pointB;
+
     public Chunk[,] chunks;
     //public int maxChunksPooled = 10;
     //readonly List<Chunk> chunkPool = new();
@@ -61,7 +63,7 @@ public class ChunkManager : MonoBehaviour
 
         if (drawLineTest)
         {
-            ChunksFromLine(Vector2.zero, transform.position, false, true);
+            ChunksFromLine(pointA.position, pointB.position, false, true);
         }
     }
 
@@ -311,25 +313,6 @@ public class ChunkManager : MonoBehaviour
 
     public List<Chunk> ChunksFromLine(Vector2 pointA, Vector2 pointB, bool newIfNone = false, bool debugLines = false)
     {
-        //if (clearList) chunkList.Clear();
-
-        //var min = Vector2.Min(pointA, pointB);
-        //var max = Vector2.Max(pointA, pointB);
-
-        //var adresses = AdressesFromBox(min, max);
-
-        //foreach (var adress in adresses)
-        //{
-        //    GetChunkBox(adress, out var chunkMin, out var chunkMax);
-        //    if (GeoUtils.DoesLineIntersectBox(pointA,pointB,chunkMin,chunkMax,debugLines))
-        //    {
-        //        var chunk = ChunkFromAdress(adress, newIfNone);
-        //        if (chunk != null && !chunkList.Contains(chunk))
-        //            chunkList.Add(chunk);
-        //    }
-        //}
-
-        //return chunkList;
 
         GetWorldBox(out var worldMin, out _);
 
@@ -338,20 +321,23 @@ public class ChunkManager : MonoBehaviour
             Debug.DrawLine(pointA, pointB, Color.green);
         }
 
-        pointA -= worldMin;
-        pointB -= worldMin;
+        pointA = pointA - worldMin + (chunkSize * .5f * Vector2.one);
+        pointB = pointB - worldMin + (chunkSize * .5f * Vector2.one);
 
         List<Chunk> chunks = new();
 
-        //float hue = 0;
+        var lineToCells = GeoUtils.GetLineCells(pointA, pointB, chunkSize);
 
-        //Color color;
-
-        Action<Vector2Int> action = adress =>
+        foreach (var cell in lineToCells)
         {
+            //cell -= Vector2Int.one * chunkSize;
+
+            var adress = cell - Vector2Int.one;
+
             var chunk = ChunkFromAdress(adress);
 
-            GetChunkBox(adress, out var chunkMin, out var chunkMax);
+            //GetChunkBox(cell, out var chunkMin, out var chunkMax);
+
 
             if (chunk != null)
             {
@@ -359,7 +345,7 @@ public class ChunkManager : MonoBehaviour
 
                 if (debugLines)
                 {
-                    GeoUtils.DrawBoxMinMax(chunkMin, chunkMax, Color.green);
+                    DrawAdressBox(adress, Color.green);
                 }
             }
             else if (debugLines)
@@ -367,13 +353,12 @@ public class ChunkManager : MonoBehaviour
                 //hue = Mathf.Repeat(hue, 1);
                 //color = Color.HSVToRGB(hue, 1, 1);
 
-                GeoUtils.DrawBoxMinMax(chunkMin, chunkMax, Color.blue);
+                if (debugLines)
+                {
+                    DrawAdressBox(adress, Color.white);
+                }
             }
-
-            //hue += .02f;
-        };
-
-        //GeoUtils.ForeachCellTouchingLine(pointA, pointB, chunkSize, action, debugLines); //mehhh
+        }
 
         return chunks;
     }

@@ -26,7 +26,7 @@ public class TrenchMap
         int totalEditedBlocks = 0;
     public bool empty = true;
 
-    public TrenchMap (int resolution, float scale, Color32 trenchColor, Color32 groundColor, Vector2 pos, Mesh imageMesh, Material imageMaterial)
+    public TrenchMap (int resolution, float scale, Color32 trenchColor, Color32 groundColor, Vector2 pos, Mesh imageMesh, Material imageMaterial, FilterMode filter)
     {
         this.resolution = resolution;
 
@@ -49,6 +49,7 @@ public class TrenchMap
 
         pixels = new Color32[resolution * 4 * 4 * resolution];
 
+        imageTexture.filterMode = filter;
         imageTexture.SetPixels32(pixels);
         imageTexture.Apply();
     }
@@ -295,7 +296,10 @@ public class TrenchMap
         }
     }
 
-
+    public MapBlock GetBlock (Vector2Int adress)
+    {
+        return blocks[adress.x, adress.y];
+    }
 
     public void Draw ()
     {

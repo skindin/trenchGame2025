@@ -12,6 +12,9 @@ public class TrenchManager : ManagerBase<TrenchManager>
     public Color32 trenchColor, groundColor;
     public Mesh imageMesh;
     public Material imageMaterial;//
+    public FilterMode filter;
+    public Transform pointA, pointB;
+    public bool runTest = false, debugLines = false;
 
     private void Start()
     {
@@ -22,6 +25,11 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     private void Update()
     {
+        if (runTest)
+        {
+            TestRayHitsValue(pointA.position, pointB.position, true, out _, true);
+        }
+
         foreach (var chunk in ChunkManager.Manager.chunks)
         {
             if (chunk != null && chunk.map != null)
@@ -31,8 +39,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         }
     }
 
-    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, out bool wasModified,
-        bool debugLines = false)
+    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, out bool wasModified)
     {
         var startMax = Vector2.one * startRadius;
         var endMax = Vector2.one * endRadius;
@@ -58,7 +65,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 {
                     var pos = ChunkManager.Manager.GetChunkPos(chunk) + ChunkManager.Manager.chunkSize * .5f * Vector2.one;
 
-                    chunk.map = new(mapResolution,ChunkManager.Manager.chunkSize, trenchColor, groundColor,pos,imageMesh,imageMaterial);
+                    chunk.map = new(mapResolution,ChunkManager.Manager.chunkSize, trenchColor, groundColor,pos,imageMesh,imageMaterial,filter);
                 }
                 else
                 {
@@ -71,7 +78,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
             if (mapChanged)
                 wasModified = true;
 
-            Debug.Log($"chunk {chunk.adress} has {chunk.map.totalEditedBlocks} edited blocks");
+            //Debug.Log($"chunk {chunk.adress} has {chunk.map.totalEditedBlocks} edited blocks");
 
             if (chunk.map.empty)
             {
@@ -80,32 +87,93 @@ public class TrenchManager : ManagerBase<TrenchManager>
         }
     }
 
-    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint, bool value, out Vector2 hitPoint, bool debugLines = false, bool logTotal = false)
+    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint, bool value, out float hitPoint, bool logTotal = false)
     {
-        //var lineMin = Vector2.Min(startPoint,endPoint);
-        //var lineMax = Vector2.Max(startPoint,endPoint);
+        var blockWidth = GetBlockWidth();
+        var bitWidth = GetBitWidth(blockWidth);
 
-        //Func<Vector2Int, bool> returnCondition = cell =>
-        //{
-        //    var pos = 
+        if (debugLines)
+        {
+            Debug.DrawLine(startPoint, endPoint, Color.blue);
+        }
 
-        //    var chunk = ChunkManager.Manager.ChunkFromPos(cell);
+        hitPoint = 0;
 
-        //    if (chunk == null) //if completely filled
-        //    {
-        //        return !value;
-        //    }
-        //};
+        //return GeoUtils.ForeachCellTouchingLine<bool>(startPoint, endPoint, bitWidth, null, returnCondition, returnCondition, out _, logTotal);
 
-        //Func<Vector2Int, Vector2> getOutput = cell =>
-        //{
+        var lineToCells = GeoUtils.GetLineCells(startPoint, endPoint, bitWidth);
 
-        //};
+        foreach (var cell in lineToCells)
+        {
+            var pos = (Vector2)cell * bitWidth;
 
-        //var blockWidth = ChunkManager.Manager.chunkSize / mapResolution;
+            var chunk = ChunkManager.Manager.ChunkFromPos(pos);
 
-        //return GeoUtils.ForeachCellTouchingLine<Vector2>(startPoint, endPoint, blockWidth, null, returnCondition, returnCondition, out _, logTotal);
-        hitPoint = Vector2.zero;
+            if (debugLines)
+                GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.white);
+
+            if (chunk == null || chunk.map == null)
+            {
+                if (value)
+                    continue;
+                else
+                    return true;
+            }
+
+            var blockAdress = GetBlockAdressFloored(pos, chunk.map.pos, blockWidth);
+
+            if (debugLines)
+                GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.green);
+
+            var block = chunk.map.GetBlock(blockAdress);
+
+            if (block == null)
+            {
+                if (value)
+                    continue;
+                else
+                    return true;
+            }
+
+            if (block.TestWhole(value))
+            {
+                return true;
+            }
+
+            var blockPos = GetBlockPos(chunk.map.pos, blockAdress, blockWidth);
+
+            if (debugLines)
+            {
+                GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.red);
+            }
+
+            var bitAdress = GetBitAdressFloored(pos, blockPos, blockWidth, bitWidth);
+
+            bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
+            bitAdress = Vector2Int.Max(bitAdress, Vector2Int.zero);
+
+            if (block.GetArray()[bitAdress.x,bitAdress.y] == value)
+            {
+                if (debugLines)
+                {
+                    GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.green);
+                    GeoUtils.MarkPoint(pos, bitWidth / 2, Color.green);
+                }
+
+                return true;
+            }
+            else if (debugLines)
+            {
+                GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.red);
+            }
+
+            //var bitAdress = 
+
+            //if (debugLines)
+            //{
+            //    GeoUtils.DrawBoxPosSize(pos, Vector2.one * blockWidth, Color.blue);
+            //}
+        }
 
         return false;
     }
@@ -149,5 +217,15 @@ public class TrenchManager : ManagerBase<TrenchManager>
     public Vector2Int GetBlockAdressRounded(Vector2 pos, Vector2 mapPos, float blockWidth)
     {
         return Vector2Int.RoundToInt(GetBlockAdressPoint(pos, mapPos, blockWidth));
+    }
+
+    public Vector2 GetBitAdressPoint(Vector2 pos, Vector2 blockPos, float blockWidth, float bitWidth)
+    {
+        return (pos - blockPos + .5f * blockWidth * Vector2.one) / bitWidth;
+    }
+
+    public Vector2Int GetBitAdressFloored (Vector2 pos, Vector2 blockPos, float blockWidth, float bitWidth)
+    {
+        return Vector2Int.FloorToInt(GetBitAdressPoint(pos, blockPos, blockWidth, bitWidth));
     }
 }
