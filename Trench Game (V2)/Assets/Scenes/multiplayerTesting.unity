@@ -3366,7 +3366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1f84533755dbf4cb6e9469e6a62b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPixelSize: 1
+  maxPixelSize: 0.1
   trenchColor:
     serializedVersion: 2
     rgba: 2332033024

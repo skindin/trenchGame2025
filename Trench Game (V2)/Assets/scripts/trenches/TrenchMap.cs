@@ -211,7 +211,7 @@ public class TrenchMap
                 }
 
                 // Get the 4x4 bit array from the block
-                var blockArray = block.GetArray();
+                //var blockArray = block.GetArray();
                 int totalBitsAtValue = 0;
 
                 //Profiler.BeginSample("TestCircleTouchesTaperedCapsule");
@@ -220,7 +220,7 @@ public class TrenchMap
                 {
                     for (int bitX = 0; bitX < 4; bitX++)
                     {
-                        var bitValue = blockArray[bitX, bitY];
+                        var bitValue = block[bitX,bitY];
 
                         totalBitsTested++;
 
@@ -240,7 +240,7 @@ public class TrenchMap
                         // Test if the bit is within the capsule
                         if (GeoUtils.TestPointWithinTaperedCapsule(bitPos, startPoint, startRadius, endPoint, endRadius))
                         {
-                            blockArray[bitX, bitY] = value;
+                            block[bitX,bitY] = value;
                             totalBitsAtValue++;
                             if (debugLines)
                             {
@@ -276,7 +276,7 @@ public class TrenchMap
                 else
                 {
                     blocks[blockX, blockY] = block;
-                    block.SetArray(blockArray);
+                    //block.SetArray(blockArray);
                 }
             }
         }

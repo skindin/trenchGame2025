@@ -1,60 +1,105 @@
+using UnityEngine;
+
 public class MapBlock
 {
     public byte Byte1 { private set; get; }
     public byte Byte2 { private set; get; }
 
     // Get a 4x4 boolean 2D array from byte1 and byte2
-    public bool[,] GetArray()
-    {
-        bool[,] result = new bool[4, 4];
+    //public bool[,] GetArray()
+    //{
+    //    bool[,] result = new bool[4, 4];
 
-        for (int i = 0; i < 4; i++)
+    //    for (int x = 0; x < 4; x++)
+    //    {
+    //        for (int y = 0; y < 4; y++)
+    //        {
+    //            int bitIndex = x * 4 + y;
+    //            if (bitIndex < 8)
+    //            {
+    //                result[x, y] = (Byte1 & (1 << (7 - bitIndex))) != 0;
+    //            }
+    //            else
+    //            {
+    //                result[x, y] = (Byte2 & (1 << (15 - bitIndex))) != 0;
+    //            }
+    //        }
+    //    }
+
+    //    return result;
+    //}
+
+    //// Set byte1 and byte2 from a 4x4 boolean 2D array
+    //public void SetArray(bool[,] array)
+    //{
+    //    byte tempByte1 = 0;
+    //    byte tempByte2 = 0;
+
+    //    for (int i = 0; i < 4; i++)
+    //    {
+    //        for (int j = 0; j < 4; j++)
+    //        {
+    //            int bitIndex = i * 4 + j;
+    //            if (array[i, j])
+    //            {
+    //                if (bitIndex < 8)
+    //                {
+    //                    tempByte1 |= (byte)(1 << (7 - bitIndex));
+    //                }
+    //                else
+    //                {
+    //                    tempByte2 |= (byte)(1 << (15 - bitIndex));
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //    Byte1 = tempByte1;
+    //    Byte2 = tempByte2;
+    //}
+
+    public bool this[Vector2Int adress]
+    {
+        get
         {
-            for (int j = 0; j < 4; j++)
+            return this[adress.x, adress.y];
+        }
+        set
+        {
+            this[adress.x, adress.y] = value;
+        }
+    }
+
+    public bool this[int x, int y]
+    {
+        get
+        {
+            int bitIndex = x * 4 + y;
+            if (bitIndex < 8)
             {
-                int bitIndex = i * 4 + j;
+                return (Byte1 & (1 << (7 - bitIndex))) != 0;
+            }
+            else
+            {
+                return (Byte2 & (1 << (15 - bitIndex))) != 0;
+            }
+        }
+
+        set
+        {
+            int bitIndex = x * 4 + y;
+            if (value)
                 if (bitIndex < 8)
                 {
-                    result[i, j] = (Byte1 & (1 << (7 - bitIndex))) != 0;
+                    Byte1 |= (byte)(1 << (7 - bitIndex));
                 }
                 else
                 {
-                    result[i, j] = (Byte2 & (1 << (15 - bitIndex))) != 0;
+                    Byte2 |= (byte)(1 << (15 - bitIndex));
                 }
-            }
         }
-
-        return result;
     }
 
-    // Set byte1 and byte2 from a 4x4 boolean 2D array
-    public void SetArray(bool[,] array)
-    {
-        byte tempByte1 = 0;
-        byte tempByte2 = 0;
-
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                int bitIndex = i * 4 + j;
-                if (array[i, j])
-                {
-                    if (bitIndex < 8)
-                    {
-                        tempByte1 |= (byte)(1 << (7 - bitIndex));
-                    }
-                    else
-                    {
-                        tempByte2 |= (byte)(1 << (15 - bitIndex));
-                    }
-                }
-            }
-        }
-
-        Byte1 = tempByte1;
-        Byte2 = tempByte2;
-    }
 
     public bool TestFull()
     {

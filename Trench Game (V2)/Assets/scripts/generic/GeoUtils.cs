@@ -836,8 +836,16 @@ public static class GeoUtils
         end /= cellSize;
 
         // Convert start and end to grid coordinates based on the cell size
-        Vector2Int startCell = Vector2Int.RoundToInt(start);
-        Vector2Int endCell = Vector2Int.RoundToInt(end);
+        Vector2Int startCell = RoundToInt(start);
+        Vector2Int endCell = RoundToInt(end);
+
+        static Vector2Int RoundToInt (Vector2 pos)
+        {
+            var floored = Vector2Int.FloorToInt(pos);
+            var remainder = pos - floored;
+
+            return new Vector2Int(remainder.x >= .5f ? 1 : 0, remainder.y >= .5f ? 1 : 0) + floored;
+        }
 
         if (startCell.x == endCell.x)
         {
@@ -878,7 +886,7 @@ public static class GeoUtils
 
         var yIntercept = start.y - (slope * start.x);
 
-        MarkPoint(new Vector2(0, yIntercept) * cellSize, 1, Color.magenta);
+        //MarkPoint(new Vector2(0, yIntercept) * cellSize, 1, Color.magenta);
 
         var cellDelta = endCell - startCell;
 
@@ -902,30 +910,23 @@ public static class GeoUtils
 
             var nextRowIntercept = slope * nextRowX + yIntercept;
 
-            MarkPoint(new Vector2(nextRowX, nextRowIntercept) * cellSize, .2f, Color.green);
+            //MarkPoint(new Vector2(nextRowX, nextRowIntercept) * cellSize, .2f, Color.green);
 
             var deltaToNextRow = Mathf.Abs(nextRowIntercept - currentCell.y);
 
-            if (deltaToNextRow >= .5f)
+            if (deltaToNextRow > .5f)
             {
-                var reps = Mathf.Floor(deltaToNextRow*2)/2;
-
-                for ( var y = 0; y < reps; y++)
-                {
-                    yield return currentCell += Vector2Int.up * yDirection;
-                    if (currentCell == endCell)
-                        yield break;
-                    cellsCalculated++;
-                }
+                currentCell += Vector2Int.up * yDirection;
+            }
+            else
+            {
+                currentCell += Vector2Int.right * xDirection;
             }
 
-            yield return currentCell += Vector2Int.right * xDirection;
-            //yield return currentCell += Vector2Int.up;
-
+            yield return currentCell;
             if (currentCell == endCell)
                 yield break;
-
-            cellsCalculated ++;
+            cellsCalculated++;
         }
 
         yield break;
