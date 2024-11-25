@@ -99,6 +99,11 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
         hitPoint = 0;
 
+        var bitCorner = bitWidth * .5f * Vector2.one;
+
+        startPoint += bitCorner;
+        endPoint += bitCorner;
+
         //return GeoUtils.ForeachCellTouchingLine<bool>(startPoint, endPoint, bitWidth, null, returnCondition, returnCondition, out _, logTotal);
 
         var lineToCells = GeoUtils.GetLineCells(startPoint, endPoint, bitWidth);
@@ -110,7 +115,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
             var chunk = ChunkManager.Manager.ChunkFromPos(pos);
 
             if (debugLines)
-                GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.white);
+                GeoUtils.DrawBoxPosSize(pos - bitCorner, bitWidth * Vector2.one, Color.white);
 
             if (chunk == null || chunk.map == null)
             {
@@ -122,8 +127,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             var blockAdress = GetBlockAdressFloored(pos, chunk.map.pos, blockWidth);
 
-            if (debugLines)
-                GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.green);
+            //if (debugLines)
+            //    GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.green);
 
             var block = chunk.map.GetBlock(blockAdress);
 
@@ -135,12 +140,17 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     return true;
             }
 
+            var blockPos = GetBlockPos(chunk.map.pos, blockAdress, blockWidth);
+
             if (block.TestWhole(value))
             {
+                if (debugLines)
+                {
+                    GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.green);
+                }
+
                 return true;
             }
-
-            var blockPos = GetBlockPos(chunk.map.pos, blockAdress, blockWidth);
 
             if (debugLines)
             {
@@ -156,15 +166,15 @@ public class TrenchManager : ManagerBase<TrenchManager>
             {
                 if (debugLines)
                 {
-                    GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.green);
-                    GeoUtils.MarkPoint(pos, bitWidth / 2, Color.green);
+                    GeoUtils.DrawBoxPosSize(pos - bitCorner, bitWidth * Vector2.one, Color.green);
+                    GeoUtils.MarkPoint(pos - bitCorner, bitWidth / 2, Color.green);
                 }
 
                 return true;
             }
             else if (debugLines)
             {
-                GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.red);
+                GeoUtils.DrawBoxPosSize(pos - bitCorner, bitWidth * Vector2.one, Color.red);
             }
 
             //var bitAdress = 

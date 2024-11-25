@@ -878,7 +878,7 @@ public static class GeoUtils
 
         var yIntercept = start.y - (slope * start.x);
 
-        //MarkPoint(new Vector2(0, yIntercept) * cellSize, 1, Color.magenta);
+        MarkPoint(new Vector2(0, yIntercept) * cellSize, 1, Color.magenta);
 
         var cellDelta = endCell - startCell;
 
@@ -902,7 +902,7 @@ public static class GeoUtils
 
             var nextRowIntercept = slope * nextRowX + yIntercept;
 
-            //MarkPoint(new Vector2(nextRowX, nextRowIntercept) * cellSize, .2f, Color.green);
+            MarkPoint(new Vector2(nextRowX, nextRowIntercept) * cellSize, .2f, Color.green);
 
             var deltaToNextRow = Mathf.Abs(nextRowIntercept - currentCell.y);
 

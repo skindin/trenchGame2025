@@ -3366,7 +3366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1f84533755dbf4cb6e9469e6a62b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPixelSize: 0.1
+  maxPixelSize: 1
   trenchColor:
     serializedVersion: 2
     rgba: 2332033024
@@ -3375,9 +3375,11 @@ MonoBehaviour:
     rgba: 0
   imageMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   imageMaterial: {fileID: 2100000, guid: 41eb24fc18bbdad42ad19ac7362a0c20, type: 2}
+  filter: 0
   pointA: {fileID: 1884687862}
   pointB: {fileID: 1477006794}
   runTest: 1
+  debugLines: 1
 --- !u!1 &896552506
 GameObject:
   m_ObjectHideFlags: 0
