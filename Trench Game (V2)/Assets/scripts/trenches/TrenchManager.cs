@@ -119,8 +119,6 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             var chunk = ChunkManager.Manager.ChunkFromPos(pos);
 
-
-
             if (chunk == null || chunk.map == null)
             {
                 if (rayLines)
@@ -131,7 +129,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     continue;
                 else
                 {
-                    distance = Vector2.Distance(startPoint, pos);
+                    distance = Vector2.Distance(startPoint, pos + bitCorner);
                     return true;
                 }
             }
@@ -162,7 +160,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     continue;
                 else
                 {
-                    distance = Vector2.Distance(startPoint, pos);
+                    distance = Vector2.Distance(startPoint, pos + bitCorner);
                     return true;
                 }
             }
@@ -175,7 +173,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
                 }
 
-                distance = Vector2.Distance(startPoint, pos);
+                distance = Vector2.Distance(startPoint, pos + bitCorner);
                 return true;
             }
 
@@ -200,13 +198,38 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     GeoUtils.MarkPoint(pos + bitCorner, bitWidth / 2, Color.green);
                 }
 
-                distance = Vector2.Distance(startPoint, pos);
+                distance = Vector2.Distance(startPoint, pos + bitCorner);
                 return true;
             }
             else if (rayLines)
             {
                 GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.red);
             }
+        }
+
+        return false;
+    }
+
+    public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value, bool debugLines = false)
+    {
+        var chunks = ChunkManager.Manager.ChunksFromBoxPosSize(circlePos, circleRadius * 2 * Vector2.one, false);
+
+        foreach (var chunk in chunks)
+        {
+            if (chunk == null || chunk.map == null)
+            {
+                if (value)
+                {
+                    continue;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            if (chunk.map.TestCircleTouchesValue(circlePos, circleRadius, value, debugLines))
+                return true;
         }
 
         return false;

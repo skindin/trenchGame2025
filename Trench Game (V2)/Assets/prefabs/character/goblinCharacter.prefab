@@ -192,11 +192,8 @@ MonoBehaviour:
   characterName: 
   userController: {fileID: 5029955527161250187}
   aiController: {fileID: 9178249837958229984}
-  sprite: {fileID: 4108761352474424341}
-  dangerColor: {r: 1, g: 1, b: 1, a: 1}
   baseMoveSpeed: 8
-  digMoveSpeed: 1
-  initialDigSpeed: 5
+  moveSpeed: 0
   deathDropRadius: 1
   hp: 10
   maxHp: 10
@@ -300,7 +297,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   localSize: 1.7
   draw: 0
-  vulnerable: 1
+  withinTrench: 0
+  drawTrenchStatus: 1
+  drawTrenchTest: 0
 --- !u!114 &1672398506640000765
 MonoBehaviour:
   m_ObjectHideFlags: 0

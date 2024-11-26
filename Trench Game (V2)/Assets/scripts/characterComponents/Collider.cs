@@ -20,7 +20,24 @@ public class Collider : MonoBehaviour
         }
     }
 
-    public bool vulnerable = true;
+    public bool withinTrench = false, drawTrenchStatus = false, drawTrenchTest = false;
+
+    private void Update()
+    {
+        TestWithinTrench();
+    }
+
+    public bool TestWithinTrench()
+    {
+        withinTrench = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false, drawTrenchTest);
+
+        if (drawTrenchStatus)
+        {
+            GeoUtils.DrawCircle(transform.position, WorldSize / 2, withinTrench ? Color.green : Color.red);
+        }
+
+        return withinTrench;
+    }
 
     public void HitCollider (Bullet bullet)
     {
@@ -30,7 +47,7 @@ public class Collider : MonoBehaviour
 
     public void ToggleSafe (bool safe)
     {
-        this.vulnerable = !safe;
+        this.withinTrench = !safe;
     }
 
     public void ResetCollider()

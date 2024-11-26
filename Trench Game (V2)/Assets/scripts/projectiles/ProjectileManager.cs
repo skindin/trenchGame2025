@@ -42,7 +42,7 @@ public class ProjectileManager : MonoBehaviour
             );
     }
 
-    public Bullet NewBullet (Vector2 startPos, Vector2 velocity, float range, float damage, Character source, bool withinTrench)
+    public Bullet NewBullet (Vector2 startPos, Vector2 velocity, float range, float damage, Character source, bool withinTrench = false)
     {
         var newBullet = bulletPool.GetFromPool();
 
@@ -134,10 +134,9 @@ public class ProjectileManager : MonoBehaviour
         {
             var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, false, debugLines);
 
-            if (bullet.withinTrench && TrenchManager.Manager.TestRayHitsValue(bullet.pos,nextPos, false, out var wallDist))
-            {
+            float wallDist = shortestDistance;
 
-            }
+            var exitedTrench = bullet.withinTrench && TrenchManager.Manager.TestRayHitsValue(bullet.pos, nextPos, false, out wallDist);
 
             foreach (var chunk in chunks)
             {
@@ -145,39 +144,20 @@ public class ProjectileManager : MonoBehaviour
                 {
                     if (!collider.gameObject.activeInHierarchy) continue;
                     if (bullet.source && bullet.source.collider == collider) continue;
-                    if (!collider.vulnerable) continue;
+                    if (!bullet.withinTrench && collider.withinTrench) continue;
 
                     var point = collider.TestRay(bullet.pos, nextPos,debugLines);
                     if (point.x == Mathf.Infinity) continue;
 
                     var pointDist = (point - bullet.pos).magnitude;
 
-                    if (pointDist < shortestDistance)
+                    if (pointDist < shortestDistance && (!collider.withinTrench || bullet.withinTrench || (exitedTrench && wallDist < shortestDistance)))
                     {
                         closestCollider = collider;
                         bullet.range = (point - bullet.startPos).magnitude;
                         shortestDistance = pointDist;
                         closestPoint = point;
                     }
-
-
-                    ////if (bullet.withinTrench && !collider.vulnerable)
-                    ////{
-                    ////    if (pointDist > furthestTrenchDist) continue;
-                    ////}
-                    //var startToNext = bullet.startPos - nextPos;
-                    //var clampedNext = Vector2.ClampMagnitude(startToNext, bullet.range);
-                    ////var nextDist = (nextPos - bullet.pos).magnitude;
-
-                    //if (clampedNext.magnitude > pointDist)
-                    //{
-
-                    //    bullet.hit = true;
-                    //    //nextPos = point;
-                    //    bullet.range = (point - bullet.startPos).magnitude;
-                    //    closestCollider = collider;
-                    //    //closestPoint = point;
-                    //}
                 }
             }
 
@@ -202,6 +182,11 @@ public class ProjectileManager : MonoBehaviour
             {
                 bullet.hit = true;
                 bullet.range = (closestPoint - bullet.startPos).magnitude;
+            }
+
+            if (exitedTrench)
+            {
+                bullet.withinTrench = false;
             }
         }
 

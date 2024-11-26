@@ -320,7 +320,8 @@ public class Gun : Weapon
             (direction.normalized * bulletSpeed) + velocity,
             range,
             DamagePerBullet,
-            wielder);
+            wielder,
+            wielder.collider.withinTrench);
 
         NetworkManager.Manager.SpawnBullet(this,bullet);
 

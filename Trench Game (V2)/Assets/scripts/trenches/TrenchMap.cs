@@ -4,6 +4,7 @@ using System.Collections.Generic;
 //using System.Net;
 using UnityEngine;
 using System;
+using System.Net;
 //using static Unity.Collections.AllocatorManager;
 //using UnityEngine.Profiling;
 //using UnityEngine.Rendering;
@@ -296,73 +297,77 @@ public class TrenchMap
         }
     }
 
-    public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value)
+    public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value, bool debugLines = false)
     {
-        return true;
-
         var blockWidth = TrenchManager.Manager.GetBlockWidth();
+        var bitWidth = TrenchManager.Manager.GetBitWidth(blockWidth);
 
-        var chunks = ChunkManager.Manager.ChunksFromBoxPosSize(circlePos, circleRadius * 2 * Vector2.one, false);
+        var mapMin = pos - scale / 2 * Vector2.one;
+        var mapMax = pos + scale / 2 * Vector2.one;
 
-        foreach (var chunk in chunks)
+        var circleMin = circlePos - (circleRadius * Vector2.one);
+        circleMin = Vector2.Max(circleMin, mapMin);
+
+        var circleMax = circlePos + (circleRadius * Vector2.one);
+        circleMax = Vector2.Min(circleMax, mapMax);
+
+        //var halfVector2One = Vector2.one * .5f;
+
+        var startPos = TrenchManager.Manager.GetBlockAdressFloored(circleMin, pos, blockWidth); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
+        startPos = Vector2Int.Max(startPos, Vector2Int.zero);
+
+        var endPos = TrenchManager.Manager.GetBlockAdressCield(circleMax, pos, blockWidth);
+
+        for (var blockY = startPos.y; blockY < endPos.y; blockY++)
         {
-            if (chunk == null || chunk.map == null)
+            for (var blockX = startPos.x; blockX < endPos.x; blockX++)
             {
-                if (value)
+                var block = blocks[blockX, blockY];
+
+                var blockPos = TrenchManager.Manager.GetBlockPos(pos, new Vector2Int(blockX, blockY), blockWidth);
+
+                if (block == null)
                 {
+                    if (!value && GeoUtils.TestBoxPosSizeTouchesCircle(blockPos, blockWidth * Vector2.one, circlePos, circleRadius, debugLines))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                if (block.TestWhole(!value))
+                {
+                    if (debugLines)
+                        GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one,Color.green);
                     continue;
                 }
-                else
-                {
-                    return true;
-                }
-            }
 
-            for (var blockY = 0; blockY < resolution; blockY++)
-            {
-                for (var blockX = 0; blockX < resolution; blockX++)
+                for (var bitY = 0; bitY < 4; bitY++)
                 {
-                    var block = chunk.map.blocks[blockX, blockY];
-
-                    if (block == null)
+                    for (var bitX = 0; bitX < 4; bitX++)
                     {
-                        if (value)
+                        var bitPos = TrenchManager.Manager.GetBitPos(blockPos, bitWidth, new(bitX, bitY));
+
+                        if (debugLines)
                         {
-                            continue;
+                            GeoUtils.DrawBoxPosSize(bitPos, bitWidth * Vector2.one, Color.green);
                         }
-                        else
+
+                        var dist = (bitPos - circlePos).magnitude;
+
+                        if (dist <= circleRadius && block[bitX,bitY] == value)
                         {
                             return true;
                         }
                     }
-
-                    var blockPos = TrenchManager.Manager.GetBlockPos(chunk.map.pos, new Vector2Int(blockX, blockY), blockWidth);
-
-                    for (var bitY = 0; bitY < resolution; bitY++)
-                    {
-                        for (var bitX = 0; bitX < resolution; bitX++)
-                        {
-                        }
-                    }
-                }
-            }
-
-
-            foreach (var block in chunk.map.blocks)
-            {
-                if (block == null)
-                {
-                    if (value)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        return true;
-                    }
                 }
             }
         }
+
+        return false;
     }
 
     public MapBlock GetBlock (Vector2Int adress)
