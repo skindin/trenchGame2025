@@ -331,7 +331,7 @@ public class BotController : MonoBehaviour
         {
             if (unexploredPoints.Count < 1)
             {
-                wanderPoints = ChunkManager.Manager.DistributePoints(visionBox);
+                wanderPoints = ChunkManager.Manager.DistributePoints(visionBox,character.collider.WorldSize/2);
 
                 unexploredPoints.Clear();
                 exploredPoints.Clear();

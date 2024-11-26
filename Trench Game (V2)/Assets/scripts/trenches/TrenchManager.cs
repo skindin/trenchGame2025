@@ -212,7 +212,10 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value, bool debugLines = false)
     {
-        var chunks = ChunkManager.Manager.ChunksFromBoxPosSize(circlePos, circleRadius * 2 * Vector2.one, false);
+        var min = circlePos - circleRadius * Vector2.one;
+        var max = circlePos + circleRadius * Vector2.one;
+
+        var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(min,max, false);
 
         foreach (var chunk in chunks)
         {

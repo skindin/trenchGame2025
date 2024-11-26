@@ -215,30 +215,31 @@ public class ChunkManager : MonoBehaviour
         return ChunkFromAdress(adress,newIfNone);
     }
 
-    public Chunk ChunkFromPosClamped (Transform transform, bool newIfNone = true)
+    public Chunk ChunkFromPosClamped (Transform transform, float margin = 0, bool newIfNone = true)
     {
-        var clampedPos = ClampToWorld(transform.position, out var adress);
+        var clampedPos = ClampToWorld(transform.position, out var adress, margin);
         transform.position = clampedPos;
+
         return ChunkFromAdress(adress, newIfNone);
     }
 
-    public Vector2 ClampToWorld(Vector2 pos, out Vector2Int closestAdress)
+    public Vector2 ClampToWorld(Vector2 pos, out Vector2Int closestAdress, float margin = 0)
     {
-        var adress = PosToAdress(pos);
-        closestAdress = Vector2Int.Max(adress, Vector2Int.zero);
+        GetWorldBox(out var min, out var max, margin);
+
+        pos = Vector2.Max(min, pos);
+        pos = Vector2.Min(max, pos);
+
+        closestAdress = PosToAdress(pos);
+
         closestAdress = Vector2Int.Min(closestAdress, (chunkArraySize - 1) * Vector2Int.one);
 
-        GetChunkBox(closestAdress, out var chunkMin, out var chunkMax);
-
-        var closestPos = Vector2.Max(pos, chunkMin);
-        closestPos = Vector2.Min(closestPos, chunkMax);
-
-        return closestPos; //there's a reason this is so complicated! if you just clamp it to the world box, sometimes the pos doesn't convert to an adress within the world
+        return pos; //there's a reason this is so complicated! if you just clamp it to the world box, sometimes the pos doesn't convert to an adress within the world
     }
 
-    public Vector2 ClampToWorld(Vector2 pos)
+    public Vector2 ClampToWorld(Vector2 pos, float margin = 0)
     {
-        return ClampToWorld(pos, out _);
+        return ClampToWorld(pos, out _, margin);
     }
 
     public bool IsPointInWorld (Vector2 point, bool debugLines = false)
@@ -247,9 +248,9 @@ public class ChunkManager : MonoBehaviour
         return GeoUtils.TestBoxPosSize(Vector2.zero, Vector2.one * worldSize, point, debugLines);
     }
 
-    public Vector2[,] DistributePoints (Vector2 distributionBox)
+    public Vector2[,] DistributePoints (Vector2 distributionBox, float margin = 0)
     {
-        return GeoUtils.DistributePointsInBoxPosSize(Vector2.zero, Vector2.one * worldSize, distributionBox);
+        return GeoUtils.DistributePointsInBoxPosSize(Vector2.zero, (worldSize - margin * 2) * Vector2.one, distributionBox);
     }
 
     public Vector2Int[,] AdressesFromBox (Vector2 min, Vector2 max)
@@ -276,8 +277,8 @@ public class ChunkManager : MonoBehaviour
 
     public Chunk[,] ChunksFromBoxMinMax (Vector2 min, Vector2 max, bool newIfNone = false)
     {
-        var minAdress = PosToAdress(min);
-        var maxAdress = PosToAdress(max);// + Vector2Int.one;
+        ClampToWorld(min, out var minAdress);
+        ClampToWorld(max, out var maxAdress);// - chunkSize * .5f * Vector2.one); //fingies crossed
 
         var adressDelta = maxAdress - minAdress;
 
@@ -307,7 +308,7 @@ public class ChunkManager : MonoBehaviour
 
     public void GetWorldBox (out Vector2 min, out Vector2 max, float margin = 0)
     {
-        min = -new Vector2(worldSize, worldSize) / 2 - Vector2.one * margin;
+        min = -new Vector2(worldSize, worldSize) / 2 + Vector2.one * margin;
         max = -min;
     }
 

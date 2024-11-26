@@ -845,10 +845,15 @@ public static class GeoUtils
 
         var startCellDelta = startCell - start;
 
-        if (Mathf.Abs(startCellDelta.x) == .5f && Mathf.Abs(startCellDelta.y) == .5f)
-        {
-            startCell = RoundToInt(start + .5f * new Vector2(xDirection,yDirection));
-        }
+        Vector2 offset = Vector2.zero;
+
+        if (Mathf.Abs(startCellDelta.x) == 0.5f)
+            offset += 0.5f * xDirection * Vector2.right;
+
+        if (Mathf.Abs(startCellDelta.y) == 0.5f)
+            offset += 0.5f * yDirection * Vector2.up;
+
+        startCell = RoundToInt(start + offset);
 
         Vector2Int endCell = RoundToInt(end);
 

@@ -43,13 +43,13 @@ public class Chunk
     public void AddCharacter (Character character)
     {
         characters.Add(character);
-        colliders.Add(character.collider);
+        //colliders.Add(character.collider);
     }
 
     public void RemoveCharacter (Character character)
     {
         characters.Remove(character);
-        colliders.Remove(character.collider);
+        //colliders.Remove(character.collider);
         DestroyIfEmpty();
     }
 

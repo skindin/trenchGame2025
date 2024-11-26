@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
-using UnityEngine.Events;
+//using UnityEngine.Events;
 
 public class Collider : MonoBehaviour
 {
     //public static List<Collider> all = new();
     public Action<Bullet> onHit;
     public UnityEvent<bool> onChangeTrenchStatus;
+    public Chunk[,] chunks;
 
     public float localSize = 1;
 
@@ -27,6 +28,30 @@ public class Collider : MonoBehaviour
     private void Update()
     {
         TestWithinTrench();
+        UpdateChunk();
+    }
+
+    public void UpdateChunk()
+    {
+
+        if (chunks != null)
+            foreach (var chunk in chunks)
+            {
+                if (chunk == null)
+                    continue;
+
+                chunk.colliders.Remove(this);
+            }
+
+        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, WorldSize / 2 * Vector2.one);
+
+        foreach (var chunk in chunks)
+        {
+            if (chunk == null)
+                continue;
+
+            chunk.colliders.Add(this);
+        }
     }
 
     public bool TestWithinTrench()
@@ -56,6 +81,11 @@ public class Collider : MonoBehaviour
 
     public void ResetCollider()
     {
+        foreach (var chunk in chunks)
+        {
+            chunk.colliders.Remove(this);
+        }
+        chunks = new Chunk[0,0];
         //hp = maxHp;
     }
 

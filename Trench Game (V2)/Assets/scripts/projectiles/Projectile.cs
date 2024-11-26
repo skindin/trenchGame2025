@@ -6,9 +6,9 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class Projectile
 {
     //public int id; //not implemented
-    public Vector2 pos, 
+    public Vector2 pos,
         //lastPos, 
-        startPos, velocity;
+        startPos, velocity, trenchExit;
     public float range;
     public Character source;
     public bool

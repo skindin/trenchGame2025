@@ -45,7 +45,6 @@ public class ProjectileRenderer : MonoBehaviour
 
     public void LateUpdate()
     {
-        RenderTrenches();
         RenderBullets();
     }
     public void RenderBullets ()
@@ -70,21 +69,33 @@ public class ProjectileRenderer : MonoBehaviour
             var totalDist = startToPos.magnitude;
             var startToEnd = Mathf.Clamp(totalDist - maxLength, 0, bullet.range);
             var end = bullet.startPos + startToPos.normalized * startToEnd;
-            var length = Vector2.Distance(clampedPos, end);
-            var center = (end + clampedPos) /2;
-            Vector3 scale = new Vector2(headSize,length); // Adjust as needed
-            var rot = Quaternion.LookRotation(Vector3.forward, bullet.velocity);
-            Matrix4x4 matrix = Matrix4x4.TRS(center, rot, scale);
-            //transforms[i] = matrix;
-            if (bullet.startedWithinTrench)
+
+            if (bullet.withinTrench)
             {
+                var matrix = GetMatrix(clampedPos, end);
+
                 dangerousTransforms.Add(matrix);
             }
             else
-            {
-                transforms.Add(matrix);
-            }
+            {                //transforms[i] = matrix;
 
+                if (bullet.startedWithinTrench)
+                {
+                    if ((bullet.trenchExit - bullet.startPos).magnitude > (end - bullet.startPos).magnitude)
+                    {
+                        dangerousTransforms.Add(GetMatrix(bullet.trenchExit, end));
+                    }
+
+                    end = Vector2.ClampMagnitude(bullet.trenchExit - bullet.pos, maxLength) + bullet.pos;
+
+                    transforms.Add(GetMatrix(bullet.pos,end));
+                }
+                else
+                {
+                    var matrix = GetMatrix(clampedPos, end);
+                    transforms.Add(matrix);
+                }
+            }
             //Graphics.DrawMesh(bulletMesh, matrix, bulletMaterial, 0);
         }
 
@@ -92,34 +103,14 @@ public class ProjectileRenderer : MonoBehaviour
         Graphics.DrawMeshInstanced(bulletMesh, 0, bulletMaterial, transforms);
     }
 
-#endif
-
-    public void RenderTrenches ()
+    public Matrix4x4 GetMatrix (Vector2 pointA, Vector2 pointB)
     {
-        //Vector3 boxDelta = renderBox / 2; //vector3 just to prevent conversion complications
-        //Vector2 boxMin = transform.position - boxDelta;
-        //Vector2 boxMax = transform.position + boxDelta;
-
-        //chunks.Clear();
-        //chunks = Chunk.manager.ChunksFromBox(boxMin, boxMax, chunks, false, debugLines);
-        
-        //if (debugLines) GeoFuncs.DrawBox(boxMin, boxMax, Color.magenta);
-
-        //Mesh mesh = new();
-
-        //Trench.manager.GetTrenchesFromChunks(chunks, trenches);
-
-        //CombineInstance[] combine = new CombineInstance[trenches.Count];
-
-        //for (int i = 0; i < trenches.Count; i++)
-        //{
-        //    var trench = trenches[i];
-
-        //    combine[i].mesh = trench.lineMesh.mesh;
-        //    combine[i].transform = Matrix4x4.identity;
-        //}
-
-        //mesh.CombineMeshes(combine);
-        //Graphics.DrawMesh(mesh, Vector3.forward, Quaternion.identity, lineMaterial, 0);
+        var length = Vector2.Distance(pointA, pointB);
+        var center = (pointB + pointA) /2;
+        Vector3 scale = new Vector2(headSize,length); // Adjust as needed
+        var rot = Quaternion.LookRotation(Vector3.forward, pointA - pointB);
+        return Matrix4x4.TRS(center, rot, scale);
     }
+
+#endif
 }

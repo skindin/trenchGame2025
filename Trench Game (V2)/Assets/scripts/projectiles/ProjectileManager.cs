@@ -143,15 +143,21 @@ public class ProjectileManager : MonoBehaviour
 
             var exitedTrench = bullet.withinTrench && TrenchManager.Manager.TestRayHitsValue(bullet.pos, nextPos, false, out wallDist);
 
+            HashSet<Collider> processedColliders = new();
+
             foreach (var chunk in chunks)
             {
                 foreach (var collider in chunk.colliders)
                 {
+                    if (processedColliders.Contains(collider)) continue;
                     if (!collider.gameObject.activeInHierarchy) continue;
                     if (bullet.source && bullet.source.collider == collider) continue;
                     if (!bullet.withinTrench && collider.trenchStatus) continue;
 
                     var point = collider.TestRay(bullet.pos, nextPos,debugLines);
+
+                    processedColliders.Add(collider);
+
                     if (point.x == Mathf.Infinity) continue;
 
                     var pointDist = (point - bullet.pos).magnitude;
@@ -191,6 +197,7 @@ public class ProjectileManager : MonoBehaviour
 
             if (exitedTrench)
             {
+                bullet.trenchExit = bullet.pos + bullet.velocity.normalized * wallDist;
                 bullet.withinTrench = false;
                 //float distTraveled = ((bullet.pos + bullet.velocity.normalized * wallDist) - bullet.startPos).magnitude;
                 //NewBullet(bullet.startPos, bullet.velocity, distTraveled, 0, bullet.source, true);
