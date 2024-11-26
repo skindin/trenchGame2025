@@ -141,7 +141,7 @@ public class Inventory : MonoBehaviour
     {
         SelectedItem = null;
         var emptyChunkArray = new Chunk[0,0];
-        AddChunkListeners(chunks, emptyChunkArray);
+        //AddChunkListeners(chunks, emptyChunkArray);
         chunks = emptyChunkArray;
 
         if (dropAllItems)
@@ -189,58 +189,58 @@ public class Inventory : MonoBehaviour
         var min = (Vector2)transform.position - Vector2.one * radius;
         var max = (Vector2)transform.position + Vector2.one * radius;
         var newChunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
-        if (updateListeners)
-            AddChunkListeners(chunks, newChunks);
+        //if (updateListeners)
+        //    AddChunkListeners(chunks, newChunks);
         chunks = newChunks;
     }
 
-    public void AddChunkListeners (Chunk[,] oldChunks, Chunk[,] newChunks)
-    {
-        if (oldChunks == newChunks) return;
+    //public void AddChunkListeners (Chunk[,] oldChunks, Chunk[,] newChunks)
+    //{
+    //    if (oldChunks == newChunks) return;
 
-        //find old
-        foreach (var newChunk in newChunks)
-        {
-            if (newChunk == null) continue;
+    //    //find old
+    //    foreach (var newChunk in newChunks)
+    //    {
+    //        if (newChunk == null) continue;
 
-            bool found = false;
+    //        //bool found = false;
 
-            foreach (var oldChunk in oldChunks)
-            {
-                if (oldChunk == newChunk)
-                {
-                    found = true;
-                    break;
-                }
-            }
+    //        foreach (var oldChunk in oldChunks)
+    //        {
+    //            if (oldChunk == newChunk)
+    //            {
+    //                //found = true;
+    //                break;
+    //            }
+    //        }
 
-            //if (!found) //if new chunk is not within old chunks
-            //{
-            //    newChunk.listeningInventories.Add(this);
-            //}
-        }        
+    //        //if (!found) //if new chunk is not within old chunks
+    //        //{
+    //        //    newChunk.listeningInventories.Add(this);
+    //        //}
+    //    }        
         
-        foreach (var oldChunk in oldChunks)
-        {
-            if (oldChunk == null) continue;
+    //    foreach (var oldChunk in oldChunks)
+    //    {
+    //        if (oldChunk == null) continue;
 
-            bool found = false;
+    //        //bool found = false;
 
-            foreach (var newChunk in newChunks)
-            {
-                if (oldChunk == newChunk)
-                {
-                    found = true;
-                    break;
-                }
-            }
+    //        foreach (var newChunk in newChunks)
+    //        {
+    //            if (oldChunk == newChunk)
+    //            {
+    //                //found = true;
+    //                break;
+    //            }
+    //        }
 
-            //if (!found) //if old chunk is not in new chunks
-            //{
-            //    oldChunk.listeningInventories.Remove(this);
-            //}
-        }
-    }
+    //        //if (!found) //if old chunk is not in new chunks
+    //        //{
+    //        //    oldChunk.listeningInventories.Remove(this);
+    //        //}
+    //    }
+    //}
 
 
     /// <summary>

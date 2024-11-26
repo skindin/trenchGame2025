@@ -106,7 +106,7 @@ public class TrenchMap
     //    Debug.DrawLine(pointA.position, pointB.position, Color.green);
     //}
 
-    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, out bool mapChanged,
+    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, out float areaChanged,
         bool debugLines = false)
     {
         //if (blocks == null)
@@ -147,7 +147,8 @@ public class TrenchMap
             //Vector2Int.CeilToInt(((capsuleMax - pos) / blockWidth) + (resolution * halfVector2One));
 
         //GeoUtils.DrawBoxMinMax(startPos, endPos, Color.magenta);
-        mapChanged = false;
+        areaChanged = 0;
+        var bitArea = bitWidth * bitWidth;
         //honestly probably better to switch between setting all the pixels and some of them depending on how many
 
         //Color32[] pixels = new Color32[resolution * 4 * resolution * 4];
@@ -248,7 +249,9 @@ public class TrenchMap
                                 GeoUtils.MarkPoint(bitPos, bitWidth, Color.green);
                             }
 
-                            mapChanged = blockChanged = true;
+                            areaChanged += bitArea;
+
+                            blockChanged = true;
 
                             var arrayIndex = bitY * resolution * 4 + bitX + blockY * 16 * resolution + blockX * 4;
 
@@ -289,7 +292,7 @@ public class TrenchMap
         //    Debug.Log($"tested {totalBlocksTested} blocks and {totalBitsTested} bits");
         //}
 
-        if (mapChanged)
+        if (areaChanged > 0)
         {
             imageTexture.SetPixels32(pixels);
 

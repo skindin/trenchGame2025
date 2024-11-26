@@ -3240,7 +3240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 20
+  worldSize: 50
   minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0

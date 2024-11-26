@@ -20,7 +20,7 @@ public class CharacterManager : MonoBehaviour
     public KeyValuePair<string, float> serverRecord = new();
     //public int botsPerSquad = 5, spawnCap = 10;
     //float squadSpawnTimer = 0;
-    Coroutine stopWatchRoutine, scoreboardRoutine;
+    Coroutine stopWatchRoutine;//, scoreboardRoutine;
     //bool sortCharactersThisFrame = false;
 
     public string playerName = "";
@@ -207,7 +207,7 @@ public class CharacterManager : MonoBehaviour
 
             if (active.Count < 1)
             {
-                scoreboardRoutine = null;
+                //scoreboardRoutine = null;
                 return;
                 //yield break;
             }
@@ -246,7 +246,7 @@ public class CharacterManager : MonoBehaviour
             prevCharCount = active.Count;
             prevKills = currentTop.KillCount;
 
-            scoreboardRoutine = null;
+            //scoreboardRoutine = null;
         //}
     }
 

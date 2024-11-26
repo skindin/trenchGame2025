@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Spade : Weapon, ISecondaryAction
 {
-    public float integrity;
+    public float integrity, maxIntegrity;
     //float elapsedRadius = 0;
 
     public float
@@ -73,7 +73,7 @@ public class Spade : Weapon, ISecondaryAction
         }
 
         if (onlyModifySpeedIfMapWasChanged)
-            ToggleSpeedModifier(changed);
+            ToggleSpeedModifier(changed > 0);
 
         usedThisFrame = StartCoroutine(WaitForNextFrame());
 
@@ -135,6 +135,8 @@ public class Spade : Weapon, ISecondaryAction
         OnStopDigging();
 
         appliedMovementModifier = false;
+
+        integrity = maxIntegrity;
 
         //integrity = ShovelModel.maxIntegrity;
     }
