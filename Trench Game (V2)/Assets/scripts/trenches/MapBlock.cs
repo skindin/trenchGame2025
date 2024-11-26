@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MapBlock
@@ -74,7 +75,16 @@ public class MapBlock
     {
         get
         {
+            // Calculate the bit index based on grid position
             int bitIndex = x * 4 + y;
+
+            // Validate the index is within range
+            if (bitIndex < 0 || bitIndex >= 16)
+            {
+                throw new ArgumentOutOfRangeException($"Invalid index [{x}, {y}]");
+            }
+
+            // Retrieve the appropriate bit
             if (bitIndex < 8)
             {
                 return (Byte1 & (1 << (7 - bitIndex))) != 0;
@@ -87,7 +97,16 @@ public class MapBlock
 
         set
         {
+            // Calculate the bit index based on grid position
             int bitIndex = x * 4 + y;
+
+            // Validate the index is within range
+            if (bitIndex < 0 || bitIndex >= 16)
+            {
+                throw new ArgumentOutOfRangeException($"Invalid index [{x}, {y}]");
+            }
+
+            // Set or clear the bit
             if (bitIndex < 8)
             {
                 if (value)
@@ -112,6 +131,7 @@ public class MapBlock
             }
         }
     }
+
 
 
 

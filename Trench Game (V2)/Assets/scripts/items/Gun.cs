@@ -15,7 +15,8 @@ public class Gun : Weapon
         reloading = false,
         startFull = true, //temporary, until i make the actual spawning script
         fired = false,
-        drawBerrelPos = false;
+        drawBerrelPos = false,
+        lineTest = false;
     //bool isFiring = false;
 
     public override string Verb { get; } = "shoot";
@@ -321,7 +322,8 @@ public class Gun : Weapon
             range,
             DamagePerBullet,
             wielder,
-            wielder.collider.withinTrench);
+            //true);
+            wielder.collider.trenchStatus);
 
         NetworkManager.Manager.SpawnBullet(this,bullet);
 
@@ -331,6 +333,11 @@ public class Gun : Weapon
     public override void ItemUpdate()
     {
         base.ItemUpdate();
+
+        if (lineTest)
+        {
+            TrenchManager.Manager.TestRayHitsValue(BarrelPos, BarrelPos + direction * 10, false, out _);
+        }
 
         if (!holdingTrigger)
         {

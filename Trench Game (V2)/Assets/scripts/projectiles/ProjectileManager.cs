@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Net;
+//using System.Drawing;
+//using System.Net;
 using UnityEngine;
 
 public class ProjectileManager : MonoBehaviour
@@ -28,7 +28,7 @@ public class ProjectileManager : MonoBehaviour
 
     public readonly List<Bullet> activeBullets = new();//, pooledBullets = new();
     //public int maxPooled = 100, activeCount, pooledCount, total;
-    public bool debugLines = false;
+    public bool debugLines = false, markTrenchBullets = false;
     public ObjectPool<Bullet> bulletPool;
     public float destroyDelay = .2f, updateScale = 1.0f;
 
@@ -53,7 +53,7 @@ public class ProjectileManager : MonoBehaviour
         newBullet.source = source;
         newBullet.hit = false;
         newBullet.shooterLife = source.life;
-        newBullet.withinTrench = withinTrench;
+        newBullet.withinTrench = newBullet.startedWithinTrench = withinTrench;
 
         activeBullets.Add(newBullet);
         //activeCount = activeBullets.Count;
@@ -136,6 +136,11 @@ public class ProjectileManager : MonoBehaviour
 
             float wallDist = shortestDistance;
 
+            if (bullet.withinTrench && markTrenchBullets)
+            {
+                GeoUtils.MarkPoint(bullet.pos, .5f, UnityEngine.Color.red);
+            }
+
             var exitedTrench = bullet.withinTrench && TrenchManager.Manager.TestRayHitsValue(bullet.pos, nextPos, false, out wallDist);
 
             foreach (var chunk in chunks)
@@ -144,14 +149,14 @@ public class ProjectileManager : MonoBehaviour
                 {
                     if (!collider.gameObject.activeInHierarchy) continue;
                     if (bullet.source && bullet.source.collider == collider) continue;
-                    if (!bullet.withinTrench && collider.withinTrench) continue;
+                    if (!bullet.withinTrench && collider.trenchStatus) continue;
 
                     var point = collider.TestRay(bullet.pos, nextPos,debugLines);
                     if (point.x == Mathf.Infinity) continue;
 
                     var pointDist = (point - bullet.pos).magnitude;
 
-                    if (pointDist < shortestDistance && (!collider.withinTrench || bullet.withinTrench || (exitedTrench && wallDist < shortestDistance)))
+                    if (pointDist < shortestDistance && (!collider.trenchStatus || bullet.withinTrench || (exitedTrench && wallDist < shortestDistance)))
                     {
                         closestCollider = collider;
                         bullet.range = (point - bullet.startPos).magnitude;
@@ -187,6 +192,8 @@ public class ProjectileManager : MonoBehaviour
             if (exitedTrench)
             {
                 bullet.withinTrench = false;
+                //float distTraveled = ((bullet.pos + bullet.velocity.normalized * wallDist) - bullet.startPos).magnitude;
+                //NewBullet(bullet.startPos, bullet.velocity, distTraveled, 0, bullet.source, true);
             }
         }
 

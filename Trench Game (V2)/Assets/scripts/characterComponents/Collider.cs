@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using UnityEngine.Events;
 
 public class Collider : MonoBehaviour
 {
     //public static List<Collider> all = new();
     public Action<Bullet> onHit;
+    public UnityEvent<bool> onChangeTrenchStatus;
 
     public float localSize = 1;
 
@@ -20,7 +22,7 @@ public class Collider : MonoBehaviour
         }
     }
 
-    public bool withinTrench = false, drawTrenchStatus = false, drawTrenchTest = false;
+    public bool trenchStatus = true, drawTrenchStatus = false, drawTrenchTest = false;
 
     private void Update()
     {
@@ -29,14 +31,16 @@ public class Collider : MonoBehaviour
 
     public bool TestWithinTrench()
     {
-        withinTrench = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false, drawTrenchTest);
+        trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false, drawTrenchTest);
+
+        onChangeTrenchStatus.Invoke(trenchStatus);
 
         if (drawTrenchStatus)
         {
-            GeoUtils.DrawCircle(transform.position, WorldSize / 2, withinTrench ? Color.green : Color.red);
+            GeoUtils.DrawCircle(transform.position, WorldSize / 2, trenchStatus ? Color.green : Color.red);
         }
 
-        return withinTrench;
+        return trenchStatus;
     }
 
     public void HitCollider (Bullet bullet)
@@ -47,7 +51,7 @@ public class Collider : MonoBehaviour
 
     public void ToggleSafe (bool safe)
     {
-        this.withinTrench = !safe;
+        this.trenchStatus = !safe;
     }
 
     public void ResetCollider()

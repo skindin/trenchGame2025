@@ -13,8 +13,9 @@ public class ProjectileRenderer : MonoBehaviour
     //List<Trench> trenches = new();
 
     public Mesh bulletMesh;
-    public Color bulletColor = Color.white;
+    public Color bulletColor = Color.white, dangerColor = Color.red;
     public Material bulletMaterial;
+    Material dangerMaterial;
     public float headSize = .1f, trailEndSpeed = 10;//, ppu = 10;
     //Texture2D texture;
 
@@ -34,6 +35,8 @@ public class ProjectileRenderer : MonoBehaviour
 
         bulletMaterial = new Material(bulletMaterial);
 
+        dangerMaterial = new Material(bulletMaterial);
+
         //if (!NetworkManager.IsServer)
         //    Debug.Log("this is server dedicated server");
     }
@@ -50,9 +53,11 @@ public class ProjectileRenderer : MonoBehaviour
         bulletMaterial.enableInstancing = true;
 
         var bullets = ProjectileManager.Manager.activeBullets;
-        Matrix4x4[] transforms = new Matrix4x4[bullets.Count];
+        List<Matrix4x4> transforms = new();
+        List<Matrix4x4> dangerousTransforms = new();
 
         bulletMaterial.color = bulletColor;
+        dangerMaterial.color = dangerColor;
 
         for (int i = 0; i < bullets.Count; i++)
         {
@@ -70,11 +75,20 @@ public class ProjectileRenderer : MonoBehaviour
             Vector3 scale = new Vector2(headSize,length); // Adjust as needed
             var rot = Quaternion.LookRotation(Vector3.forward, bullet.velocity);
             Matrix4x4 matrix = Matrix4x4.TRS(center, rot, scale);
-            transforms[i] = matrix;
+            //transforms[i] = matrix;
+            if (bullet.startedWithinTrench)
+            {
+                dangerousTransforms.Add(matrix);
+            }
+            else
+            {
+                transforms.Add(matrix);
+            }
 
             //Graphics.DrawMesh(bulletMesh, matrix, bulletMaterial, 0);
         }
 
+        Graphics.DrawMeshInstanced(bulletMesh, 0, dangerMaterial, dangerousTransforms);
         Graphics.DrawMeshInstanced(bulletMesh, 0, bulletMaterial, transforms);
     }
 

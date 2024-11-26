@@ -68,6 +68,7 @@ MonoBehaviour:
   startFull: 1
   fired: 0
   drawBerrelPos: 0
+  lineTest: 0
   bulletSpeed: 100
   range: 20
   firingRate: 1

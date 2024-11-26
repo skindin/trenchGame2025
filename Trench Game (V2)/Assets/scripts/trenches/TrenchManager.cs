@@ -184,7 +184,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             var bitAdress = GetBitAdressFloored(pos+ bitCorner, blockPos, blockWidth, bitWidth);
 
-            //bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
+            bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
             //bitAdress = Vector2Int.Max(bitAdress, Vector2Int.zero);
 
             //if (bitAdress.x < 0 || bitAdress.y < 0)

@@ -295,10 +295,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9af10b153f1df57459e3415ad1e2468f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onChangeTrenchStatus:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6926741438716249447}
+        m_TargetAssemblyTypeName: TintSprite, Assembly-CSharp
+        m_MethodName: ApplyTint
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   localSize: 1.7
   draw: 0
-  withinTrench: 0
-  drawTrenchStatus: 1
+  trenchStatus: 0
+  drawTrenchStatus: 0
   drawTrenchTest: 0
 --- !u!114 &1672398506640000765
 MonoBehaviour:
@@ -409,6 +424,7 @@ GameObject:
   - component: {fileID: 1235202178872870430}
   - component: {fileID: 5373565871716294443}
   - component: {fileID: 1393441897014514951}
+  - component: {fileID: 6926741438716249447}
   m_Layer: 0
   m_Name: sprites
   m_TagString: Untagged
@@ -845,3 +861,17 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6926741438716249447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8812111973789784530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4a7ad5df96025d4c89ab636d52a4b17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tintColor: {r: 1, g: 1, b: 1, a: 0.8666667}
+  sprite: {fileID: 4108761352474424341}
