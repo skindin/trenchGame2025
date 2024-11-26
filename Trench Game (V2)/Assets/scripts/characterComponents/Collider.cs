@@ -83,7 +83,8 @@ public class Collider : MonoBehaviour
     {
         foreach (var chunk in chunks)
         {
-            chunk.colliders.Remove(this);
+            if (chunk!= null)
+                chunk.colliders.Remove(this);
         }
         chunks = new Chunk[0,0];
         //hp = maxHp;
