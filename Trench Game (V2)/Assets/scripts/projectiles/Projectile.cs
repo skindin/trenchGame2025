@@ -12,7 +12,7 @@ public class Projectile
     public float range;
     public Character source;
     public bool
-        //withinTrench, 
+        withinTrench = false, 
         hit = false,
         destroy = false;
     public float damage = 1;

@@ -113,7 +113,7 @@ public class Spade : Weapon, ISecondaryAction
     {
         digMode = !digMode;
 
-        OnStopDigging();
+        digRadius = lastRadius = 0;
     }
 
     public override void DirectionalAction(Vector2 direction)

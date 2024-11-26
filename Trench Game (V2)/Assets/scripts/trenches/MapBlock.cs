@@ -88,17 +88,31 @@ public class MapBlock
         set
         {
             int bitIndex = x * 4 + y;
-            if (value)
-                if (bitIndex < 8)
+            if (bitIndex < 8)
+            {
+                if (value)
                 {
-                    Byte1 |= (byte)(1 << (7 - bitIndex));
+                    Byte1 |= (byte)(1 << (7 - bitIndex)); // Set the bit
                 }
                 else
                 {
-                    Byte2 |= (byte)(1 << (15 - bitIndex));
+                    Byte1 &= (byte)~(1 << (7 - bitIndex)); // Clear the bit
                 }
+            }
+            else
+            {
+                if (value)
+                {
+                    Byte2 |= (byte)(1 << (15 - bitIndex)); // Set the bit
+                }
+                else
+                {
+                    Byte2 &= (byte)~(1 << (15 - bitIndex)); // Clear the bit
+                }
+            }
         }
     }
+
 
 
     public bool TestFull()

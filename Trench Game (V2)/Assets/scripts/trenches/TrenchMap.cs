@@ -296,6 +296,75 @@ public class TrenchMap
         }
     }
 
+    public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value)
+    {
+        return true;
+
+        var blockWidth = TrenchManager.Manager.GetBlockWidth();
+
+        var chunks = ChunkManager.Manager.ChunksFromBoxPosSize(circlePos, circleRadius * 2 * Vector2.one, false);
+
+        foreach (var chunk in chunks)
+        {
+            if (chunk == null || chunk.map == null)
+            {
+                if (value)
+                {
+                    continue;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            for (var blockY = 0; blockY < resolution; blockY++)
+            {
+                for (var blockX = 0; blockX < resolution; blockX++)
+                {
+                    var block = chunk.map.blocks[blockX, blockY];
+
+                    if (block == null)
+                    {
+                        if (value)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+
+                    var blockPos = TrenchManager.Manager.GetBlockPos(chunk.map.pos, new Vector2Int(blockX, blockY), blockWidth);
+
+                    for (var bitY = 0; bitY < resolution; bitY++)
+                    {
+                        for (var bitX = 0; bitX < resolution; bitX++)
+                        {
+                        }
+                    }
+                }
+            }
+
+
+            foreach (var block in chunk.map.blocks)
+            {
+                if (block == null)
+                {
+                    if (value)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
     public MapBlock GetBlock (Vector2Int adress)
     {
         return blocks[adress.x, adress.y];

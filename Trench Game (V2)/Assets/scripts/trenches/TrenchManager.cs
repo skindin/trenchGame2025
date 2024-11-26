@@ -92,7 +92,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         }
     }
 
-    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint, bool value, out float hitPoint, bool logTotal = false)
+    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint, bool value, out float distance, bool logTotal = false)
     {
         var blockWidth = GetBlockWidth();
         var bitWidth = GetBitWidth(blockWidth);
@@ -102,7 +102,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
             Debug.DrawLine(startPoint, endPoint, Color.blue);
         }
 
-        hitPoint = 0;
+        distance = Vector2.Distance(startPoint, endPoint);
 
         var bitCorner = bitWidth * .5f * Vector2.one;
 
@@ -130,7 +130,10 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 if (value)
                     continue;
                 else
+                {
+                    distance = Vector2.Distance(startPoint, pos);
                     return true;
+                }
             }
             else if (rayLines)
             {
@@ -150,13 +153,18 @@ public class TrenchManager : ManagerBase<TrenchManager>
             {
                 if (rayLines)
                 {
-                    GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, !value ? Color.green : Color.white);
+                    var color = !value ? Color.green : Color.white;
+                    GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, color);
+                    GeoUtils.DrawBoxPosSize(pos+ bitCorner, bitWidth * Vector2.one, color);
                 }
 
                 if (value)
                     continue;
                 else
+                {
+                    distance = Vector2.Distance(startPoint, pos);
                     return true;
+                }
             }
 
             if (block.TestWhole(value))
@@ -164,8 +172,10 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 if (rayLines)
                 {
                     GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.green);
+                    GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
                 }
 
+                distance = Vector2.Distance(startPoint, pos);
                 return true;
             }
 
@@ -174,10 +184,13 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.red);
             }
 
-            var bitAdress = GetBitAdressFloored(pos, blockPos, blockWidth, bitWidth);
+            var bitAdress = GetBitAdressFloored(pos+ bitCorner, blockPos, blockWidth, bitWidth);
 
-            bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
-            bitAdress = Vector2Int.Max(bitAdress, Vector2Int.zero);
+            //bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
+            //bitAdress = Vector2Int.Max(bitAdress, Vector2Int.zero);
+
+            //if (bitAdress.x < 0 || bitAdress.y < 0)
+            //    continue;
 
             if (block[bitAdress] == value)
             {
@@ -187,6 +200,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     GeoUtils.MarkPoint(pos + bitCorner, bitWidth / 2, Color.green);
                 }
 
+                distance = Vector2.Distance(startPoint, pos);
                 return true;
             }
             else if (rayLines)
@@ -230,9 +244,9 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     if (block == null)
                         continue;
 
-                    for (var bitY = 0; bitY < mapResolution; bitY++)
+                    for (var bitY = 0; bitY < 4; bitY++)
                     {
-                        for (var bitX = 0; bitX < mapResolution; bitX++)
+                        for (var bitX = 0; bitX < 4; bitX++)
                         {
                             if (block[bitX,bitY] == value)
                             {
@@ -293,6 +307,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     public Vector2Int GetBitAdressFloored (Vector2 pos, Vector2 blockPos, float blockWidth, float bitWidth)
     {
-        return Vector2Int.FloorToInt(GetBitAdressPoint(pos, blockPos, blockWidth, bitWidth));
+        var point = GetBitAdressPoint(pos, blockPos, blockWidth, bitWidth);
+        var floored = Vector2Int.FloorToInt(point);
+        return floored;
     }
 }

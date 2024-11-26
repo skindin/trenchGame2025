@@ -42,7 +42,7 @@ public class ProjectileManager : MonoBehaviour
             );
     }
 
-    public Bullet NewBullet (Vector2 startPos, Vector2 velocity, float range, float damage, Character source)
+    public Bullet NewBullet (Vector2 startPos, Vector2 velocity, float range, float damage, Character source, bool withinTrench)
     {
         var newBullet = bulletPool.GetFromPool();
 
@@ -53,6 +53,7 @@ public class ProjectileManager : MonoBehaviour
         newBullet.source = source;
         newBullet.hit = false;
         newBullet.shooterLife = source.life;
+        newBullet.withinTrench = withinTrench;
 
         activeBullets.Add(newBullet);
         //activeCount = activeBullets.Count;
@@ -132,6 +133,11 @@ public class ProjectileManager : MonoBehaviour
         if (!bullet.hit)
         {
             var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, false, debugLines);
+
+            if (bullet.withinTrench && TrenchManager.Manager.TestRayHitsValue(bullet.pos,nextPos, false, out var wallDist))
+            {
+
+            }
 
             foreach (var chunk in chunks)
             {

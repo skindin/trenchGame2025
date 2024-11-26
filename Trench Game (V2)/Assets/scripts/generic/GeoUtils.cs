@@ -835,8 +835,21 @@ public static class GeoUtils
         start /= cellSize;
         end /= cellSize;
 
+        var delta = end - start;
+
+        var xDirection = delta.x > 0 ? 1 : -1;
+        var yDirection = delta.y > 0 ? 1 : -1;
+
         // Convert start and end to grid coordinates based on the cell size
         Vector2Int startCell = RoundToInt(start);
+
+        var startCellDelta = startCell - start;
+
+        if (Mathf.Abs(startCellDelta.x) == .5f && Mathf.Abs(startCellDelta.y) == .5f)
+        {
+            startCell = RoundToInt(start + .5f * new Vector2(xDirection,yDirection));
+        }
+
         Vector2Int endCell = RoundToInt(end);
 
         static Vector2Int RoundToInt (Vector2 pos)
@@ -880,8 +893,6 @@ public static class GeoUtils
             }
         } //perfectly horizontal
 
-        var delta = end - start;
-
         var slope = delta.y / delta.x;
 
         var yIntercept = start.y - (slope * start.x);
@@ -891,9 +902,6 @@ public static class GeoUtils
         var cellDelta = endCell - startCell;
 
         var predictedTotal = Mathf.Abs(cellDelta.x) + Mathf.Abs(cellDelta.y) + 2;
-
-        var xDirection = delta.x > 0 ? 1 : -1;
-        var yDirection = delta.y > 0 ? 1 : -1;
 
         //if (delta.x < 0 || delta.y < 0)
         //    yield break;

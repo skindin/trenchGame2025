@@ -3378,8 +3378,10 @@ MonoBehaviour:
   filter: 0
   pointA: {fileID: 1884687862}
   pointB: {fileID: 1477006794}
-  runTest: 1
-  debugLines: 1
+  runTest: 0
+  rayLines: 1
+  fillLines: 0
+  drawAllBits: 0
 --- !u!1 &896552506
 GameObject:
   m_ObjectHideFlags: 0
