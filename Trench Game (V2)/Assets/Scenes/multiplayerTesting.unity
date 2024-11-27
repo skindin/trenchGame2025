@@ -4765,7 +4765,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   bulletColor: {r: 1, g: 1, b: 1, a: 0.5019608}
-  dangerColor: {r: 1, g: 0, b: 0, a: 1}
+  dangerColor: {r: 1, g: 0, b: 0, a: 0.5019608}
   bulletMaterial: {fileID: 2100000, guid: 48336d74b6957b445bffcbb4f07e5c52, type: 2}
   headSize: 0.1
   trailEndSpeed: 10

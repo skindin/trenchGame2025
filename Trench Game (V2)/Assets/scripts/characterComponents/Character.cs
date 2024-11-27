@@ -44,7 +44,7 @@ public class Character : MonoBehaviour
     //}
 
     public Chunk chunk;
-    public Collider collider;
+    public TrenchCollider collider;
     //public TrenchDetector detector;
     //public TrenchDigger digger; //eventually this will be attached to the shovel...?
     //public Gun gun;

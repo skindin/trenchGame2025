@@ -292,7 +292,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4411661645840510790}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9af10b153f1df57459e3415ad1e2468f, type: 3}
+  m_Script: {fileID: 11500000, guid: 41a00a2b35c9ac144a483ed46c0938b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onChangeTrenchStatus:
@@ -310,7 +310,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  localSize: 1.7
+  localSize: 1.6
   draw: 0
   trenchStatus: 0
   drawTrenchStatus: 0

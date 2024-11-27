@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using System;
 //using UnityEngine.Events;
 
-public class Collider : MonoBehaviour
+public class TrenchCollider : MonoBehaviour
 {
     //public static List<Collider> all = new();
     public Action<Bullet> onHit;

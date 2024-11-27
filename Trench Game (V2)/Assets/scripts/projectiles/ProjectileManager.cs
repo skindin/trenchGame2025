@@ -113,7 +113,7 @@ public class ProjectileManager : MonoBehaviour
         var nextDirection = bullet.velocity * seconds;
         var nextPos = bullet.pos + nextDirection;
         //var closestPoint = nextPos;
-        Collider closestCollider = null;
+        TrenchCollider closestCollider = null;
         float shortestDistance = nextDirection.magnitude;
         var ogDistance = shortestDistance;
         Vector2 closestPoint = nextPos;
@@ -143,7 +143,7 @@ public class ProjectileManager : MonoBehaviour
 
             var exitedTrench = bullet.withinTrench && TrenchManager.Manager.TestRayHitsValue(bullet.pos, nextPos, false, out wallDist);
 
-            HashSet<Collider> processedColliders = new();
+            HashSet<TrenchCollider> processedColliders = new();
 
             foreach (var chunk in chunks)
             {

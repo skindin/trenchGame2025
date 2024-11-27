@@ -40,7 +40,7 @@ public class Spade : Weapon, ISecondaryAction
         if (digRadius < maxDigRadius)
         {
             digRadius = Mathf.MoveTowards(digRadius, maxDigRadius,
-                movementModifier * wielder.baseMoveSpeed * radiusSpeedModifier* Time.deltaTime);
+                wielder.moveSpeed * radiusSpeedModifier* Time.deltaTime);
             //digRadius += (maxDigRadius - digRadius) * movementModifier * wielder.baseMoveSpeed * Time.deltaTime;
         }
 

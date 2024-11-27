@@ -64,7 +64,7 @@ public class BotController : MonoBehaviour
     }
 
     public Item targetItem;
-    public Collider targetCollider;
+    public TrenchCollider targetCollider;
     public Character closestEnemy;
     //List<Vector2> path = new();
 
