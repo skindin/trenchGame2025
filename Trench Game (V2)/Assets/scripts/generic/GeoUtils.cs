@@ -830,7 +830,7 @@ public static class GeoUtils
         return ClampToBoxMinMax (point, min, max);
     }
 
-    public static IEnumerable<Vector2Int> GetLineCells(Vector2 start, Vector2 end, float cellSize)
+    public static IEnumerable<Vector2Int> CellsFromLine(Vector2 start, Vector2 end, float cellSize)
     {
         start /= cellSize;
         end /= cellSize;
@@ -944,4 +944,6 @@ public static class GeoUtils
 
         yield break;
     }
+
+    public static IEnumerable<Vector2Int> CellsFromFunction
 }

@@ -227,7 +227,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  collider: {fileID: 5314683665201247688}
+  trenchCollider: {fileID: 5314683665201247688}
   reserve: {fileID: 4680587690229962691}
   inventory: {fileID: 1889033204176027796}
   digging: 0

@@ -117,7 +117,7 @@ public class BotController : MonoBehaviour
         {
             if (!targetCollider && closestEnemy && GeoUtils.TestBoxPosSize(transform.position, visionBox, closestEnemy.transform.position)) //and you have no target collider, but you do have a close enemy...
             {
-                targetCollider = closestEnemy.collider; //target the closest enemy
+                targetCollider = closestEnemy.trenchCollider; //target the closest enemy
             }
 
             if (gun.rounds <= 0) //and your gun is out of amo...
@@ -331,7 +331,7 @@ public class BotController : MonoBehaviour
         {
             if (unexploredPoints.Count < 1)
             {
-                wanderPoints = ChunkManager.Manager.DistributePoints(visionBox,character.collider.WorldSize/2);
+                wanderPoints = ChunkManager.Manager.DistributePoints(visionBox,character.trenchCollider.WorldSize/2);
 
                 unexploredPoints.Clear();
                 exploredPoints.Clear();

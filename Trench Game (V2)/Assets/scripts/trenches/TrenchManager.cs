@@ -110,7 +110,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
         //return GeoUtils.ForeachCellTouchingLine<bool>(startPoint, endPoint, bitWidth, null, returnCondition, returnCondition, out _, logTotal);
 
-        var lineToCells = GeoUtils.GetLineCells(startPoint, endPoint, bitWidth);
+        var lineToCells = GeoUtils.CellsFromLine(startPoint, endPoint, bitWidth);
 
         foreach (var cell in lineToCells)
         {

@@ -44,7 +44,7 @@ public class Character : MonoBehaviour
     //}
 
     public Chunk chunk;
-    public TrenchCollider collider;
+    public TrenchCollider trenchCollider;
     //public TrenchDetector detector;
     //public TrenchDigger digger; //eventually this will be attached to the shovel...?
     //public Gun gun;
@@ -100,7 +100,7 @@ public class Character : MonoBehaviour
         //    //Debug.Log(gameObject.name + " was hit");
         //});
 
-        collider.onHit = bullet => Damage(bullet.damage,bullet.source, bullet.shooterLife);
+        trenchCollider.onHit = bullet => Damage(bullet.damage,bullet.source, bullet.shooterLife);
     }
 
     //private void Update()
@@ -316,7 +316,7 @@ public class Character : MonoBehaviour
                 inventory.ResetInventory(true);
         }
 
-        collider.ResetCollider();
+        trenchCollider.ResetCollider();
 
         hp = maxHp; //shouldn't use set, because then the server sends new character data every time it resets a character object
 

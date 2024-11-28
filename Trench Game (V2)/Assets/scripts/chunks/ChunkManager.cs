@@ -327,7 +327,7 @@ public class ChunkManager : MonoBehaviour
 
         List<Chunk> chunks = new();
 
-        var lineToCells = GeoUtils.GetLineCells(pointA, pointB, chunkSize);
+        var lineToCells = GeoUtils.CellsFromLine(pointA, pointB, chunkSize);
 
         foreach (var cell in lineToCells)
         {

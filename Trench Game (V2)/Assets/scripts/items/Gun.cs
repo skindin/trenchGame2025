@@ -323,7 +323,7 @@ public class Gun : Weapon
             DamagePerBullet,
             wielder,
             //true);
-            wielder.collider.trenchStatus);
+            wielder.trenchCollider.trenchStatus);
 
         NetworkManager.Manager.SpawnBullet(this,bullet);
 

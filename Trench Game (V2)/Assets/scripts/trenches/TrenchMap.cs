@@ -158,6 +158,8 @@ public class TrenchMap
         //    pixels[i] = groundColor;
         //}
 
+        float blockCircleRadius = Vector2.one.magnitude * bitWidth * 1.5f;
+
         int totalBitsTested = 0;
         int totalBlocksTested = 0;
 
@@ -195,7 +197,7 @@ public class TrenchMap
 
                 totalBlocksTested++;
                 // Check if the block overlaps with the tapered capsule
-                if (!GeoUtils.TestCirlceTouchesTaperedCapsule(blockPos, Vector2.one.magnitude * bitWidth * 1.5f, startPoint, startRadius, endPoint, endRadius,
+                if (!GeoUtils.TestCirlceTouchesTaperedCapsule(blockPos, blockCircleRadius, startPoint, startRadius, endPoint, endRadius,
                     debugLines))
                 {
                     if (debugLines)
@@ -321,6 +323,8 @@ public class TrenchMap
 
         var endPos = TrenchManager.Manager.GetBlockAdressCield(circleMax, pos, blockWidth);
 
+        float blockCircleRadius = Vector2.one.magnitude * bitWidth * 1.5f;
+
         for (var blockY = startPos.y; blockY < endPos.y; blockY++)
         {
             for (var blockX = startPos.x; blockX < endPos.x; blockX++)
@@ -331,7 +335,7 @@ public class TrenchMap
 
                 if (block == null)
                 {
-                    if (!value && GeoUtils.TestBoxPosSizeTouchesCircle(blockPos, blockWidth * Vector2.one, circlePos, circleRadius, debugLines))
+                    if (!value && GeoUtils.CirclesOverlap(blockPos, blockCircleRadius, circlePos, circleRadius, debugLines))
                     {
                         return true;
                     }

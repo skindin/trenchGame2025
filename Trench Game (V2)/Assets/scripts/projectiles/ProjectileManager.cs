@@ -151,7 +151,7 @@ public class ProjectileManager : MonoBehaviour
                 {
                     if (processedColliders.Contains(collider)) continue;
                     if (!collider.gameObject.activeInHierarchy) continue;
-                    if (bullet.source && bullet.source.collider == collider) continue;
+                    if (bullet.source && bullet.source.trenchCollider == collider) continue;
                     if (!bullet.withinTrench && collider.trenchStatus) continue;
 
                     var point = collider.TestRay(bullet.pos, nextPos,debugLines);
