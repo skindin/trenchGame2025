@@ -6,11 +6,11 @@ Shader "Custom/LinearTrailShaderTopToBottom"
     }
     SubShader
     {
-        Tags { "Queue"="Transparent" "RenderType"="Transparent" }
+        Tags { "Queue"="Transparent+100" "RenderType"="Transparent" }
         LOD 100
 
         Blend SrcAlpha OneMinusSrcAlpha
-        ZWrite Off
+        ZWrite Off // Depth write disabled for transparency
         Cull Off
         Lighting Off
 

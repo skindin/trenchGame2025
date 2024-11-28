@@ -14,21 +14,23 @@ public class TrenchManager : ManagerBase<TrenchManager>
     public Material imageMaterial;//
     public FilterMode filter;
     public Transform pointA, pointB;
-    public bool runTest = false, rayLines = false, fillLines = false, drawAllBits = false;
+    public bool 
+        //runTest = false,
+        drawRayLines = false, drawFillLines = false, drawColliderTestLines = false, drawAllBits = false;
 
     private void Start()
     {
         //mapResolution = ChunkManager.Manager.chunkSize //determine resolution with maxPixelSize
 
-        mapResolution = Mathf.FloorToInt(ChunkManager.Manager.chunkSize / maxPixelSize/4);
+        mapResolution = Mathf.CeilToInt(ChunkManager.Manager.chunkSize / maxPixelSize/4);
     }
 
     private void Update()
     {
-        if (runTest)
-        {
-            TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
-        }
+        //if (runTest)
+        //{
+        //    TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
+        //}
 
         if (drawAllBits)
         {
@@ -44,7 +46,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         }
     }
 
-    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, out float areaChanged)
+    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, float maxArea, out float areaChanged)
     {
         var startMax = Vector2.one * startRadius;
         var endMax = Vector2.one * endRadius;
@@ -78,9 +80,10 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
             }
 
-            chunk.map.SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, value, out var areaChangedMap, fillLines);
+            chunk.map.SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, value, maxArea, out var areaChangedMap, drawFillLines);
 
             areaChanged += areaChangedMap;
+            maxArea -= areaChangedMap;
 
             //Debug.Log($"chunk {chunk.adress} has {chunk.map.totalEditedBlocks} edited blocks");
 
@@ -96,7 +99,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         var blockWidth = GetBlockWidth();
         var bitWidth = GetBitWidth(blockWidth);
 
-        if (rayLines)
+        if (drawRayLines)
         {
             Debug.DrawLine(startPoint, endPoint, Color.blue);
         }
@@ -120,7 +123,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             if (chunk == null || chunk.map == null)
             {
-                if (rayLines)
+                if (drawRayLines)
                     GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one,
                         !value ? Color.green : Color.white);
 
@@ -132,7 +135,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     return true;
                 }
             }
-            else if (rayLines)
+            else if (drawRayLines)
             {
 
             }
@@ -148,7 +151,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             if (block == null)
             {
-                if (rayLines)
+                if (drawRayLines)
                 {
                     var color = !value ? Color.green : Color.white;
                     GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, color);
@@ -166,7 +169,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             if (block.TestWhole(value))
             {
-                if (rayLines)
+                if (drawRayLines)
                 {
                     GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.green);
                     GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
@@ -176,7 +179,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 return true;
             }
 
-            if (rayLines)
+            if (drawRayLines)
             {
                 GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.red);
             }
@@ -191,7 +194,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             if (block[bitAdress] == value)
             {
-                if (rayLines)
+                if (drawRayLines)
                 {
                     GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
                     GeoUtils.MarkPoint(pos + bitCorner, bitWidth / 2, Color.green);
@@ -200,7 +203,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 distance = Vector2.Distance(startPoint, pos + bitCorner);
                 return true;
             }
-            else if (rayLines)
+            else if (drawRayLines)
             {
                 GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.red);
             }
@@ -209,7 +212,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         return false;
     }
 
-    public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value, bool debugLines = false)
+    public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value)
     {
         var min = circlePos - circleRadius * Vector2.one;
         var max = circlePos + circleRadius * Vector2.one;
@@ -230,7 +233,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
             }
 
-            if (chunk.map.TestCircleTouchesValue(circlePos, circleRadius, value, debugLines))
+            if (chunk.map.TestCircleTouchesValue(circlePos, circleRadius, value, drawColliderTestLines))
                 return true;
         }
 

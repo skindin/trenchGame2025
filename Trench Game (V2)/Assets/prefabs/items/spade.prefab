@@ -72,8 +72,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 451774991
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.6509434, g: 0.36101568, b: 0.2794144, a: 1}
@@ -160,15 +160,13 @@ MonoBehaviour:
   heldRot: {x: 0, y: 0, z: 0}
   heldPos: {x: 0.286, y: 0, z: 0}
   passivePickup: 0
-  onAim:
-    m_PersistentCalls:
-      m_Calls: []
   integrity: 0
+  maxIntegrity: 100
   maxDigRadius: 1
   movementModifier: 0.2
   radiusSpeedModifier: 2
   digMode: 1
-  debugLines: 1
+  onlyModifySpeedIfMapWasChanged: 0
 --- !u!1 &4839155834968144279
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,8 +238,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 451774991
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.36992702, g: 0.45114306, b: 0.4811321, a: 1}

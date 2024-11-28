@@ -49,7 +49,7 @@ public class ProjectileRenderer : MonoBehaviour
     }
     public void RenderBullets ()
     {
-        bulletMaterial.enableInstancing = true;
+        //bulletMaterial.enableInstancing = true;
 
         var bullets = ProjectileManager.Manager.activeBullets;
         List<Matrix4x4> transforms = new();
@@ -88,7 +88,7 @@ public class ProjectileRenderer : MonoBehaviour
 
                     end = Vector2.ClampMagnitude(bullet.trenchExit - bullet.pos, maxLength) + bullet.pos;
 
-                    transforms.Add(GetMatrix(bullet.pos,end));
+                    transforms.Add(GetMatrix(clampedPos,end));
                 }
                 else
                 {
@@ -106,11 +106,19 @@ public class ProjectileRenderer : MonoBehaviour
     public Matrix4x4 GetMatrix (Vector2 pointA, Vector2 pointB)
     {
         var length = Vector2.Distance(pointA, pointB);
-        var center = (pointB + pointA) /2;
+        var center = (Vector3)(pointB + pointA) /2 + Vector3.back;
         Vector3 scale = new Vector2(headSize,length); // Adjust as needed
         var rot = Quaternion.LookRotation(Vector3.forward, pointA - pointB);
         return Matrix4x4.TRS(center, rot, scale);
     }
+
+    //private void OnDrawGizmos()
+    //{
+    //    if (!Application.isPlaying)
+    //    {
+    //        RenderBullets();
+    //    }
+    //}
 
 #endif
 }

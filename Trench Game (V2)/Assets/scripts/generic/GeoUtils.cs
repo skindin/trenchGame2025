@@ -945,5 +945,13 @@ public static class GeoUtils
         yield break;
     }
 
-    public static IEnumerable<Vector2Int> CellsFromFunction
+    //public static IEnumerable<Vector2Int> CellsFromArc(Vector2 arcPivot, float radius, float centerAngle, float spreadAngle, float cellSize)
+    //{
+    //    Vector2 pointA = (Vector2)(Quaternion.AngleAxis(centerAngle - (spreadAngle * 2), Vector3.forward) * Vector2.up) * radius + arcPivot;
+    //}
+
+    //public static void DrawArc (Vector2 pivot, float radius, float dirAngle, float spreadAngle, int res = 4)
+    //{
+        
+    //}
 }

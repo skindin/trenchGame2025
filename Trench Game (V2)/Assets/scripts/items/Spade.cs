@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
 
-public class Spade : Weapon, ISecondaryAction
+public class Spade : Item, ISecondaryAction, IDirectionalAction
 {
-    public float integrity, maxIntegrity;
+    public float integrity, maxIntegrity = 20;
     //float elapsedRadius = 0;
 
     public float
@@ -22,7 +22,12 @@ public class Spade : Weapon, ISecondaryAction
     Vector2 lastPos = Vector2.positiveInfinity;
     float lastRadius = 0;
 
-    bool appliedMovementModifier = false;
+    public bool appliedMovementModifier = false;
+
+    private void Awake()
+    {
+        integrity = maxIntegrity;
+    }
 
     private void LateUpdate()
     {
@@ -54,7 +59,14 @@ public class Spade : Weapon, ISecondaryAction
             lastRadius = 0;
         }
 
-        TrenchManager.Manager.SetTaperedCapsule(lastPos, lastRadius, wielder.transform.position, digRadius, digMode, out var changed);
+        TrenchManager.Manager.SetTaperedCapsule(lastPos, lastRadius, wielder.transform.position, digRadius, digMode, integrity, out var changed);
+        integrity -= changed;
+
+        if (integrity <= 0)
+        {
+            DestroyItem();
+            return;
+        }
 
         //if (!changed)
         //    return;
@@ -106,6 +118,10 @@ public class Spade : Weapon, ISecondaryAction
     {
         digRadius = lastRadius = 0;
 
+        usedThisFrame = null;
+
+        lastPos = Vector2.positiveInfinity;
+
         ToggleSpeedModifier(false);
     }
 
@@ -116,13 +132,13 @@ public class Spade : Weapon, ISecondaryAction
         digRadius = lastRadius = 0;
     }
 
-    public override void DirectionalAction(Vector2 direction)
+    public void DirectionalAction(Vector2 direction)
     {
         //throw new System.NotImplementedException();
 
     }
 
-    public override void Aim(Vector2 direction)
+    public void Aim(Vector2 direction)
     {
         //throw new System.NotImplementedException();
         transform.rotation = Quaternion.FromToRotation(Vector2.up, direction);
@@ -145,12 +161,15 @@ public class Spade : Weapon, ISecondaryAction
     {
         base.ToggleActive(active);
 
+        //StopAllCoroutines();
         OnStopDigging();
     }
 
     public override void DropLogic(Vector2 pos, out bool destroyedSelf)
     {
         base.DropLogic(pos, out destroyedSelf);
+
+        OnStopDigging();
 
         digMode = true;
     }
@@ -162,8 +181,9 @@ public class Spade : Weapon, ISecondaryAction
         if (wielder)
             itemInfo += separator + (digMode ? "dig" : "fill");
 
-        itemInfo += $"{separator} {maxDigRadius:F1} m";
-        itemInfo += $"{separator} speed x{movementModifier:F1}";
+        itemInfo += $"{separator}{integrity:F1} m^2";
+        itemInfo += $"{separator}{maxDigRadius:F1} m";
+        itemInfo += $"{separator}speed x{movementModifier:F1}";
 
         return itemInfo;
     }

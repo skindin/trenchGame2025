@@ -115,7 +115,7 @@ public class ChunkManager : MonoBehaviour
 
     public void InstantiateChunks ()
     {
-        chunkArraySize = Mathf.CeilToInt(worldSize / minChunkSize);
+        chunkArraySize = Mathf.FloorToInt(worldSize / minChunkSize);
         chunkSize = worldSize / chunkArraySize;
         //worldSize = chunkArraySize * chunkSize;
         chunks = new Chunk[chunkArraySize, chunkArraySize];

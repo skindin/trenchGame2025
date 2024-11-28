@@ -39,7 +39,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1571640494949150238}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 
@@ -122,8 +122,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1179072205
+  m_SortingLayer: -2
   m_SortingOrder: -1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 0.25490198}
@@ -314,7 +314,6 @@ MonoBehaviour:
   draw: 0
   trenchStatus: 0
   drawTrenchStatus: 0
-  drawTrenchTest: 0
 --- !u!114 &1672398506640000765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -487,8 +486,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 451774991
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 66e4a217034b94d4380965fc75550b49, type: 3}
   m_Color: {r: 0.49076894, g: 0.709, b: 0.43249, a: 1}
@@ -508,7 +507,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8812111973789784530}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 

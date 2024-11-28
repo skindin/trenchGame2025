@@ -106,9 +106,15 @@ public class TrenchMap
     //    Debug.DrawLine(pointA.position, pointB.position, Color.green);
     //}
 
-    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, out float areaChanged,
+    public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, float maxArea, out float areaChanged,
         bool debugLines = false)
     {
+        if (maxArea == 0)
+        {
+            areaChanged = 0;
+            return;
+        }
+
         //if (blocks == null)
         //{
         //    if (value)
@@ -258,6 +264,11 @@ public class TrenchMap
                             var arrayIndex = bitY * resolution * 4 + bitX + blockY * 16 * resolution + blockX * 4;
 
                             pixels[arrayIndex] = value ? trenchColor : groundColor;
+
+                            if (areaChanged >= maxArea)
+                            {
+                                return;
+                            }
                         }
                         else if (debugLines)
                         {

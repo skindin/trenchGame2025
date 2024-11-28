@@ -499,9 +499,9 @@ public class Inventory : MonoBehaviour
 
     public void Aim (Vector2 direction)
     {
-        if (ActiveWeapon)
+        if (ActiveItem is IDirectionalAction directional)
         {
-            ActiveWeapon.Aim(direction);
+            directional.Aim(direction);
 
             var angle = Vector2.SignedAngle(Vector3.up, direction);
             itemContainer.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);

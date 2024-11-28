@@ -145,7 +145,7 @@ public class PlayerController : MonoBehaviour
                 {
                     gun.Action();
                 }
-                else if (character.inventory.ActiveWeapon is Spade spade)
+                else if (character.inventory.ActiveItem is Spade spade)
                     spade.SecondaryAction();
             }
             else 

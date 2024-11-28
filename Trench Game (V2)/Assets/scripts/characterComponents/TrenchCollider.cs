@@ -23,7 +23,7 @@ public class TrenchCollider : MonoBehaviour
         }
     }
 
-    public bool trenchStatus = true, drawTrenchStatus = false, drawTrenchTest = false;
+    public bool trenchStatus = true, drawTrenchStatus = false;
 
     private void Update()
     {
@@ -56,7 +56,7 @@ public class TrenchCollider : MonoBehaviour
 
     public bool TestWithinTrench()
     {
-        trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false, drawTrenchTest);
+        trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
 
         onChangeTrenchStatus.Invoke(trenchStatus);
 
