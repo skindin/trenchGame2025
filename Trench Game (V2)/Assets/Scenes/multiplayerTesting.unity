@@ -3298,13 +3298,16 @@ MonoBehaviour:
     rgba: 0
   imageMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   imageMaterial: {fileID: 2100000, guid: 41eb24fc18bbdad42ad19ac7362a0c20, type: 2}
-  filter: 1
+  filter: 2
   pointA: {fileID: 1884687862}
   pointB: {fileID: 1477006794}
-  drawRayLines: 0
+  runTest: 0
+  drawRayLines: 1
   drawFillLines: 0
   drawColliderTestLines: 0
   drawAllBits: 0
+  blockWidth: 0
+  bitWidth: 0
 --- !u!1 &896552506
 GameObject:
   m_ObjectHideFlags: 0
@@ -3587,8 +3590,16 @@ MonoBehaviour:
       active: []
       spawnCap: 1
       chance: 2
+    - prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
+      active: []
+      spawnCap: 1
+      chance: 2
+    - prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
+      active: []
+      spawnCap: 1
+      chance: 2
     chance: 1
-  itemsPerDrop: 1
+  itemsPerDrop: 3
   itemDropRadius: 5
   itemDropInterval: 1
   itemDropTimer: 0

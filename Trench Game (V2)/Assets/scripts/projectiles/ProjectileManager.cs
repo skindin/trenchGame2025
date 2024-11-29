@@ -134,14 +134,18 @@ public class ProjectileManager : MonoBehaviour
         {
             var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, false, debugLines);
 
-            float wallDist = shortestDistance;
+            //float wallDist = shortestDistance;
 
             if (bullet.withinTrench && markTrenchBullets)
             {
                 GeoUtils.MarkPoint(bullet.pos, .5f, UnityEngine.Color.red);
             }
 
-            var exitedTrench = bullet.withinTrench && TrenchManager.Manager.TestRayHitsValue(bullet.pos, nextPos, false, out wallDist);
+            Vector2 trenchExit = nextPos;
+
+            var exitedTrench = bullet.withinTrench && TrenchManager.Manager.TestRayHitsValue(bullet.pos, nextPos, false, out trenchExit);
+
+            var wallDist = (trenchExit - bullet.pos).magnitude;
 
             HashSet<TrenchCollider> processedColliders = new();
 
@@ -197,7 +201,7 @@ public class ProjectileManager : MonoBehaviour
 
             if (exitedTrench)
             {
-                bullet.trenchExit = bullet.pos + bullet.velocity.normalized * wallDist;
+                bullet.trenchExit = trenchExit;
                 bullet.withinTrench = false;
                 //float distTraveled = ((bullet.pos + bullet.velocity.normalized * wallDist) - bullet.startPos).magnitude;
                 //NewBullet(bullet.startPos, bullet.velocity, distTraveled, 0, bullet.source, true);

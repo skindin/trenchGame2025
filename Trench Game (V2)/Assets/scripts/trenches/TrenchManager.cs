@@ -14,23 +14,29 @@ public class TrenchManager : ManagerBase<TrenchManager>
     public Material imageMaterial;//
     public FilterMode filter;
     public Transform pointA, pointB;
-    public bool 
-        //runTest = false,
+    public bool
+        runTest = false,
         drawRayLines = false, drawFillLines = false, drawColliderTestLines = false, drawAllBits = false;
+
+    public float blockWidth, bitWidth;
 
     private void Start()
     {
         //mapResolution = ChunkManager.Manager.chunkSize //determine resolution with maxPixelSize
 
         mapResolution = Mathf.CeilToInt(ChunkManager.Manager.chunkSize / maxPixelSize/4);
+
+        blockWidth = ChunkManager.Manager.chunkSize / mapResolution;
+
+        bitWidth = blockWidth / 4;
     }
 
     private void Update()
     {
-        //if (runTest)
-        //{
-        //    TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
-        //}
+        if (runTest)
+        {
+            TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
+        }
 
         if (drawAllBits)
         {
@@ -94,17 +100,14 @@ public class TrenchManager : ManagerBase<TrenchManager>
         }
     }
 
-    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint, bool value, out float distance, bool logTotal = false)
+    public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint, bool value, out Vector2 hitPoint, bool logTotal = false)
     {
-        var blockWidth = GetBlockWidth();
-        var bitWidth = GetBitWidth(blockWidth);
-
         if (drawRayLines)
         {
             Debug.DrawLine(startPoint, endPoint, Color.blue);
         }
 
-        distance = Vector2.Distance(startPoint, endPoint);
+        hitPoint = endPoint;
 
         var bitCorner = bitWidth * .5f * Vector2.one;
 
@@ -131,7 +134,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     continue;
                 else
                 {
-                    distance = Vector2.Distance(startPoint, pos + bitCorner);
+                    hitPoint = GetIntersectDistance(pos);
                     return true;
                 }
             }
@@ -140,14 +143,14 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             }
 
-            var blockAdress = GetBlockAdressFloored(pos, chunk.map.pos, blockWidth);
+            var blockAdress = GetBlockAdressFloored(pos, chunk.map.pos);
 
             //if (debugLines)
             //    GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.green);
 
             var block = chunk.map.GetBlock(blockAdress);
 
-            var blockPos = GetBlockPos(chunk.map.pos, blockAdress, blockWidth);
+            var blockPos = GetBlockPos(chunk.map.pos, blockAdress);
 
             if (block == null)
             {
@@ -162,7 +165,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     continue;
                 else
                 {
-                    distance = Vector2.Distance(startPoint, pos + bitCorner);
+                    hitPoint = GetIntersectDistance(pos);
                     return true;
                 }
             }
@@ -175,7 +178,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
                 }
 
-                distance = Vector2.Distance(startPoint, pos + bitCorner);
+                hitPoint = GetIntersectDistance(pos);
                 return true;
             }
 
@@ -184,9 +187,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.red);
             }
 
-            var bitAdress = GetBitAdressFloored(pos+ bitCorner, blockPos, blockWidth, bitWidth);
-
-            bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
+            var bitAdress = GetBitAdressFloored(pos+ bitCorner, blockPos);
             //bitAdress = Vector2Int.Max(bitAdress, Vector2Int.zero);
 
             //if (bitAdress.x < 0 || bitAdress.y < 0)
@@ -200,13 +201,30 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     GeoUtils.MarkPoint(pos + bitCorner, bitWidth / 2, Color.green);
                 }
 
-                distance = Vector2.Distance(startPoint, pos + bitCorner);
+                hitPoint = GetIntersectDistance(pos);
                 return true;
             }
             else if (drawRayLines)
             {
                 GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.red);
             }
+        }
+
+        Vector2 GetIntersectDistance (Vector2 point)
+        {
+            var vector = (endPoint - startPoint).normalized * bitWidth;
+
+            var perp = Vector2.Perpendicular(vector);
+
+            point += bitCorner;
+
+            point -= vector;
+
+            var pointA = point - perp;
+
+            var pointB = point + perp;
+
+            return GeoUtils.FindIntersection(startPoint - vector*2 + bitCorner, point + vector*2 + bitCorner, pointA, pointB, drawRayLines);
         }
 
         return false;
@@ -240,10 +258,19 @@ public class TrenchManager : ManagerBase<TrenchManager>
         return false;
     }
 
+    public bool TestPoint (Vector2 point)
+    {
+        var chunk = ChunkManager.Manager.ChunkFromPos(point);
+
+        if (chunk == null || chunk.map == null)
+            return false;
+
+        return chunk.map.TestPoint(point);
+    }
+
     public void DrawAllBits ()
     {
         var trenchBits = GetBits(true);
-        var bitWidth = GetBitWidth(GetBlockWidth());
 
         foreach (var bit in trenchBits)
         {
@@ -253,9 +280,6 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     public IEnumerable<Vector2> GetBits (bool value)
     {
-        var blockWidth = GetBlockWidth();
-        var bitWidth = GetBitWidth(blockWidth);
-
         foreach (var chunk in ChunkManager.Manager.chunks)
         {
             if (chunk == null || chunk.map == null)
@@ -267,7 +291,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 {
                     var block = chunk.map.blocks[blockX, blockY];
 
-                    var blockPos = GetBlockPos(chunk.map.pos, new Vector2Int(blockX, blockY), blockWidth);
+                    var blockPos = GetBlockPos(chunk.map.pos, new Vector2Int(blockX, blockY));
 
                     if (block == null)
                         continue;
@@ -278,7 +302,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                         {
                             if (block[bitX,bitY] == value)
                             {
-                                yield return GetBitPos(blockPos, bitWidth, new(bitX, bitY));
+                                yield return GetBitPos(blockPos, new(bitX, bitY));
                             }
                         }
                     }
@@ -287,56 +311,47 @@ public class TrenchManager : ManagerBase<TrenchManager>
         }
     }
 
-    public float GetBitWidth(float blockWidth)
-    {
-        return blockWidth / 4f;
-    }
-
-    public float GetBlockWidth()
-    {
-        return ChunkManager.Manager.chunkSize / mapResolution;
-    }
-
-    public Vector2 GetBlockPos(Vector2 mapPos, Vector2Int blockAdress, float blockWidth)
+    public Vector2 GetBlockPos(Vector2 mapPos, Vector2Int blockAdress)
     {
         return (new Vector2(blockAdress.x + 0.5f, blockAdress.y + 0.5f) - mapResolution * .5f * Vector2.one) * blockWidth
                     + mapPos;
     }
 
-    public Vector2 GetBitPos(Vector2 blockPos, float bitWidth, Vector2Int bitAdress)
+    public Vector2 GetBitPos(Vector2 blockPos, Vector2Int bitAdress)
     {
         return blockPos + new Vector2((bitAdress.x - 1.5f) * bitWidth, (bitAdress.y - 1.5f) * bitWidth);
     }
 
-    public Vector2 GetBlockAdressPoint(Vector2 pos, Vector2 mapPos, float blockWidth)
+    public Vector2 GetBlockAdressPoint(Vector2 pos, Vector2 mapPos)
     {
         return ((pos - mapPos) / blockWidth) + (mapResolution * .5f * Vector2.one);
     }
 
-    public Vector2Int GetBlockAdressFloored(Vector2 pos, Vector2 mapPos, float blockWidth)
+    public Vector2Int GetBlockAdressFloored(Vector2 pos, Vector2 mapPos)
     {
-        return Vector2Int.FloorToInt(GetBlockAdressPoint(pos, mapPos, blockWidth));
+        return Vector2Int.FloorToInt(GetBlockAdressPoint(pos, mapPos));
     }
 
-    public Vector2Int GetBlockAdressCield(Vector2 pos, Vector2 mapPos, float blockWidth)
+    public Vector2Int GetBlockAdressCield(Vector2 pos, Vector2 mapPos)
     {
-        return Vector2Int.CeilToInt(GetBlockAdressPoint(pos, mapPos, blockWidth));
+        return Vector2Int.CeilToInt(GetBlockAdressPoint(pos, mapPos));
     }
 
-    public Vector2Int GetBlockAdressRounded(Vector2 pos, Vector2 mapPos, float blockWidth)
+    public Vector2Int GetBlockAdressRounded(Vector2 pos, Vector2 mapPos)
     {
-        return Vector2Int.RoundToInt(GetBlockAdressPoint(pos, mapPos, blockWidth));
+        return Vector2Int.RoundToInt(GetBlockAdressPoint(pos, mapPos));
     }
 
-    public Vector2 GetBitAdressPoint(Vector2 pos, Vector2 blockPos, float blockWidth, float bitWidth)
+    public Vector2 GetBitAdressPoint(Vector2 pos, Vector2 blockPos)
     {
         return (pos - blockPos + .5f * blockWidth * Vector2.one) / bitWidth;
     }
 
-    public Vector2Int GetBitAdressFloored (Vector2 pos, Vector2 blockPos, float blockWidth, float bitWidth)
+    public Vector2Int GetBitAdressFloored (Vector2 pos, Vector2 blockPos)
     {
-        var point = GetBitAdressPoint(pos, blockPos, blockWidth, bitWidth);
-        var floored = Vector2Int.FloorToInt(point);
+        var point = GetBitAdressPoint(pos, blockPos);
+        var floored = Vector2Int.Min(Vector2Int.FloorToInt(point),Vector2Int.one * 3);
+
         return floored;
     }
 }

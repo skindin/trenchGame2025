@@ -475,13 +475,21 @@ public static class GeoUtils
         if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
         {
             // Intersection detected
-            if (debugLines) Debug.DrawLine(line2Start, line2End, Color.green);
+            if (debugLines)
+            {
+                Debug.DrawLine(line1Start, line1End, Color.green);
+                Debug.DrawLine(line2Start, line2End, Color.green);
+            }
             var intersection = new Vector2(line1Start.x + (t * s1_x), line1Start.y + (t * s1_y));
             return intersection;
         }
 
         // No intersection
-        if (debugLines) Debug.DrawLine(line2Start, line2End, Color.red);
+        if (debugLines)
+        {
+            Debug.DrawLine(line1Start, line1End, Color.red);
+            Debug.DrawLine(line2Start, line2End, Color.red);
+        }
         return Vector2.positiveInfinity;
     }
 

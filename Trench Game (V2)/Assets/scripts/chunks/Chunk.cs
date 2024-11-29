@@ -53,6 +53,18 @@ public class Chunk
         DestroyIfEmpty();
     }
 
+    public void AddCollider (TrenchCollider collider)
+    {
+        colliders.Add(collider);
+    }
+
+    public void RemoveCollider(TrenchCollider collider)
+    {
+        colliders.Remove(collider);
+        DestroyIfEmpty();
+    }
+
+
     public void AddItem(Item item)
     {
         items.Add(item);

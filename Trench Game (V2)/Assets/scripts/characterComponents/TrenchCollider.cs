@@ -14,7 +14,7 @@ public class TrenchCollider : MonoBehaviour
 
     public float localSize = 1;
 
-    public bool draw = false;
+    public bool draw = false, trenchTestWithPoint = true;
     public float WorldSize
     {
         get
@@ -40,23 +40,35 @@ public class TrenchCollider : MonoBehaviour
                 if (chunk == null)
                     continue;
 
-                chunk.colliders.Remove(this);
+                chunk.RemoveCollider(this);
             }
 
-        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, WorldSize / 2 * Vector2.one);
+        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, WorldSize / 2 * Vector2.one,true);
 
         foreach (var chunk in chunks)
         {
             if (chunk == null)
                 continue;
 
-            chunk.colliders.Add(this);
+            chunk.AddCollider(this);
         }
     }
 
     public bool TestWithinTrench()
     {
-        trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
+        if (trenchTestWithPoint)
+        {
+            trenchStatus =
+            //if (    
+            TrenchManager.Manager.TestPoint(transform.position)
+                //)
+                ;
+            //trenchStatus = true;
+        }
+        else
+        {
+            trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
+        }
 
         onChangeTrenchStatus.Invoke(trenchStatus);
 
@@ -99,6 +111,19 @@ public class TrenchCollider : MonoBehaviour
     //{
     //    all.Remove(this);
     //}
+
+    public Vector2 MoveToPos (Vector2 pos)
+    {
+        //if (trenchStatus)
+        //{
+
+        //    TrenchManager.Manager.TestRayHitsValue(transform.position, pos, false, out pos);
+
+        //    return transform.position = pos;
+        //}
+
+        return transform.position = pos;
+    }
 
     public Vector2 TestRay(Vector2 start, Vector2 end, bool debugLines = false)
     {

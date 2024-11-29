@@ -312,6 +312,7 @@ MonoBehaviour:
         m_CallState: 2
   localSize: 1.6
   draw: 0
+  trenchTestWithPoint: 0
   trenchStatus: 0
   drawTrenchStatus: 0
 --- !u!114 &1672398506640000765

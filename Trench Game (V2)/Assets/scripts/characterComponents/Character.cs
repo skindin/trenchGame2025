@@ -202,18 +202,22 @@ public class Character : MonoBehaviour
 
     public void MoveInDirection(Vector2 direction)
     {
-        Vector3 dir = Vector2.ClampMagnitude(direction, moveSpeed * Time.deltaTime);
+        Vector3 dir = moveSpeed * Time.deltaTime * direction;
 
-        SetPos(transform.position + dir);
+        //trenchCollider.MoveToPos(transform.position + dir);
+
+        SetPos(trenchCollider.MoveToPos(transform.position + dir));
 
         onMove.Invoke(direction);
     }
 
-    public void MoveToPos (Vector2 pos)
+    public void MoveToPos (Vector2 pos) //doesn't utilize trenchCollider yet
     {
-        //SetPos(Vector2.MoveTowards(transform.position, pos, MoveSpeed * Time.deltaTime));
+        SetPos(Vector2.MoveTowards(transform.position, pos, moveSpeed * Time.deltaTime));
 
-        MoveInDirection(pos - (Vector2)transform.position);
+        onMove.Invoke(pos - (Vector2)transform.position);
+
+        //MoveInDirection(Vector2.ClampMagnitude(pos - (Vector2)transform.position, moveSpeed * Time.deltaTime));
 
         //transform.position += d * Time.deltaTime;
     }

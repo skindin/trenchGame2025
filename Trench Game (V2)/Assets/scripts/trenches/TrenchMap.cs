@@ -129,8 +129,8 @@ public class TrenchMap
 
         var manager = TrenchManager.Manager;
 
-        float blockWidth = manager.GetBlockWidth(); // Width of each MapBlock
-        float bitWidth = manager.GetBitWidth(blockWidth);      // Width of each bit in a MapBlock
+        float blockWidth = manager.blockWidth; // Width of each MapBlock
+        float bitWidth = manager.bitWidth;      // Width of each bit in a MapBlock
 
         var startMax = Vector2.one * startRadius;
         var endMax = Vector2.one * endRadius;
@@ -146,10 +146,10 @@ public class TrenchMap
 
         //var halfVector2One = Vector2.one * .5f;
 
-        var startPos = manager.GetBlockAdressFloored(capsuleMin, pos, blockWidth); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
+        var startPos = manager.GetBlockAdressFloored(capsuleMin, pos); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
         startPos = Vector2Int.Max(startPos, Vector2Int.zero);
 
-        var endPos = manager.GetBlockAdressCield(capsuleMax, pos, blockWidth);
+        var endPos = manager.GetBlockAdressCield(capsuleMax, pos);
             //Vector2Int.CeilToInt(((capsuleMax - pos) / blockWidth) + (resolution * halfVector2One));
 
         //GeoUtils.DrawBoxMinMax(startPos, endPos, Color.magenta);
@@ -185,7 +185,7 @@ public class TrenchMap
                 }
 
                 // Compute the position of the block's center in world space
-                var blockPos = manager.GetBlockPos(pos, new(blockX, blockY),blockWidth);
+                var blockPos = manager.GetBlockPos(pos, new(blockX, blockY));
 
                 // If the block already fully matches the target value, skip processing
                 if (block.TestWhole(value))
@@ -242,7 +242,7 @@ public class TrenchMap
                         }
 
                         // Compute the position of the bit in world space
-                        var bitPos = manager.GetBitPos(blockPos, bitWidth, new(bitX,bitY));
+                        var bitPos = manager.GetBitPos(blockPos, new(bitX,bitY));
 
                         //if (!GeoUtils.TestBoxMinMax(capsuleMin, capsuleMax, bitPos, debugLines))
                         //    continue;
@@ -315,8 +315,8 @@ public class TrenchMap
 
     public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value, bool debugLines = false)
     {
-        var blockWidth = TrenchManager.Manager.GetBlockWidth();
-        var bitWidth = TrenchManager.Manager.GetBitWidth(blockWidth);
+        var blockWidth = TrenchManager.Manager.blockWidth;
+        var bitWidth = TrenchManager.Manager.bitWidth;
 
         var mapMin = pos - scale / 2 * Vector2.one;
         var mapMax = pos + scale / 2 * Vector2.one;
@@ -329,10 +329,10 @@ public class TrenchMap
 
         //var halfVector2One = Vector2.one * .5f;
 
-        var startPos = TrenchManager.Manager.GetBlockAdressFloored(circleMin, pos, blockWidth); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
+        var startPos = TrenchManager.Manager.GetBlockAdressFloored(circleMin, pos); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
         startPos = Vector2Int.Max(startPos, Vector2Int.zero);
 
-        var endPos = TrenchManager.Manager.GetBlockAdressCield(circleMax, pos, blockWidth);
+        var endPos = TrenchManager.Manager.GetBlockAdressCield(circleMax, pos);
 
         float blockCircleRadius = Vector2.one.magnitude * bitWidth * 1.5f;
 
@@ -342,7 +342,7 @@ public class TrenchMap
             {
                 var block = blocks[blockX, blockY];
 
-                var blockPos = TrenchManager.Manager.GetBlockPos(pos, new Vector2Int(blockX, blockY), blockWidth);
+                var blockPos = TrenchManager.Manager.GetBlockPos(pos, new Vector2Int(blockX, blockY));
 
                 if (block == null)
                 {
@@ -367,7 +367,7 @@ public class TrenchMap
                 {
                     for (var bitX = 0; bitX < 4; bitX++)
                     {
-                        var bitPos = TrenchManager.Manager.GetBitPos(blockPos, bitWidth, new(bitX, bitY));
+                        var bitPos = TrenchManager.Manager.GetBitPos(blockPos, new(bitX, bitY));
 
                         if (debugLines)
                         {
@@ -386,6 +386,20 @@ public class TrenchMap
         }
 
         return false;
+    }
+
+    public bool TestPoint (Vector2 point)
+    {
+        var blockAdress = TrenchManager.Manager.GetBlockAdressFloored(point, pos);
+
+        if (blocks[blockAdress.x, blockAdress.y] == null)
+            return false;
+
+        var blockPos = TrenchManager.Manager.GetBlockPos(pos, blockAdress);
+
+        var bitAdress = TrenchManager.Manager.GetBitAdressFloored(point, blockPos);
+
+        return blocks[blockAdress.x, blockAdress.y][bitAdress];
     }
 
     public MapBlock GetBlock (Vector2Int adress)
