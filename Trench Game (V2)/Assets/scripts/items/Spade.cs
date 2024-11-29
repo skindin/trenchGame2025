@@ -12,7 +12,7 @@ public class Spade : Item, ISecondaryAction, IDirectionalAction
         //maxIntegrity = 10, 
         maxDigRadius = 1, movementModifier = .8f, radiusSpeedModifier = 2;
 
-    float digRadius = 0;
+    public float digRadius = 0;
 
     public override string Verb => "dig";
     public string SecondaryVerb => "fill";

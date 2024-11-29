@@ -24,8 +24,8 @@ public class TrenchMap
     public Texture2D imageTexture;
     Color32[] pixels;
     public
-        int totalEditedBlocks = 0;
-    public bool empty = true;
+        int totalEditedBlocks = 0, totalAllTrench = 0;
+    public bool allFull = true, allTrench = false;
 
     public TrenchMap (int resolution, float scale, Color32 trenchColor, Color32 groundColor, Vector2 pos, Mesh imageMesh, Material imageMaterial, FilterMode filter)
     {
@@ -109,9 +109,10 @@ public class TrenchMap
     public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, float maxArea, out float areaChanged,
         bool debugLines = false)
     {
+        areaChanged = 0;
+
         if (maxArea == 0)
         {
-            areaChanged = 0;
             return;
         }
 
@@ -128,6 +129,26 @@ public class TrenchMap
         //}
 
         var manager = TrenchManager.Manager;
+
+        if (allTrench)
+        {
+            if (value)
+            {
+                return;
+            }
+            else
+            {
+                blocks = new MapBlock[resolution, resolution];
+
+                for (int y = 0; y < resolution; y++)
+                {
+                    for (int x = 0; x < resolution; x++)
+                    {
+                        blocks[x, y] = MapBlock.GetFull(true);
+                    }
+                }
+            }
+        }
 
         float blockWidth = manager.blockWidth; // Width of each MapBlock
         float bitWidth = manager.bitWidth;      // Width of each bit in a MapBlock
@@ -179,7 +200,7 @@ public class TrenchMap
                 if (block == null)
                 {
                     if (value)
-                        block = new MapBlock();
+                        blocks[blockX,blockY] = block = new MapBlock();
                     else
                         continue;
                 }
@@ -198,7 +219,7 @@ public class TrenchMap
                     continue;
                 }
 
-                bool wasCompletelyFull = block.TestWhole(false);
+                bool wholeWasOpposite = block.TestWhole(!value);
                 bool blockChanged = false;
 
                 totalBlocksTested++;
@@ -250,7 +271,7 @@ public class TrenchMap
                         // Test if the bit is within the capsule
                         if (GeoUtils.TestPointWithinTaperedCapsule(bitPos, startPoint, startRadius, endPoint, endRadius))
                         {
-                            block[bitX,bitY] = value;
+                            //block[bitX, bitY] = value;
                             totalBitsAtValue++;
                             if (debugLines)
                             {
@@ -261,12 +282,11 @@ public class TrenchMap
 
                             blockChanged = true;
 
-                            var arrayIndex = bitY * resolution * 4 + bitX + blockY * 16 * resolution + blockX * 4;
-
-                            pixels[arrayIndex] = value ? trenchColor : groundColor;
+                            SetBit(new(blockX, blockY), new(bitX, bitY), value);
 
                             if (areaChanged >= maxArea)
                             {
+                                ApplyPixels();
                                 return;
                             }
                         }
@@ -277,9 +297,17 @@ public class TrenchMap
                     }
                 }
 
-                if (wasCompletelyFull && blockChanged)
+                if (wholeWasOpposite && blockChanged && totalBitsAtValue < 16)
                 {
                     totalEditedBlocks++;
+
+                    if (!value)
+                        totalAllTrench--;
+                }
+
+                if (value && totalBitsAtValue >= 16)
+                {
+                    totalAllTrench++;
                 }
 
                 //Profiler.EndSample();
@@ -292,29 +320,57 @@ public class TrenchMap
                 }
                 else
                 {
-                    blocks[blockX, blockY] = block;
                     //block.SetArray(blockArray);
                 }
             }
         }
 
-        empty = totalEditedBlocks == 0;
+        allFull = totalEditedBlocks == 0;
+
+        allTrench = totalAllTrench == resolution * resolution;
+
+        if (allTrench)
+            blocks = null;
 
         //if (logBitsTested)
         //{
         //    Debug.Log($"tested {totalBlocksTested} blocks and {totalBitsTested} bits");
         //}
 
+        Debug.Log($"{totalEditedBlocks} have been edited");
+
         if (areaChanged > 0)
         {
-            imageTexture.SetPixels32(pixels);
-
-            imageTexture.Apply();
+            ApplyPixels();
         }
+    }
+
+    public void SetBit (Vector2Int blockAdress, Vector2Int bitAdress, bool value, bool applyPixels = false)
+    {
+        blocks[blockAdress.x, blockAdress.y][bitAdress] = value;
+
+        var arrayIndex = bitAdress.y * resolution * 4 + bitAdress.x + blockAdress.y * 16 * resolution + blockAdress.x * 4;
+
+        pixels[arrayIndex] = value ? trenchColor : groundColor;
+
+        if (applyPixels)
+        {
+            ApplyPixels();
+        }
+    }
+
+    public void ApplyPixels ()
+    {
+        imageTexture.SetPixels32(pixels);
+
+        imageTexture.Apply();
     }
 
     public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value, bool debugLines = false)
     {
+        if (allTrench)
+            return value;
+
         var blockWidth = TrenchManager.Manager.blockWidth;
         var bitWidth = TrenchManager.Manager.bitWidth;
 

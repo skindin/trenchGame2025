@@ -2078,7 +2078,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &534257686
 Transform:
   m_ObjectHideFlags: 0
@@ -3247,8 +3247,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 50
-  minChunkSize: 10
+  worldSize: 10
+  minChunkSize: 5
   chunkSize: 0
   chunkArraySize: 0
   pointA: {fileID: 1884687862}
@@ -3257,7 +3257,7 @@ MonoBehaviour:
     minPooled: 0
     maxPooled: 10
   logOutOfBounds: 0
-  drawChunks: 1
+  drawChunks: 0
   drawObjectChunkLinks: 0
   drawLineTest: 0
 --- !u!4 &893604346
@@ -3555,7 +3555,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &978235425
 Transform:
   m_ObjectHideFlags: 0

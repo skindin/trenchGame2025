@@ -43,7 +43,7 @@ public class TrenchCollider : MonoBehaviour
                 chunk.RemoveCollider(this);
             }
 
-        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, WorldSize / 2 * Vector2.one,true);
+        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, WorldSize * Vector2.one,true);
 
         foreach (var chunk in chunks)
         {

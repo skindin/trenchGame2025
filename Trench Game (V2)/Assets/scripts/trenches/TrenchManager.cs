@@ -93,7 +93,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             //Debug.Log($"chunk {chunk.adress} has {chunk.map.totalEditedBlocks} edited blocks");
 
-            if (chunk.map.empty)
+            if (chunk.map.allFull)
             {
                 chunk.RemoveTrenchMap();
             }
@@ -141,6 +141,19 @@ public class TrenchManager : ManagerBase<TrenchManager>
             else if (drawRayLines)
             {
 
+            }
+
+            if (chunk.map.allTrench)
+            {
+                if (value)
+                {
+                    hitPoint = GetIntersectDistance(pos);
+                    return true;
+                }
+                else
+                {
+                    continue;
+                }
             }
 
             var blockAdress = GetBlockAdressFloored(pos, chunk.map.pos);
@@ -257,6 +270,11 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
         return false;
     }
+
+    //public void Decay (bool value, float amount)
+    //{
+    //    foreach 
+    //}
 
     public bool TestPoint (Vector2 point)
     {
