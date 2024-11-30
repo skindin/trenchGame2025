@@ -347,7 +347,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
                     if (distance < smallestDist)
                     {
-                        closestPos = circleCenter;// - Mathf.Min(bitWidth*2,distance) * direction;
+                        closestPos = circleCenter - (point - circleCenter).normalized * ogDelta.magnitude * bitWidth;// - Mathf.Min(bitWidth*2,distance) * direction;
                         smallestDist = distance;
                         closestCollisionPoint = point;
                     }
@@ -365,7 +365,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
             if (smallestDist == Mathf.Infinity)
                 return currentEnd;
 
-            if (Vector2.Dot(ogDelta, currentOgDelta) >= 1)
+            if (currentMagnitude >= ogDelta.magnitude || Vector2.Dot(ogDelta, currentOgDelta) >= 1)
                 break;
 
             if (slideCount <= 0)
@@ -388,7 +388,9 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 Debug.DrawRay(closestPos, deflectedDirection, Color.yellow);
             }
 
-            currentStart = closestPos - collisionDelta.normalized * bitWidth;
+
+
+            currentStart = closestPos;
             currentEnd = closestPos + deflectedDirection;
 
             var endDot = Vector2.Dot(ogDelta, currentEnd - currentStart);
@@ -405,6 +407,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             currentDirection = currentDelta.normalized;
             currentMagnitude = currentDelta.magnitude;
+
+            deflectedDirection = Vector2.ClampMagnitude(deflectedDirection, ogDelta.magnitude - currentMagnitude);
         }
 
         return closestPos;
