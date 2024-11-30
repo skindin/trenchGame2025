@@ -18,7 +18,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
         runTest = false,
         drawRayTests = false, drawFillLines = false, drawStatusTests = false, drawCollisionTests = false, drawAllBits = false;//, doSpread = false;
 
-    public float blockWidth, bitWidth;
+    public float blockWidth, bitWidth, testRadius = 1;
+    public int maxSlides = 5;
 
     private void Start()
     {
@@ -43,7 +44,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         {
             //TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
 
-            StopAtValue(pointA.position, pointB.position, 1, false);
+            StopAtValue(pointA.position, pointB.position, testRadius, false);
         }
 
         if (drawAllBits)
@@ -279,72 +280,134 @@ public class TrenchManager : ManagerBase<TrenchManager>
         return false;
     }
 
-    public Vector2 StopAtValue (Vector2 start, Vector2 end, float radius, bool value)
+    public Vector2 StopAtValue (Vector2 currentStart, Vector2 currentEnd, float radius, bool value)
     {
-        var magnitude = (end - start).magnitude;
-        var direction = (end - start).normalized;
+        var slideCount = maxSlides;
+
+        var ogStart = currentStart;
+        var ogDelta = currentEnd - currentStart;
+        var currentMagnitude = ogDelta.magnitude;
+        var currentDirection = ogDelta.normalized;
 
         float smallestDist = Mathf.Infinity;
-        Vector2 closestPoint = end;
-        Vector2 collisionPoint = end + direction * radius;
+        Vector2 closestPos = currentEnd;
+        Vector2 closestCollisionPoint = currentEnd;
 
-        foreach (var chunk in ChunkManager.Manager.chunks)
+        var currentOgDelta = Vector2.zero;
+
+        while (true)
         {
-            if (chunk == null || chunk.map == null)
+            foreach (var chunk in ChunkManager.Manager.chunks)
             {
-                continue;
-            }
-
-            var points = chunk.map.GetBitsObstructingTaperedCapsule(start, radius, end, radius, value);
-
-            foreach (var point in points)
-            {
-                //if (Vector2.Distance(point, start) <= radius)
-                //{
-                //    closestPoint = start;
-                //    collisionPoint = point;
-                //    break;
-                //}
-
-                var closestSegPoint = GeoUtils.ClosestPointToLineSegment(point, start, end, out var ratio);
-
-                if (ratio <= 0)
+                if (chunk == null || chunk.map == null)
+                {
                     continue;
-
-                var c = Vector2.Distance(closestSegPoint, point);
-
-                var a = Mathf.Sqrt(Mathf.Abs( (c * c) - (radius * radius)));
-
-                a = MathF.Min(magnitude, a);
-
-                var circleCenter = closestSegPoint - direction * a;
-
-                var distance = (circleCenter - start).magnitude;
-
-                if (drawCollisionTests)
-                {
-                    GeoUtils.MarkPoint(point, bitWidth * .5f, Color.red);
-                    Debug.DrawRay(closestSegPoint, -direction * a, Color.magenta);
                 }
 
-                if (distance < smallestDist)
+                var points = chunk.map.GetBitsObstructingTaperedCapsule(currentStart, radius, currentEnd, radius, value);
+
+                foreach (var point in points)
                 {
-                    closestPoint = circleCenter;// - Mathf.Min(bitWidth*2,distance) * direction;
-                    smallestDist = distance;
-                    collisionPoint = point;
+                    //if (Vector2.Distance(point, currentStart) <= radius)
+                    //{
+                    //    continue;
+                    //}
+
+                    //var closestSegPoint = GeoUtils.ClosestPointToLineSegment(point, start, end + direction * radius, out var ratio);
+
+                    //if (ratio <= 0)
+                    //    continue;
+
+                    var collisionPointDot = Vector2.Dot(currentDirection.normalized, point - currentStart);
+
+                    if (collisionPointDot < 0)
+                        continue;
+
+                    var b = radius;
+
+                    var c = Mathf.Abs(Vector2.Dot(Vector2.Perpendicular(currentDirection), point - currentStart));
+
+                    var a = Mathf.Sqrt((b * b) - (c * c));
+
+                    //a = Mathf.Min(currentMagnitude, a);
+
+                    var circleStartDelta = (collisionPointDot - a) * currentDirection;
+
+                    var circleCenter = circleStartDelta + currentStart;
+
+                    var distance = circleStartDelta.magnitude;
+
+                    if (drawCollisionTests)
+                    {
+                        GeoUtils.MarkPoint(point, bitWidth * .5f, Color.red);
+                        //Debug.DrawLine(collisionPointDot * currentDirection + currentStart, point, Color.magenta);
+                        //Debug.DrawLine(point, circleCenter, Color.magenta);
+                        //Debug.DrawLine(circleCenter, collisionPointDot * currentDirection + currentStart, Color.magenta);
+                    }
+
+                    if (distance < smallestDist)
+                    {
+                        closestPos = circleCenter;// - Mathf.Min(bitWidth*2,distance) * direction;
+                        smallestDist = distance;
+                        closestCollisionPoint = point;
+                    }
                 }
             }
+
+            if (drawCollisionTests)
+            {
+                Debug.DrawRay(currentStart, currentDirection, Color.blue);
+                GeoUtils.DrawCircle(currentStart, radius, Color.blue);
+                GeoUtils.DrawCircle(closestPos, radius, Color.green);
+                GeoUtils.MarkPoint(closestCollisionPoint, .5f, Color.green);
+            }
+
+            if (smallestDist == Mathf.Infinity)
+                return currentEnd;
+
+            if (Vector2.Dot(ogDelta, currentOgDelta) >= 1)
+                break;
+
+            if (slideCount <= 0)
+            {
+                break;
+            }
+            slideCount--;
+
+            //var deflectedDirection = collisionPoint - end;
+
+            var collisionDot = Vector2.Dot(Vector2.Perpendicular(currentEnd - currentStart), closestCollisionPoint);
+
+            var collisionDelta = closestCollisionPoint - closestPos;
+
+            var deflectedDirection = -(collisionDot > 0 ? 1 : -1) * Vector2.Perpendicular(collisionDelta).normalized;
+
+            if (drawCollisionTests)
+            {
+                Debug.DrawRay(closestPos, collisionDelta, Color.magenta);
+                Debug.DrawRay(closestPos, deflectedDirection, Color.yellow);
+            }
+
+            currentStart = closestPos - collisionDelta.normalized * bitWidth;
+            currentEnd = closestPos + deflectedDirection;
+
+            var endDot = Vector2.Dot(ogDelta, currentEnd - currentStart);
+
+            endDot = Mathf.Clamp01(endDot);
+
+            deflectedDirection = deflectedDirection.normalized * endDot;
+
+            currentEnd = closestPos + deflectedDirection;
+
+            currentOgDelta = currentStart - ogStart;
+
+            var currentDelta = currentEnd - currentStart;
+
+            currentDirection = currentDelta.normalized;
+            currentMagnitude = currentDelta.magnitude;
         }
 
-        if (drawCollisionTests)
-        {
-            Debug.DrawRay(start, direction, Color.blue);
-            GeoUtils.DrawCircle(start, radius, Color.blue);
-            GeoUtils.DrawCircle(closestPoint, radius, Color.green);
-            GeoUtils.MarkPoint(collisionPoint, .5f, Color.green);
-        }
-
-        return closestPoint;
+        return closestPos;
     }
 
     //public void Spread(bool value, float minAmount, float maxAmount)
