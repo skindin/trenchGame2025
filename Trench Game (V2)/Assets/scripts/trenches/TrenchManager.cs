@@ -388,16 +388,19 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 Debug.DrawRay(closestPos, deflectedDirection, Color.yellow);
             }
 
-
-
             currentStart = closestPos;
-            currentEnd = closestPos + deflectedDirection;
 
-            var endDot = Vector2.Dot(ogDelta, currentEnd - currentStart);
+            //currentEnd = closestPos + deflectedDirection;
 
-            endDot = Mathf.Clamp01(endDot);
+            //var endDot = Vector2.Dot(ogDelta, currentEnd - currentStart);
 
-            deflectedDirection = deflectedDirection.normalized * endDot;
+            //endDot = Mathf.Clamp01(endDot);
+
+            //deflectedDirection = deflectedDirection.normalized * endDot;
+
+            deflectedDirection =
+                Mathf.Max(deflectedDirection.magnitude, ogDelta.magnitude - (closestPos - ogStart).magnitude) * 100
+                * deflectedDirection.normalized;
 
             currentEnd = closestPos + deflectedDirection;
 
@@ -407,8 +410,6 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             currentDirection = currentDelta.normalized;
             currentMagnitude = currentDelta.magnitude;
-
-            deflectedDirection = Vector2.ClampMagnitude(deflectedDirection, ogDelta.magnitude - currentMagnitude);
         }
 
         return closestPos;

@@ -345,6 +345,8 @@ public class TrenchMap
         }
     }
 
+    //public IEnumerable<Vector2> GetBitsFromBox(Vector2 min, Vector2 max, )
+
     public IEnumerable<Vector2> GetBitsObstructingTaperedCapsule (Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value)
     {
         var manager = TrenchManager.Manager;
