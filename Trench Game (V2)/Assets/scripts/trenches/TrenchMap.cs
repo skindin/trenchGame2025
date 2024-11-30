@@ -200,7 +200,7 @@ public class TrenchMap
                 if (block == null)
                 {
                     if (value)
-                        blocks[blockX,blockY] = block = new MapBlock();
+                        block = new MapBlock();
                     else
                         continue;
                 }
@@ -345,8 +345,121 @@ public class TrenchMap
         }
     }
 
+    public IEnumerable<Vector2> GetBitsObstructingTaperedCapsule (Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value)
+    {
+        var manager = TrenchManager.Manager;
+
+        var startMax = Vector2.one * startRadius;
+        var endMax = Vector2.one * endRadius;
+
+        var mapMin = pos - scale / 2 * Vector2.one;
+        var mapMax = pos + scale / 2 * Vector2.one;
+
+        var capsuleMin = Vector2.Min(startPoint - startMax, endPoint - endMax);
+        capsuleMin = Vector2.Max(capsuleMin, mapMin);
+
+        var capsuleMax = Vector2.Max(startPoint + startMax, endPoint + endMax);
+        capsuleMax = Vector2.Min(capsuleMax, mapMax);
+
+        //var halfVector2One = Vector2.one * .5f;
+
+        var startPos = manager.GetBlockAdressFloored(capsuleMin, pos); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
+        startPos = Vector2Int.Max(startPos, Vector2Int.zero);
+
+        var endPos = manager.GetBlockAdressCield(capsuleMax, pos);
+
+        var bitCorner = manager.bitWidth * .5f * Vector2.one;
+
+        float blockCircleRadius = Vector2.one.magnitude * manager.bitWidth * 1.5f;
+
+        if (allTrench)
+        {
+            if (value)
+                for (int blockY = startPos.y; blockY < endPos.y; blockY++)
+                {
+                    for (int blockX = startPos.x; blockX < endPos.x; blockX++)
+                    {
+                        var blockPos = manager.GetBlockPos(pos, new(blockX, blockY));
+                        if (GeoUtils.TestCirlceTouchesTaperedCapsule(blockPos, blockCircleRadius, startPoint, startRadius, endPoint, endRadius))
+                        {
+                            for (int bitY = 0; bitY < 4; bitY++)
+                            {
+                                for (int bitX = 0; bitX < 4; bitX++)
+                                {
+                                    var bitPos = manager.GetBitPos(blockPos, new(bitX, bitY));
+                                    if (GeoUtils.TestPointWithinTaperedCapsule(bitPos,startPoint,startRadius,endPoint,endRadius))
+                                        yield return bitPos;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            yield break;
+        }
+
+        for (int blockY = startPos.y; blockY < endPos.y; blockY++)
+        {
+            for (int blockX = startPos.x; blockX < endPos.x; blockX++)
+            {
+                var blockPos = manager.GetBlockPos(pos, new(blockX, blockY));
+
+                if (!GeoUtils.TestCirlceTouchesTaperedCapsule(blockPos, blockCircleRadius, startPoint, startRadius, endPoint, endRadius))
+                    continue;
+
+                var block = blocks[blockX, blockY];
+
+                if (block == null)
+                {
+                    if (!value)
+                        for (int bitY = 0; bitY < 4; bitY++)
+                        {
+                            for (int bitX = 0; bitX < 4; bitX++)
+                            {
+                                var bitPos = manager.GetBitPos(blockPos, new(bitX, bitY));
+
+                                if (GeoUtils.TestPointWithinTaperedCapsule(bitPos, startPoint, startRadius, endPoint, endRadius))
+                                    yield return bitPos;
+                            }
+                        }
+
+                    continue;
+                }
+
+                for (int bitY = 0; bitY < 4; bitY++)
+                {
+                    for (int bitX = 0; bitX < 4; bitX++)
+                    {
+                        var bitPos = manager.GetBitPos(blockPos, new(bitX, bitY));
+
+                        if (
+                            block[bitX, bitY] == value
+                            && GeoUtils.TestPointWithinTaperedCapsule(bitPos, startPoint, startRadius, endPoint, endRadius)
+                            )
+                        {
+                            yield return bitPos;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     public void SetBit (Vector2Int blockAdress, Vector2Int bitAdress, bool value, bool applyPixels = false)
     {
+        if (blocks[blockAdress.x,blockAdress.y] == null)
+        {
+            if (value)
+            {
+                blocks[blockAdress.x, blockAdress.y] = new();
+            }
+            else
+            {
+                return;
+            }
+        }
+
         blocks[blockAdress.x, blockAdress.y][bitAdress] = value;
 
         var arrayIndex = bitAdress.y * resolution * 4 + bitAdress.x + blockAdress.y * 16 * resolution + blockAdress.x * 4;

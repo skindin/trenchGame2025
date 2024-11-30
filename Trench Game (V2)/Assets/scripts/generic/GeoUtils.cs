@@ -649,6 +649,13 @@ public static class GeoUtils
         return false;
     }
 
+    //public static Vector2 GetCircleBoxCollisionPoint(Vector2 start, Vector2 end, float circleRadius, Vector2 boxMin, Vector2 boxMax)
+    //{
+    //    var corners = GetBoxCornersMinMax(boxMin, boxMax);
+
+    //    var closestPoint 
+    //}
+
     public static bool CirclesOverlap(Vector2 center1, float radius1, Vector2 center2, float radius2, bool debugLines = false)
     {
         var result = (center1 - center2).magnitude < radius1 + radius2;
@@ -739,6 +746,14 @@ public static class GeoUtils
             pos + new Vector2(halfSize.x,halfSize.y),
             pos + new Vector2(halfSize.x, -halfSize.y)
         };
+    }
+
+    public static Vector2[] GetBoxCornersMinMax (Vector2 min, Vector2 max)
+    {
+        var pos = (max + min) / 2;
+        var size = max - min;
+
+        return GetBoxCornersPosSize(pos, size);
     }
 
     public static Vector2 RandomPosInBoxPosSize (Vector2 pos, Vector2 size)

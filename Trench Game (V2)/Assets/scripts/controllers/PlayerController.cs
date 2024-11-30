@@ -159,6 +159,11 @@ public class PlayerController : MonoBehaviour
             character.inventory.DropActiveItem(mousePos);
         }
 
+        if (Input.GetKey(KeyCode.Space))
+        {
+            character.trenchCollider.ExitTrench();
+        }
+
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //var mouseDir = mousePos - transform.position;
     }

@@ -16,7 +16,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
     public Transform pointA, pointB;
     public bool
         runTest = false,
-        drawRayLines = false, drawFillLines = false, drawColliderTestLines = false, drawAllBits = false;
+        drawRayTests = false, drawFillLines = false, drawStatusTests = false, drawCollisionTests = false, drawAllBits = false;//, doSpread = false;
 
     public float blockWidth, bitWidth;
 
@@ -33,9 +33,17 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     private void Update()
     {
+        //if (doSpread)
+        //{
+        //    Spread(false, 1, 1);
+        //    doSpread = false;
+        //}
+
         if (runTest)
         {
-            TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
+            //TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
+
+            StopAtValue(pointA.position, pointB.position, 1, false);
         }
 
         if (drawAllBits)
@@ -102,7 +110,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     public bool TestRayHitsValue(Vector2 startPoint, Vector2 endPoint, bool value, out Vector2 hitPoint, bool logTotal = false)
     {
-        if (drawRayLines)
+        if (drawRayTests)
         {
             Debug.DrawLine(startPoint, endPoint, Color.blue);
         }
@@ -126,7 +134,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             if (chunk == null || chunk.map == null)
             {
-                if (drawRayLines)
+                if (drawRayTests)
                     GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one,
                         !value ? Color.green : Color.white);
 
@@ -138,7 +146,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     return true;
                 }
             }
-            else if (drawRayLines)
+            else if (drawRayTests)
             {
 
             }
@@ -167,7 +175,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             if (block == null)
             {
-                if (drawRayLines)
+                if (drawRayTests)
                 {
                     var color = !value ? Color.green : Color.white;
                     GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, color);
@@ -185,7 +193,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             if (block.TestWhole(value))
             {
-                if (drawRayLines)
+                if (drawRayTests)
                 {
                     GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.green);
                     GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
@@ -195,7 +203,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 return true;
             }
 
-            if (drawRayLines)
+            if (drawRayTests)
             {
                 GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.red);
             }
@@ -208,7 +216,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             if (block[bitAdress] == value)
             {
-                if (drawRayLines)
+                if (drawRayTests)
                 {
                     GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
                     GeoUtils.MarkPoint(pos + bitCorner, bitWidth / 2, Color.green);
@@ -217,7 +225,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 hitPoint = GetIntersectDistance(pos);
                 return true;
             }
-            else if (drawRayLines)
+            else if (drawRayTests)
             {
                 GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.red);
             }
@@ -237,7 +245,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             var pointB = point + perp;
 
-            return GeoUtils.FindIntersection(startPoint - vector*2 + bitCorner, point + vector*2 + bitCorner, pointA, pointB, drawRayLines);
+            return GeoUtils.FindIntersection(startPoint - vector*2 + bitCorner, point + vector*2 + bitCorner, pointA, pointB, drawRayTests);
         }
 
         return false;
@@ -264,16 +272,184 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
             }
 
-            if (chunk.map.TestCircleTouchesValue(circlePos, circleRadius, value, drawColliderTestLines))
+            if (chunk.map.TestCircleTouchesValue(circlePos, circleRadius, value, drawStatusTests))
                 return true;
         }
 
         return false;
     }
 
-    //public void Decay (bool value, float amount)
+    public Vector2 StopAtValue (Vector2 start, Vector2 end, float radius, bool value)
+    {
+        var magnitude = (end - start).magnitude;
+        var direction = (end - start).normalized;
+
+        float smallestDist = Mathf.Infinity;
+        Vector2 closestPoint = end;
+        Vector2 collisionPoint = end + direction * radius;
+
+        foreach (var chunk in ChunkManager.Manager.chunks)
+        {
+            if (chunk == null || chunk.map == null)
+            {
+                continue;
+            }
+
+            var points = chunk.map.GetBitsObstructingTaperedCapsule(start, radius, end, radius, value);
+
+            foreach (var point in points)
+            {
+                //if (Vector2.Distance(point, start) <= radius)
+                //{
+                //    closestPoint = start;
+                //    collisionPoint = point;
+                //    break;
+                //}
+
+                var closestSegPoint = GeoUtils.ClosestPointToLineSegment(point, start, end, out var ratio);
+
+                if (ratio <= 0)
+                    continue;
+
+                var c = Vector2.Distance(closestSegPoint, point);
+
+                var a = Mathf.Sqrt(Mathf.Abs( (c * c) - (radius * radius)));
+
+                a = MathF.Min(magnitude, a);
+
+                var circleCenter = closestSegPoint - direction * a;
+
+                var distance = (circleCenter - start).magnitude;
+
+                if (drawCollisionTests)
+                {
+                    GeoUtils.MarkPoint(point, bitWidth * .5f, Color.red);
+                    Debug.DrawRay(closestSegPoint, -direction * a, Color.magenta);
+                }
+
+                if (distance < smallestDist)
+                {
+                    closestPoint = circleCenter;// - Mathf.Min(bitWidth*2,distance) * direction;
+                    smallestDist = distance;
+                    collisionPoint = point;
+                }
+            }
+        }
+
+        if (drawCollisionTests)
+        {
+            Debug.DrawRay(start, direction, Color.blue);
+            GeoUtils.DrawCircle(start, radius, Color.blue);
+            GeoUtils.DrawCircle(closestPoint, radius, Color.green);
+            GeoUtils.MarkPoint(collisionPoint, .5f, Color.green);
+        }
+
+        return closestPoint;
+    }
+
+    //public void Spread(bool value, float minAmount, float maxAmount)
     //{
-    //    foreach 
+    //    var chunkManager = ChunkManager.Manager;
+
+    //    int arraySize = chunkManager.chunkArraySize;
+    //    var minBits = minAmount / bitWidth;
+    //    var maxBits = maxAmount / bitWidth;
+
+    //    var chunkArray = chunkManager.chunks;
+
+    //    bool somethingChanged = false;
+
+    //    for (var chunkY = 0; chunkY < arraySize; chunkY++)
+    //    {
+    //        for (var chunkX = 0; chunkX < arraySize; chunkX++)
+    //        {
+    //            var chunk = chunkArray[chunkX,chunkY];
+
+    //            var chunkBelow = chunkY - 1 >= 0 ? chunkManager.ChunkFromPos(new(chunkX,chunkY-1),value) : null;
+    //            var chunkToLeft = chunkX - 1 >= 0 ? chunkManager.ChunkFromPos(new(chunkX - 1, chunkY), value) : null;
+
+    //            //if (chunk != null) //if we're going to edit this eventually...
+    //            //{
+    //            //    if (chunk.map == null) //if there is no map data (completely full)...
+    //            //    {
+    //            //        if (value) //if we are trying to spread trenches...
+    //            //        {
+
+    //            //        }
+    //            //        else
+    //            //        {
+    //            //            continue;
+    //            //        }
+    //            //    }
+    //            //}
+    //            //continue;
+
+    //            //if (chunk == null || chunk.map == null)
+    //            //    continue; //for now...
+
+    //            //var blockArray = chunk.map.blocks;
+    //            var map = chunk.map;
+
+    //            for (var blockY = 0; blockY < mapResolution; blockY++)
+    //            {
+    //                for (var blockX = 0; blockX < mapResolution; blockX++)
+    //                {
+    //                    var block = map.blocks[blockX, blockY];
+    //                    var blockBelow = blockY - 1 >= 0
+    //                        ? map.blocks[blockX, blockY - 1] //if in this chunk...
+    //                        : chunkBelow != null
+    //                            ? chunkBelow.map.blocks[blockX, mapResolution - 1]
+    //                            : null;
+
+    //                    var blockToLeft = blockX - 1 >= 0
+    //                        ? map.blocks[blockX-1, blockY] //if in this chunk...
+    //                        : chunkToLeft != null
+    //                            ? chunkToLeft.map.blocks[mapResolution - 1, blockY]
+    //                            : null;
+
+    //                    if (block == null)
+    //                        continue; //for now...
+
+    //                    for (var bitY = 0; bitY < 4; bitY++)
+    //                    {
+    //                        for (var bitX = 0; bitX < 4; bitX++)
+    //                        {
+    //                            var bitValue = block[bitX, bitY];
+
+    //                            if (bitValue == value)
+    //                            {
+
+    //                                continue;
+    //                            }
+
+    //                            var bitBelow = bitY - 1 >= 0
+    //                                ? block[bitX, bitY - 1]
+    //                                : blockBelow != null
+    //                                    ? blockBelow[bitX, 3]
+    //                                    : !value;
+
+    //                            var bitToLeft = bitX - 1 >= 0
+    //                                ? block[bitX - 1, bitY]
+    //                                : blockToLeft != null
+    //                                    ? blockToLeft[3, bitY]
+    //                                    : !value;
+
+    //                            if (bitBelow == value || bitToLeft == value)
+    //                            {
+    //                                map.SetBit(new(blockX, blockY), new(bitX, bitY), value);
+    //                                somethingChanged = true;
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+
+    //            if (somethingChanged)
+    //            {
+    //                map.ApplyPixels();
+    //            }
+    //        }
+    //    }
     //}
 
     public bool TestPoint (Vector2 point)

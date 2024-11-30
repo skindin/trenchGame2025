@@ -12,9 +12,11 @@ public class TrenchCollider : MonoBehaviour
     public UnityEvent<bool> onChangeTrenchStatus;
     public Chunk[,] chunks;
 
-    public float localSize = 1;
+    public float localSize = 1, wallBuffer = .1f;
 
     public bool draw = false, trenchTestWithPoint = true;
+    bool exitedTrenchThisFrame = false;
+
     public float WorldSize
     {
         get
@@ -23,7 +25,7 @@ public class TrenchCollider : MonoBehaviour
         }
     }
 
-    public bool trenchStatus = true, drawTrenchStatus = false;
+    public bool trenchStatus = true, drawTrenchStatus = false, freezeMovement = false;
 
     private void Update()
     {
@@ -56,19 +58,28 @@ public class TrenchCollider : MonoBehaviour
 
     public bool TestWithinTrench()
     {
-        if (trenchTestWithPoint)
+        //if (trenchTestWithPoint)
+        //{
+        //    //trenchStatus =
+        //    if (
+        //    TrenchManager.Manager.TestPoint(transform.position)
+        //        )
+        //        //;
+        //    trenchStatus = true;
+        //}
+        //else
+        //{
+        //    trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
+        //}
+
+        if (exitedTrenchThisFrame)
         {
-            trenchStatus =
-            //if (    
-            TrenchManager.Manager.TestPoint(transform.position)
-                //)
-                ;
-            //trenchStatus = true;
+            trenchStatus = exitedTrenchThisFrame = false;
         }
         else
-        {
             trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
-        }
+
+        //trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
 
         onChangeTrenchStatus.Invoke(trenchStatus);
 
@@ -99,6 +110,7 @@ public class TrenchCollider : MonoBehaviour
                 chunk.colliders.Remove(this);
         }
         chunks = new Chunk[0,0];
+        exitedTrenchThisFrame = false;
         //hp = maxHp;
     }
 
@@ -114,15 +126,26 @@ public class TrenchCollider : MonoBehaviour
 
     public Vector2 MoveToPos (Vector2 pos)
     {
-        //if (trenchStatus)
-        //{
+        if (trenchStatus)
+        {
 
-        //    TrenchManager.Manager.TestRayHitsValue(transform.position, pos, false, out pos);
+            pos = TrenchManager.Manager.StopAtValue(transform.position, pos, WorldSize/2 + wallBuffer, false);
 
-        //    return transform.position = pos;
-        //}
+            if (freezeMovement)
+                return transform.position;// = pos;
+            else
+            {
+                return transform.position = pos;
+            }
+        }
 
         return transform.position = pos;
+    }
+
+    public void ExitTrench ()
+    {
+        trenchStatus = false;
+        exitedTrenchThisFrame = true;
     }
 
     public Vector2 TestRay(Vector2 start, Vector2 end, bool debugLines = false)

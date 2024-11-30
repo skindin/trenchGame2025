@@ -3247,8 +3247,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 10
-  minChunkSize: 5
+  worldSize: 50
+  minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0
   pointA: {fileID: 1884687862}
@@ -3298,13 +3298,14 @@ MonoBehaviour:
     rgba: 0
   imageMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   imageMaterial: {fileID: 2100000, guid: 41eb24fc18bbdad42ad19ac7362a0c20, type: 2}
-  filter: 2
+  filter: 1
   pointA: {fileID: 1884687862}
   pointB: {fileID: 1477006794}
   runTest: 0
-  drawRayLines: 1
+  drawRayTests: 0
   drawFillLines: 0
-  drawColliderTestLines: 0
+  drawStatusTests: 0
+  drawCollisionTests: 1
   drawAllBits: 0
   blockWidth: 0
   bitWidth: 0
@@ -3555,7 +3556,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &978235425
 Transform:
   m_ObjectHideFlags: 0
