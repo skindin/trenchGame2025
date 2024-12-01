@@ -15,7 +15,7 @@ public class Character : MonoBehaviour
     //public SpriteRenderer sprite;
     //public Color dangerColor = Color.white;
     Color startColor;
-    public float baseMoveSpeed = 5, moveSpeed = 0, deathDropRadius = 1, hp = 10, maxHp = 10;
+    public float baseMoveSpeed = 5, moveSpeed = 0, deathDropRadius = 1, hp = 10, maxHp = 10, jumpDuration = .2f, jumpCooldown = .1f;
 
     int killCount;
 
@@ -192,6 +192,10 @@ public class Character : MonoBehaviour
     //{
     //    lastPos = transform.position;
     //}
+    public void Jump ()
+    {
+        trenchCollider.ExitTrench(jumpDuration);
+    }
 
     public void LookInDirection (Vector2 direction)
     {

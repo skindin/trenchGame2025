@@ -159,9 +159,9 @@ public class PlayerController : MonoBehaviour
             character.inventory.DropActiveItem(mousePos);
         }
 
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            character.trenchCollider.ExitTrench();
+            character.Jump();
         }
 
         //var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

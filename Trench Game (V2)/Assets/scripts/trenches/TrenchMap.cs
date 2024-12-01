@@ -337,7 +337,7 @@ public class TrenchMap
         //    Debug.Log($"tested {totalBlocksTested} blocks and {totalBitsTested} bits");
         //}
 
-        Debug.Log($"{totalEditedBlocks} have been edited");
+        //Debug.Log($"{totalEditedBlocks} have been edited");
 
         if (areaChanged > 0)
         {

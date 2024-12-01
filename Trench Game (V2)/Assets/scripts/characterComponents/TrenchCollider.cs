@@ -72,7 +72,7 @@ public class TrenchCollider : MonoBehaviour
         //    trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
         //}
 
-        if (exitedTrenchThisFrame)
+        if (exitRoutine != null || exitedTrenchThisFrame)
         {
             trenchStatus = exitedTrenchThisFrame = false;
         }
@@ -112,6 +112,9 @@ public class TrenchCollider : MonoBehaviour
         chunks = new Chunk[0,0];
         exitedTrenchThisFrame = false;
         //hp = maxHp;
+
+        StopAllCoroutines();
+        exitRoutine = null;
     }
 
     //private void Awake()
@@ -142,10 +145,24 @@ public class TrenchCollider : MonoBehaviour
         return transform.position = pos;
     }
 
-    public void ExitTrench ()
+    Coroutine exitRoutine;
+
+    public void ExitTrench (float duration)
     {
+        if (exitRoutine != null)
+            return;
+
         trenchStatus = false;
         exitedTrenchThisFrame = true;
+
+        exitRoutine = StartCoroutine(ExitRoutine());
+
+        IEnumerator ExitRoutine ()
+        {
+            yield return new WaitForSeconds(duration);
+
+            exitRoutine = null;
+        }
     }
 
     public Vector2 TestRay(Vector2 start, Vector2 end, bool debugLines = false)

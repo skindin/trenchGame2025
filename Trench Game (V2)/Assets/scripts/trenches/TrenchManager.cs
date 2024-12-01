@@ -292,8 +292,11 @@ public class TrenchManager : ManagerBase<TrenchManager>
         float smallestDist = Mathf.Infinity;
         Vector2 closestPos = currentEnd;
         Vector2 closestCollisionPoint = currentEnd;
+        var collisionDot = 0f;
 
-        var currentOgDelta = Vector2.zero;
+        var offset = Vector2.zero;
+
+        //var currentOgDelta = Vector2.zero;
 
         while (true)
         {
@@ -308,16 +311,6 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
                 foreach (var point in points)
                 {
-                    //if (Vector2.Distance(point, currentStart) <= radius)
-                    //{
-                    //    continue;
-                    //}
-
-                    //var closestSegPoint = GeoUtils.ClosestPointToLineSegment(point, start, end + direction * radius, out var ratio);
-
-                    //if (ratio <= 0)
-                    //    continue;
-
                     var collisionPointDot = Vector2.Dot(currentDirection.normalized, point - currentStart);
 
                     if (collisionPointDot < 0)
@@ -327,46 +320,64 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
                     var c = Mathf.Abs(Vector2.Dot(Vector2.Perpendicular(currentDirection), point - currentStart));
 
-                    var a = Mathf.Sqrt((b * b) - (c * c));
+                    //if (c + bitWidth >= b)
+                    //{
+                    //    continue;
+                    //}
 
-                    //a = Mathf.Min(currentMagnitude, a);
+                    var a = Mathf.Sqrt((b * b) - (c * c));
 
                     var circleStartDelta = (collisionPointDot - a) * currentDirection;
 
                     var circleCenter = circleStartDelta + currentStart;
+
+                    //if ((point - circleCenter).magnitude >= radius)
+                    //    continue;
 
                     var distance = circleStartDelta.magnitude;
 
                     if (drawCollisionTests)
                     {
                         GeoUtils.MarkPoint(point, bitWidth * .5f, Color.red);
-                        //Debug.DrawLine(collisionPointDot * currentDirection + currentStart, point, Color.magenta);
-                        //Debug.DrawLine(point, circleCenter, Color.magenta);
-                        //Debug.DrawLine(circleCenter, collisionPointDot * currentDirection + currentStart, Color.magenta);
                     }
 
                     if (distance < smallestDist)
                     {
-                        closestPos = circleCenter - (point - circleCenter).normalized * ogDelta.magnitude * bitWidth;// - Mathf.Min(bitWidth*2,distance) * direction;
+                        collisionDot = Vector2.Dot(Vector2.Perpendicular(currentEnd - currentStart).normalized * radius, point - circleCenter);
+
+                        //if (Mathf.Abs(collisionDot) >= 1)
+                        //{
+                        //    continue;
+                        //}
+
+                        offset = -
+                            //ogDelta.magnitude * 
+                            bitWidth *
+                            //Mathf.Abs(collisionDot) * bitWidth *
+                            //2 * 
+                            (point - circleCenter).normalized;
+                        closestPos = circleCenter + offset;
                         smallestDist = distance;
-                        closestCollisionPoint = point;
+                        closestCollisionPoint = point + offset;
                     }
                 }
             }
 
             if (drawCollisionTests)
             {
+                var transparentGreen = new Color(0, 1, 0, .2f);
+
                 Debug.DrawRay(currentStart, currentDirection, Color.blue);
                 GeoUtils.DrawCircle(currentStart, radius, Color.blue);
-                GeoUtils.DrawCircle(closestPos, radius, Color.green);
-                GeoUtils.MarkPoint(closestCollisionPoint, .5f, Color.green);
+                GeoUtils.DrawCircle(closestPos, radius, transparentGreen);
+                GeoUtils.MarkPoint(closestCollisionPoint, .5f, transparentGreen);
             }
+
+            if ((closestPos - ogStart).magnitude >= ogDelta.magnitude)
+                break;
 
             if (smallestDist == Mathf.Infinity)
                 return currentEnd;
-
-            if (currentMagnitude >= ogDelta.magnitude || Vector2.Dot(ogDelta, currentOgDelta) >= 1)
-                break;
 
             if (slideCount <= 0)
             {
@@ -374,13 +385,16 @@ public class TrenchManager : ManagerBase<TrenchManager>
             }
             slideCount--;
 
-            //var deflectedDirection = collisionPoint - end;
-
-            var collisionDot = Vector2.Dot(Vector2.Perpendicular(currentEnd - currentStart), closestCollisionPoint);
+            closestPos -= offset;
+            closestCollisionPoint -= offset;
 
             var collisionDelta = closestCollisionPoint - closestPos;
 
-            var deflectedDirection = -(collisionDot > 0 ? 1 : -1) * Vector2.Perpendicular(collisionDelta).normalized;
+            var leftoverMagnitude = (ogDelta.magnitude - (closestPos - ogStart).magnitude);
+
+            var deflectedDirection = leftoverMagnitude
+                * -(collisionDot > 0 ? 1 : -1)
+                * Vector2.Perpendicular(collisionDelta).normalized;
 
             if (drawCollisionTests)
             {
@@ -390,21 +404,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             currentStart = closestPos;
 
-            //currentEnd = closestPos + deflectedDirection;
-
-            //var endDot = Vector2.Dot(ogDelta, currentEnd - currentStart);
-
-            //endDot = Mathf.Clamp01(endDot);
-
-            //deflectedDirection = deflectedDirection.normalized * endDot;
-
-            deflectedDirection =
-                Mathf.Max(deflectedDirection.magnitude, ogDelta.magnitude - (closestPos - ogStart).magnitude) * 100
-                * deflectedDirection.normalized;
-
             currentEnd = closestPos + deflectedDirection;
 
-            currentOgDelta = currentStart - ogStart;
 
             var currentDelta = currentEnd - currentStart;
 
