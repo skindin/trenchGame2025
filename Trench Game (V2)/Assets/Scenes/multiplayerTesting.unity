@@ -3247,7 +3247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 10
+  worldSize: 20
   minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0
@@ -3301,7 +3301,7 @@ MonoBehaviour:
   filter: 1
   pointA: {fileID: 1884687862}
   pointB: {fileID: 1477006794}
-  runTest: 1
+  runTest: 0
   drawRayTests: 0
   drawFillLines: 0
   drawStatusTests: 0
@@ -3310,7 +3310,7 @@ MonoBehaviour:
   blockWidth: 0
   bitWidth: 0
   testRadius: 0.8
-  maxSlides: 1
+  maxSlides: 10
 --- !u!1 &896552506
 GameObject:
   m_ObjectHideFlags: 0
