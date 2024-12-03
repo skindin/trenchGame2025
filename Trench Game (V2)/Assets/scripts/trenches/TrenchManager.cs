@@ -299,13 +299,14 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
         var direction = (end - start).normalized;
 
-        //var hitWall = false;
+        var hitWall = false;
 
         while (slideCount >= Mathf.Epsilon)
         {
             float smallestDist = Mathf.Infinity;
             Vector2 closestCirclePos = currentEnd;
             Vector2 closestCollisionPoint = currentEnd;
+            float closestCollisionPointDot = 0;
 
             foreach (var chunk in ChunkManager.Manager.chunks)
             {
@@ -337,7 +338,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
                     var circleStartDelta = (collisionPointDot - a) * direction;
 
-                    var circleCenter = circleStartDelta + currentStart;
+                    var circlePos = circleStartDelta + currentStart;
 
                     var distance = circleStartDelta.magnitude;
 
@@ -361,15 +362,21 @@ public class TrenchManager : ManagerBase<TrenchManager>
                         //    continue;
                         //}
 
-                        closestCirclePos = circleCenter;
+                        closestCirclePos = circlePos;
                         smallestDist = distance;
                         closestCollisionPoint = point;
-                        //hitWall = false;
+                        closestCollisionPointDot = collisionPointDot;
+                        hitWall = false;
+                        continue;
                     }
-                    //else if (distance == smallestDist)
-                    //{
-                    //    hitWall = true;
-                    //}
+
+                    var closestDirDot = Vector2.Dot(Vector2.Perpendicular(direction), closestCirclePos);
+                    var thisDirDot = Vector2.Dot(Vector2.Perpendicular(direction), circlePos);
+
+                    if ((closestDirDot < 0 && thisDirDot > 0) || (closestDirDot > 0 && thisDirDot < 0))
+                    {
+                        hitWall = true;
+                    }
                 }
             }
 
@@ -386,6 +393,15 @@ public class TrenchManager : ManagerBase<TrenchManager>
             if (smallestDist == Mathf.Infinity)
             {
                 return currentEnd;
+            }
+
+            if (hitWall)
+            {
+                if (drawCollisionTests)
+                {
+                    GeoUtils.MarkPoint(closestCollisionPoint, bitWidth / 2, Color.yellow);
+                }
+                return closestCirclePos;
             }
 
             totalMagnitude += (closestCirclePos - currentStart).magnitude;
