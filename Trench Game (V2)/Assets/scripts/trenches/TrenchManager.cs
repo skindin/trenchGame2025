@@ -16,9 +16,9 @@ public class TrenchManager : ManagerBase<TrenchManager>
     public Transform pointA, pointB;
     public bool
         runTest = false,
-        drawRayTests = false, drawFillLines = false, drawStatusTests = false, drawCollisionTests = false, drawAllBits = false;//, doSpread = false;
+        drawRayTests = false, drawFillLines = false, drawStatusTests = false, drawCollisionTests = false, drawAllBits = false, logWallSlides = false;//, doSpread = false;
 
-    public float blockWidth, bitWidth, testRadius = 1;
+    public float blockWidth, bitWidth, testRadius = 1, frictionAngleMod = 1, wallFriction = 0;
     public int maxSlides = 5, targetFPS = 120;
 
     private void Start()
@@ -282,155 +282,141 @@ public class TrenchManager : ManagerBase<TrenchManager>
         return false;
     }
 
-    public Vector2 StopAtValue (Vector2 start, Vector2 end, float radius, bool value)
+    public Vector2 StopAtValue(Vector2 start, Vector2 end, float radius, bool value)
     {
-        var slideCount = maxSlides;
+        // Tracks the number of slides (iterations) during the calculation
+        var slideCount = 0;
 
+        // The current start and end points for each iteration
         var currentStart = start;
         var currentEnd = end;
 
+        // Original delta (difference) between start and end points
         var ogDelta = currentEnd - currentStart;
-        //var currentDirection = ogDelta.normalized;
 
+        // Total magnitude of movement processed so far
         float totalMagnitude = 0;
-        //var collisionDot = 0f;
 
-        //var currentOgDelta = Vector2.zero;
-
+        // Initial movement direction, normalized to a unit vector
         var direction = (end - start).normalized;
 
-        var hitWall = false;
-
-        while (slideCount >= Mathf.Epsilon)
+        // Loop to simulate sliding along obstacles until maxSlides is reached
+        while (slideCount < maxSlides)
         {
+            // Variables to track the closest collision point and related information
             float smallestDist = Mathf.Infinity;
             Vector2 closestCirclePos = currentEnd;
             Vector2 closestCollisionPoint = currentEnd;
-            float closestCollisionPointDot = 0;
 
+            // Iterate through chunks to find potential collision points
             foreach (var chunk in ChunkManager.Manager.chunks)
             {
                 if (chunk == null || chunk.map == null)
                 {
-                    continue;
+                    continue; // Skip null or invalid chunks
                 }
 
+                // Get points in the chunk that obstruct the capsule-shaped area
                 var points = chunk.map.GetBitsObstructingTaperedCapsule(currentStart, radius, currentEnd, radius, value);
 
+                // Process each obstruction point
                 foreach (var point in points)
                 {
                     var pointDelta = point - currentStart;
 
-                    //if (pointDelta.magnitude < radius)
-                    //    return currentStart;
-
+                    // Calculate the dot product to ensure the point is in the forward direction
                     var collisionPointDot = Vector2.Dot(direction.normalized, pointDelta);
+                    if (collisionPointDot <= 0)
+                        continue; // Skip points behind the starting position
 
-                    if (collisionPointDot <= -Mathf.Epsilon*100)// bitWidth / 100) 
-                        //used to just be <, maybe <= will fix the getting stuck after applying perpendicular direction...
-                        continue;
-
+                    // Calculate the perpendicular distance to the collision point
                     var b = radius;
-
                     var c = Mathf.Abs(Vector2.Dot(Vector2.Perpendicular(direction), point - currentStart));
-
                     var a = Mathf.Sqrt((b * b) - (c * c));
 
+                    // Determine the circle's collision position
                     var circleStartDelta = (collisionPointDot - a) * direction;
-
                     var circlePos = circleStartDelta + currentStart;
 
+                    // Update the closest collision point if this is the nearest so far
                     var distance = circleStartDelta.magnitude;
-
-                    if (drawCollisionTests)
-                    {
-                        GeoUtils.MarkPoint(point, bitWidth * .5f, new Color(1,0,0,.2f));
-                    }
-
-                    //if (circleCenter == closestCirclePos)
-                    //{
-                    //    GeoUtils.MarkPoint(point, bitWidth * .5f, Color.yellow);
-                    //    break;
-                    //}
-
                     if (distance < smallestDist)
                     {
-                        //collisionDot = Vector2.Dot(Vector2.Perpendicular(currentEnd - currentStart).normalized * radius, point - circleCenter);
-
-                        //if (Mathf.Abs(collisionDot) >= 1)
-                        //{
-                        //    continue;
-                        //}
+                        if (drawCollisionTests)
+                        {
+                            GeoUtils.MarkPoint(point, bitWidth * 0.5f, new Color(0, 1, 0, 0.2f));
+                        }
 
                         closestCirclePos = circlePos;
                         smallestDist = distance;
                         closestCollisionPoint = point;
-                        closestCollisionPointDot = collisionPointDot;
-                        hitWall = false;
                         continue;
                     }
 
-                    var closestDirDot = Vector2.Dot(Vector2.Perpendicular(direction), closestCirclePos);
-                    var thisDirDot = Vector2.Dot(Vector2.Perpendicular(direction), circlePos);
-
-                    if ((closestDirDot < 0 && thisDirDot > 0) || (closestDirDot > 0 && thisDirDot < 0))
+                    // Optionally visualize points that are further away
+                    if (drawCollisionTests)
                     {
-                        hitWall = true;
+                        GeoUtils.MarkPoint(point, bitWidth * 0.5f, new Color(1, 0, 0, 0.2f));
                     }
                 }
             }
 
+            // Debug visuals for collision testing
             if (drawCollisionTests)
             {
                 var transparentGreen = new Color(0, 1, 0, 1);
-
                 Debug.DrawRay(currentStart, direction, Color.blue);
                 GeoUtils.DrawCircle(currentStart, radius, Color.blue);
                 GeoUtils.DrawCircle(closestCirclePos, radius, transparentGreen);
-                GeoUtils.MarkPoint(closestCollisionPoint, bitWidth/2, transparentGreen);
+                GeoUtils.MarkPoint(closestCollisionPoint, bitWidth / 2, transparentGreen);
             }
 
+            // If no collision was found, return the current end position
             if (smallestDist == Mathf.Infinity)
             {
+                if (logWallSlides)
+                    Debug.Log($"{slideCount} slides");
+
                 return currentEnd;
             }
 
-            if (hitWall)
-            {
-                if (drawCollisionTests)
-                {
-                    GeoUtils.MarkPoint(closestCollisionPoint, bitWidth / 2, Color.yellow);
-                }
-                return closestCirclePos;
-            }
-
+            // Calculate the new direction based on the collision point
             totalMagnitude += (closestCirclePos - currentStart).magnitude;
-
             var collisionPointDelta = (closestCollisionPoint - closestCirclePos);
-
             var collisionDot = Vector2.Dot(Vector2.Perpendicular(direction), collisionPointDelta);
 
             direction = Vector2.Perpendicular(collisionPointDelta).normalized;
-
             if (-collisionDot < 0)
             {
                 direction = -direction;
             }
 
-            if (Vector2.Dot(ogDelta,direction) < 0)
+            // Stop sliding if the direction is opposite to the original movement
+            if (Vector2.Dot(ogDelta, direction) < 0)
+            {
+                if (logWallSlides)
+                    Debug.Log($"{slideCount} slides");
+
                 return closestCirclePos;
+            }
 
-            var angleRatio = 1 - (Vector2.Angle(ogDelta, direction) / 90);
-
+            // Apply friction and calculate the deflection direction
+            var angleRatio = (1 - frictionAngleMod * (Vector2.Angle(ogDelta, direction) / 90)) * (1 - wallFriction);
             var magnitude = Mathf.Min(radius, (ogDelta.magnitude - totalMagnitude) * angleRatio);
 
             var deflectionDir = direction * magnitude;
 
+            // Update the current start and end positions for the next iteration
             currentStart = closestCirclePos;
             currentEnd = currentStart + deflectionDir;
 
-            slideCount--;
+            // Increment the slide count
+            slideCount++;
         }
+
+        // Log the total number of slides if necessary
+        if (logWallSlides)
+            Debug.Log($"{slideCount} slides");
 
         return currentEnd;
     }
