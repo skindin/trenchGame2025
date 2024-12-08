@@ -308,6 +308,9 @@ public class TrenchManager : ManagerBase<TrenchManager>
             Vector2 closestCirclePos = currentEnd;
             Vector2 closestCollisionPoint = currentEnd;
 
+            var bitRadius = bitWidth / 2;
+            var testRadius = radius + bitRadius;
+
             // Iterate through chunks to find potential collision points
             foreach (var chunk in ChunkManager.Manager.chunks)
             {
@@ -317,39 +320,50 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
 
                 // Get points in the chunk that obstruct the capsule-shaped area
-                var points = chunk.map.GetBitsObstructingTaperedCapsule(currentStart, radius, currentEnd, radius, value);
+
+                var points = chunk.map.GetBitsObstructingTaperedCapsule(currentStart, testRadius, currentEnd, testRadius, value);
 
                 // Process each obstruction point
                 foreach (var point in points)
                 {
-                    var pointDelta = point - currentStart;
+                    //var pointDelta = point - currentStart;
 
                     // Calculate the dot product to ensure the point is in the forward direction
-                    var collisionPointDot = Vector2.Dot(direction.normalized, pointDelta);
-                    if (collisionPointDot <= 0)
-                        continue; // Skip points behind the starting position
 
-                    // Calculate the perpendicular distance to the collision point
-                    var b = radius;
-                    var c = Mathf.Abs(Vector2.Dot(Vector2.Perpendicular(direction), point - currentStart));
-                    var a = Mathf.Sqrt((b * b) - (c * c));
+                    var distToPointCollision = GeoUtils.CircleCollideWithPoint(currentStart, testRadius, direction, point, out bool wasBehind, true);
 
-                    // Determine the circle's collision position
-                    var circleStartDelta = (collisionPointDot - a) * direction;
-                    var circlePos = circleStartDelta + currentStart;
+                    if (wasBehind)
+                        continue;
+
+                    var circlePos = distToPointCollision * direction + currentStart;
+
+                    var collisionDelta = (point - circlePos);
+
+                    var circlePoint = bitRadius * -collisionDelta.normalized + point;
+
+                    var distToCircleCollision = GeoUtils.CircleCollideWithPoint(currentStart, radius, direction, circlePoint, out _);
+
+                    //if (wasBehind)
+                    //    continue;
+
+                    circlePos = currentStart + direction * distToCircleCollision;
+
+                    //if (distToPointCollision < -bitWidth)
+                    //    break;
 
                     // Update the closest collision point if this is the nearest so far
-                    var distance = circleStartDelta.magnitude;
-                    if (distance < smallestDist)
+                    if (distToCircleCollision < smallestDist)
                     {
+                        closestCirclePos = circlePos;
+                        smallestDist = distToCircleCollision;
+                        closestCollisionPoint = circlePoint;
+
                         if (drawCollisionTests)
                         {
-                            GeoUtils.MarkPoint(point, bitWidth * 0.5f, new Color(0, 1, 0, 0.2f));
+                            var newColor = new Color(0, 1, 0, 0.2f);
+                            GeoUtils.DrawCircle(point, bitWidth * 0.5f, newColor);
+                            GeoUtils.MarkPoint(closestCollisionPoint, bitWidth * .5f, newColor);
                         }
-
-                        closestCirclePos = circlePos;
-                        smallestDist = distance;
-                        closestCollisionPoint = point;
                         continue;
                     }
 
@@ -380,9 +394,26 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 return currentEnd;
             }
 
+            var collisionPointDelta = (closestCollisionPoint - closestCirclePos);
+
+            //idk how tf to fix this dude
+
+            //if (Vector2.Dot(direction, closestCirclePos - currentStart) < 0)
+            //{
+            //    currentStart = closestCirclePos;
+            //    var delta = (collisionPointDelta.magnitude - radius) * collisionPointDelta.normalized;
+
+            //    currentEnd = currentStart + delta;
+
+            //    direction = delta.normalized;
+
+            //    slideCount++;
+
+            //    continue;
+            //}
+
             // Calculate the new direction based on the collision point
             totalMagnitude += (closestCirclePos - currentStart).magnitude;
-            var collisionPointDelta = (closestCollisionPoint - closestCirclePos);
             var collisionDot = Vector2.Dot(Vector2.Perpendicular(direction), collisionPointDelta);
 
             direction = Vector2.Perpendicular(collisionPointDelta).normalized;

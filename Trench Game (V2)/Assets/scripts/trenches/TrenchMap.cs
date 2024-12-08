@@ -185,7 +185,7 @@ public class TrenchMap
         //    pixels[i] = groundColor;
         //}
 
-        float blockCircleRadius = Vector2.one.magnitude * bitWidth * 1.5f;
+        float blockCircleRadius = (Vector2.one.magnitude * bitWidth * 1.5f) + (bitWidth * 1.5f);
 
         int totalBitsTested = 0;
         int totalBlocksTested = 0;
@@ -269,13 +269,13 @@ public class TrenchMap
                         //    continue;
 
                         // Test if the bit is within the capsule
-                        if (GeoUtils.TestPointWithinTaperedCapsule(bitPos, startPoint, startRadius, endPoint, endRadius))
+                        if (GeoUtils.TestCirlceTouchesTaperedCapsule(bitPos, bitWidth/2, startPoint, startRadius, endPoint, endRadius))
                         {
                             //block[bitX, bitY] = value;
                             totalBitsAtValue++;
                             if (debugLines)
                             {
-                                GeoUtils.MarkPoint(bitPos, bitWidth, Color.green);
+                                GeoUtils.DrawCircle(bitPos, bitWidth/2, Color.green);
                             }
 
                             areaChanged += bitArea;
@@ -292,7 +292,7 @@ public class TrenchMap
                         }
                         else if (debugLines)
                         {
-                            GeoUtils.MarkPoint(bitPos, bitWidth/2, Color.red);
+                            GeoUtils.DrawCircle(bitPos, bitWidth/2, Color.red);
                         }
                     }
                 }

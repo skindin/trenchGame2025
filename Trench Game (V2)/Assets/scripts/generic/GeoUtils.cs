@@ -672,6 +672,31 @@ public static class GeoUtils
         return result;
     }
 
+    /// <summary>
+    /// returns distance before hitting point
+    /// </summary>
+    /// <param name="circleStart"></param>
+    /// <param name="radius"></param>
+    /// <param name="direction"></param>
+    /// <param name="point"></param>
+    /// <returns></returns>
+    public static float CircleCollideWithPoint (Vector2 circleStart, float radius, Vector2 direction, Vector2 point, out bool wasBehind, bool returnIfBehind = false)
+    {
+        var collisionPointDot = Vector2.Dot(direction.normalized, point - circleStart);
+
+        wasBehind = collisionPointDot < 0;
+
+        if (wasBehind && returnIfBehind)
+            return 0;
+
+        // Calculate the perpendicular distance to the collision point
+        var b = radius;
+        var c = Mathf.Abs(Vector2.Dot(Vector2.Perpendicular(direction), point - circleStart));
+        var a = Mathf.Sqrt((b * b) - (c * c));
+
+        return Mathf.Max(0, collisionPointDot - a);
+    }
+
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {
         Vector3 lastPoint = Vector2.up * radius;

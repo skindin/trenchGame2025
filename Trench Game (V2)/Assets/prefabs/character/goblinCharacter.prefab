@@ -197,6 +197,8 @@ MonoBehaviour:
   deathDropRadius: 1
   hp: 10
   maxHp: 10
+  jumpDuration: 0.2
+  jumpCooldown: 0.1
   onMove:
     m_PersistentCalls:
       m_Calls:
@@ -311,10 +313,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   localSize: 1.6
-  draw: 0
+  wallBuffer: 0
+  draw: 1
   trenchTestWithPoint: 0
   trenchStatus: 0
   drawTrenchStatus: 0
+  freezeMovement: 0
 --- !u!114 &1672398506640000765
 MonoBehaviour:
   m_ObjectHideFlags: 0
