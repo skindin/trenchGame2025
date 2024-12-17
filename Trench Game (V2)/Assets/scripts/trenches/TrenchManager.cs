@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using UnityEngine.UIElements;
 
 public class TrenchManager : ManagerBase<TrenchManager>
 {
@@ -311,12 +309,25 @@ public class TrenchManager : ManagerBase<TrenchManager>
             var bitRadius = bitWidth / 2;
             var testRadius = radius + bitRadius;
 
+            var boxMin = Vector2.Min(currentStart - Vector2.one * testRadius, currentEnd - Vector2.one * testRadius);
+            var boxMax = Vector2.Max(currentStart + Vector2.one * testRadius, currentEnd + Vector2.one * testRadius);
+
+            var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(boxMin, boxMax);
+
             // Iterate through chunks to find potential collision points
-            foreach (var chunk in ChunkManager.Manager.chunks)
+            foreach (var chunk in chunks)
             {
-                if (chunk == null || chunk.map == null)
+                if (chunk == null)
                 {
-                    continue; // Skip null or invalid chunks
+                    continue;//tbh idk if this will ever happen? cause the collider?
+                }
+
+                if (chunk.map == null)
+                {
+                    ChunkManager.Manager.GetChunkBox(chunk.adress, out var min, out var max);
+                    var boxClampedPoint = GeoUtils.ClampToBoxMinMax(start, min, max);
+                    var chunkCollisionPoint = GeoUtils.CircleCollideWithPoint(currentStart, radius, direction, boxClampedPoint, out _);
+                    continue; //temporary
                 }
 
                 // Get points in the chunk that obstruct the capsule-shaped area

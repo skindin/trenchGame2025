@@ -71,7 +71,7 @@ MonoBehaviour:
   lineTest: 0
   bulletSpeed: 80
   range: 15
-  firingRate: 1
+  firingRate: 3
   reloadTime: 1
   damageRate: 5
   swapDelay: 0.2

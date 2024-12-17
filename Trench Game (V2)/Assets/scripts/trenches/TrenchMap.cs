@@ -107,7 +107,7 @@ public class TrenchMap
     //}
 
     public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, float maxArea, out float areaChanged,
-        bool debugLines = false)
+        bool debugLines = false, bool logCounters = false)
     {
         areaChanged = 0;
 
@@ -213,7 +213,7 @@ public class TrenchMap
                 {
                     if (debugLines)
                     {
-                        GeoUtils.MarkPoint(blockPos, blockWidth/2, Color.white);
+                        GeoUtils.MarkPoint(blockPos, blockWidth / 2, Color.white);
                     }
 
                     continue;
@@ -251,7 +251,7 @@ public class TrenchMap
                 {
                     for (int bitX = 0; bitX < 4; bitX++)
                     {
-                        var bitValue = block[bitX,bitY];
+                        var bitValue = block[bitX, bitY];
 
                         totalBitsTested++;
 
@@ -263,19 +263,19 @@ public class TrenchMap
                         }
 
                         // Compute the position of the bit in world space
-                        var bitPos = manager.GetBitPos(blockPos, new(bitX,bitY));
+                        var bitPos = manager.GetBitPos(blockPos, new(bitX, bitY));
 
                         //if (!GeoUtils.TestBoxMinMax(capsuleMin, capsuleMax, bitPos, debugLines))
                         //    continue;
 
                         // Test if the bit is within the capsule
-                        if (GeoUtils.TestCirlceTouchesTaperedCapsule(bitPos, bitWidth/2, startPoint, startRadius, endPoint, endRadius))
+                        if (GeoUtils.TestCirlceTouchesTaperedCapsule(bitPos, bitWidth / 2, startPoint, startRadius, endPoint, endRadius))
                         {
                             //block[bitX, bitY] = value;
                             totalBitsAtValue++;
                             if (debugLines)
                             {
-                                GeoUtils.DrawCircle(bitPos, bitWidth/2, Color.green);
+                                GeoUtils.DrawCircle(bitPos, bitWidth / 2, Color.green);
                             }
 
                             areaChanged += bitArea;
@@ -292,35 +292,40 @@ public class TrenchMap
                         }
                         else if (debugLines)
                         {
-                            GeoUtils.DrawCircle(bitPos, bitWidth/2, Color.red);
+                            GeoUtils.DrawCircle(bitPos, bitWidth / 2, Color.red);
                         }
                     }
                 }
 
-                if (wholeWasOpposite && blockChanged && totalBitsAtValue < 16)
+                if (blockChanged)
                 {
-                    totalEditedBlocks++;
 
-                    if (!value)
-                        totalAllTrench--;
-                }
+                    var wholeIsNowValue = totalBitsAtValue >= 16;
 
-                if (value && totalBitsAtValue >= 16)
-                {
-                    totalAllTrench++;
-                }
 
-                //Profiler.EndSample();
+                    if (wholeWasOpposite && !wholeIsNowValue)
+                    {
+                        if (!value)
+                            totalAllTrench--;
+                        else
+                            totalEditedBlocks++;
+                    }
 
-                // Remove the block if all bits are cleared and `value` is false
-                if (!value && totalBitsAtValue >= 16)
-                {
-                    blocks[blockX, blockY] = null;
-                    totalEditedBlocks--;
-                }
-                else
-                {
-                    //block.SetArray(blockArray);
+                    if (value && wholeIsNowValue)
+                    {
+                        totalAllTrench++;
+                    }
+
+                    // Remove the block if all bits are cleared and `value` is false
+                    if (!value && wholeIsNowValue)
+                    {
+                        blocks[blockX, blockY] = null;
+                        totalEditedBlocks--;
+                    }
+                    else
+                    {
+                        //block.SetArray(blockArray);
+                    }
                 }
             }
         }
@@ -332,10 +337,10 @@ public class TrenchMap
         if (allTrench)
             blocks = null;
 
-        //if (logBitsTested)
-        //{
-        //    Debug.Log($"tested {totalBlocksTested} blocks and {totalBitsTested} bits");
-        //}
+        if (logCounters)
+        {
+            Debug.Log($"totalEditedBlocks = {totalEditedBlocks}, allFull = {allFull}, totalAllTrench = {totalAllTrench}, allTrench = {allTrench}");
+        }
 
         //Debug.Log($"{totalEditedBlocks} have been edited");
 

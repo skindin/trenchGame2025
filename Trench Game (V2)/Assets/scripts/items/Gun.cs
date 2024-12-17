@@ -317,13 +317,20 @@ public class Gun : Weapon
 
     public Bullet Fire ()
     {
+        var trenchStatus = wielder.trenchCollider.trenchStatus;
+
+        if (trenchStatus)
+        {
+            trenchStatus = !TrenchManager.Manager.TestRayHitsValue(wielder.trenchCollider.transform.position, BarrelPos, false, out _);
+        }
+
         var bullet = ProjectileManager.Manager.NewBullet(BarrelPos,
             (direction.normalized * bulletSpeed) + velocity,
             range,
             DamagePerBullet,
             wielder,
             //true);
-            wielder.trenchCollider.trenchStatus);
+            trenchStatus);
 
         NetworkManager.Manager.SpawnBullet(this,bullet);
 
