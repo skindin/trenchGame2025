@@ -86,9 +86,15 @@ public class ProjectileRenderer : MonoBehaviour
                         dangerousTransforms.Add(GetMatrix(bullet.trenchExit, end));
                     }
 
-                    end = Vector2.ClampMagnitude(bullet.trenchExit - bullet.pos, maxLength) + bullet.pos;
+                    var exitDeltaMagnitude = (bullet.startPos - bullet.trenchExit).magnitude;
 
-                    transforms.Add(GetMatrix(clampedPos,end));
+                    var clampedMagnitude = Mathf.Clamp(exitDeltaMagnitude, startToEnd, bullet.range);
+
+                    var exitTrailEnd = bullet.startPos + bullet.velocity.normalized * clampedMagnitude;
+
+                    //var clampedExitDelta = Vector2.ClampMagnitude(exitDelta, bull);
+
+                    transforms.Add(GetMatrix(clampedPos,exitTrailEnd));
                 }
                 else
                 {

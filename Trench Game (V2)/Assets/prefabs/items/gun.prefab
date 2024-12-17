@@ -69,10 +69,10 @@ MonoBehaviour:
   fired: 0
   drawBerrelPos: 0
   lineTest: 0
-  bulletSpeed: 100
-  range: 20
+  bulletSpeed: 80
+  range: 15
   firingRate: 1
-  reloadTime: 2
+  reloadTime: 1
   damageRate: 5
   swapDelay: 0.2
   maxPerFrame: 5

@@ -161,10 +161,10 @@ MonoBehaviour:
   heldRot: {x: 0, y: 0, z: 0}
   heldPos: {x: 0.13, y: 0, z: 0}
   passivePickup: 0
-  animRots: 2
+  animRots: 1
   healing: 0
   hp: 5
-  healingTime: 2
+  healingTime: 0.5
 --- !u!1 &7997774657667501754
 GameObject:
   m_ObjectHideFlags: 0

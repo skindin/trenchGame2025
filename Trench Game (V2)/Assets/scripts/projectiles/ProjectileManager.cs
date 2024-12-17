@@ -196,7 +196,7 @@ public class ProjectileManager : MonoBehaviour
             if (shortestDistance < ogDistance)
             {
                 bullet.hit = true;
-                bullet.range = (closestPoint - bullet.startPos).magnitude;
+                bullet.range = Mathf.Min((closestPoint - bullet.startPos).magnitude, bullet.range);
             }
 
             if (exitedTrench)

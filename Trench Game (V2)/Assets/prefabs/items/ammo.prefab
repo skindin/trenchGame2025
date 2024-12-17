@@ -160,7 +160,7 @@ MonoBehaviour:
   heldPos: {x: 0, y: 0, z: 0}
   passivePickup: 1
   limitAmount: 0
-  maxAmount: 50
+  maxAmount: 20
   combineRadius: 0
   amount: 1
   startFull: 1
