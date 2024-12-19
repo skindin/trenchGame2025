@@ -3301,7 +3301,7 @@ MonoBehaviour:
   filter: 1
   pointA: {fileID: 1884687862}
   pointB: {fileID: 1477006794}
-  runTest: 0
+  runTest: 1
   drawRayTests: 0
   drawFillLines: 0
   drawStatusTests: 0
@@ -3314,7 +3314,6 @@ MonoBehaviour:
   frictionAngleMod: 1
   wallFriction: 0
   maxSlides: 10
-  targetFPS: 120
 --- !u!1 &896552506
 GameObject:
   m_ObjectHideFlags: 0

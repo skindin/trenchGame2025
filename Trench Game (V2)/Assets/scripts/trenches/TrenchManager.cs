@@ -46,21 +46,23 @@ public class TrenchManager : ManagerBase<TrenchManager>
             var start = pointA.position;
             var end = pointB.position;
 
-            var radius = pointA.lossyScale.x * pointB.lossyScale.x;
+            //var radius = pointA.lossyScale.x * pointB.lossyScale.x;
 
-            GeoUtils.DrawCircle(start, radius, Color.green);
-            GeoUtils.DrawCircle(end, radius, Color.red);
+            //GeoUtils.DrawCircle(start, radius, Color.green);
+            //GeoUtils.DrawCircle(end, radius, Color.red);
+
+            Debug.DrawLine(start, end,Color.green);
 
             var boxMin = -Vector2.one * transform.lossyScale.x;
             var boxMax = -boxMin;
 
             GeoUtils.DrawBoxMinMax(boxMin, boxMax, Color.blue);
 
-            var point = GeoUtils.FindCircleBoxCollisionPoint(start, end, radius, boxMin, boxMax);
+            var point = GeoUtils.FindPointBoxCollisionPoint(start, end-start, boxMin, boxMax);
 
             if (point != null)
 
-                GeoUtils.MarkPoint((Vector2)point, 1, Color.green);
+                GeoUtils.MarkPoint((Vector2)point, 1, Color.red);
         }
 
         if (drawAllBits)
