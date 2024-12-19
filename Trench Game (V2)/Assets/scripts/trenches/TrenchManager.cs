@@ -17,7 +17,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         drawRayTests = false, drawFillLines = false, drawStatusTests = false, drawCollisionTests = false, drawAllBits = false, logWallSlides = false;//, doSpread = false;
 
     public float blockWidth, bitWidth, testRadius = 1, frictionAngleMod = 1, wallFriction = 0;
-    public int maxSlides = 5, targetFPS = 120;
+    public int maxSlides = 5;//, targetFPS = 120;
 
     private void Start()
     {
@@ -32,7 +32,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     private void Update()
     {
-        Application.targetFrameRate = targetFPS;
+        //Application.targetFrameRate = targetFPS;
 
         //if (doSpread)
         //{
@@ -43,8 +43,24 @@ public class TrenchManager : ManagerBase<TrenchManager>
         if (runTest)
         {
             //TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
+            var start = pointA.position;
+            var end = pointB.position;
 
-            StopAtValue(pointA.position, pointB.position, testRadius, false);
+            var radius = pointA.lossyScale.x * pointB.lossyScale.x;
+
+            GeoUtils.DrawCircle(start, radius, Color.green);
+            GeoUtils.DrawCircle(end, radius, Color.red);
+
+            var boxMin = -Vector2.one * transform.lossyScale.x;
+            var boxMax = -boxMin;
+
+            GeoUtils.DrawBoxMinMax(boxMin, boxMax, Color.blue);
+
+            var point = GeoUtils.FindCircleBoxCollisionPoint(start, end, radius, boxMin, boxMax);
+
+            if (point != null)
+
+                GeoUtils.MarkPoint((Vector2)point, 1, Color.green);
         }
 
         if (drawAllBits)
@@ -319,14 +335,15 @@ public class TrenchManager : ManagerBase<TrenchManager>
             {
                 if (chunk == null)
                 {
-                    continue;//tbh idk if this will ever happen? cause the collider?
+                    Debug.LogError("Cell collision detected a null chunk");
+                    continue;//tbh idk if this will ever happen? cause the collider? probably bad to do this
                 }
 
                 if (chunk.map == null)
                 {
                     ChunkManager.Manager.GetChunkBox(chunk.adress, out var min, out var max);
-                    var boxClampedPoint = GeoUtils.ClampToBoxMinMax(start, min, max);
-                    var chunkCollisionPoint = GeoUtils.CircleCollideWithPoint(currentStart, radius, direction, boxClampedPoint, out _);
+                    var boxClampedStart = GeoUtils.ClampToBoxMinMax(start, min, max);
+                    var segStartPoint = GeoUtils.ClosestPointToLineSegment(boxClampedStart, currentStart, currentEnd);
                     continue; //temporary
                 }
 

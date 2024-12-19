@@ -313,7 +313,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   localSize: 1.6
-  wallBuffer: 0
+  wallBuffer: 0.1
   draw: 0
   trenchTestWithPoint: 0
   trenchStatus: 0

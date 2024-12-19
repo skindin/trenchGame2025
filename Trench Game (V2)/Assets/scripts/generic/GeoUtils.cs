@@ -214,28 +214,12 @@ public static class GeoUtils
     {
         if (debugLines) Debug.DrawLine(pointA, pointB, Color.green);
 
-        if (TestBoxMinMax(boxMin, boxMax, pointA, debugLines) || TestBoxMinMax(boxMin, boxMax, pointB, debugLines))
-        {
-            if (debugLines) DrawBoxMinMax(boxMin, boxMax, Color.blue);
-            return true;
-        }
+        var boxCenter = (boxMin + boxMax) / 2;
 
-        GetTopLeftAndBottomRight(boxMin, boxMax, out var topLeft, out var bottomRight);
+        var closestPoint = ClosestPointToLineSegment(boxCenter, pointA, pointB);
 
-        return DoesLineIntersectX(pointA, pointB, boxMin, topLeft, boxMax, bottomRight, debugLines);
-
-        //if (DoLinesIntersect(pointA, pointB, boxMax, bottomRight, debugLines))
-        //{
-        //    return true;
-        //}
-
-        //if (DoLinesIntersect(pointA, pointB, bottomRight, boxMin, debugLines))
-        //{
-        //    return true;
-        //}
-
-        //realized there is no scenario where you would have to test all four lines if you're already testing if it's within
-
+        return TestBoxMinMax(boxMin,boxMax, closestPoint); 
+        //i haven't confirmed this works properly since changing it but it probably does
     }
 
     public static bool DoesLineIntersectBoxPosSize (Vector2 pointA, Vector2 pointB, Vector2 boxPos, Vector2 boxSize, bool debugLines = false)
@@ -695,6 +679,120 @@ public static class GeoUtils
         var a = Mathf.Sqrt((b * b) - (c * c));
 
         return Mathf.Max(0, collisionPointDot - a);
+    }
+
+    public static bool TestSegmentsWithinDistance (Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End, float distance)
+    {
+        if (Vector2.Distance(ClosestPointToLineSegment(line2Start, line1Start, line1End), line2Start) >= distance)
+            return true;
+        if (Vector2.Distance(ClosestPointToLineSegment(line2End, line1Start, line1End), line2End) >= distance)
+            return true;
+        if (Vector2.Distance(ClosestPointToLineSegment(line1Start, line2Start, line2End), line1Start) >= distance)
+            return true;
+        if (Vector2.Distance(ClosestPointToLineSegment(line1End, line2Start, line2End), line1End) >= distance)
+            return true;
+
+        return false; //idk if ill use this lol
+    }
+
+    //public static float CircleCollideWithBoxMinMax(Vector2 circleStart, float circleRadius, Vector2 circleDelta, Vector2 boxMin, Vector2 boxMax)
+    //{
+    //find point on line closest to box center, then roll it back towards the start until just barely touching the box
+    //}
+
+    public static Vector2? FindCircleBoxCollisionPoint(Vector2 start, Vector2 end, float radius, Vector2 boxMin, Vector2 boxMax)
+    {
+        Vector2 direction = end - start;
+        float length = direction.magnitude;
+
+        // Normalize direction to handle parametric t [0, 1]
+        Vector2 normalizedDir = direction / length;
+
+        // Parametric line equation: circlePos(t) = start + t * direction
+        // Check for the closest approach to the box
+
+        float tMin = 0f;
+        float tMax = 1f;
+
+        // Sweep against each axis
+        for (int i = 0; i < 2; i++)
+        {
+            float boxMinEdge = i == 0 ? boxMin.x : boxMin.y;
+            float boxMaxEdge = i == 0 ? boxMax.x : boxMax.y;
+            float startCoord = i == 0 ? start.x : start.y;
+            float dirCoord = i == 0 ? normalizedDir.x : normalizedDir.y;
+
+            if (Mathf.Abs(dirCoord) < Mathf.Epsilon)
+            {
+                // Parallel to this axis
+                if (startCoord < boxMinEdge - radius || startCoord > boxMaxEdge + radius)
+                {
+                    return null; // No collision possible
+                }
+            }
+            else
+            {
+                // Compute t values for intersection with box edges
+                float t1 = (boxMinEdge - radius - startCoord) / dirCoord;
+                float t2 = (boxMaxEdge + radius - startCoord) / dirCoord;
+
+                if (t1 > t2)
+                {
+                    // Ensure t1 is the smaller value
+                    (t1, t2) = (t2, t1);
+                }
+
+                // Update the range of t values
+                tMin = Mathf.Max(tMin, t1);
+                tMax = Mathf.Min(tMax, t2);
+
+                // If t range is invalid, no collision
+                if (tMin > tMax)
+                {
+                    return null;
+                }
+            }
+        }
+
+        // If we reach here, there is a collision
+        float tCollision = tMin;
+        if (tCollision < 0f || tCollision > 1f)
+        {
+            return null; // Collision outside the segment
+        }
+
+        // Compute the collision point
+        return start + tCollision * direction;
+    }
+
+    public static Vector2? FindPointBoxCollision (Vector2 point, Vector2 delta, Vector2 boxMin, Vector2 boxMax)
+    {
+        //removed box test because it's probably redundant
+
+        if (delta.x == 0)// if the direction is perfectly vertical, 
+        {
+            if (point.x < boxMin.x || point.x > boxMax.x) //if the point is to the left or right of the box, return null
+                return null;
+
+            var end = point + delta;
+
+            if (point.y >= boxMax.y && (end.y <= boxMax.y)) //if point is above box, and would move through the box
+            {
+                return new Vector2(point.x, boxMax.y); //return the point it would hit
+            }
+            else if (point.y <= boxMin.y && (end.y >= boxMin.y)) //if point is above box, and would move through the box
+            {
+                return new Vector2(point.x, boxMin.y); //return the point it would hit
+            }
+        }
+
+        var m = delta.y / delta.x;
+
+        var b = point.y - (m * point.x);
+
+        var closestSideX = true;
+
+        return null;//just to save it
     }
 
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
