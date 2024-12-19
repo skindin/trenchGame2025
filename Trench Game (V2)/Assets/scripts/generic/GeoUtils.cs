@@ -702,116 +702,166 @@ public static class GeoUtils
 
     public static Vector2? FindCircleBoxCollisionPoint(Vector2 start, Vector2 end, float radius, Vector2 boxMin, Vector2 boxMax)
     {
-        Vector2 delta = end - start; //im tired too late ahh
+        var boxClampedStart = ClampToBoxMinMax(start, boxMin, boxMax);
+
+        if (Vector2.Distance(boxClampedStart,start) <= radius)
+        {
+            return boxClampedStart;
+        }
 
         var boxCenter = (boxMin + boxMax) / 2;
 
         var closestPoint = ClosestPointToLineSegment(boxCenter, start, end);
 
-        var edgeDelta = Vector2.Perpendicular(delta).normalized * radius;
+        var clampedClosest = ClampToBoxMinMax(closestPoint, boxMin, boxMax);
 
-        if (closestPoint.x < boxCenter.x)
-            edgeDelta = -edgeDelta;
-
-        var radiusCollisionPoint = FindPointBoxCollisionPoint(start + edgeDelta, delta, boxMin, boxMax, out var radiusEdgeHit);
-
-        if (radiusCollisionPoint == null) 
+        if (Vector2.Distance(closestPoint, clampedClosest) >= radius)
             return null;
 
-        var centerCollisionPoint = FindPointBoxCollisionPoint(start, delta, boxMin, boxMax, out var centerEdgeHit);
-
-        if (radiusEdgeHit != centerEdgeHit)
-            return ClampToBoxMinMax(start, boxMin, boxMax);
-
-        if (centerCollisionPoint == null)
-            return ClampToBoxMinMax(closestPoint, boxMin, boxMax);
-
-        return (radiusCollisionPoint + centerCollisionPoint) / 2;
-    }
-
-    public static Vector2? FindPointBoxCollisionPoint (Vector2 point, Vector2 delta, Vector2 boxMin, Vector2 boxMax, out Vector2Int edgeHit)
-    {
-        //removed box test because it's probably redundant
-
-        var end = point + delta;
-
-        edgeHit = Vector2Int.zero;
-
-        if ((point.x > boxMax.x && end.x > boxMax.x) ||
-            (point.x < boxMin.x && end.x < boxMin.x) ||
-            (point.y > boxMax.y && end.y > boxMax.y) ||
-            (point.y < boxMin.y && end.y < boxMin.y)
-    )
-        {
-            return null;
-        }
-
-        if (delta.x == 0)// if the direction is perfectly vertical, 
-        {
-            if (point.x < boxMin.x || point.x > boxMax.x) //if the point is to the left or right of the box, return null
-                return null;
-
-            if (point.y >= boxMax.y && (end.y <= boxMax.y)) //if point is above box, and would move through the box
-            {
-                return new Vector2(point.x, boxMax.y); //return the point it would hit
-            }
-            else if (point.y <= boxMin.y && (end.y >= boxMin.y)) //if point is above box, and would move through the box
-            {
-                return new Vector2(point.x, boxMin.y); //return the point it would hit
-            }
-        }
-
-        if (TestBoxMinMax(boxMin, boxMax, point))
-        {
-            return point;
-        }
+        Vector2 delta = end - start; //im tired too late ahh
 
         var m = delta.y / delta.x;
 
-        var b = point.y - (m * point.x);
+        var movingRight = delta.x > 0;
+        var movingUp = delta.y > 0;
 
-        var movingRight = delta.x > 0f;
+        var horizontalB = start.y - (m * start.x + (movingRight ? radius : -radius));
 
-        var leftY = (m * boxMin.x) + b;
-        var hitsLeft = (leftY >= boxMin.y && leftY <= boxMax.y);
+        var horizontalX = movingRight ? boxMin.x : boxMax.x;
 
-        if (hitsLeft && movingRight) //if ends inside or is moving right
+        var horizontalY = (m * horizontalX) + horizontalB;
+
+        var horizontalMissed = movingRight ?
+            movingUp && horizontalY > boxMax.y :
+            !movingUp && horizontalY < boxMin.y;
+
+        if (horizontalMissed)
         {
-            edgeHit = Vector2Int.left;
-            return new(boxMin.x, leftY); //return intercept
+            return boxClampedStart;
         }
 
-        var rightY = (m * boxMax.x) + b;
-        var hitsRight = (rightY >= boxMin.y && rightY <= boxMax.y);
+        var hitY = movingRight ?
+            movingUp && horizontalY <= boxMax.y :
+            !movingUp && horizontalY >= boxMin.y;
 
-        //FIX; probably should clamp the intercepts to the end pos
-
-        if (hitsRight && !movingRight) //if it ends inside or is moving left
+        if (hitY)
         {
-            edgeHit = Vector2Int.right;
-            return new(boxMax.x, rightY); //return right point
+            return new Vector2(horizontalX, horizontalY);
         }
 
-        var bottomX = (boxMin.y - b) / m;
-        var hitsBottom = (bottomX >= boxMin.x && bottomX <= boxMax.x);
+        var verticalB = start.y + (movingUp ? radius : -radius) - (m * start.x);
 
-        if (hitsBottom && delta.y > 0)
+        var verticalY = movingUp ? boxMin.y : boxMax.y;
+
+        var verticalX = (verticalY - verticalB) / m;
+
+        var verticalMissed = movingUp ?
+            movingRight && verticalX > boxMax.x :
+            !movingRight && verticalX < boxMin.x;
+
+        if (verticalMissed)
         {
-            edgeHit = Vector2Int.down;
-            return new Vector2(bottomX, boxMin.y);
+            return boxClampedStart;
         }
 
-        var topX = (boxMax.y - b) / m;
-        var hitsTop = (topX >= boxMin.x && topX <= boxMax.x);
+        var hitX = movingUp ?
+            movingRight && verticalX <= boxMax.x :
+            !movingRight && verticalX >= boxMin.x;
 
-        if (hitsTop)
+        if (hitX)
         {
-            edgeHit = Vector2Int.up;
-            return new Vector2(topX, boxMax.y);
+            return new Vector2(verticalX, verticalY);
         }
 
-        return null;
+        return boxClampedStart;
+
+        //if ((m * boxCenter.x) + horizontalB) //breh this is so complicated
     }
+
+    //not even optimised
+    //public static Vector2? FindPointBoxCollisionPoint (Vector2 point, Vector2 delta, Vector2 boxMin, Vector2 boxMax, out Vector2Int edgeHit)
+    //{
+    //    //removed box test because it's probably redundant
+
+    //    var end = point + delta;
+
+    //    edgeHit = Vector2Int.zero;
+
+    //    if ((point.x > boxMax.x && end.x > boxMax.x) ||
+    //        (point.x < boxMin.x && end.x < boxMin.x) ||
+    //        (point.y > boxMax.y && end.y > boxMax.y) ||
+    //        (point.y < boxMin.y && end.y < boxMin.y)
+    //)
+    //    {
+    //        return null;
+    //    }
+
+    //    if (delta.x == 0)// if the direction is perfectly vertical, 
+    //    {
+    //        if (point.x < boxMin.x || point.x > boxMax.x) //if the point is to the left or right of the box, return null
+    //            return null;
+
+    //        if (point.y >= boxMax.y && (end.y <= boxMax.y)) //if point is above box, and would move through the box
+    //        {
+    //            return new Vector2(point.x, boxMax.y); //return the point it would hit
+    //        }
+    //        else if (point.y <= boxMin.y && (end.y >= boxMin.y)) //if point is above box, and would move through the box
+    //        {
+    //            return new Vector2(point.x, boxMin.y); //return the point it would hit
+    //        }
+    //    }
+
+    //    if (TestBoxMinMax(boxMin, boxMax, point))
+    //    {
+    //        return point;
+    //    }
+
+    //    var m = delta.y / delta.x;
+
+    //    var b = point.y - (m * point.x);
+
+    //    var movingRight = delta.x > 0f;
+
+    //    var leftY = (m * boxMin.x) + b;
+    //    var hitsLeft = (leftY >= boxMin.y && leftY <= boxMax.y);
+
+    //    if (hitsLeft && movingRight) //if ends inside or is moving right
+    //    {
+    //        edgeHit = Vector2Int.left;
+    //        return new(boxMin.x, leftY); //return intercept
+    //    }
+
+    //    var rightY = (m * boxMax.x) + b;
+    //    var hitsRight = (rightY >= boxMin.y && rightY <= boxMax.y);
+
+    //    //FIX; probably should clamp the intercepts to the end pos
+
+    //    if (hitsRight && !movingRight) //if it ends inside or is moving left
+    //    {
+    //        edgeHit = Vector2Int.right;
+    //        return new(boxMax.x, rightY); //return right point
+    //    }
+
+    //    var bottomX = (boxMin.y - b) / m;
+    //    var hitsBottom = (bottomX >= boxMin.x && bottomX <= boxMax.x);
+
+    //    if (hitsBottom && delta.y > 0)
+    //    {
+    //        edgeHit = Vector2Int.down;
+    //        return new Vector2(bottomX, boxMin.y);
+    //    }
+
+    //    var topX = (boxMax.y - b) / m;
+    //    var hitsTop = (topX >= boxMin.x && topX <= boxMax.x);
+
+    //    if (hitsTop)
+    //    {
+    //        edgeHit = Vector2Int.up;
+    //        return new Vector2(topX, boxMax.y);
+    //    }
+
+    //    return null;
+    //}
 
     public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
     {
