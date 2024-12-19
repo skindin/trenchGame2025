@@ -43,22 +43,28 @@ public class TrenchManager : ManagerBase<TrenchManager>
         if (runTest)
         {
             //TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
-            var start = pointA.position;
-            var end = pointB.position;
+            Vector2 start = pointA.position;
+            Vector2 end = pointB.position;
 
-            //var radius = pointA.lossyScale.x * pointB.lossyScale.x;
+            var delta = end - start;
 
-            //GeoUtils.DrawCircle(start, radius, Color.green);
-            //GeoUtils.DrawCircle(end, radius, Color.red);
+            var radius = pointA.lossyScale.x * pointB.lossyScale.x;
 
-            Debug.DrawLine(start, end,Color.green);
+            GeoUtils.DrawCircle(start, radius, Color.green);
+            GeoUtils.DrawCircle(end, radius, Color.green);
+
+            Debug.DrawRay(start, delta, Color.green);
+
+            var circleEdgeOffset = Vector2.Perpendicular(delta).normalized * radius;
+            Debug.DrawRay(start + circleEdgeOffset, delta,Color.green);
+            Debug.DrawRay(start - circleEdgeOffset, delta, Color.green);
 
             var boxMin = -Vector2.one * transform.lossyScale.x;
             var boxMax = -boxMin;
 
             GeoUtils.DrawBoxMinMax(boxMin, boxMax, Color.blue);
 
-            var point = GeoUtils.FindPointBoxCollisionPoint(start, end-start, boxMin, boxMax);
+            var point = GeoUtils.FindCircleBoxCollisionPoint(start, end, radius, boxMin, boxMax);
 
             if (point != null)
 

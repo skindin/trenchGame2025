@@ -702,74 +702,40 @@ public static class GeoUtils
 
     public static Vector2? FindCircleBoxCollisionPoint(Vector2 start, Vector2 end, float radius, Vector2 boxMin, Vector2 boxMax)
     {
-        Vector2 direction = end - start;
-        float length = direction.magnitude;
+        Vector2 delta = end - start; //im tired too late ahh
 
-        // Normalize direction to handle parametric t [0, 1]
-        Vector2 normalizedDir = direction / length;
+        var boxCenter = (boxMin + boxMax) / 2;
 
-        // Parametric line equation: circlePos(t) = start + t * direction
-        // Check for the closest approach to the box
+        var closestPoint = ClosestPointToLineSegment(boxCenter, start, end);
 
-        float tMin = 0f;
-        float tMax = 1f;
+        var edgeDelta = Vector2.Perpendicular(delta).normalized * radius;
 
-        // Sweep against each axis
-        for (int i = 0; i < 2; i++)
-        {
-            float boxMinEdge = i == 0 ? boxMin.x : boxMin.y;
-            float boxMaxEdge = i == 0 ? boxMax.x : boxMax.y;
-            float startCoord = i == 0 ? start.x : start.y;
-            float dirCoord = i == 0 ? normalizedDir.x : normalizedDir.y;
+        if (closestPoint.x < boxCenter.x)
+            edgeDelta = -edgeDelta;
 
-            if (Mathf.Abs(dirCoord) < Mathf.Epsilon)
-            {
-                // Parallel to this axis
-                if (startCoord < boxMinEdge - radius || startCoord > boxMaxEdge + radius)
-                {
-                    return null; // No collision possible
-                }
-            }
-            else
-            {
-                // Compute t values for intersection with box edges
-                float t1 = (boxMinEdge - radius - startCoord) / dirCoord;
-                float t2 = (boxMaxEdge + radius - startCoord) / dirCoord;
+        var radiusCollisionPoint = FindPointBoxCollisionPoint(start + edgeDelta, delta, boxMin, boxMax, out var radiusEdgeHit);
 
-                if (t1 > t2)
-                {
-                    // Ensure t1 is the smaller value
-                    (t1, t2) = (t2, t1);
-                }
+        if (radiusCollisionPoint == null) 
+            return null;
 
-                // Update the range of t values
-                tMin = Mathf.Max(tMin, t1);
-                tMax = Mathf.Min(tMax, t2);
+        var centerCollisionPoint = FindPointBoxCollisionPoint(start, delta, boxMin, boxMax, out var centerEdgeHit);
 
-                // If t range is invalid, no collision
-                if (tMin > tMax)
-                {
-                    return null;
-                }
-            }
-        }
+        if (radiusEdgeHit != centerEdgeHit)
+            return ClampToBoxMinMax(start, boxMin, boxMax);
 
-        // If we reach here, there is a collision
-        float tCollision = tMin;
-        if (tCollision < 0f || tCollision > 1f)
-        {
-            return null; // Collision outside the segment
-        }
+        if (centerCollisionPoint == null)
+            return ClampToBoxMinMax(closestPoint, boxMin, boxMax);
 
-        // Compute the collision point
-        return start + tCollision * direction;
+        return (radiusCollisionPoint + centerCollisionPoint) / 2;
     }
 
-    public static Vector2? FindPointBoxCollisionPoint (Vector2 point, Vector2 delta, Vector2 boxMin, Vector2 boxMax)
+    public static Vector2? FindPointBoxCollisionPoint (Vector2 point, Vector2 delta, Vector2 boxMin, Vector2 boxMax, out Vector2Int edgeHit)
     {
         //removed box test because it's probably redundant
 
         var end = point + delta;
+
+        edgeHit = Vector2Int.zero;
 
         if ((point.x > boxMax.x && end.x > boxMax.x) ||
             (point.x < boxMin.x && end.x < boxMin.x) ||
@@ -796,7 +762,9 @@ public static class GeoUtils
         }
 
         if (TestBoxMinMax(boxMin, boxMax, point))
+        {
             return point;
+        }
 
         var m = delta.y / delta.x;
 
@@ -809,6 +777,7 @@ public static class GeoUtils
 
         if (hitsLeft && movingRight) //if ends inside or is moving right
         {
+            edgeHit = Vector2Int.left;
             return new(boxMin.x, leftY); //return intercept
         }
 
@@ -819,6 +788,7 @@ public static class GeoUtils
 
         if (hitsRight && !movingRight) //if it ends inside or is moving left
         {
+            edgeHit = Vector2Int.right;
             return new(boxMax.x, rightY); //return right point
         }
 
@@ -827,6 +797,7 @@ public static class GeoUtils
 
         if (hitsBottom && delta.y > 0)
         {
+            edgeHit = Vector2Int.down;
             return new Vector2(bottomX, boxMin.y);
         }
 
@@ -834,7 +805,10 @@ public static class GeoUtils
         var hitsTop = (topX >= boxMin.x && topX <= boxMax.x);
 
         if (hitsTop)
-            return new Vector2(topX,boxMax.y);
+        {
+            edgeHit = Vector2Int.up;
+            return new Vector2(topX, boxMax.y);
+        }
 
         return null;
     }
