@@ -25,7 +25,7 @@ public class TrenchCollider : MonoBehaviour
         }
     }
 
-    public bool trenchStatus = true, drawTrenchStatus = false, freezeMovement = false;
+    public bool trenchStatus = true, drawTrenchStatus = false, wallCollisions = false, freezeMovement = false;
 
     private void Update()
     {
@@ -74,12 +74,13 @@ public class TrenchCollider : MonoBehaviour
 
         if (exitRoutine != null || exitedTrenchThisFrame)
         {
-            trenchStatus = exitedTrenchThisFrame = false;
+            trenchStatus = exitedTrenchThisFrame = wallCollisions = false;
         }
         else
+        {
+            wallCollisions = TrenchManager.Manager.TestPoint(transform.position);
             trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
-
-        //trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
+        }
 
         onChangeTrenchStatus.Invoke(trenchStatus);
 
@@ -129,9 +130,8 @@ public class TrenchCollider : MonoBehaviour
 
     public Vector2 MoveToPos (Vector2 pos)
     {
-        if (trenchStatus)
+        if (wallCollisions)
         {
-
             pos = TrenchManager.Manager.StopAtValue(transform.position, pos, WorldSize/2 + wallBuffer, false);
 
             if (freezeMovement)

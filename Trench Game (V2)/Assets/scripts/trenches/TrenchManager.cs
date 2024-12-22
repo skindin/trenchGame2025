@@ -42,33 +42,21 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
         if (runTest)
         {
-            //TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
-            Vector2 start = pointA.position;
-            Vector2 end = pointB.position;
+            ////TestRayHitsValue(pointA.position, pointB.position, false, out _, true);
+            //Vector2 start = pointA.position;
 
-            var delta = end - start;
+            //Vector2 end = pointB.position;
 
-            var radius = pointA.lossyScale.x * pointB.lossyScale.x;
+            //var radius = pointA.lossyScale.x * pointB.lossyScale.x;
 
-            GeoUtils.DrawCircle(start, radius, Color.green);
-            GeoUtils.DrawCircle(end, radius, Color.green);
+            //var boxMin = -Vector2.one * transform.lossyScale.x;
+            //var boxMax = -boxMin;
 
-            Debug.DrawRay(start, delta, Color.green);
+            //var point = GeoUtils.CircBoxCollButDoesntWork(start, end, radius, boxMin, boxMax,true);
 
-            var circleEdgeOffset = Vector2.Perpendicular(delta).normalized * radius;
-            Debug.DrawRay(start + circleEdgeOffset, delta,Color.green);
-            Debug.DrawRay(start - circleEdgeOffset, delta, Color.green);
+            //if (point != null)
 
-            var boxMin = -Vector2.one * transform.lossyScale.x;
-            var boxMax = -boxMin;
-
-            GeoUtils.DrawBoxMinMax(boxMin, boxMax, Color.blue);
-
-            var point = GeoUtils.FindCircleBoxCollisionPoint(start, end, radius, boxMin, boxMax);
-
-            if (point != null)
-
-                GeoUtils.MarkPoint((Vector2)point, 1, Color.red);
+            //    GeoUtils.MarkPoint((Vector2)point, 1, Color.red);
         }
 
         if (drawAllBits)
@@ -336,20 +324,16 @@ public class TrenchManager : ManagerBase<TrenchManager>
             var boxMin = Vector2.Min(currentStart - Vector2.one * testRadius, currentEnd - Vector2.one * testRadius);
             var boxMax = Vector2.Max(currentStart + Vector2.one * testRadius, currentEnd + Vector2.one * testRadius);
 
-            var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(boxMin, boxMax);
+            var chunks = ChunkManager.Manager.AdressesFromBox(boxMin, boxMax);
 
             // Iterate through chunks to find potential collision points
-            foreach (var chunk in chunks)
+            foreach (var adress in chunks)
             {
-                if (chunk == null)
-                {
-                    Debug.LogError("Cell collision detected a null chunk");
-                    continue;//tbh idk if this will ever happen? cause the collider? probably bad to do this
-                }
+                var chunk = ChunkManager.Manager.ChunkFromAdress(adress);
 
-                if (chunk.map == null)
+                if (chunk == null || chunk.map == null)
                 {
-                    ChunkManager.Manager.GetChunkBox(chunk.adress, out var min, out var max);
+                    ChunkManager.Manager.GetChunkBox(adress, out var min, out var max);
                     var boxClampedStart = GeoUtils.ClampToBoxMinMax(start, min, max);
                     var segStartPoint = GeoUtils.ClosestPointToLineSegment(boxClampedStart, currentStart, currentEnd);
                     continue; //temporary
@@ -366,16 +350,20 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
                     // Calculate the dot product to ensure the point is in the forward direction
 
-                    var distToPointCollision = GeoUtils.CircleCollideWithPoint(currentStart, testRadius, direction, point, out bool wasBehind, true);
+                    var delta = point - currentStart;
+
+                    var clampedPoint = Mathf.Max(delta.magnitude, testRadius) * delta.normalized + currentStart;
+
+                    var distToPointCollision = GeoUtils.CircleCollideWithPoint(currentStart, testRadius, direction, clampedPoint, out bool wasBehind, true);
 
                     if (wasBehind)
                         continue;
 
                     var circlePos = distToPointCollision * direction + currentStart;
 
-                    var collisionDelta = (point - circlePos);
+                    var collisionDelta = (clampedPoint - circlePos);
 
-                    var circlePoint = bitRadius * -collisionDelta.normalized + point;
+                    var circlePoint = bitRadius * -collisionDelta.normalized + clampedPoint;
 
                     var distToCircleCollision = GeoUtils.CircleCollideWithPoint(currentStart, radius, direction, circlePoint, out _);
 
@@ -397,7 +385,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                         if (drawCollisionTests)
                         {
                             var newColor = new Color(0, 1, 0, 0.2f);
-                            GeoUtils.DrawCircle(point, bitWidth * 0.5f, newColor);
+                            GeoUtils.DrawCircle(clampedPoint, bitWidth * 0.5f, newColor);
                             GeoUtils.MarkPoint(closestCollisionPoint, bitWidth * .5f, newColor);
                         }
                         continue;
@@ -406,7 +394,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     // Optionally visualize points that are further away
                     if (drawCollisionTests)
                     {
-                        GeoUtils.MarkPoint(point, bitWidth * 0.5f, new Color(1, 0, 0, 0.2f));
+                        GeoUtils.MarkPoint(clampedPoint, bitWidth * 0.5f, new Color(1, 0, 0, 0.2f));
                     }
                 }
             }

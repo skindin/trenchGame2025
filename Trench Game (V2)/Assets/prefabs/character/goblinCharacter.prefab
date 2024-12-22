@@ -197,7 +197,7 @@ MonoBehaviour:
   deathDropRadius: 1
   hp: 10
   maxHp: 10
-  jumpDuration: 0.2
+  jumpDuration: 0.5
   jumpCooldown: 0.1
   onMove:
     m_PersistentCalls:

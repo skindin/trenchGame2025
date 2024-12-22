@@ -575,6 +575,8 @@ public class TrenchMap
 
         var bitAdress = TrenchManager.Manager.GetBitAdressFloored(point, blockPos);
 
+        bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
+
         return blocks[blockAdress.x, blockAdress.y][bitAdress];
     }
 
