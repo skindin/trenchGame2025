@@ -137,12 +137,20 @@ public class MapBlock
         return value ? new MapBlock() {Byte1 = 0xFF, Byte2 = 0xFF} : new MapBlock { Byte1 = 0x00, Byte2 = 0x00};
     }
 
+
+    /// <summary>
+    /// returns true if equal to 11111111
+    /// </summary>
+    /// <returns></returns>
     public bool TestFull()
     {
         return Byte1 == 0xFF && Byte2 == 0xFF; // 0xFF = 11111111 in binary
     }
 
-    // Check if all bits are 0
+    /// <summary>
+    /// returns true if equal to 00000000
+    /// </summary>
+    /// <returns></returns>
     public bool TestEmtpy()
     {
         return Byte1 == 0x00 && Byte2 == 0x00; // 0x00 = 00000000 in binary

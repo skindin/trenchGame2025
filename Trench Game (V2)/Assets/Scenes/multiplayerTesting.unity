@@ -3305,7 +3305,7 @@ MonoBehaviour:
   drawRayTests: 0
   drawFillLines: 0
   drawStatusTests: 0
-  drawCollisionTests: 0
+  drawCollisionTests: 1
   drawAllBits: 0
   logWallSlides: 0
   blockWidth: 0

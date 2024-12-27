@@ -151,7 +151,7 @@ public class TrenchMap
         }
 
         float blockWidth = manager.blockWidth; // Width of each MapBlock
-        float bitWidth = manager.bitWidth;      // Width of each bit in a MapBlock
+        float bitWidth = manager.cellWidth;      // Width of each bit in a MapBlock
 
         var startMax = Vector2.one * startRadius;
         var endMax = Vector2.one * endRadius;
@@ -263,7 +263,7 @@ public class TrenchMap
                         }
 
                         // Compute the position of the bit in world space
-                        var bitPos = manager.GetBitPos(blockPos, new(bitX, bitY));
+                        var bitPos = manager.GetCellPos(blockPos, new(bitX, bitY));
 
                         //if (!GeoUtils.TestBoxMinMax(capsuleMin, capsuleMax, bitPos, debugLines))
                         //    continue;
@@ -352,7 +352,7 @@ public class TrenchMap
 
     //public IEnumerable<Vector2> GetBitsFromBox(Vector2 min, Vector2 max, )
 
-    public IEnumerable<Vector2> GetBitsObstructingTaperedCapsule (Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value)
+    public IEnumerable<Vector2> GetCellsTouchingTaperedCapsule (Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value)
     {
         var manager = TrenchManager.Manager;
 
@@ -370,87 +370,50 @@ public class TrenchMap
 
         //var halfVector2One = Vector2.one * .5f;
 
-        var startPos = manager.GetBlockAdressFloored(capsuleMin, pos); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
-        startPos = Vector2Int.Max(startPos, Vector2Int.zero);
+        //var cellsFromBlock = GetCellsFromBox(capsuleMin, capsuleMax, true, !value);
 
-        var endPos = manager.GetBlockAdressCield(capsuleMax, pos);
+        //foreach (var cell in cellsFromBlock)
+        //{
 
-        var bitCorner = manager.bitWidth * .5f * Vector2.one;
+        //}
 
-        float blockCircleRadius = Vector2.one.magnitude * manager.bitWidth * 1.5f;
+        var cellRadius = manager.cellWidth / 2;
 
-        if (allTrench)
+        var blockCircleRadius = (manager.cellWidth * 2 * Vector2.one).magnitude + cellRadius;
+
+        Func<Vector2Int, bool> blockCondition = (blockAdress) =>
         {
-            if (value)
-                for (int blockY = startPos.y; blockY < endPos.y; blockY++)
-                {
-                    for (int blockX = startPos.x; blockX < endPos.x; blockX++)
-                    {
-                        var blockPos = manager.GetBlockPos(pos, new(blockX, blockY));
-                        if (GeoUtils.TestCirlceTouchesTaperedCapsule(blockPos, blockCircleRadius, startPoint, startRadius, endPoint, endRadius))
-                        {
-                            for (int bitY = 0; bitY < 4; bitY++)
-                            {
-                                for (int bitX = 0; bitX < 4; bitX++)
-                                {
-                                    var bitPos = manager.GetBitPos(blockPos, new(bitX, bitY));
-                                    if (GeoUtils.TestPointWithinTaperedCapsule(bitPos,startPoint,startRadius,endPoint,endRadius))
-                                        yield return bitPos;
-                                }
-                            }
-                        }
-                    }
-                }
+            var block = blocks[blockAdress.x, blockAdress.y];
 
-            yield break;
-        }
-
-        for (int blockY = startPos.y; blockY < endPos.y; blockY++)
-        {
-            for (int blockX = startPos.x; blockX < endPos.x; blockX++)
+            if (
+                (value && block == null) || //if the block is empty and we 
+                (!value && block != null && block.TestFull())
+            )
             {
-                var blockPos = manager.GetBlockPos(pos, new(blockX, blockY));
+                return false;
+            }
 
-                if (!GeoUtils.TestCirlceTouchesTaperedCapsule(blockPos, blockCircleRadius, startPoint, startRadius, endPoint, endRadius))
-                    continue;
+            var blockPos = manager.GetBlockPos(pos, blockAdress);
 
-                var block = blocks[blockX, blockY];
+            return GeoUtils.TestCirlceTouchesTaperedCapsule(blockPos, blockCircleRadius, startPoint, startRadius, endPoint, endRadius);
+        };
 
-                if (block == null)
-                {
-                    if (!value)
-                        for (int bitY = 0; bitY < 4; bitY++)
-                        {
-                            for (int bitX = 0; bitX < 4; bitX++)
-                            {
-                                var bitPos = manager.GetBitPos(blockPos, new(bitX, bitY));
+        var cellsFromBox = GetCellsFromBox(capsuleMin, capsuleMax, blockCondition);
 
-                                if (GeoUtils.TestPointWithinTaperedCapsule(bitPos, startPoint, startRadius, endPoint, endRadius))
-                                    yield return bitPos;
-                            }
-                        }
+        foreach (var cell in cellsFromBox)
+        {
+            var cellValue = GetCellValue(cell);
 
-                    continue;
-                }
+            if (cellValue != value)
+                continue;
 
-                for (int bitY = 0; bitY < 4; bitY++)
-                {
-                    for (int bitX = 0; bitX < 4; bitX++)
-                    {
-                        var bitPos = manager.GetBitPos(blockPos, new(bitX, bitY));
+            var cellPos = GetCellPos(cell);
 
-                        if (
-                            block[bitX, bitY] == value
-                            && GeoUtils.TestPointWithinTaperedCapsule(bitPos, startPoint, startRadius, endPoint, endRadius)
-                            )
-                        {
-                            yield return bitPos;
-                        }
-                    }
-                }
+            if (GeoUtils.TestCirlceTouchesTaperedCapsule(cellPos,cellRadius,startPoint,startRadius,endPoint,endRadius))
+            {
+                yield return cellPos;
             }
         }
-
     }
 
     public void SetBit (Vector2Int blockAdress, Vector2Int bitAdress, bool value, bool applyPixels = false)
@@ -492,7 +455,7 @@ public class TrenchMap
             return value;
 
         var blockWidth = TrenchManager.Manager.blockWidth;
-        var bitWidth = TrenchManager.Manager.bitWidth;
+        var bitWidth = TrenchManager.Manager.cellWidth;
 
         var mapMin = pos - scale / 2 * Vector2.one;
         var mapMax = pos + scale / 2 * Vector2.one;
@@ -543,7 +506,7 @@ public class TrenchMap
                 {
                     for (var bitX = 0; bitX < 4; bitX++)
                     {
-                        var bitPos = TrenchManager.Manager.GetBitPos(blockPos, new(bitX, bitY));
+                        var bitPos = TrenchManager.Manager.GetCellPos(blockPos, new(bitX, bitY));
 
                         if (debugLines)
                         {
@@ -573,9 +536,9 @@ public class TrenchMap
 
         var blockPos = TrenchManager.Manager.GetBlockPos(pos, blockAdress);
 
-        var bitAdress = TrenchManager.Manager.GetBitAdressFloored(point, blockPos);
+        var bitAdress = TrenchManager.Manager.GetCellAdressFloored(point, blockPos);
 
-        bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
+        //bitAdress = Vector2Int.Min(bitAdress, Vector2Int.one * 3);
 
         return blocks[blockAdress.x, blockAdress.y][bitAdress];
     }
@@ -599,4 +562,103 @@ public class TrenchMap
     //        DrawCapsule();
     //    }
     //}
+
+    public IEnumerable<LocalCell> GetCellsFromBox (Vector2 min, Vector2 max, Func<Vector2Int, bool> blockCondition)
+    {
+        var startBlock = TrenchManager.Manager.GetBlockAdressFloored(min, pos); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
+        startBlock = Vector2Int.Max(startBlock, Vector2Int.zero);
+
+        var endBlock = TrenchManager.Manager.GetBlockAdressCield(max, pos);
+
+        return GetCellsFromBoundBlocks(startBlock,endBlock,blockCondition);
+    }
+
+    public IEnumerable<LocalCell> GetCellsFromBoundBlocks (Vector2Int startBlock, Vector2Int endBlock, 
+        Func<Vector2Int, bool> blockCondition)
+    {
+        //this could cause null reference exceptions for block array, but i'll wait until it does
+
+        for (var blockY = startBlock.y; blockY < endBlock.y; blockY++)
+        {
+            for (var blockX = startBlock.x; blockX < endBlock.x; blockX++)
+            {
+                Vector2Int blockAdress = new(blockX, blockY);
+
+                if (blockCondition != null && !blockCondition(blockAdress))
+                    continue;
+
+                //could be a good idea to clamp cell start and end...?
+
+                for (var cellY = 0; cellY < 4; cellY++)
+                {
+                    for (var cellX = 0; cellX < 4; cellX++)
+                    {
+                        var cellAdress = new Vector2Int(cellX, cellY);
+
+                        yield return new(blockAdress, cellAdress);
+                    }
+                }
+            }
+        }
+    }
+
+    public IEnumerable<LocalCell> GetCells (Func<Vector2Int, bool> blockCondition)
+    {
+        var maxBlock = resolution - 1;
+
+        return GetCellsFromBoundBlocks(Vector2Int.zero, new(maxBlock,maxBlock), blockCondition);
+    }
+
+    public LocalCell GetLocalCell(Vector2 pos)
+    {
+        var blockAdress = TrenchManager.Manager.GetBlockAdressFloored(pos, this.pos);
+        var blockPos = TrenchManager.Manager.GetBlockPos(this.pos, blockAdress);
+        var cellAdress = TrenchManager.Manager.GetCellAdressFloored((Vector2)blockAdress, blockPos);
+
+        return new(blockAdress, cellAdress);
+    }
+
+    public Vector2 GetCellPos(LocalCell cell)
+    {
+        var blockPos = TrenchManager.Manager.GetBlockPos(pos, cell.blockAdress);
+        return TrenchManager.Manager.GetCellPos(blockPos, cell.cellAdress);
+    }
+
+    public bool GetCellValue (LocalCell cell)
+    {
+        var block = blocks[cell.blockAdress.x,cell.blockAdress.y];
+
+        return block != null ? block[cell.cellAdress] : false;
+    }
+
+    public bool GetCellValue (Vector2 pos)
+    {
+        var cell = GetLocalCell(pos);
+
+        return GetCellValue(cell);
+    }
+
+    public void SetCellValue (LocalCell cell, bool value)
+    {
+        blocks[cell.blockAdress.x, cell.blockAdress.y][cell.cellAdress] = value;
+    }
+
+    public void SetCellValue(Vector2 pos, bool value)
+    {
+        var cell = GetLocalCell(pos);
+
+        SetCellValue(cell, value);
+    }
+
+    public class LocalCell
+    {
+        public Vector2Int blockAdress, cellAdress;
+
+        public LocalCell(Vector2Int blockAdress, Vector2Int cellAdress)
+        {
+            //this.chunkAdress = chunkAdress;
+            this.blockAdress = blockAdress;
+            this.cellAdress = cellAdress;
+        }
+    }
 }

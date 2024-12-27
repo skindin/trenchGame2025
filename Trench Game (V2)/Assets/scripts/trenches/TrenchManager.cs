@@ -16,7 +16,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
         runTest = false,
         drawRayTests = false, drawFillLines = false, drawStatusTests = false, drawCollisionTests = false, drawAllBits = false, logWallSlides = false;//, doSpread = false;
 
-    public float blockWidth, bitWidth, testRadius = 1, frictionAngleMod = 1, wallFriction = 0;
+    public float blockWidth, cellWidth, testRadius = 1, frictionAngleMod = 1, wallFriction = 0;
     public int maxSlides = 5;//, targetFPS = 120;
 
     private void Start()
@@ -27,7 +27,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
         blockWidth = ChunkManager.Manager.chunkSize / mapResolution;
 
-        bitWidth = blockWidth / 4;
+        cellWidth = blockWidth / 4;
     }
 
     private void Update()
@@ -61,7 +61,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
         if (drawAllBits)
         {
-            DrawAllBits();
+            DrawAllCells();
         }
 
         foreach (var chunk in ChunkManager.Manager.chunks)
@@ -130,25 +130,25 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
         hitPoint = endPoint;
 
-        var bitCorner = bitWidth * .5f * Vector2.one;
+        var cellCorner = cellWidth * .5f * Vector2.one;
 
-        startPoint -= bitCorner;
-        endPoint -= bitCorner;
+        startPoint -= cellCorner;
+        endPoint -= cellCorner;
 
         //return GeoUtils.ForeachCellTouchingLine<bool>(startPoint, endPoint, bitWidth, null, returnCondition, returnCondition, out _, logTotal);
 
-        var lineToCells = GeoUtils.CellsFromLine(startPoint, endPoint, bitWidth);
+        var lineToCells = GeoUtils.CellsFromLine(startPoint, endPoint, cellWidth);
 
         foreach (var cell in lineToCells)
         {
-            var pos = (Vector2)cell * bitWidth;
+            var pos = (Vector2)cell * cellWidth;
 
             var chunk = ChunkManager.Manager.ChunkFromPos(pos);
 
             if (chunk == null || chunk.map == null)
             {
                 if (drawRayTests)
-                    GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one,
+                    GeoUtils.DrawBoxPosSize(pos + cellCorner, cellWidth * Vector2.one,
                         !value ? Color.green : Color.white);
 
                 if (value)
@@ -192,7 +192,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 {
                     var color = !value ? Color.green : Color.white;
                     GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, color);
-                    GeoUtils.DrawBoxPosSize(pos+ bitCorner, bitWidth * Vector2.one, color);
+                    GeoUtils.DrawBoxPosSize(pos+ cellCorner, cellWidth * Vector2.one, color);
                 }
 
                 if (value)
@@ -209,7 +209,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 if (drawRayTests)
                 {
                     GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.green);
-                    GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
+                    GeoUtils.DrawBoxPosSize(pos + cellCorner, cellWidth * Vector2.one, Color.green);
                 }
 
                 hitPoint = GetIntersectDistance(pos);
@@ -221,18 +221,18 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 GeoUtils.DrawBoxPosSize(blockPos, blockWidth * Vector2.one, Color.red);
             }
 
-            var bitAdress = GetBitAdressFloored(pos+ bitCorner, blockPos);
+            var cellAdress = GetCellAdressFloored(pos+ cellCorner, blockPos);
             //bitAdress = Vector2Int.Max(bitAdress, Vector2Int.zero);
 
             //if (bitAdress.x < 0 || bitAdress.y < 0)
             //    continue;
 
-            if (block[bitAdress] == value)
+            if (block[cellAdress] == value)
             {
                 if (drawRayTests)
                 {
-                    GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.green);
-                    GeoUtils.MarkPoint(pos + bitCorner, bitWidth / 2, Color.green);
+                    GeoUtils.DrawBoxPosSize(pos + cellCorner, cellWidth * Vector2.one, Color.green);
+                    GeoUtils.MarkPoint(pos + cellCorner, cellWidth / 2, Color.green);
                 }
 
                 hitPoint = GetIntersectDistance(pos);
@@ -240,17 +240,17 @@ public class TrenchManager : ManagerBase<TrenchManager>
             }
             else if (drawRayTests)
             {
-                GeoUtils.DrawBoxPosSize(pos + bitCorner, bitWidth * Vector2.one, Color.red);
+                GeoUtils.DrawBoxPosSize(pos + cellCorner, cellWidth * Vector2.one, Color.red);
             }
         }
 
         Vector2 GetIntersectDistance (Vector2 point)
         {
-            var vector = (endPoint - startPoint).normalized * bitWidth;
+            var vector = (endPoint - startPoint).normalized * cellWidth;
 
             var perp = Vector2.Perpendicular(vector);
 
-            point += bitCorner;
+            point += cellCorner;
 
             point -= vector;
 
@@ -258,7 +258,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             var pointB = point + perp;
 
-            return GeoUtils.FindIntersection(startPoint - vector*2 + bitCorner, point + vector*2 + bitCorner, pointA, pointB, drawRayTests);
+            return GeoUtils.FindIntersection(startPoint - vector*2 + cellCorner, point + vector*2 + cellCorner, pointA, pointB, drawRayTests);
         }
 
         return false;
@@ -318,8 +318,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
             Vector2 closestCirclePos = currentEnd;
             Vector2 closestCollisionPoint = currentEnd;
 
-            var bitRadius = bitWidth / 2;
-            var testRadius = radius + bitRadius;
+            var cellRadius = cellWidth / 2;
+            var testRadius = radius + cellRadius;
 
             var boxMin = Vector2.Min(currentStart - Vector2.one * testRadius, currentEnd - Vector2.one * testRadius);
             var boxMax = Vector2.Max(currentStart + Vector2.one * testRadius, currentEnd + Vector2.one * testRadius);
@@ -341,7 +341,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
                 // Get points in the chunk that obstruct the capsule-shaped area
 
-                var points = chunk.map.GetBitsObstructingTaperedCapsule(currentStart, testRadius, currentEnd, testRadius, value);
+                var points = chunk.map.GetCellsTouchingTaperedCapsule(currentStart, testRadius, currentEnd, testRadius, value);
 
                 // Process each obstruction point
                 foreach (var point in points)
@@ -363,7 +363,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
                     var collisionDelta = (clampedPoint - circlePos);
 
-                    var circlePoint = bitRadius * -collisionDelta.normalized + clampedPoint;
+                    var circlePoint = cellRadius * -collisionDelta.normalized + clampedPoint;
 
                     var distToCircleCollision = GeoUtils.CircleCollideWithPoint(currentStart, radius, direction, circlePoint, out _);
 
@@ -385,8 +385,8 @@ public class TrenchManager : ManagerBase<TrenchManager>
                         if (drawCollisionTests)
                         {
                             var newColor = new Color(0, 1, 0, 0.2f);
-                            GeoUtils.DrawCircle(clampedPoint, bitWidth * 0.5f, newColor);
-                            GeoUtils.MarkPoint(closestCollisionPoint, bitWidth * .5f, newColor);
+                            GeoUtils.DrawCircle(clampedPoint, cellWidth * 0.5f, newColor);
+                            GeoUtils.MarkPoint(closestCollisionPoint, cellWidth * .5f, newColor);
                         }
                         continue;
                     }
@@ -394,7 +394,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     // Optionally visualize points that are further away
                     if (drawCollisionTests)
                     {
-                        GeoUtils.MarkPoint(clampedPoint, bitWidth * 0.5f, new Color(1, 0, 0, 0.2f));
+                        GeoUtils.MarkPoint(clampedPoint, cellWidth * 0.5f, new Color(1, 0, 0, 0.2f));
                     }
                 }
             }
@@ -406,7 +406,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 Debug.DrawRay(currentStart, direction, Color.blue);
                 GeoUtils.DrawCircle(currentStart, radius, Color.blue);
                 GeoUtils.DrawCircle(closestCirclePos, radius, transparentGreen);
-                GeoUtils.MarkPoint(closestCollisionPoint, bitWidth / 2, transparentGreen);
+                GeoUtils.MarkPoint(closestCollisionPoint, cellWidth / 2, transparentGreen);
             }
 
             // If no collision was found, return the current end position
@@ -591,45 +591,30 @@ public class TrenchManager : ManagerBase<TrenchManager>
         return chunk.map.TestPoint(point);
     }
 
-    public void DrawAllBits ()
+    public void DrawAllCells ()
     {
-        var trenchBits = GetBits(true);
+        var trenchCells = GetCells(true);
 
-        foreach (var bit in trenchBits)
+        foreach (var cell in trenchCells)
         {
-            GeoUtils.DrawBoxPosSize(bit, bitWidth * Vector2.one,Color.green);
+            GeoUtils.DrawBoxPosSize(cell, cellWidth * Vector2.one,Color.green);
         }
     }
 
-    public IEnumerable<Vector2> GetBits (bool value)
+    public IEnumerable<Vector2> GetCells (bool value)
     {
         foreach (var chunk in ChunkManager.Manager.chunks)
         {
             if (chunk == null || chunk.map == null)
                 continue;
 
-            for (var blockY = 0; blockY < mapResolution; blockY++)
+            var cells = chunk.map.GetCells((adress) => chunk.map.blocks[adress.x, adress.y] == null ? !value : value);
+
+            foreach (var cell in cells)
             {
-                for (var blockX = 0; blockX < mapResolution; blockX++)
-                {
-                    var block = chunk.map.blocks[blockX, blockY];
+                var cellPos = chunk.map.GetCellPos(cell);
 
-                    var blockPos = GetBlockPos(chunk.map.pos, new Vector2Int(blockX, blockY));
-
-                    if (block == null)
-                        continue;
-
-                    for (var bitY = 0; bitY < 4; bitY++)
-                    {
-                        for (var bitX = 0; bitX < 4; bitX++)
-                        {
-                            if (block[bitX,bitY] == value)
-                            {
-                                yield return GetBitPos(blockPos, new(bitX, bitY));
-                            }
-                        }
-                    }
-                }
+                yield return cellPos;
             }
         }
     }
@@ -640,9 +625,9 @@ public class TrenchManager : ManagerBase<TrenchManager>
                     + mapPos;
     }
 
-    public Vector2 GetBitPos(Vector2 blockPos, Vector2Int bitAdress)
+    public Vector2 GetCellPos(Vector2 blockPos, Vector2Int cellAdress)
     {
-        return blockPos + new Vector2((bitAdress.x - 1.5f) * bitWidth, (bitAdress.y - 1.5f) * bitWidth);
+        return blockPos + new Vector2((cellAdress.x - 1.5f) * cellWidth, (cellAdress.y - 1.5f) * cellWidth);
     }
 
     public Vector2 GetBlockAdressPoint(Vector2 pos, Vector2 mapPos)
@@ -665,14 +650,14 @@ public class TrenchManager : ManagerBase<TrenchManager>
         return Vector2Int.RoundToInt(GetBlockAdressPoint(pos, mapPos));
     }
 
-    public Vector2 GetBitAdressPoint(Vector2 pos, Vector2 blockPos)
+    public Vector2 GetCellAdressPoint(Vector2 pos, Vector2 blockPos)
     {
-        return (pos - blockPos + .5f * blockWidth * Vector2.one) / bitWidth;
+        return (pos - blockPos + .5f * blockWidth * Vector2.one) / cellWidth;
     }
 
-    public Vector2Int GetBitAdressFloored (Vector2 pos, Vector2 blockPos)
+    public Vector2Int GetCellAdressFloored (Vector2 pos, Vector2 blockPos)
     {
-        var point = GetBitAdressPoint(pos, blockPos);
+        var point = GetCellAdressPoint(pos, blockPos);
         var floored = Vector2Int.Min(Vector2Int.FloorToInt(point),Vector2Int.one * 3);
 
         return floored;
