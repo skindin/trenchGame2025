@@ -334,7 +334,7 @@ public static class DataManager
 
             case ItemData.TypeOneofCase.Consumable:
                 {
-                    if (item is MedPack medPack)
+                    if (item is Consumable medPack)
                     {
                         medPack.StartHeal(data.Consumable.ConsumeStart);
                     }

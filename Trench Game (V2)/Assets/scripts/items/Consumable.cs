@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MedPack : Item
+public class Consumable : Item
 {
     public float animRots = 3;
     public bool healing = false;

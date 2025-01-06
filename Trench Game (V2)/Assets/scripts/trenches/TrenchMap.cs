@@ -24,7 +24,7 @@ public class TrenchMap
     public Texture2D imageTexture;
     Color32[] pixels;
     public
-        int totalEditedBlocks = 0, totalAllTrench = 0;
+        int totalTrenchCells = 0;
     public bool allFull = true, allTrench = false;
 
     public TrenchMap (int resolution, float scale, Color32 trenchColor, Color32 groundColor, Vector2 pos, Mesh imageMesh, Material imageMaterial, FilterMode filter)
@@ -151,7 +151,7 @@ public class TrenchMap
         }
 
         float blockWidth = manager.blockWidth; // Width of each MapBlock
-        float bitWidth = manager.cellWidth;      // Width of each bit in a MapBlock
+        float cellWidth = manager.cellWidth;      // Width of each bit in a MapBlock
 
         var startMax = Vector2.one * startRadius;
         var endMax = Vector2.one * endRadius;
@@ -175,7 +175,7 @@ public class TrenchMap
 
         //GeoUtils.DrawBoxMinMax(startPos, endPos, Color.magenta);
         areaChanged = 0;
-        var bitArea = bitWidth * bitWidth;
+        var bitArea = cellWidth * cellWidth;
         //honestly probably better to switch between setting all the pixels and some of them depending on how many
 
         //Color32[] pixels = new Color32[resolution * 4 * resolution * 4];
@@ -185,7 +185,7 @@ public class TrenchMap
         //    pixels[i] = groundColor;
         //}
 
-        float blockCircleRadius = (Vector2.one.magnitude * bitWidth * 1.5f) + (bitWidth * 1.5f);
+        float blockCircleRadius = (Vector2.one.magnitude * cellWidth * 1.5f) + (cellWidth * 1.5f);
 
         int totalBitsTested = 0;
         int totalBlocksTested = 0;
@@ -218,8 +218,6 @@ public class TrenchMap
 
                     continue;
                 }
-
-                bool wholeWasOpposite = block.TestWhole(!value);
                 bool blockChanged = false;
 
                 totalBlocksTested++;
@@ -263,26 +261,30 @@ public class TrenchMap
                         }
 
                         // Compute the position of the bit in world space
-                        var bitPos = manager.GetCellPos(blockPos, new(bitX, bitY));
+                        var localCell = new LocalCell (new(blockX,blockY), new(bitX, bitY));
+
+                        var cellPos = GetCellPos(localCell);
 
                         //if (!GeoUtils.TestBoxMinMax(capsuleMin, capsuleMax, bitPos, debugLines))
                         //    continue;
 
                         // Test if the bit is within the capsule
-                        if (GeoUtils.TestCirlceTouchesTaperedCapsule(bitPos, bitWidth / 2, startPoint, startRadius, endPoint, endRadius))
+                        if (GeoUtils.TestCirlceTouchesTaperedCapsule(cellPos, cellWidth / 2, startPoint, startRadius, endPoint, endRadius))
                         {
                             //block[bitX, bitY] = value;
                             totalBitsAtValue++;
                             if (debugLines)
                             {
-                                GeoUtils.DrawCircle(bitPos, bitWidth / 2, Color.green);
+                                GeoUtils.DrawCircle(cellPos, cellWidth / 2, Color.green);
                             }
 
                             areaChanged += bitArea;
 
                             blockChanged = true;
 
-                            SetBit(new(blockX, blockY), new(bitX, bitY), value);
+                            SetCellValue(localCell, value);
+
+                            totalTrenchCells += value ? 1 : -1;
 
                             if (areaChanged >= maxArea)
                             {
@@ -292,7 +294,7 @@ public class TrenchMap
                         }
                         else if (debugLines)
                         {
-                            GeoUtils.DrawCircle(bitPos, bitWidth / 2, Color.red);
+                            GeoUtils.DrawCircle(cellPos, cellWidth / 2, Color.red);
                         }
                     }
                 }
@@ -302,45 +304,21 @@ public class TrenchMap
 
                     var wholeIsNowValue = totalBitsAtValue >= 16;
 
-
-                    if (wholeWasOpposite && !wholeIsNowValue)
-                    {
-                        if (!value)
-                            totalAllTrench--;
-                        else
-                            totalEditedBlocks++;
-                    }
-
-                    if (value && wholeIsNowValue)
-                    {
-                        totalAllTrench++;
-                    }
-
                     // Remove the block if all bits are cleared and `value` is false
                     if (!value && wholeIsNowValue)
                     {
                         blocks[blockX, blockY] = null;
-                        totalEditedBlocks--;
-                    }
-                    else
-                    {
-                        //block.SetArray(blockArray);
                     }
                 }
             }
         }
 
-        allFull = totalEditedBlocks == 0;
+        allFull = totalTrenchCells == 0;
 
-        allTrench = totalAllTrench == resolution * resolution;
+        allTrench = totalTrenchCells == resolution * resolution * 16;
 
         if (allTrench)
             blocks = null;
-
-        if (logCounters)
-        {
-            Debug.Log($"totalEditedBlocks = {totalEditedBlocks}, allFull = {allFull}, totalAllTrench = {totalAllTrench}, allTrench = {allTrench}");
-        }
 
         //Debug.Log($"{totalEditedBlocks} have been edited");
 
@@ -416,31 +394,31 @@ public class TrenchMap
         }
     }
 
-    public void SetBit (Vector2Int blockAdress, Vector2Int bitAdress, bool value, bool applyPixels = false)
-    {
-        if (blocks[blockAdress.x,blockAdress.y] == null)
-        {
-            if (value)
-            {
-                blocks[blockAdress.x, blockAdress.y] = new();
-            }
-            else
-            {
-                return;
-            }
-        }
+    //public void SetBit (Vector2Int blockAdress, Vector2Int bitAdress, bool value, bool applyPixels = false)
+    //{
+    //    if (blocks[blockAdress.x,blockAdress.y] == null)
+    //    {
+    //        if (value)
+    //        {
+    //            blocks[blockAdress.x, blockAdress.y] = new();
+    //        }
+    //        else
+    //        {
+    //            return;
+    //        }
+    //    }
 
-        blocks[blockAdress.x, blockAdress.y][bitAdress] = value;
+    //    blocks[blockAdress.x, blockAdress.y][bitAdress] = value;
 
-        var arrayIndex = bitAdress.y * resolution * 4 + bitAdress.x + blockAdress.y * 16 * resolution + blockAdress.x * 4;
+    //    var arrayIndex = bitAdress.y * resolution * 4 + bitAdress.x + blockAdress.y * 16 * resolution + blockAdress.x * 4;
 
-        pixels[arrayIndex] = value ? trenchColor : groundColor;
+    //    pixels[arrayIndex] = value ? trenchColor : groundColor;
 
-        if (applyPixels)
-        {
-            ApplyPixels();
-        }
-    }
+    //    if (applyPixels)
+    //    {
+    //        ApplyPixels();
+    //    }
+    //}
 
     public void ApplyPixels ()
     {
@@ -563,6 +541,14 @@ public class TrenchMap
     //    }
     //}
 
+    public int LocalCellToPixelIndex (LocalCell cell)
+    {
+        var blockAdress = cell.blockAdress;
+        var cellAdress = cell.cellAdress;
+
+        return cellAdress.y * resolution * 4 + cellAdress.x + blockAdress.y * 16 * resolution + blockAdress.x * 4;
+    }
+
     public IEnumerable<LocalCell> GetCellsFromBox (Vector2 min, Vector2 max, Func<Vector2Int, bool> blockCondition)
     {
         var startBlock = TrenchManager.Manager.GetBlockAdressFloored(min, pos); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
@@ -604,9 +590,30 @@ public class TrenchMap
 
     public IEnumerable<LocalCell> GetCells (Func<Vector2Int, bool> blockCondition)
     {
-        var maxBlock = resolution - 1;
+        var maxBlock = resolution;
 
-        return GetCellsFromBoundBlocks(Vector2Int.zero, new(maxBlock,maxBlock), blockCondition);
+        for (var blockY = 0; blockY < maxBlock; blockY++)
+        {
+            for (var blockX = 0; blockX < maxBlock; blockX++)
+            {
+                Vector2Int blockAdress = new(blockX, blockY);
+
+                if (blockCondition != null && !blockCondition(blockAdress))
+                    continue;
+
+                //could be a good idea to clamp cell start and end...?
+
+                for (var cellY = 0; cellY < 4; cellY++)
+                {
+                    for (var cellX = 0; cellX < 4; cellX++)
+                    {
+                        var cellAdress = new Vector2Int(cellX, cellY);
+
+                        yield return new(blockAdress, cellAdress);
+                    }
+                }
+            }
+        }
     }
 
     public LocalCell GetLocalCell(Vector2 pos)
@@ -640,7 +647,25 @@ public class TrenchMap
 
     public void SetCellValue (LocalCell cell, bool value)
     {
-        blocks[cell.blockAdress.x, cell.blockAdress.y][cell.cellAdress] = value;
+        var block = blocks[cell.blockAdress.x, cell.blockAdress.y];
+
+        if (block == null)
+        {
+            if (value)
+            {
+                block = blocks[cell.blockAdress.x,cell.blockAdress.y] = new();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        var pixelIndex = LocalCellToPixelIndex(cell);
+
+        pixels[pixelIndex] = value ? trenchColor : groundColor;
+
+        block[cell.cellAdress] = value;
     }
 
     public void SetCellValue(Vector2 pos, bool value)

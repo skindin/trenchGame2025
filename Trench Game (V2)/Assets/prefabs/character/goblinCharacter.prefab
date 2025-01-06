@@ -318,6 +318,7 @@ MonoBehaviour:
   trenchTestWithPoint: 0
   trenchStatus: 0
   drawTrenchStatus: 0
+  wallCollisions: 0
   freezeMovement: 0
 --- !u!114 &1672398506640000765
 MonoBehaviour:

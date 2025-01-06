@@ -284,7 +284,7 @@ public class NetworkManager : ManagerBase<NetworkManager>
         }
     }
 
-    public void StartConsume (MedPack consumable)
+    public void StartConsume (Consumable consumable)
     {
         if (!IsServer)
         {

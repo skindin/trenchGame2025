@@ -878,7 +878,7 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
                                     {
                                         if (character.inventory.ActiveItem)
                                         {
-                                            if (character.inventory.ActiveItem is MedPack medpack)
+                                            if (character.inventory.ActiveItem is Consumable medpack)
                                             {
                                                 if (!medpack.healing)
                                                 {

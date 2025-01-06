@@ -14,7 +14,7 @@ public class SpriteOrderTool : MonoBehaviour
     public SpriteOrderTool parent;
     public List<SpriteOrderTool> children = new();
     Transform lastParent;
-    public Transform container;
+    //public Transform container;
 
     public int LocalOrder {  get { return localOrder; } set { localOrder = value; } }
 

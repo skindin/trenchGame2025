@@ -637,7 +637,9 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     public Vector2Int GetBlockAdressFloored(Vector2 pos, Vector2 mapPos)
     {
-        return Vector2Int.FloorToInt(GetBlockAdressPoint(pos, mapPos));
+        var point = Vector2Int.FloorToInt(GetBlockAdressPoint(pos, mapPos));
+        var floored = Vector2Int.Min(Vector2Int.FloorToInt(point), Vector2Int.one * (mapResolution-1));
+        return floored;
     }
 
     public Vector2Int GetBlockAdressCield(Vector2 pos, Vector2 mapPos)

@@ -1572,7 +1572,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1162532254875336613, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1162532254875336613, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1584,11 +1584,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1162532254875336613, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1162532254875336613, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2831460076466995517, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1630,6 +1630,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4108761352474424341, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 4411661645840510790, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
       propertyPath: m_Name
       value: goblinCharacter
@@ -1656,6 +1660,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1162532254875336613, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1233798378}
+    - targetCorrespondingSourceObject: {fileID: 1162532254875336613, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 603601915}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
 --- !u!1 &478373407
@@ -2078,7 +2085,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &534257686
 Transform:
   m_ObjectHideFlags: 0
@@ -2136,6 +2143,10 @@ MonoBehaviour:
       active: []
       spawnCap: 3
       chance: 2
+    - prefab: {fileID: 8004778390888356480, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      active: []
+      spawnCap: 1
+      chance: 1
     chance: 1
   itemsPerDrop: 5
   itemDropRadius: 5
@@ -2190,6 +2201,68 @@ RectTransform:
   m_AnchoredPosition: {x: 100, y: 25}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &603601914
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1029702624}
+    m_Modifications:
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.204
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.039
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058382142666770491, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      propertyPath: m_Name
+      value: trench fruit
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+--- !u!4 &603601915 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1846328602684126069, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+  m_PrefabInstance: {fileID: 603601914}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &607711349
 GameObject:
   m_ObjectHideFlags: 0
@@ -3247,7 +3320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 10
+  worldSize: 40
   minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0
@@ -3309,7 +3382,7 @@ MonoBehaviour:
   drawAllBits: 0
   logWallSlides: 0
   blockWidth: 0
-  bitWidth: 0
+  cellWidth: 0
   testRadius: 0.8
   frictionAngleMod: 1
   wallFriction: 0
@@ -3561,7 +3634,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &978235425
 Transform:
   m_ObjectHideFlags: 0
@@ -3604,8 +3677,15 @@ MonoBehaviour:
       active: []
       spawnCap: 1
       chance: 2
+    chance: 0
+  - Name: tier 2
+    spawnItems:
+    - prefab: {fileID: 8004778390888356480, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
+      active: []
+      spawnCap: 1
+      chance: 2
     chance: 1
-  itemsPerDrop: 3
+  itemsPerDrop: 4
   itemDropRadius: 5
   itemDropInterval: 1
   itemDropTimer: 0
@@ -3697,6 +3777,11 @@ MonoBehaviour:
       maxPooled: 10
     container: {fileID: 0}
   - prefab: {fileID: 4392698207926738930, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
+    pool:
+      minPooled: 0
+      maxPooled: 10
+    container: {fileID: 0}
+  - prefab: {fileID: 8004778390888356480, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
     pool:
       minPooled: 0
       maxPooled: 10
@@ -4458,6 +4543,10 @@ PrefabInstance:
     - target: {fileID: 2421231489847228794, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
       propertyPath: m_Name
       value: spade
+      objectReference: {fileID: 0}
+    - target: {fileID: 2421231489847228794, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4844498587393228925, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
       propertyPath: m_SortingOrder
