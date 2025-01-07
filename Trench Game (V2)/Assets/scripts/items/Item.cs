@@ -127,7 +127,7 @@ public class Item : MonoBehaviour
         HeldOrientation();
     }
 
-    void HeldOrientation ()
+    public void HeldOrientation ()
     {
         transform.localRotation = Quaternion.Euler(heldRot);
         transform.localPosition = heldPos;

@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 1
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
-  m_Color: {r: 0.7355891, g: 0.26059094, b: 0.9056604, a: 1}
+  m_Color: {r: 0.7689266, g: 0.22000003, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -179,7 +179,7 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
-  m_Color: {r: 0.5222706, g: 0.681, b: 0, a: 1}
+  m_Color: {r: 0, g: 0.8867924, b: 0.5533456, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -219,7 +219,7 @@ GameObject:
   - component: {fileID: 1846328602684126069}
   - component: {fileID: 8004778390888356480}
   m_Layer: 0
-  m_Name: trench fruit
+  m_Name: no man's fruit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -297,8 +297,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3890086318085853917}
-  - {fileID: 3362306121324828685}
   - {fileID: 1824766355417269215}
+  - {fileID: 3362306121324828685}
   m_Father: {fileID: 1846328602684126069}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5063614655205946132
@@ -314,7 +314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundCenterPoint: {x: 0, y: 0.53}
-  drawPoint: 1
+  drawPoint: 0
   includeSelf: 0
   sprite: {fileID: 0}
   localOrder: 0
@@ -395,7 +395,7 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 2
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
-  m_Color: {r: 0.5792638, g: 0.2588235, b: 0.90588236, a: 1}
+  m_Color: {r: 0.7689266, g: 0.22000003, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

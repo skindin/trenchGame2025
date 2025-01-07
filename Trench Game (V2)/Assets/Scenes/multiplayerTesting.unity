@@ -2146,7 +2146,7 @@ MonoBehaviour:
     - prefab: {fileID: 8004778390888356480, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
       active: []
       spawnCap: 1
-      chance: 1
+      chance: 0
     chance: 1
   itemsPerDrop: 5
   itemDropRadius: 5
@@ -2163,7 +2163,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     active: []
     spawnCap: 3
-  spawnBots: 1
+  spawnBots: 0
 --- !u!1 &575497487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3320,7 +3320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 40
+  worldSize: 10
   minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0
@@ -3330,7 +3330,7 @@ MonoBehaviour:
     minPooled: 0
     maxPooled: 10
   logOutOfBounds: 0
-  drawChunks: 0
+  drawChunks: 1
   drawObjectChunkLinks: 0
   drawLineTest: 0
 --- !u!4 &893604346
@@ -3679,11 +3679,7 @@ MonoBehaviour:
       chance: 2
     chance: 0
   - Name: tier 2
-    spawnItems:
-    - prefab: {fileID: 8004778390888356480, guid: 9ccbd60746ebb9e4395ba3c1c0d167e9, type: 3}
-      active: []
-      spawnCap: 1
-      chance: 2
+    spawnItems: []
     chance: 1
   itemsPerDrop: 4
   itemDropRadius: 5

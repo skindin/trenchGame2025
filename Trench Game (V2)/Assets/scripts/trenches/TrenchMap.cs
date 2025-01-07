@@ -284,8 +284,6 @@ public class TrenchMap
 
                             SetCellValue(localCell, value);
 
-                            totalTrenchCells += value ? 1 : -1;
-
                             if (areaChanged >= maxArea)
                             {
                                 ApplyPixels();
@@ -660,6 +658,8 @@ public class TrenchMap
                 return;
             }
         }
+
+        totalTrenchCells += value ? 1 : -1;
 
         var pixelIndex = LocalCellToPixelIndex(cell);
 

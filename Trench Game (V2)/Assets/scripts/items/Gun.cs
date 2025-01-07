@@ -32,7 +32,7 @@ public class Gun : Weapon
     public float bulletSpeed, range, firingRate, reloadTime = 2, damageRate = 5, swapDelay = .2f;
     public int maxPerFrame = 5, maxRounds = 10;//, reloadAnimRots = 3;
     public AmmoType amoType;
-    public bool autoFire = true, autoReload = false;
+    public bool autoFire = true, autoReloadEmpty = true, autoReloadRelease = true;
     //public bool released = true;
 
     public float DamagePerBullet
@@ -67,14 +67,7 @@ public class Gun : Weapon
 
         if (!active)
         {
-            //StopAllCoroutines(); //should suffice for now
-                                 //fireRoutine = 
-            if (reloadRoutine != null)
-            {
-                StopCoroutine(reloadRoutine);
-                reloadRoutine = null;
-            }
-            reloading = false; //maaan idk how to design the delay. using the cooldown is way to long, requiring click is too hard
+            CancelReload();
 
             if (fireRoutine != null)
             {
@@ -98,6 +91,16 @@ public class Gun : Weapon
         //{
         //    StartShootRoutine(true);
         //}
+    }
+
+    public void CancelReload ()
+    {
+        if (reloadRoutine != null)
+        {
+            StopCoroutine(reloadRoutine);
+            reloadRoutine = null;
+        }
+        reloading = false; //maa
     }
 
     public override void ItemAwake()
@@ -180,7 +183,17 @@ public class Gun : Weapon
     void StartShootRoutine (float delay = 0)
     {
         //if (released)
-        fireRoutine ??= StartCoroutine(Shoot(delay));
+
+        if (fireRoutine == null)
+        {
+            if (reloading && rounds > 0)
+            {
+                CancelReload();
+                HeldOrientation();
+            }
+
+            fireRoutine = StartCoroutine(Shoot(delay));
+        }
 
         IEnumerator Shoot(float delay = 0)
         {
@@ -197,6 +210,8 @@ public class Gun : Weapon
                 {
                     //released = true;
                     fireRoutine = null;
+                    if (autoReloadRelease)
+                        StartReload();
                     yield break;
                 }
 
@@ -220,8 +235,8 @@ public class Gun : Weapon
                     }
                     else
                     {
-                        if (!reloading && autoReload) //inconsistant af to only test reloading property here
-                            Action();
+                        if (!reloading && autoReloadEmpty) //inconsistant af to only test reloading property here
+                            StartReload();
 
                         fireRoutine = null;
                         yield break;
@@ -230,16 +245,25 @@ public class Gun : Weapon
 
                 if (!autoFire) break;
 
-                holdingTrigger = false; //makes sure that something else says it's pulling the trigger before it repeats
-
-                float startTime = Time.time;
+                float fireTimer = 0;
 
                 do
                 {
                     yield return null;
-                }
-                while (Time.time - startTime < secsPerBullet); //accounts for being paused
+                    if (!holdingTrigger)
+                    {
+                        //released = true;
+                        fireRoutine = null;
+                        if (autoReloadRelease)
+                            StartReload();
+                        yield break;
+                    }
 
+                    holdingTrigger = false;
+
+                    fireTimer += Time.deltaTime;
+                }
+                while (fireTimer < secsPerBullet); //accounts for being paused
                 //yield return new WaitForSeconds(secsPerBullet);
             }
 
@@ -263,7 +287,7 @@ public class Gun : Weapon
 
     public override void Action()
     {
-        reloadRoutine ??= StartCoroutine(Reload(0, true));
+        StartReload(0);
     }
 
     IEnumerator Reload(float progress = 0, bool sync = false)
@@ -308,11 +332,17 @@ public class Gun : Weapon
         reloadRoutine = null;
     }
 
-    public void StartReload (float startTime)
+    public void StartReload (float progress = 0, bool sync = true) //probably red flag to make sync parameter optional 
+    {
+
+        reloadRoutine ??= StartCoroutine(Reload(progress, sync));
+    }
+
+    public void ReloadFromStart (float startTime)
     {
         var progress = NetworkManager.NetTime - startTime;
 
-        reloadRoutine ??= StartCoroutine(Reload(progress, false));
+        StartReload(progress,false);
     }
 
     public Bullet Fire ()
