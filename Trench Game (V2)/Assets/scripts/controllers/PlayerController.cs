@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public bool enableFill = false, drawEdgeDetection = false;
     public ControllerType type = ControllerType.keyboard;
     //public GameObject touchCursor;
-    public bool overrideToTouchControls = false;
+    public bool overrideToTouchControls = false, autoReloadGuns = true;
     public int scrollSensitivity = 1;
     //public TouchController touchController;
 
@@ -133,13 +133,26 @@ public class PlayerController : MonoBehaviour
                     character.inventory.ActiveItem.Action();
             }
         }
+        //else if (Input.GetMouseButtonUp(0))
+        //{
+        //    if (reloadGunsOnRelease && character.inventory.ActiveWeapon is Gun gun)
+        //    {
+        //        gun.StartReload(0,true);
+        //    }
+        //}
 
-
+        else 
+        { //new scope for sake of gun name
+            if (character.inventory.ActiveWeapon is Gun gun)
+            {
+                gun.StartReload();
+            }
+        }
 
         if (Input.GetKey(KeyCode.E)) //temporary!!
         {
 
-            if (Input.GetKeyDown(KeyCode.E)) //temporary!!
+            if (Input.GetKeyDown(KeyCode.E)) //temporary!! //idk why i said this was temporary
             {
                 if (character.inventory.ActiveWeapon is Gun gun)
                 {

@@ -78,7 +78,7 @@ public class TrenchCollider : MonoBehaviour
         }
         else
         {
-            wallCollisions = TrenchManager.Manager.TestPoint(transform.position);
+            wallCollisions =// TrenchManager.Manager.TestPoint(transform.position);
             trenchStatus = !TrenchManager.Manager.TestCircleTouchesValue(transform.position, WorldSize / 2, false);
         }
 
@@ -146,7 +146,6 @@ public class TrenchCollider : MonoBehaviour
     }
 
     Coroutine exitRoutine;
-
     public void ExitTrench (float duration)
     {
         if (exitRoutine != null)

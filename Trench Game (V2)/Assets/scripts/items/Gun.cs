@@ -32,7 +32,7 @@ public class Gun : Weapon
     public float bulletSpeed, range, firingRate, reloadTime = 2, damageRate = 5, swapDelay = .2f;
     public int maxPerFrame = 5, maxRounds = 10;//, reloadAnimRots = 3;
     public AmmoType amoType;
-    public bool autoReloadEmpty = true, autoReloadRelease = true;
+    public bool autoReloadEmpty = true;//, autoReloadRelease = true;
     //public bool released = true;
 
     public float DamagePerBullet
@@ -184,14 +184,14 @@ public class Gun : Weapon
     {
         //if (released)
 
+        if (reloading && rounds > 0)
+        {
+            HeldOrientation();
+            CancelReload();
+        }
+
         if (fireRoutine == null)
         {
-            if (reloading && rounds > 0)
-            {
-                CancelReload();
-                HeldOrientation();
-            }
-
             fireRoutine = StartCoroutine(Shoot(delay));
         }
 
@@ -210,8 +210,8 @@ public class Gun : Weapon
                 {
                     //released = true;
                     fireRoutine = null;
-                    if (autoReloadRelease)
-                        StartReload();
+                    //if (autoReloadRelease)
+                    //    StartReload();
                     yield break;
                 }
 
@@ -249,14 +249,14 @@ public class Gun : Weapon
                 {
                     holdingTrigger = false;
                     yield return null;
-                    if (!holdingTrigger)
-                    {
-                        //released = true;
-                        fireRoutine = null;
-                        if (autoReloadRelease)
-                            StartReload();
-                        yield break;
-                    }
+                    //if (!holdingTrigger)
+                    //{
+                    //    //released = true;
+                    //    fireRoutine = null;
+                    //    if (autoReloadRelease)
+                    //        StartReload();
+                    //    yield break;
+                    //}
 
                     fireTimer += Time.deltaTime;
                 }
