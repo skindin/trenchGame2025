@@ -32,7 +32,7 @@ public class Gun : Weapon
     public float bulletSpeed, range, firingRate, reloadTime = 2, damageRate = 5, swapDelay = .2f;
     public int maxPerFrame = 5, maxRounds = 10;//, reloadAnimRots = 3;
     public AmmoType amoType;
-    public bool autoFire = true, autoReloadEmpty = true, autoReloadRelease = true;
+    public bool autoReloadEmpty = true, autoReloadRelease = true;
     //public bool released = true;
 
     public float DamagePerBullet
@@ -80,7 +80,7 @@ public class Gun : Weapon
         else
         {
             var secsPerBullet = 1 / firingRate;
-            var rateDelay = Mathf.Max(secsPerBullet - Time.time - timeDeactivated, 0);
+            var rateDelay = Mathf.Max(secsPerBullet - Time.time - timeDeactivated, 0); //!!! This will break if time scale is modified live
             StartShootRoutine(swapDelay + rateDelay);
         }
         //else
@@ -243,12 +243,11 @@ public class Gun : Weapon
                     }
                 }
 
-                if (!autoFire) break;
-
                 float fireTimer = 0;
 
                 do
                 {
+                    holdingTrigger = false;
                     yield return null;
                     if (!holdingTrigger)
                     {
@@ -258,8 +257,6 @@ public class Gun : Weapon
                             StartReload();
                         yield break;
                     }
-
-                    holdingTrigger = false;
 
                     fireTimer += Time.deltaTime;
                 }
@@ -376,11 +373,11 @@ public class Gun : Weapon
             TrenchManager.Manager.TestRayHitsValue(BarrelPos, BarrelPos + direction * 10, false, out _);
         }
 
-        if (!holdingTrigger)
-        {
-            fired = false;
-        }
-        holdingTrigger = false;
+        //if (!holdingTrigger)
+        //{
+        //    fired = false;
+        //}
+        //holdingTrigger = false;
 
         //if (reloading)
         //{           
