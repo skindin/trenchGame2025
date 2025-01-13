@@ -11,7 +11,7 @@ public class Character : MonoBehaviour
     public int id, rank, life = 0;
     public string characterName;
     public PlayerController userController;
-    public BotController aiController;
+    public BotController botController;
     //public SpriteRenderer sprite;
     //public Color dangerColor = Color.white;
     Color startColor;
@@ -20,6 +20,7 @@ public class Character : MonoBehaviour
     int killCount;
 
     public UnityEvent<Vector2> onMove, onLook;
+    public UnityEvent onReset;
 
     public int KillCount
     {
@@ -68,8 +69,8 @@ public class Character : MonoBehaviour
             if (userController)
                 userController.enabled = value == CharacterType.localPlayer;
 
-            if (aiController)
-                aiController.enabled = value == CharacterType.localBot;
+            if (botController)
+                botController.enabled = value == CharacterType.localBot;
 
             type = value;
         }
@@ -332,6 +333,10 @@ public class Character : MonoBehaviour
 
         moveSpeed = baseMoveSpeed;
         //CharacterManager.Manager.UpdateScoreBoard();
+
+        onReset.Invoke();
+
+        botController.ResetBot();
 
         Type = CharacterType.none;
     }

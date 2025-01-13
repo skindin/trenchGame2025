@@ -333,14 +333,14 @@ public class BotController : MonoBehaviour
             {
                 wanderPoints = ChunkManager.Manager.DistributePoints(visionBox,character.trenchCollider.WorldSize/2);
 
-                unexploredPoints.Clear();
+                //unexploredPoints.Clear(); //not sure why this would be here, considering it is already empty
                 exploredPoints.Clear();
 
                 var height = wanderPoints.GetLength(1);
+                var width = wanderPoints.GetLength(0);
 
                 for (int y = 0; y < height; y++)
                 {
-                    var width = wanderPoints.GetLength(0);
 
                     for (int x = 0; x < width; x++)
                     {
@@ -435,6 +435,13 @@ public class BotController : MonoBehaviour
         }
     }
 
+    public void ResetBot()
+    {
+        wandering = false;
+        unexploredPoints.Clear();
+
+        dodging = false;
+    }
 
     public void Dodge()
     {
