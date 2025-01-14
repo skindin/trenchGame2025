@@ -10,8 +10,17 @@ public class BotControllerV2 : MonoBehaviour
     public bool debugLines = false;
     public Transform targetObj;
     public Vector2 targetPos;
+    public Dictionary<int,BotCharacterProfile> profiles = new ();
 
     public Chunk[,] chunks;
+
+    public void ExampleKillThisCharacter(Character target)
+    {
+        var sortedVisibleItems = LogicAndMath.SortToListDict(GetItems<Item>(), item => item.GetType());
+        //this is a sorted list of all visible items
+
+        //now, it should determine the best possible action, based on the character's items and profile
+    }
 
     private void Update()
     {

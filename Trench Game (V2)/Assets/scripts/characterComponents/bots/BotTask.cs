@@ -9,6 +9,7 @@ public struct BotTask<Type>
 
     public enum TaskType
     {
+        MoveTo,
         Destroy, //for characters and other destroyable objects
         Retrieve, //for picking up items items
         Prepare, //reloading guns

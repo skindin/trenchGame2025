@@ -430,10 +430,32 @@ public static class LogicAndMath
 
         foreach (var clone in itemListClone)
         {
-            itemList.Add(clone); //im so fucking lazy
+            itemList.Add(clone); //im so f* lazy
         }
 
         return itemList;
+    }
+
+    public static Dictionary<TKey,List<TObject>> SortToListDict<TObject,TKey> (IEnumerable<TObject> collection, Func<TObject,TKey> getKey)
+    {
+        Dictionary<TKey, List<TObject>> dictionary = new();
+
+        foreach (var item in collection)
+        {
+            List<TObject> list;
+
+            var itemKey = getKey(item);
+
+            if (!dictionary.TryGetValue(itemKey,out list))
+            {
+                list = new();
+                dictionary[itemKey] = list;
+            }
+
+            list.Add(item);
+        }
+
+        return dictionary;
     }
 
     public static float TicksToSeconds(long ticks)
