@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 //using static UnityEditor.PlayerSettings;
@@ -426,6 +427,54 @@ public class ChunkManager : MonoBehaviour
 
         return LogicAndMath.GetClosest(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, Mathf.Infinity, debugLines);
         //return closestBehavior;
+    }
+
+    public List<T> GetItemsWithinChunkArray<T> (Chunk[,] chunks, Func<T, bool> condition = null) where T : Item
+    {
+        var output = new List<T>();
+
+        foreach ( var chunk in chunks )
+        {
+            if (chunk == null)
+                break;
+
+            var itemsOfType = chunk.GetItems<T>();
+
+            foreach ( var item in itemsOfType )
+            {
+                if (condition == null || condition(item))
+                {
+                    output.Add(item);
+                }
+
+            }
+        }
+
+        return output;
+    }
+
+    public List<T> GetCharactersWithinChunkArray<T>(Chunk[,] chunks, Func<T, bool> condition = null) where T : Character
+    {
+        var output = new List<T>();
+
+        foreach (var chunk in chunks)
+        {
+            if (chunk == null)
+                break;
+
+            var itemsOfType = chunk.GetCharacters<T>();
+
+            foreach (var character in itemsOfType)
+            {
+                if (condition == null || condition(character))
+                {
+                    output.Add(character);
+                }
+
+            }
+        }
+
+        return output;
     }
 
     public Vector2 GetPosRatio(Vector2 pos)

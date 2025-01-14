@@ -13,6 +13,11 @@ public class BotControllerV2 : MonoBehaviour
 
     public Chunk[,] chunks;
 
+    private void Update()
+    {
+        UpdateChunks();
+    }
+
     public void UpdateChunks ()
     {
         chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position,visionBox);
@@ -45,6 +50,16 @@ public class BotControllerV2 : MonoBehaviour
     public T FindClosestItem<T>(Func<T, bool> condition = null) where T : Item
     {
         return ChunkManager.Manager.FindClosestItemWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
+    }
+
+    public List<T> GetItems<T> (Func<T, bool> condition = null) where T : Item
+    {
+        return ChunkManager.Manager.GetItemsWithinChunkArray(chunks, condition);
+    }
+
+    public List<T> GetCharacters<T>(Func<T, bool> condition = null) where T : Character
+    {
+        return ChunkManager.Manager.GetCharactersWithinChunkArray(chunks, condition);
     }
 
     private void OnDrawGizmos()
