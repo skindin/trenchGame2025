@@ -97,7 +97,7 @@ public class BotControllerV2 : MonoBehaviour
                 continue;
             }
 
-            bestGun = gun;
+            bestGun = gun; //next i should make it sort the guns into prefab id, and then grab the best from each group
             break;
         }
 
