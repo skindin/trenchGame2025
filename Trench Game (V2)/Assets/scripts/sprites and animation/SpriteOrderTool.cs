@@ -51,7 +51,7 @@ public class SpriteOrderTool : MonoBehaviour
 
         if (main == this)
         {
-            LogicAndMath.SortHighestToLowest(all, tool => tool.transform.TransformPoint(tool.groundCenterPoint).y);
+            CollectionUtils.SortHighestToLowest(all, tool => tool.transform.TransformPoint(tool.groundCenterPoint).y);
 
             var order = 0;
 

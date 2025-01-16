@@ -71,7 +71,7 @@ public class GameClient : MonoBehaviour
         }
 
         if (startTimeTick > 0)
-            NetworkManager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
+            NetworkManager.NetTime = MathUtils.TicksToSeconds(DateTime.UtcNow.Ticks - startTimeTick);
 
 
         //add remote chars for new player
@@ -264,8 +264,8 @@ public class GameClient : MonoBehaviour
             if (scoreboardUpdate.HasStopWatchStart)
                 CharacterManager.Manager.StartStopWatch(NetworkManager.NetTime - scoreboardUpdate.StopWatchStart);
 
-            LogicAndMath.AssignIndexesByIntCollection(CharacterManager.Manager.active, scoreboardUpdate.Order, character => character.id);
-            LogicAndMath.AssignIntPropToIndex(CharacterManager.Manager.active, (character, index) => character.rank = index + 1);
+            CollectionUtils.AssignIndexesByIntCollection(CharacterManager.Manager.active, scoreboardUpdate.Order, character => character.id);
+            CollectionUtils.AssignIntPropToIndex(CharacterManager.Manager.active, (character, index) => character.rank = index + 1);
 
             scoreboardUpdate = null;
         }

@@ -64,7 +64,7 @@ public class SpawnManager : MonoBehaviour
     {
         get
         {
-            return (int)LogicAndMath.GetListValueTotal(itemGroups.ToArray(), group => LogicAndMath.GetListValueTotal(group.spawnItems.ToArray(), spawnItem => spawnItem.active.Count));
+            return (int)CollectionUtils.GetListValueTotal(itemGroups.ToArray(), group => CollectionUtils.GetListValueTotal(group.spawnItems.ToArray(), spawnItem => spawnItem.active.Count));
         }
     }
 
@@ -197,13 +197,13 @@ public class SpawnManager : MonoBehaviour
 
     public List<(SpawnItem, int)> GenerateItemPairs()
     {
-        var groupPairs = LogicAndMath.GetOccurancePairs(itemGroups, itemsPerDrop, group => group.chance);
+        var groupPairs = CollectionUtils.GetOccurancePairs(itemGroups, itemsPerDrop, group => group.chance);
 
         var allItemPairs = new List<(SpawnItem, int)>();
 
         foreach (var groupPair in groupPairs)
         {
-            var itemPairs = LogicAndMath.GetOccurancePairs(
+            var itemPairs = CollectionUtils.GetOccurancePairs(
                 groupPair.Item1.spawnItems,
                 groupPair.Item2,
                 spawnItem => spawnItem.chance,

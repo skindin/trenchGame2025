@@ -369,7 +369,7 @@ public class BotController : MonoBehaviour
 
             if (wanderIndex < 0 || foundPoint)
             {
-                LogicAndMath.GetClosest(transform.position, unexploredPoints.ToArray(), arrayPos => wanderPoints[arrayPos.x,arrayPos.y], out wanderIndex, null);
+                CollectionUtils.GetClosest(transform.position, unexploredPoints, arrayPos => wanderPoints[arrayPos.x,arrayPos.y], out wanderIndex, null);
 
                 if (wanderIndex > -1) // Ensure valid index
                 {
@@ -467,9 +467,9 @@ public class BotController : MonoBehaviour
 
     public Item PickupClosestItem<T>(Func<T, bool> condition = null) where T : Item
     {
-        var closestItem = LogicAndMath.GetClosest(
+        var closestItem = CollectionUtils.GetClosest(
             transform.position,
-            character.inventory.withinRadius.OfType<T>().ToArray(),
+            character.inventory.withinRadius.OfType<T>().ToList(),
             item => item.transform.position,
             out _,
             condition

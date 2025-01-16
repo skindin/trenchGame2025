@@ -398,7 +398,7 @@ public class ChunkManager : MonoBehaviour
         if (chunks == default)
             chunks = ChunksFromBoxPosSize(pos, size);
 
-        var flattenedChunks = LogicAndMath.FlattenArray(chunks);
+        var flattenedChunks = CollectionUtils.FlattenArray(chunks);
 
         T[][] jaggedArray = new T[flattenedChunks.Length][];
 
@@ -421,11 +421,11 @@ public class ChunkManager : MonoBehaviour
         }
 
 
-        T[] allObjects = LogicAndMath.FlattenArray(jaggedArray);
+        T[] allObjects = CollectionUtils.FlattenArray(jaggedArray);
 
         Func<T, bool> objCondition = obj => (condition == null || condition(obj)) && GeoUtils.TestBoxPosSize(pos, size, obj.transform.position, debugLines);
 
-        return LogicAndMath.GetClosest(pos, allObjects, obj => obj.transform.position, out _, objCondition, null, Mathf.Infinity, debugLines);
+        return CollectionUtils.GetClosest(pos, allObjects.ToList(), obj => obj.transform.position, out _, objCondition, null, Mathf.Infinity, debugLines); //idc to redesign this rn but should be designed not to use arrays
         //return closestBehavior;
     }
 

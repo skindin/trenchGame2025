@@ -8,23 +8,78 @@ public class BotControllerV2 : MonoBehaviour
     public Character character;
     public Vector2 visionBox;
     public bool debugLines = false;
-    public Transform targetObj;
+    public Transform targetObject;
     public Vector2 targetPos;
+    //public float targetFollowDistance;
     public Dictionary<int,BotCharacterProfile> profiles = new ();
 
     public Chunk[,] chunks;
 
     public void ExampleKillThisCharacter(Character target)
     {
-        var sortedVisibleItems = LogicAndMath.SortToListDict(GetItems<Item>(), item => item.GetType());
+        var sortedVisibleItems = CollectionUtils.SortToListDict(GetItems<Item>(), item => item.GetType());
         //this is a sorted list of all visible items
 
-        //now, it should determine the best possible action, based on the character's items and profile
+        if (sortedVisibleItems.TryGetValue(typeof(Gun), out var list))
+        {
+            SortItemListByStats(list);
+
+            targetObject = list[0].transform;
+
+            
+        }
+
+    }
+
+    public void SortItemListByStats<T> (List<T> items) where T : Item
+    {
+        var type = typeof(T);
+
+        if (type == typeof(Gun))
+        {
+            CollectionUtils.GetHighest(items, gun => ItemManager.Manager.ranking.RankGun(gun as Gun), out _);
+        }
+    }
+
+    public Vector2 FindBulletPathToPos (Vector2 pos)
+    {
+        return transform.position; 
+    }
+
+    public void FollowTargetObject (float distance)
+    {
+        var delta = transform.position - targetObject.position;
+
+        var pos = delta.normalized * distance + targetObject.position;
+
+        character.MoveToPos(pos);
+    }
+
+    public void TestGetBestGun ()
+    {
+        var bestGun = CollectionUtils.GetHighest(GetItems<Gun>(), gun => ItemManager.Manager.ranking.RankGun(gun), out _);
+        if (!bestGun || //if it didn't find a gun
+            bestGun.transform != targetObject || //or we are already moving targeting this gun
+            character.inventory.SetSlotToItem(item => item == bestGun)) //or we are already holding this gun
+        {
+            return; //nothing to do
+        }
+
+        if (Vector2.Distance(transform.position, bestGun.transform.position) <= character.inventory.activePickupRad)
+        {
+            character.inventory.PickupItem(bestGun, transform.position, true);
+        }
+        else
+        {
+            FollowTargetObject(0);
+        }
     }
 
     private void Update()
     {
         UpdateChunks();
+
+        TestGetBestGun();
     }
 
     public void UpdateChunks ()
@@ -34,9 +89,9 @@ public class BotControllerV2 : MonoBehaviour
 
     public Item PickupClosestItem<T>(Func<T, bool> condition = null) where T : Item
     {
-        var closestItem = LogicAndMath.GetClosest(
+        var closestItem = CollectionUtils.GetClosest(
             transform.position,
-            character.inventory.withinRadius.OfType<T>().ToArray(),
+            character.inventory.withinRadius.OfType<T>().ToList(),
             item => item.transform.position,
             out _,
             condition

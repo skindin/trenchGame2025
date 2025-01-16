@@ -212,8 +212,8 @@ public class CharacterManager : MonoBehaviour
                 //yield break;
             }
 
-            LogicAndMath.SortHighestToLowest(active, character => character.KillCount);
-            LogicAndMath.AssignIntPropToIndex(active, (character, index) => character.rank = index + 1);
+            CollectionUtils.SortHighestToLowest(active, character => character.KillCount);
+            CollectionUtils.AssignIntPropToIndex(active, (character, index) => character.rank = index + 1);
 
             var currentTop = active[0];
             var prevTop = this.prevTop;

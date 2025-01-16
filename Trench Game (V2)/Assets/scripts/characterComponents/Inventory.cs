@@ -66,12 +66,10 @@ public class Inventory : MonoBehaviour
                 if (itemSlots[currentSlot])
                     itemSlots[currentSlot].ToggleActive(true);
             }
-
-
         }
     }
 
-    int GetEmptySlot ()
+    int? GetEmptySlot ()
     {
         for (int i = 0; i < itemSlots.Length; i++)
         {
@@ -81,8 +79,35 @@ public class Inventory : MonoBehaviour
             }
         }
 
-        return -1;
+        return null;
     }
+
+    int? GetSlotWithItem(Func<Item, bool> condition)
+    {
+        for (int i = 0; i < itemSlots.Length; i++)
+        {
+            if (condition(itemSlots[i]))
+            {
+                return i;
+            }
+        }
+
+        return null;
+    }
+
+    public bool SetSlotToItem(Func<Item, bool> condition)
+    {
+        var slot = GetSlotWithItem(condition);
+
+        if (slot != null)
+        {
+            CurrentSlot = (int)slot;
+            return true;
+        }
+
+        return false;
+    }
+
 
     private void Awake()
     {
@@ -112,7 +137,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public Item SelectedItem
+    public Item SelectedItem //this is for the sake of highlighting ground items, not the item the character is holding. tbh, this should probably be in a different script
     {
         get
         {
@@ -194,54 +219,6 @@ public class Inventory : MonoBehaviour
         chunks = newChunks;
     }
 
-    //public void AddChunkListeners (Chunk[,] oldChunks, Chunk[,] newChunks)
-    //{
-    //    if (oldChunks == newChunks) return;
-
-    //    //find old
-    //    foreach (var newChunk in newChunks)
-    //    {
-    //        if (newChunk == null) continue;
-
-    //        //bool found = false;
-
-    //        foreach (var oldChunk in oldChunks)
-    //        {
-    //            if (oldChunk == newChunk)
-    //            {
-    //                //found = true;
-    //                break;
-    //            }
-    //        }
-
-    //        //if (!found) //if new chunk is not within old chunks
-    //        //{
-    //        //    newChunk.listeningInventories.Add(this);
-    //        //}
-    //    }        
-        
-    //    foreach (var oldChunk in oldChunks)
-    //    {
-    //        if (oldChunk == null) continue;
-
-    //        //bool found = false;
-
-    //        foreach (var newChunk in newChunks)
-    //        {
-    //            if (oldChunk == newChunk)
-    //            {
-    //                //found = true;
-    //                break;
-    //            }
-    //        }
-
-    //        //if (!found) //if old chunk is not in new chunks
-    //        //{
-    //        //    oldChunk.listeningInventories.Remove(this);
-    //        //}
-    //    }
-    //}
-
 
     /// <summary>
     /// Only to be used when an item is to be destroyed while a character is holding it
@@ -321,9 +298,9 @@ public class Inventory : MonoBehaviour
                     if (ActiveItem)
                     {
                         var emptySlot = GetEmptySlot();
-                        if (emptySlot > -1) //if there is an empty slot
+                        if (emptySlot != null) //if there is an empty slot
                         {
-                            itemSlots[emptySlot] = item;
+                            itemSlots[(int)emptySlot] = item;
                             item.ToggleActive(false);
                             //CurrentSlot = emptySlot;
                         }
@@ -432,7 +409,7 @@ public class Inventory : MonoBehaviour
 
     public Item SelectClosest (Vector2 pos)
     {
-        SelectedItem = LogicAndMath.GetClosest(pos, withinRadius.ToArray(), item => item.transform.position, out _, null, null, selectionRad, debugLines);
+        SelectedItem = CollectionUtils.GetClosest(pos, withinRadius, item => item.transform.position, out _, null, null, selectionRad, debugLines);
         return SelectedItem;
     }
 

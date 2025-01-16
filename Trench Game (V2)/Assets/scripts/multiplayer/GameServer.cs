@@ -54,7 +54,7 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
         //bool sentSomeData = actionQueue.Count > 0;
 
 
-        NetworkManager.NetTime = LogicAndMath.TicksToSeconds(DateTime.UtcNow.Ticks - startTick); //just rying this
+        NetworkManager.NetTime = MathUtils.TicksToSeconds(DateTime.UtcNow.Ticks - startTick); //just rying this
 
         while (actionQueue.Count > 0)
         {
@@ -925,13 +925,13 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
                     if (message.HasTick)
                     {
                         var delay = DateTime.UtcNow.Ticks - connStartTick; //delay is how long this message took roundTrip
-                        var delayInSeconds = LogicAndMath.TicksToSeconds(delay);
+                        var delayInSeconds = MathUtils.TicksToSeconds(delay);
 
                         var remoteTick = message.Tick - (delay); //remote tick is the tick that the client thought it was when the server sent the message
                         //var ticksSinceStart = LogicAndMath.SecondsToTicks(Time.unscaledTime);
 
                         var remoteStartTick = remoteTick - connStartTick + server.startTick;
-                        var startTickDelta = LogicAndMath.TicksToSeconds(server.startTick - remoteStartTick);
+                        var startTickDelta = MathUtils.TicksToSeconds(server.startTick - remoteStartTick);
 
                         var startTickMessage = new MessageForClient { StartTick = remoteStartTick };
 

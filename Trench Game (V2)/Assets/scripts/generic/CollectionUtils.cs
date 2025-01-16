@@ -3,33 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
-using System.Reflection;
-using System.Collections.ObjectModel;
-using Unity.VisualScripting;
 //using static UnityEditor.Progress;
 //using static UnityEditor.PlayerSettings;
 //using UnityEditor;
 //using JetBrains.Annotations;
 
-public static class LogicAndMath
+public static class CollectionUtils
 {
-    public static float MinMaxAvgConc(float x, float min, float max, float avg, float conc)
-    {
-        max = Mathf.Max(max, min);
-        avg = Mathf.Clamp(avg, min, max);
-
-        var linear = x * (max - min) + min;
-        var warpedValue = linear + ((avg - linear) * Mathf.Pow(conc, 2));
-
-        //if (intValues) warpedValue = Mathf.Round(warpedValue);
-
-        return warpedValue;
-    }
-
-    public static int MinMaxAvgConcToInt(float x, float min, float max, float avg, float conc)
-    {
-        return Mathf.RoundToInt(MinMaxAvgConc(x, min, max, avg, conc));
-    }
 
     public static float GetListValueTotal<T> (T[] list, Func<T,float> getValue)
     {
@@ -222,17 +202,12 @@ public static class LogicAndMath
         return default;
     }
 
-    static float GetDistance<T> (T item, Vector2 pos, Func<T, Vector2> getPos)
-    {
-        return Vector2.Distance(pos, getPos(item));
-    }
+    //static float GetDistance<T> (T item, Vector2 pos, Func<T, Vector2> getPos)
+    //{
+    //    return Vector2.Distance(pos, getPos(item));
+    //}
 
-    static void OnPosSelected<T> (T item, Func<T, Vector2> getPos) //no idea what I was gonna use this for
-    {
-        GeoUtils.MarkPoint(getPos(item), .5f, Color.green);
-    }
-
-    public static T GetClosest<T>(Vector2 pos, T[] array, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxDist = Mathf.Infinity, bool debugLines = false)
+    public static T GetClosest<T>(Vector2 pos, List<T> list, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxDist = Mathf.Infinity, bool debugLines = false)
     {
         static void MarkPos<Item> (Item item, Func<Item,Vector2> getPos, Color color)
         {
@@ -243,18 +218,18 @@ public static class LogicAndMath
         Action<T> onClosest = debugLines ? item => MarkPos(item,getPos,Color.green) : null;
         Action<T> onNotClosest = debugLines ? item => MarkPos(item, getPos, Color.red) : null;
 
-        return GetLowest(array, item => GetDistance(item,pos,getPos), out lowestIndex, condition, defaultItem, maxDist, onClosest, onNotClosest);
+        return GetLowest(list, item => Vector2.Distance(pos, getPos(item)), out lowestIndex, condition, defaultItem, maxDist, onClosest, onNotClosest);
     }
 
-    public static T GetLowest<T> (T[] array, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
+    public static T GetLowest<T> (List<T> list, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
         lowestIndex = -1;
         float lowestValue = maxValue;
         T lowestItem = defaultItem;
 
-        for (int i = 0; i < array.Length; i++)
+        for (int i = 0; i < list.Count; i++)
         {
-            var item = array[i];
+            var item = list[i];
 
             if (condition != null && !condition(item))
                 continue;
@@ -271,9 +246,9 @@ public static class LogicAndMath
 
         if (onNotSelected != null)
         {
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                var item = array[i];
+                var item = list[i];
 
                 if (item is not null)
                     onNotSelected(item);
@@ -288,43 +263,62 @@ public static class LogicAndMath
         return lowestItem;
     }
 
-    public static int RandomNegOrPos ()
+    public static T GetHighest<T>(List<T> list, Func<T, float> getValue, out int highestIndex, Func<T, bool> condition = null, 
+        T defaultItem = default, float minValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
-        return (UnityEngine.Random.Range(0, 2) == 1) ? 1 : -1;
-    }
+        highestIndex = -1;
+        float lowestValue = minValue;
+        T lowestItem = defaultItem;
 
-    public static bool RandomBool ()
-    {
-        return (UnityEngine.Random.Range(0, 2) == 1) ? true : false;
-    }
-
-    public static string FormatFloat(float number, int maxDecimalPlaces)
-    {
-        // Format with the maximum number of decimal places
-        string format = "F" + maxDecimalPlaces;
-        string result = number.ToString(format);
-
-        // Trim trailing zeros up to the maximum decimal places
-        for (int i = maxDecimalPlaces; i > 0; i--)
+        for (int i = 0; i < list.Count; i++)
         {
-            if (result.Contains(".") && result.EndsWith("0"))
+            var item = list[i];
+
+            if (condition != null && !condition(item))
+                continue;
+
+            var value = getValue(item);
+
+            if (value < lowestValue)
             {
-                result = result.Substring(0, result.Length - 1);
-            }
-            else
-            {
-                break;
+                lowestValue = value;
+                highestIndex = i;
+                lowestItem = item;
             }
         }
 
-        // If the number ends with a decimal point, remove it
-        if (result.EndsWith("."))
+        if (onNotSelected != null)
         {
-            result = result.Substring(0, result.Length - 1);
+            for (int i = 0; i < list.Count; i++)
+            {
+                var item = list[i];
+
+                if (item is not null)
+                    onNotSelected(item);
+            }
         }
 
-        return result;
+        if (onSelected != null && lowestItem is not null)
+        {
+            onSelected(lowestItem);
+        }
+
+        return lowestItem;
     }
+
+    public static float MinMaxAvgConc(float x, float min, float max, float avg, float conc)
+    {
+        max = Mathf.Max(max, min);
+        avg = Mathf.Clamp(avg, min, max);
+
+        var linear = x * (max - min) + min;
+        var warpedValue = linear + ((avg - linear) * Mathf.Pow(conc, 2));
+
+        //if (intValues) warpedValue = Mathf.Round(warpedValue);
+
+        return warpedValue;
+    }
+
 
     public static T[] FlattenArray<T>(T[,] multidimArray)
     {
@@ -458,13 +452,6 @@ public static class LogicAndMath
         return dictionary;
     }
 
-    public static float TicksToSeconds(long ticks)
-    {
-        return ticks / 10000000f;
-    }
 
-    public static long SecondsToTicks(float seconds)
-    {
-        return (long)(seconds * 10000000);
-    }
+
 }
