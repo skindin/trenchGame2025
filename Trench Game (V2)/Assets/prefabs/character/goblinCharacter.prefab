@@ -271,7 +271,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   character: {fileID: 7115039898630128601}
   visionBox: {x: 16, y: 16}
-  debugLines: 0
+  debugLines: 1
   targetObject: {fileID: 0}
   targetPos: {x: 0, y: 0}
 --- !u!114 &9178249837958229984

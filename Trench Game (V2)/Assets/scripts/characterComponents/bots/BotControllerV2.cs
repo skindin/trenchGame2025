@@ -50,34 +50,58 @@ public class BotControllerV2 : MonoBehaviour
     {
         var delta = transform.position - targetObject.position;
 
-        var pos = delta.normalized * distance + targetObject.position;
+        targetPos = delta.normalized * distance + targetObject.position;
 
-        character.MoveToPos(pos);
+        character.MoveToPos(targetPos);
     }
 
-    public void TestGetBestGun ()
+    public void TestGetBestGuns (int countLimit)
     {
         var visibleGuns = GetItems<Gun>();
+
+        if (visibleGuns.Count == 0)
+            return;
 
         foreach (var item in character.inventory.itemSlots)
         {
             if (item is Gun gun)
-                visibleGuns.Insert(0,gun);
+                visibleGuns.Insert(0,gun);//insert instead of add, to favor guns already in inventory
         }
 
-        var bestGun = CollectionUtils.GetHighest(visibleGuns, gun => ItemManager.Manager.ranking.RankGun(gun), out _);
+        CollectionUtils.SortHighestToLowest(visibleGuns, gun => ItemManager.Manager.ranking.RankGun(gun));
 
-        if (!bestGun || //if it didn't find a gun
-            character.inventory.SetSlotToItem(item => item == bestGun)) //or we are already holding this gun
-        {
-            return; //nothing to do
+        Gun bestGun = null;
+
+        var i = 0;
+
+        countLimit = Mathf.Min(character.inventory.itemSlots.Length, countLimit);
+
+        foreach (var gun in visibleGuns)
+        {            
+            if (i >= countLimit)
+            {
+                break;
+            }
+
+            if (character.inventory.SetSlotToItem(item => item == gun))
+            {
+                i++;
+                continue;
+            }
+
+            if (Vector2.Distance(transform.position, gun.transform.position) <= character.inventory.activePickupRad)
+            {
+                character.inventory.PickupItem(gun, gun.transform.position, true);
+
+                i++;
+                continue;
+            }
+
+            bestGun = gun;
+            break;
         }
 
-        if (Vector2.Distance(transform.position, bestGun.transform.position) <= character.inventory.activePickupRad)
-        {
-            character.inventory.PickupItem(bestGun, transform.position, true);
-        }
-        else
+        if (bestGun) //if there are no guns
         {
             targetObject = bestGun.transform;
             FollowTargetObject(0);
@@ -88,7 +112,7 @@ public class BotControllerV2 : MonoBehaviour
     {
         UpdateChunks();
 
-        TestGetBestGun();
+        TestGetBestGuns(3);
     }
 
     public void UpdateChunks ()

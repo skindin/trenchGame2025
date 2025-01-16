@@ -84,6 +84,10 @@ public class Item : MonoBehaviour
     private void Update()
     {
         ItemUpdate();
+        if (!wielder && chunk == null)
+        {
+            UpdateChunk();
+        }
     }
 
     public virtual void ItemUpdate ()
