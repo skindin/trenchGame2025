@@ -57,9 +57,17 @@ public class BotControllerV2 : MonoBehaviour
 
     public void TestGetBestGun ()
     {
-        var bestGun = CollectionUtils.GetHighest(GetItems<Gun>(), gun => ItemManager.Manager.ranking.RankGun(gun), out _);
+        var visibleGuns = GetItems<Gun>();
+
+        foreach (var item in character.inventory.itemSlots)
+        {
+            if (item is Gun gun)
+                visibleGuns.Insert(0,gun);
+        }
+
+        var bestGun = CollectionUtils.GetHighest(visibleGuns, gun => ItemManager.Manager.ranking.RankGun(gun), out _);
+
         if (!bestGun || //if it didn't find a gun
-            bestGun.transform != targetObject || //or we are already moving targeting this gun
             character.inventory.SetSlotToItem(item => item == bestGun)) //or we are already holding this gun
         {
             return; //nothing to do
@@ -71,6 +79,7 @@ public class BotControllerV2 : MonoBehaviour
         }
         else
         {
+            targetObject = bestGun.transform;
             FollowTargetObject(0);
         }
     }
@@ -124,6 +133,11 @@ public class BotControllerV2 : MonoBehaviour
     public List<T> GetCharacters<T>(Func<T, bool> condition = null) where T : Character
     {
         return ChunkManager.Manager.GetCharactersWithinChunkArray(chunks, condition);
+    }
+
+    public void ResetBot ()
+    {
+        //nothing to reset yet
     }
 
     private void OnDrawGizmos()

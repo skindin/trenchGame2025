@@ -642,7 +642,7 @@ public static class GeoUtils
 
     public static bool CirclesOverlap(Vector2 center1, float radius1, Vector2 center2, float radius2, bool debugLines = false)
     {
-        var result = (center1 - center2).magnitude < radius1 + radius2;
+        var result = (center1 - center2).magnitude <= radius1 + radius2;
 
         if (debugLines)
         {

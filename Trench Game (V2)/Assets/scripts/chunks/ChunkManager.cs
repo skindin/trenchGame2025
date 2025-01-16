@@ -436,7 +436,7 @@ public class ChunkManager : MonoBehaviour
         foreach ( var chunk in chunks )
         {
             if (chunk == null)
-                break;
+                continue;
 
             var itemsOfType = chunk.GetItems<T>();
 
@@ -460,7 +460,7 @@ public class ChunkManager : MonoBehaviour
         foreach (var chunk in chunks)
         {
             if (chunk == null)
-                break;
+                continue;
 
             var itemsOfType = chunk.GetCharacters<T>();
 

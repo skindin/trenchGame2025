@@ -1323,7 +1323,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &369969520
 Transform:
   m_ObjectHideFlags: 0
@@ -2195,7 +2195,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     active: []
     spawnCap: 3
-  spawnBots: 0
+  spawnBots: 1
 --- !u!1 &575497487
 GameObject:
   m_ObjectHideFlags: 0
@@ -2634,7 +2634,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &703258291
 Transform:
   m_ObjectHideFlags: 0
@@ -3416,7 +3416,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 50
+  worldSize: 30
   minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0
@@ -3773,10 +3773,11 @@ MonoBehaviour:
       active: []
       spawnCap: 1
       chance: 2
+    - prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
+      active: []
+      spawnCap: 1
+      chance: 2
     chance: 0
-  - Name: tier 2
-    spawnItems: []
-    chance: 1
   itemsPerDrop: 4
   itemDropRadius: 5
   itemDropInterval: 1
@@ -3791,8 +3792,8 @@ MonoBehaviour:
   spawnCharacter:
     prefab: {fileID: 0}
     active: []
-    spawnCap: 3
-  spawnBots: 0
+    spawnCap: 1
+  spawnBots: 1
 --- !u!4 &1029702624 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1162532254875336613, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
@@ -3934,7 +3935,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  ranking: {fileID: 0}
+  ranking: {fileID: 1268404267}
 --- !u!1 &1074577800
 GameObject:
   m_ObjectHideFlags: 0
@@ -4943,6 +4944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 440d839b1de65414a9a8a96483853a25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseGun: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
   gunRoundsRatioWeight: 2
   gunFireRateWeight: 1
   gunDamageRateWeight: 2

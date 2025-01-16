@@ -11,7 +11,7 @@ public class Character : MonoBehaviour
     public int id, rank, life = 0;
     public string characterName;
     public PlayerController userController;
-    public BotController botController;
+    public BotControllerV2 botController;
     //public SpriteRenderer sprite;
     //public Color dangerColor = Color.white;
     Color startColor;
@@ -46,14 +46,9 @@ public class Character : MonoBehaviour
 
     public Chunk chunk;
     public TrenchCollider trenchCollider;
-    //public TrenchDetector detector;
-    //public TrenchDigger digger; //eventually this will be attached to the shovel...?
-    //public Gun gun;
     public AmmoReserve reserve;
     public Inventory inventory;
-    public bool 
-        digging = false, filling = false, constantDig = false, //too much trouble to comment these out atm
-        constantlyUpdateChunk = false, shooting = false, moving = false; //most of these will probably be moved once i design shovels
+    public bool constantlyUpdateChunk = false, moving = false;
 
     public CharacterType controlType = CharacterType.none;
     CharacterType type;
@@ -314,7 +309,6 @@ public class Character : MonoBehaviour
     public void ResetSelf (bool clearItems = false) //clearItems parameter in case I need to remove character without dropping it's items
     {
         //reset code
-        digging = filling = shooting = false;
 
         if (reserve)
             reserve.Clear();

@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 2831460076466995517}
   - component: {fileID: 7115039898630128601}
   - component: {fileID: 5029955527161250187}
+  - component: {fileID: 5719557823034732747}
   - component: {fileID: 9178249837958229984}
   - component: {fileID: 5314683665201247688}
   - component: {fileID: 1672398506640000765}
@@ -190,7 +191,7 @@ MonoBehaviour:
   life: 0
   characterName: 
   userController: {fileID: 5029955527161250187}
-  botController: {fileID: 9178249837958229984}
+  botController: {fileID: 5719557823034732747}
   baseMoveSpeed: 8
   moveSpeed: 0
   deathDropRadius: 1
@@ -234,11 +235,7 @@ MonoBehaviour:
   trenchCollider: {fileID: 5314683665201247688}
   reserve: {fileID: 4680587690229962691}
   inventory: {fileID: 1889033204176027796}
-  digging: 0
-  filling: 0
-  constantDig: 0
   constantlyUpdateChunk: 1
-  shooting: 0
   moving: 0
   controlType: 0
 --- !u!114 &5029955527161250187
@@ -260,6 +257,23 @@ MonoBehaviour:
   overrideToTouchControls: 0
   autoReloadGuns: 1
   scrollSensitivity: 1
+--- !u!114 &5719557823034732747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4411661645840510790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21d5e6b494c270c408aee56f6e0c45ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 7115039898630128601}
+  visionBox: {x: 16, y: 16}
+  debugLines: 0
+  targetObject: {fileID: 0}
+  targetPos: {x: 0, y: 0}
 --- !u!114 &9178249837958229984
 MonoBehaviour:
   m_ObjectHideFlags: 0

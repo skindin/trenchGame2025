@@ -264,11 +264,11 @@ public static class CollectionUtils
     }
 
     public static T GetHighest<T>(List<T> list, Func<T, float> getValue, out int highestIndex, Func<T, bool> condition = null, 
-        T defaultItem = default, float minValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
+        T defaultItem = default, float minValue = 0, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
         highestIndex = -1;
-        float lowestValue = minValue;
-        T lowestItem = defaultItem;
+        float highestValue = minValue;
+        T highestItem = defaultItem;
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -279,11 +279,11 @@ public static class CollectionUtils
 
             var value = getValue(item);
 
-            if (value < lowestValue)
+            if (value > highestValue)
             {
-                lowestValue = value;
+                highestValue = value;
                 highestIndex = i;
-                lowestItem = item;
+                highestItem = item;
             }
         }
 
@@ -298,12 +298,12 @@ public static class CollectionUtils
             }
         }
 
-        if (onSelected != null && lowestItem is not null)
+        if (onSelected != null && highestItem is not null)
         {
-            onSelected(lowestItem);
+            onSelected(highestItem);
         }
 
-        return lowestItem;
+        return highestItem;
     }
 
     public static float MinMaxAvgConc(float x, float min, float max, float avg, float conc)
