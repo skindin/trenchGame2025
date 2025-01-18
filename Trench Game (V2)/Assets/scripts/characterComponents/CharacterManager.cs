@@ -250,7 +250,7 @@ public class CharacterManager : MonoBehaviour
         //}
     }
 
-    public Character NewCharacter (Vector2 pos, Character.CharacterType type, int id)
+    public Character NewCharacter (Vector2 pos, Character.CharacterType type, int id, int clanId = 0)
     {
         var newCharacter = pool.GetFromPool();
 
@@ -260,6 +260,7 @@ public class CharacterManager : MonoBehaviour
         newCharacter.Type = type;
 
         newCharacter.id = id;
+        newCharacter.AssignClan(ClanManager.Manager.clans[clanId]);
 
         active.Add(newCharacter);
 
@@ -277,34 +278,34 @@ public class CharacterManager : MonoBehaviour
         return newCharacter;
     }
 
-    public Character NewLocalPlayer (Vector2 pos, int id)
+    public Character NewLocalPlayer (Vector2 pos, int id, int clanId = 0)
     {
-        return NewCharacter(pos, Character.CharacterType.localPlayer, id);
+        return NewCharacter(pos, Character.CharacterType.localPlayer, id, clanId);
     }
 
-    public Character NewLocalBot (Vector2 pos, int id)
+    public Character NewLocalBot (Vector2 pos, int id, int clanId = 0)
     {
-        return NewCharacter(pos, Character.CharacterType.localBot,id);
+        return NewCharacter(pos, Character.CharacterType.localBot,id, clanId);
     }
 
-    public Character NewRemoteCharacter(Vector2 pos, int id)
+    public Character NewRemoteCharacter(Vector2 pos, int id, int clanId = 0)
     {
-        return NewCharacter(pos, Character.CharacterType.remote, id);
+        return NewCharacter(pos, Character.CharacterType.remote, id, clanId);
     }
 
     public Character NewLocalPlayerNewId (Vector2 pos)
     {
-        return NewLocalPlayer(pos, NewCharId);
+        return NewLocalPlayer(pos, NewCharId, ClanManager.Manager.GetRandomClanIndexByPopulation()); //breh
     }
 
     public Character NewLocalBotNewId(Vector2 pos)
     {
-        return NewLocalBot(pos, NewCharId);
+        return NewLocalBot(pos, NewCharId, ClanManager.Manager.GetRandomClanIndexByPopulation());
     }
 
     public Character NewRemoteCharacterNewId(Vector2 pos)
     {
-        return NewRemoteCharacter(pos, NewCharId);
+        return NewRemoteCharacter(pos, NewCharId, ClanManager.Manager.GetRandomClanIndexByPopulation());
     }
 
     public void RemoveCharacter(Character character)

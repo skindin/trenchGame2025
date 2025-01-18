@@ -22,7 +22,9 @@ public class SpriteOrderTool : MonoBehaviour
     {
         //Debug.Log($"{gameObject.name} added itself to sprite ordering list");
 
-        FindSpriteParent();
+        if (!parent)
+            FindSpriteParent();
+
         //if (includeSelf)
         if (!parent)
             all.Add(this);

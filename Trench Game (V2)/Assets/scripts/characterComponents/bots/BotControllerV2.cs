@@ -37,7 +37,8 @@ public class BotControllerV2 : MonoBehaviour
 
         if (type == typeof(Gun))
         {
-            CollectionUtils.GetHighest(items, gun => ItemManager.Manager.ranking.RankGun(gun as Gun), out _);
+            CollectionUtils.GetHighest(items, 
+                gun => ItemManager.Manager.ranking.RankGun(gun as Gun) + BotManager.Manager.GetDistanceScore(this,gun), out _);
         }
     }
 
@@ -50,12 +51,18 @@ public class BotControllerV2 : MonoBehaviour
     {
         var delta = transform.position - targetObject.position;
 
+        if (delta.magnitude <= distance)
+        {
+            return;
+        }
+
         targetPos = delta.normalized * distance + targetObject.position;
 
         character.MoveToPos(targetPos);
+        character.LookInDirection(-delta);
     }
 
-    public void TestGetBestGuns (int countLimit)
+    public void GetBestGuns (int countLimit)
     {
         var visibleGuns = GetItems<Gun>();
 
@@ -70,49 +77,102 @@ public class BotControllerV2 : MonoBehaviour
 
         CollectionUtils.SortHighestToLowest(visibleGuns, gun => ItemManager.Manager.ranking.RankGun(gun));
 
-        Gun bestGun = null;
+        var sortedByPrefabId = CollectionUtils.SortToListDict(visibleGuns, gun => gun.prefabId);
+
+        Gun targetGun = null;
 
         var i = 0;
 
         countLimit = Mathf.Min(character.inventory.itemSlots.Length, countLimit);
 
-        foreach (var gun in visibleGuns)
-        {            
+        foreach (var pair in sortedByPrefabId)
+        {
             if (i >= countLimit)
             {
                 break;
             }
 
-            if (character.inventory.SetSlotToItem(item => item == gun))
+            var bestOfGroup = pair.Value[0];
+
+            if (bestOfGroup == targetGun)
             {
-                i++;
+                targetGun = null;
+            }
+
+            if (character.inventory.GetSlotWithItem(item => item && item == bestOfGroup) != null)
+            {
                 continue;
             }
 
-            if (Vector2.Distance(transform.position, gun.transform.position) <= character.inventory.activePickupRad)
+            if (Vector2.Distance(transform.position, bestOfGroup.transform.position) <= character.inventory.activePickupRad)
             {
-                character.inventory.PickupItem(gun, gun.transform.position, true);
+                //if (character.inventory.GetSlotWithItem(item => item && item.prefabId == pair.Key) != null)
+                //{
+                //    character.inventory.DropActiveItem(bestOfGroup.transform.position);
+                //} //tbh this part isn't necessary
 
-                i++;
+                character.LookInDirection(bestOfGroup.transform.position - transform.position);
+                character.inventory.PickupItem(bestOfGroup, bestOfGroup.transform.position, true);
+
                 continue;
             }
 
-            bestGun = gun; //next i should make it sort the guns into prefab id, and then grab the best from each group
-            break;
+            targetGun = bestOfGroup; //breh it just juggles the best guns around
+
+            i++;
         }
 
-        if (bestGun) //if there are no guns
+        targetObject = targetGun ? targetGun.transform : null;
+    }
+
+    public void GetConsumables (int countLimit)
+    {
+    }
+
+    public List<T> GetBestItems<T> (int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true) where T : Item
+    {
+        var visible = GetItems<T>();
+
+        if (includeInventory)
         {
-            targetObject = bestGun.transform;
-            FollowTargetObject(0);
+            foreach (var item in character.inventory.itemSlots)
+            {
+                if (item)
+                {
+                    visible.Insert(0, (T)item);
+                }
+            }
         }
+
+        Func<T, float> getValue = item => ItemManager.Manager.ranking.RankItem(item);
+
+        CollectionUtils.SortHighestToLowest(visible,
+            considerDistance ?
+            item => getValue(item) + BotManager.Manager.GetDistanceScore(this, item) :
+            getValue
+            );
+
+        if (onePerPrefab)
+        {
+            visible = CollectionUtils.ListFirstOfEveryValue(visible, item => item.prefabId, limit);
+        }
+
+        if (limit.HasValue)
+            visible.Take(limit.Value); //haven't ever tested this take function
+
+        return visible; //gonna call it a day
     }
 
     private void Update()
     {
         UpdateChunks();
 
-        TestGetBestGuns(3);
+        GetBestGuns(2);
+
+        if (targetObject)
+        {
+            FollowTargetObject(0);
+        }
     }
 
     public void UpdateChunks ()
@@ -151,12 +211,16 @@ public class BotControllerV2 : MonoBehaviour
 
     public List<T> GetItems<T> (Func<T, bool> condition = null) where T : Item
     {
-        return ChunkManager.Manager.GetItemsWithinChunkArray(chunks, condition);
+        return ChunkManager.Manager.GetItemsWithinChunkArray<T>(chunks, 
+            item => 
+            (condition == null || condition(item)) && GeoUtils.TestBoxPosSize(transform.position,visionBox,item.transform.position));
     }
 
     public List<T> GetCharacters<T>(Func<T, bool> condition = null) where T : Character
     {
-        return ChunkManager.Manager.GetCharactersWithinChunkArray(chunks, condition);
+        return ChunkManager.Manager.GetCharactersWithinChunkArray<T>(chunks, 
+            character => 
+            (condition == null || condition(character)) && GeoUtils.TestBoxPosSize(transform.position, visionBox, character.transform.position));
     }
 
     public void ResetBot ()

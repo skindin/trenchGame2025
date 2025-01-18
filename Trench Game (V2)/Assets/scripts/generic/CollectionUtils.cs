@@ -11,7 +11,7 @@ using System.Linq;
 public static class CollectionUtils
 {
 
-    public static float GetListValueTotal<T> (T[] list, Func<T,float> getValue)
+    public static float GetListValueTotal<T>(T[] list, Func<T, float> getValue)
     {
         float total = 0f;
 
@@ -32,7 +32,7 @@ public static class CollectionUtils
         return itemValue / total;
     }
 
-    public static (T,int)[] GetOccurancePairs<T> (List<T> list, int count, Func<T, float> chancePredicate, bool onlyReturnApplicable = true)
+    public static (T, int)[] GetOccurancePairs<T>(List<T> list, int count, Func<T, float> chancePredicate, bool onlyReturnApplicable = true)
     {
         T[] results = new T[count];
 
@@ -41,7 +41,7 @@ public static class CollectionUtils
             results[i] = GetRandomItemFromListValues(UnityEngine.Random.value, list, chancePredicate);
         }
 
-        (T,int)[] allPairs = new (T,int)[list.Count];
+        (T, int)[] allPairs = new (T, int)[list.Count];
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -54,7 +54,7 @@ public static class CollectionUtils
             allPairs[i].Item2 = occurances;
         }
 
-        if (!onlyReturnApplicable) 
+        if (!onlyReturnApplicable)
             return allPairs;
 
         return GetItems(allPairs, x => x.Item2 > 0);
@@ -85,8 +85,8 @@ public static class CollectionUtils
 
             allPairs[i].Item1 = item;
 
-            int occurances = GetTotal(results,x =>{
-                     return item.Equals(x); });
+            int occurances = GetTotal(results, x => {
+                return item.Equals(x); });
 
             allPairs[i].Item2 = occurances;
         }
@@ -121,7 +121,7 @@ public static class CollectionUtils
     //    return default;
     //} //total didn't comply to condition, which broke this, and I don't feel like working on that rn
 
-    public static T[] GetItems<T> (IEnumerable<T> list, Func<T, bool> predicate)
+    public static T[] GetItems<T>(IEnumerable<T> list, Func<T, bool> predicate)
     {
         var applicableCount = 0;
 
@@ -149,7 +149,7 @@ public static class CollectionUtils
         return output;
     }
 
-    public static int GetTotal<T> (T[] list, Func<T, bool> predicate)
+    public static int GetTotal<T>(T[] list, Func<T, bool> predicate)
     {
         int total = 0;
 
@@ -170,7 +170,7 @@ public static class CollectionUtils
     //    return ItemRatioFromListItemValues(item, list, predicate);
     //}
 
-    public static int GetRandomIndexFromListValues<T> (float ratio, List<T> list, Func<T, float> predicate)
+    public static int GetRandomIndexFromListValues<T>(float ratio, List<T> list, Func<T, float> predicate)
     {
         ratio = MathF.Min(ratio, 1);
 
@@ -181,7 +181,7 @@ public static class CollectionUtils
         for (int i = 0; i < list.Count; i++)
         {
             var item = list[i];
-            var itemRatio = predicate(item)/ total + idk;
+            var itemRatio = predicate(item) / total + idk;
             if (itemRatio >= ratio)
             {
                 return i;
@@ -193,10 +193,10 @@ public static class CollectionUtils
         return list.Count - 1;
     }
 
-    public static T GetRandomItemFromListValues<T> (float ratio, List<T> list, Func<T, float> predicate)
+    public static T GetRandomItemFromListValues<T>(float ratio, List<T> list, Func<T, float> predicate)
     {
         var index = GetRandomIndexFromListValues(ratio, list, predicate);
-        if (index < list.Count) 
+        if (index < list.Count)
             return list[index];
 
         return default;
@@ -209,19 +209,19 @@ public static class CollectionUtils
 
     public static T GetClosest<T>(Vector2 pos, List<T> list, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxDist = Mathf.Infinity, bool debugLines = false)
     {
-        static void MarkPos<Item> (Item item, Func<Item,Vector2> getPos, Color color)
+        static void MarkPos<Item>(Item item, Func<Item, Vector2> getPos, Color color)
         {
             GeoUtils.MarkPoint(getPos(item), .5f, color);
         }
 
         //Func<T, float> getDistance = item => Vector2.Distance(pos, getPos(item));
-        Action<T> onClosest = debugLines ? item => MarkPos(item,getPos,Color.green) : null;
+        Action<T> onClosest = debugLines ? item => MarkPos(item, getPos, Color.green) : null;
         Action<T> onNotClosest = debugLines ? item => MarkPos(item, getPos, Color.red) : null;
 
         return GetLowest(list, item => Vector2.Distance(pos, getPos(item)), out lowestIndex, condition, defaultItem, maxDist, onClosest, onNotClosest);
     }
 
-    public static T GetLowest<T> (List<T> list, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
+    public static T GetLowest<T>(List<T> list, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
         lowestIndex = -1;
         float lowestValue = maxValue;
@@ -263,7 +263,7 @@ public static class CollectionUtils
         return lowestItem;
     }
 
-    public static T GetHighest<T>(List<T> list, Func<T, float> getValue, out int highestIndex, Func<T, bool> condition = null, 
+    public static T GetHighest<T>(List<T> list, Func<T, float> getValue, out int highestIndex, Func<T, bool> condition = null,
         T defaultItem = default, float minValue = 0, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
         highestIndex = -1;
@@ -354,14 +354,14 @@ public static class CollectionUtils
     }
 
 
-    public static List<T> SortHighestToLowest<T>(List<T> list, Func<T,float> getValue)
+    public static List<T> SortHighestToLowest<T>(List<T> list, Func<T, float> getValue)
     {
         for (int i = 1; i < list.Count; i++)
         {
             var current = list[i];
             int j = i - 1;
 
-            while (j >= 0 && getValue(current) > getValue( list[j]))
+            while (j >= 0 && getValue(current) > getValue(list[j]))
             {
                 list[j + 1] = list[j];
                 j--;
@@ -392,7 +392,7 @@ public static class CollectionUtils
         return list;
     }
 
-    public static List<T> AssignIntPropToIndex<T> (List<T> list, Action<T, int> setIndex) where T : class
+    public static List<T> AssignIntPropToIndex<T>(List<T> list, Action<T, int> setIndex) where T : class
     {
         for (int i = 0; i < list.Count; i++)
         {
@@ -402,14 +402,14 @@ public static class CollectionUtils
         return list;
     }
 
-    public static List<T> AssignIndexesByIntCollection<T> (List<T> itemList, IEnumerable<int> indexColl, Func<T, int> getProperty)
+    public static List<T> AssignIndexesByIntCollection<T>(List<T> itemList, IEnumerable<int> indexColl, Func<T, int> getProperty)
     {
         var itemListClone = new List<T>(itemList);
         itemList.Clear();
 
         foreach (var index in indexColl)
         {
-            for (var i =  0; i < itemListClone.Count; i++)
+            for (var i = 0; i < itemListClone.Count; i++)
             {
                 var item = itemListClone[i];
 
@@ -430,7 +430,7 @@ public static class CollectionUtils
         return itemList;
     }
 
-    public static Dictionary<TKey,List<TObject>> SortToListDict<TObject,TKey> (IEnumerable<TObject> collection, Func<TObject,TKey> getKey)
+    public static Dictionary<TKey, List<TObject>> SortToListDict<TObject, TKey>(IEnumerable<TObject> collection, Func<TObject, TKey> getKey)
     {
         Dictionary<TKey, List<TObject>> dictionary = new();
 
@@ -440,7 +440,7 @@ public static class CollectionUtils
 
             var itemKey = getKey(item);
 
-            if (!dictionary.TryGetValue(itemKey,out list))
+            if (!dictionary.TryGetValue(itemKey, out list))
             {
                 list = new();
                 dictionary[itemKey] = list;
@@ -453,5 +453,41 @@ public static class CollectionUtils
     }
 
 
+    /// <summary>
+    /// returns first of every value. example: 1,5,3,8,4,4,2,2,5,6,8 would be 1,5,3,8,4,2,6
+    /// </summary>
+    /// <typeparam name="TValue"></typeparam>
+    /// <typeparam name="TObject"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="getValue"></param>
+    /// <returns></returns>
+    public static List<TObject> ListFirstOfEveryValue<TValue, TObject>(IEnumerable<TObject> collection, Func<TObject, TValue> getValue, int? limit = null)
+    {
+        List<TObject> output = new();
+
+        HashSet<TValue> hashSet = new();
+
+        int count = 0;
+
+        foreach (var item in collection)
+        {
+            if (limit.HasValue && count >= limit.Value)
+            {
+                return output;
+            }
+
+            var value = getValue(item);
+
+            if (!hashSet.Contains(value))
+            {
+                hashSet.Add(value);
+                output.Add(item);
+            }
+
+            count++;
+        }
+
+        return output;
+    }
 
 }

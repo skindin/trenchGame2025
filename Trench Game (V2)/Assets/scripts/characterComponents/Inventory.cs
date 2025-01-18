@@ -82,7 +82,7 @@ public class Inventory : MonoBehaviour
         return null;
     }
 
-    int? GetSlotWithItem(Func<Item, bool> condition)
+    public int? GetSlotWithItem(Func<Item, bool> condition)
     {
         for (int i = 0; i < itemSlots.Length; i++)
         {
@@ -94,6 +94,7 @@ public class Inventory : MonoBehaviour
 
         return null;
     }
+
 
     public bool SetSlotToItem(Func<Item, bool> condition)
     {

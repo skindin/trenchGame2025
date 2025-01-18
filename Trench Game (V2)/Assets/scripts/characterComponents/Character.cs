@@ -10,17 +10,19 @@ public class Character : MonoBehaviour
     //public static List<Character> all = new();//, chunkless = new();
     public int id, rank, life = 0;
     public string characterName;
+    [HideInInspector]
+    public Clan clan;
     public PlayerController userController;
     public BotControllerV2 botController;
     //public SpriteRenderer sprite;
     //public Color dangerColor = Color.white;
-    Color startColor;
     public float baseMoveSpeed = 5, moveSpeed = 0, deathDropRadius = 1, hp = 10, maxHp = 10, jumpDuration = .2f, jumpCooldown = .1f;
 
     int killCount;
 
     public UnityEvent<Vector2> onMove, onLook;
     public UnityEvent onReset;
+    public UnityEvent<Color> onAssignedClan;
 
     public int KillCount
     {
@@ -69,6 +71,13 @@ public class Character : MonoBehaviour
 
             type = value;
         }
+    }
+
+    public void AssignClan(Clan clan)
+    {
+        this.clan = clan;
+
+        onAssignedClan.Invoke(clan.color);
     }
 
     // Start is called before the first frame update

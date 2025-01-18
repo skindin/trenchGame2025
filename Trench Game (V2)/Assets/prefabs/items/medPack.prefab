@@ -106,7 +106,6 @@ MonoBehaviour:
   localOrder: 1
   parent: {fileID: 0}
   children: []
-  container: {fileID: 1526905709983834323}
 --- !u!1 &3562899794262530257
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,9 +266,8 @@ MonoBehaviour:
   includeSelf: 1
   sprite: {fileID: 5011956228783135991}
   localOrder: 1
-  parent: {fileID: 1989906505745174026}
+  parent: {fileID: 0}
   children: []
-  container: {fileID: 1526905709983834323}
 --- !u!1 &8881084842866228380
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,6 +370,5 @@ MonoBehaviour:
   includeSelf: 1
   sprite: {fileID: 3332444744484434129}
   localOrder: 1
-  parent: {fileID: 1989906505745174026}
+  parent: {fileID: 0}
   children: []
-  container: {fileID: 1526905709983834323}

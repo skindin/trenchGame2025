@@ -1,5 +1,108 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &850079491974883146
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8506016045944791213}
+  - component: {fileID: 242852576887592375}
+  - component: {fileID: 3877864283375137117}
+  m_Layer: 0
+  m_Name: Square
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8506016045944791213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850079491974883146}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8491172871633869012}
+  - {fileID: 6956754657750626555}
+  m_Father: {fileID: 4927845735789281225}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &242852576887592375
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850079491974883146}
+  m_Enabled: 0
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 451774991
+  m_SortingLayer: -1
+  m_SortingOrder: -1
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!114 &3877864283375137117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850079491974883146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24502b756f6a70b41a1fdadda60e4fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: 0, y: 0, z: 0}
+  scale: {x: 1, y: 0.8, z: 1}
+  rotation: {x: 0, y: 0, z: 0}
+  applied: 0
 --- !u!1 &1571640494949150238
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,6 +113,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1162532254875336613}
   - component: {fileID: 4779575256211640533}
+  - component: {fileID: 6953229556152850484}
   m_Layer: 0
   m_Name: itemContainer
   m_TagString: Untagged
@@ -26,11 +130,11 @@ Transform:
   m_GameObject: {fileID: 1571640494949150238}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.375, z: 0}
-  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_LocalPosition: {x: 0, y: -0.10000001, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8491172871633869012}
+  m_Father: {fileID: 4113711866189484970}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4779575256211640533
 MonoBehaviour:
@@ -39,7 +143,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1571640494949150238}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 
@@ -49,8 +153,24 @@ MonoBehaviour:
   includeSelf: 0
   sprite: {fileID: 0}
   localOrder: 0
-  parent: {fileID: 0}
+  parent: {fileID: 1235202178872870430}
   children: []
+--- !u!114 &6953229556152850484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571640494949150238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24502b756f6a70b41a1fdadda60e4fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: 0, y: 0, z: 0}
+  scale: {x: -1, y: 1, z: 1}
+  rotation: {x: 0, y: 0, z: 0}
+  applied: 0
 --- !u!1 &1806523291695496658
 GameObject:
   m_ObjectHideFlags: 0
@@ -77,11 +197,11 @@ Transform:
   m_GameObject: {fileID: 1806523291695496658}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.18, z: 0}
-  m_LocalScale: {x: 1.3311687, y: 0.6873795, z: 1.2539681}
+  m_LocalPosition: {x: 0, y: -0.74399996, z: 0}
+  m_LocalScale: {x: 1.064935, y: 0.5499036, z: 1.0031747}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 8491172871633869012}
+  m_Father: {fileID: 8506016045944791213}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4405824250991255435
 SpriteRenderer:
@@ -149,7 +269,6 @@ GameObject:
   - component: {fileID: 5719557823034732747}
   - component: {fileID: 9178249837958229984}
   - component: {fileID: 5314683665201247688}
-  - component: {fileID: 1672398506640000765}
   m_Layer: 0
   m_Name: goblinCharacter
   m_TagString: Untagged
@@ -170,7 +289,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8491172871633869012}
+  - {fileID: 4927845735789281225}
   - {fileID: 4113711866189484970}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -190,6 +309,10 @@ MonoBehaviour:
   rank: 0
   life: 0
   characterName: 
+  clan:
+    Name: 
+    color: {r: 0, g: 0, b: 0, a: 0}
+    id: 0
   userController: {fileID: 5029955527161250187}
   botController: {fileID: 5719557823034732747}
   baseMoveSpeed: 8
@@ -232,6 +355,21 @@ MonoBehaviour:
   onReset:
     m_PersistentCalls:
       m_Calls: []
+  onAssignedClan:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4108761352474424341}
+        m_TargetAssemblyTypeName: UnityEngine.SpriteRenderer, UnityEngine
+        m_MethodName: set_color
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   trenchCollider: {fileID: 5314683665201247688}
   reserve: {fileID: 4680587690229962691}
   inventory: {fileID: 1889033204176027796}
@@ -317,9 +455,9 @@ MonoBehaviour:
   onChangeTrenchStatus:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6926741438716249447}
-        m_TargetAssemblyTypeName: TintSprite, Assembly-CSharp
-        m_MethodName: ApplyTint
+      - m_Target: {fileID: 3877864283375137117}
+        m_TargetAssemblyTypeName: TransformEffect, Assembly-CSharp
+        m_MethodName: ApplyEffect
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -337,25 +475,6 @@ MonoBehaviour:
   drawTrenchStatus: 0
   wallCollisions: 0
   freezeMovement: 0
---- !u!114 &1672398506640000765
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4411661645840510790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  groundCenterPoint: {x: 0, y: -0.8}
-  drawPoint: 0
-  includeSelf: 0
-  sprite: {fileID: 0}
-  localOrder: 0
-  parent: {fileID: 0}
-  children: []
 --- !u!1 &5384493173543384294
 GameObject:
   m_ObjectHideFlags: 0
@@ -386,7 +505,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1162532254875336613}
   m_Father: {fileID: 2831460076466995517}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1889033204176027796
@@ -432,6 +552,38 @@ MonoBehaviour:
   - type: {fileID: 11400000, guid: e00f29eaed6cdfe4d88a2f7e27c40203, type: 2}
     rounds: 0
     maxRounds: 500
+--- !u!1 &8242165592539374025
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4927845735789281225}
+  m_Layer: 0
+  m_Name: sprites
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4927845735789281225
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8242165592539374025}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8506016045944791213}
+  m_Father: {fileID: 2831460076466995517}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8812111973789784530
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,9 +597,8 @@ GameObject:
   - component: {fileID: 1235202178872870430}
   - component: {fileID: 5373565871716294443}
   - component: {fileID: 1393441897014514951}
-  - component: {fileID: 6926741438716249447}
   m_Layer: 0
-  m_Name: sprites
+  m_Name: goblin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -465,10 +616,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.2, z: 0}
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 6956754657750626555}
-  - {fileID: 1162532254875336613}
-  m_Father: {fileID: 2831460076466995517}
+  m_Children: []
+  m_Father: {fileID: 8506016045944791213}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4108761352474424341
 SpriteRenderer:
@@ -529,7 +678,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8812111973789784530}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 
@@ -539,8 +688,9 @@ MonoBehaviour:
   includeSelf: 1
   sprite: {fileID: 4108761352474424341}
   localOrder: 0
-  parent: {fileID: 1235202178872870430}
-  children: []
+  parent: {fileID: 0}
+  children:
+  - {fileID: 4779575256211640533}
 --- !u!114 &5373565871716294443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,6 +743,18 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: movingLeft
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1393441897014514951}
+        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+        m_MethodName: ResetTrigger
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: movingRight
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1393441897014514951}
@@ -742,6 +904,18 @@ MonoBehaviour:
           m_StringArgument: facingRight
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 6953229556152850484}
+        m_TargetAssemblyTypeName: TransformEffect, Assembly-CSharp
+        m_MethodName: ApplyEffect
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: facingRight
+          m_BoolArgument: 1
+        m_CallState: 2
   onFaceRight:
     m_PersistentCalls:
       m_Calls:
@@ -781,21 +955,21 @@ MonoBehaviour:
           m_StringArgument: facingLeft
           m_BoolArgument: 0
         m_CallState: 2
-  onFaceDown:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4779575256211640533}
-        m_TargetAssemblyTypeName: SpriteOrderTool, Assembly-CSharp
-        m_MethodName: SetLocalOrder
-        m_Mode: 3
+      - m_Target: {fileID: 6953229556152850484}
+        m_TargetAssemblyTypeName: TransformEffect, Assembly-CSharp
+        m_MethodName: ApplyEffect
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: facingLeft
           m_BoolArgument: 0
         m_CallState: 2
+  onFaceDown:
+    m_PersistentCalls:
+      m_Calls:
       - m_Target: {fileID: 1393441897014514951}
         m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
         m_MethodName: SetTrigger
@@ -812,6 +986,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
         m_MethodName: ResetTrigger
         m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: facingUp
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 4779575256211640533}
+        m_TargetAssemblyTypeName: SpriteOrderTool, Assembly-CSharp
+        m_MethodName: SetLocalOrder
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -881,17 +1067,3 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6926741438716249447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8812111973789784530}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4a7ad5df96025d4c89ab636d52a4b17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tintColor: {r: 1, g: 1, b: 1, a: 0.8666667}
-  sprite: {fileID: 4108761352474424341}
