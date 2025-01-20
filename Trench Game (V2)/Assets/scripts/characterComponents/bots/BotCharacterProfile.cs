@@ -5,5 +5,5 @@ using UnityEngine;
 public class BotCharacterProfile
 {
     public Vector2 lastKnownPos;
-    public float lastSeenTime;
+    public float lastSeenTime, lastDamagedTime, totalDamageDealt;
 }

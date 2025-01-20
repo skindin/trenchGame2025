@@ -11,19 +11,20 @@ public class ScoringEditor : Editor
     {
         manager = (ScoringManager)target;
 
-        //base.OnInspectorGUI();
+        base.OnInspectorGUI();
 
-        manager.drawSceneItemScores = EditorGUILayout.Toggle("Draw Scene Item Scores", manager.drawSceneItemScores);
+        //manager.drawSceneItemScores = EditorGUILayout.Toggle("Draw Scene Item Scores", manager.drawSceneItemScores);
 
-        if (manager.drawSceneItemScores)
-        {
-            EditorGUI.indentLevel++;
-            manager.scoreLabelOffset = EditorGUILayout.Vector2Field("Label Offset", manager.scoreLabelOffset);
-            EditorGUI.indentLevel--;
-        }
+        //if (manager.drawSceneItemScores)
+        //{
+        //    EditorGUI.indentLevel++;
+        //    manager.scoreLabelOffset = EditorGUILayout.Vector2Field("Label Offset", manager.scoreLabelOffset);
+        //    EditorGUI.indentLevel--;
+        //}
 
-        DrawGunUI();
-        DrawConsumableUI();
+        //DrawGunUI();
+        //DrawConsumableUI();
+        //DrawCharacterUI();
     }
 
     public void DrawGunUI ()
@@ -60,6 +61,21 @@ public class ScoringEditor : Editor
         EditorGUI.indentLevel--;
     }
 
+    public void DrawCharacterUI()
+    {
+        EditorGUILayout.LabelField("Character");
+
+        EditorGUI.indentLevel++;
+
+        manager.baseCharacter = (Character)EditorGUILayout.ObjectField("Base", manager.baseCharacter, typeof(Character), true);
+
+        manager.characterHPWeight = EditorGUILayout.FloatField("HP Weight", manager.characterHPWeight);
+
+        manager.characterMoveSpeedWeight = EditorGUILayout.FloatField("Move Speed Weight", manager.characterMoveSpeedWeight);
+
+        EditorGUI.indentLevel--;
+    }
+
     private void OnSceneGUI()
     {
         if (manager && manager.drawSceneItemScores)
@@ -76,7 +92,7 @@ public class ScoringEditor : Editor
             foreach (var item in allItems)
             {
                 Handles.Label((Vector3)manager.scoreLabelOffset + item.transform.position,
-                    $"{manager.RankItem(item):F2}",
+                    $"{manager.GetItemScore(item):F2}",
                     boldStyle);
             }
         }

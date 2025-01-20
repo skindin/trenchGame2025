@@ -36,20 +36,17 @@ public class ChunkManager : MonoBehaviour
     public Chunk[,] chunks;
     //public int maxChunksPooled = 10;
     //readonly List<Chunk> chunkPool = new();
-    public ObjectPool<Chunk> chunkPool;
+    public ObjectPool<Chunk> chunkPool = new(
+        newFunc: () => new Chunk(),
+        resetAction: chunk => chunk.Reset(),
+        disableAction: null,
+        destroyAction: null
+        );//
 
     public bool logOutOfBounds = false, drawChunks = false, drawObjectChunkLinks = false, drawLineTest = false;
 
     private void Awake()
     {
-        chunkPool = new(
-            minPooled: chunkPool.minPooled,
-            maxPooled: chunkPool.maxPooled,
-        newFunc: () => new Chunk(),
-        resetAction: chunk => chunk.Reset(),
-        disableAction: null,
-        destroyAction: null
-        );
 
         InstantiateChunks();
     }

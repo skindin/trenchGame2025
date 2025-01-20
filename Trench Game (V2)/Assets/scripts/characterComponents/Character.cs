@@ -23,6 +23,7 @@ public class Character : MonoBehaviour
     public UnityEvent<Vector2> onMove, onLook;
     public UnityEvent onReset;
     public UnityEvent<Color> onAssignedClan;
+    //public UnityEvent<float, Character, int> onDamaged;
 
     public int KillCount
     {
@@ -119,19 +120,21 @@ public class Character : MonoBehaviour
     //    }
     //}
 
-    public void Damage (float hp, Character killer, int killerLife)
+    public void Damage (float hp, Character aggressor, int life)
     {
         SetHP(MathF.Max(this.hp - hp,0));
 
+        botController.OnDamaged(hp, aggressor, life);
+
         if (this.hp == 0)
         {
-            if (killer.life == killerLife)
+            if (aggressor.life == life)
             {
-                killer.killCount++;
+                aggressor.killCount++;
 
                 if (NetworkManager.IsServer)
                 {
-                    NetworkManager.Manager.SetKills(killer, killer.killCount);
+                    NetworkManager.Manager.SetKills(aggressor, aggressor.killCount);
                 }
             }
 

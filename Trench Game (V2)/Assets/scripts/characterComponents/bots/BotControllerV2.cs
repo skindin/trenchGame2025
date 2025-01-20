@@ -10,8 +10,9 @@ public class BotControllerV2 : MonoBehaviour
     public bool debugLines = false;
     public Transform targetObject;
     public Vector2? targetPos;
+    public float offenseMemory = 5;
     //public float targetFollowDistance;
-    //public Dictionary<int,BotCharacterProfile> profiles = new ();
+    public Dictionary<int, BotCharacterProfile> profiles = new();
 
     public Chunk[,] chunks;
 
@@ -20,11 +21,11 @@ public class BotControllerV2 : MonoBehaviour
         return transform.position; 
     }
 
-    public void FollowTargetObject (float distance)
+    public void FollowTargetObject (float distance, bool maintainDist = false)
     {
         var delta = transform.position - targetObject.position;
 
-        if (delta.magnitude <= distance)
+        if (!maintainDist && delta.magnitude <= distance)
         {
             return;
         }
@@ -36,10 +37,10 @@ public class BotControllerV2 : MonoBehaviour
     }
 
     public List<T> GetBestItems<T> 
-        (int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true)
+        (Func<T,bool> condition, int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true)
         where T : Item
     {
-        var visible = GetItems<T>();
+        var visible = GetVisibleItems<T>(condition);
 
         if (includeInventory)
         {
@@ -54,9 +55,11 @@ public class BotControllerV2 : MonoBehaviour
 
         CollectionUtils.SortHighestToLowest(visible,
             considerDistance ?
-            item => ScoringManager.Manager.RankItem(item) + ScoringManager.Manager.GetItemDistanceScore(transform.position, item) :
-            ScoringManager.Manager.RankItem
+            item => ScoringManager.Manager.GetItemScore(item) + ScoringManager.Manager.GetItemDistanceScore(transform.position, item) :
+            ScoringManager.Manager.GetItemScore
             );
+
+        //this should probably have a way of privatizing properties of items outside pickup range
 
         if (onePerPrefab)
         {
@@ -109,15 +112,56 @@ public class BotControllerV2 : MonoBehaviour
         return null;
     }
 
+    public List<T> GetStrongestCharacters<T> (Func<T,bool> condition, bool considerDistance = true) where T : Character
+    {
+        var visibleCharacters = GetVisibleCharacters(condition);
+
+        Func<T, float> getValue = considerDistance ?
+            character => ScoringManager.Manager.GetCharacterScore(character) + ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character) :
+            ScoringManager.Manager.GetCharacterScore;
+
+        CollectionUtils.SortHighestToLowest(visibleCharacters, getValue);
+
+        return visibleCharacters;
+    }
+
     private void Update()
     {
         UpdateChunks();
 
-        PickupItemsInOrder(GetBestItems<Item>(2));
+        var strongestCharacter = CollectionUtils.GetHighest(
+            GetVisibleCharacters<Character>(character => character.clan != this.character.clan),
+            character => ScoringManager.Manager.GetCharacterScore(character) +
+            ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character),
+            out _);
 
-        if (targetObject)
+        if (strongestCharacter && character.inventory.ActiveWeapon)
         {
-            FollowTargetObject(0);
+            Attack(strongestCharacter);
+        }
+        else
+        {
+            PickupItemsInOrder(GetBestItems<Weapon>(null, 2));
+
+            if (targetObject)
+                FollowTargetObject(0);
+        }
+    }
+
+    public void Attack (Character victim)
+    {
+        var weapon = character.inventory.ActiveWeapon;
+
+        if (weapon is Gun gun)
+        {
+            if (Vector2.Distance(victim.transform.position, transform.position) <= gun.range)
+            {            
+                gun.DirectionalAction(victim.transform.position - transform.position);
+            }
+
+            targetObject = gun.transform;
+
+            FollowTargetObject(gun.range, true);
         }
     }
 
@@ -155,18 +199,42 @@ public class BotControllerV2 : MonoBehaviour
     //    return ChunkManager.Manager.FindClosestItemWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
     //}
 
-    public List<T> GetItems<T> (Func<T, bool> condition = null) where T : Item
+    public List<T> GetVisibleItems<T> (Func<T, bool> condition = null) where T : Item
     {
         return ChunkManager.Manager.GetItemsWithinChunkArray<T>(chunks, 
             item => 
             (condition == null || condition(item)) && GeoUtils.TestBoxPosSize(transform.position,visionBox,item.transform.position));
     }
 
-    public List<T> GetCharacters<T>(Func<T, bool> condition = null) where T : Character
+    public List<T> GetVisibleCharacters<T>(Func<T, bool> condition = null) where T : Character
     {
         return ChunkManager.Manager.GetCharactersWithinChunkArray<T>(chunks, 
-            character => 
-            (condition == null || condition(character)) && GeoUtils.TestBoxPosSize(transform.position, visionBox, character.transform.position));
+            character =>
+            character != this.character && 
+            (condition == null || condition(character)) && 
+            GeoUtils.TestBoxPosSize(transform.position, visionBox, character.transform.position));
+    }
+
+    public void OnDamaged (float hp, Character aggressor, int life)
+    {
+        var profile = GetProfile(aggressor);
+
+        profile.lastDamagedTime = Time.time;
+        profile.totalDamageDealt += hp;
+    }
+
+    public BotCharacterProfile GetProfile (Character character)
+    {
+        if (profiles.TryGetValue(character.id, out var profile))
+        {
+            return profile;
+        }
+        else
+        {
+            var newProfile = new BotCharacterProfile();
+            profiles.Add(character.id,newProfile);
+            return newProfile;
+        }
     }
 
     public void ResetBot ()
