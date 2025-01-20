@@ -9,38 +9,11 @@ public class BotControllerV2 : MonoBehaviour
     public Vector2 visionBox;
     public bool debugLines = false;
     public Transform targetObject;
-    public Vector2 targetPos;
+    public Vector2? targetPos;
     //public float targetFollowDistance;
-    public Dictionary<int,BotCharacterProfile> profiles = new ();
+    //public Dictionary<int,BotCharacterProfile> profiles = new ();
 
     public Chunk[,] chunks;
-
-    public void ExampleKillThisCharacter(Character target)
-    {
-        var sortedVisibleItems = CollectionUtils.SortToListDict(GetItems<Item>(), item => item.GetType());
-        //this is a sorted list of all visible items
-
-        if (sortedVisibleItems.TryGetValue(typeof(Gun), out var list))
-        {
-            SortItemListByStats(list);
-
-            targetObject = list[0].transform;
-
-            
-        }
-
-    }
-
-    public void SortItemListByStats<T> (List<T> items) where T : Item
-    {
-        var type = typeof(T);
-
-        if (type == typeof(Gun))
-        {
-            CollectionUtils.GetHighest(items, 
-                gun => ItemManager.Manager.ranking.RankGun(gun as Gun) + BotManager.Manager.GetDistanceScore(this,gun), out _);
-        }
-    }
 
     public Vector2 FindBulletPathToPos (Vector2 pos)
     {
@@ -58,78 +31,13 @@ public class BotControllerV2 : MonoBehaviour
 
         targetPos = delta.normalized * distance + targetObject.position;
 
-        character.MoveToPos(targetPos);
+        character.MoveToPos(targetPos.Value);
         character.LookInDirection(-delta);
     }
 
-    public void GetBestGuns (int countLimit)
-    {
-        var visibleGuns = GetItems<Gun>();
-
-        if (visibleGuns.Count == 0)
-            return;
-
-        foreach (var item in character.inventory.itemSlots)
-        {
-            if (item is Gun gun)
-                visibleGuns.Insert(0,gun);//insert instead of add, to favor guns already in inventory
-        }
-
-        CollectionUtils.SortHighestToLowest(visibleGuns, gun => ItemManager.Manager.ranking.RankGun(gun));
-
-        var sortedByPrefabId = CollectionUtils.SortToListDict(visibleGuns, gun => gun.prefabId);
-
-        Gun targetGun = null;
-
-        var i = 0;
-
-        countLimit = Mathf.Min(character.inventory.itemSlots.Length, countLimit);
-
-        foreach (var pair in sortedByPrefabId)
-        {
-            if (i >= countLimit)
-            {
-                break;
-            }
-
-            var bestOfGroup = pair.Value[0];
-
-            if (bestOfGroup == targetGun)
-            {
-                targetGun = null;
-            }
-
-            if (character.inventory.GetSlotWithItem(item => item && item == bestOfGroup) != null)
-            {
-                continue;
-            }
-
-            if (Vector2.Distance(transform.position, bestOfGroup.transform.position) <= character.inventory.activePickupRad)
-            {
-                //if (character.inventory.GetSlotWithItem(item => item && item.prefabId == pair.Key) != null)
-                //{
-                //    character.inventory.DropActiveItem(bestOfGroup.transform.position);
-                //} //tbh this part isn't necessary
-
-                character.LookInDirection(bestOfGroup.transform.position - transform.position);
-                character.inventory.PickupItem(bestOfGroup, bestOfGroup.transform.position, true);
-
-                continue;
-            }
-
-            targetGun = bestOfGroup; //breh it just juggles the best guns around
-
-            i++;
-        }
-
-        targetObject = targetGun ? targetGun.transform : null;
-    }
-
-    public void GetConsumables (int countLimit)
-    {
-    }
-
-    public List<T> GetBestItems<T> (int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true) where T : Item
+    public List<T> GetBestItems<T> 
+        (int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true)
+        where T : Item
     {
         var visible = GetItems<T>();
 
@@ -144,30 +52,68 @@ public class BotControllerV2 : MonoBehaviour
             }
         }
 
-        Func<T, float> getValue = item => ItemManager.Manager.ranking.RankItem(item);
-
         CollectionUtils.SortHighestToLowest(visible,
             considerDistance ?
-            item => getValue(item) + BotManager.Manager.GetDistanceScore(this, item) :
-            getValue
+            item => ScoringManager.Manager.RankItem(item) + ScoringManager.Manager.GetItemDistanceScore(transform.position, item) :
+            ScoringManager.Manager.RankItem
             );
 
         if (onePerPrefab)
         {
             visible = CollectionUtils.ListFirstOfEveryValue(visible, item => item.prefabId, limit);
         }
-
-        if (limit.HasValue)
+        else if (limit.HasValue)
             visible.Take(limit.Value); //haven't ever tested this take function
 
-        return visible; //gonna call it a day
+        return visible;
+    }
+
+    public T PickupItemsInOrder<T> (IEnumerable<T> items, int? pickupLimit = null, bool sortByDistance = false) where T : Item
+    {
+        int pickedUp = 0;
+
+        if (sortByDistance)
+        {
+            CollectionUtils.SortLowestToHighest(items.ToList(), item => Vector2.Distance(item.transform.position, transform.position));
+        }
+
+        foreach (var item in items) //gotta implement pickup limit, and implement sorting by distance
+        {
+            if (item.wielder == character)
+            {
+                //continue;
+            }
+            else if (Vector2.Distance(item.transform.position,transform.position) <= character.inventory.activePickupRad)
+            {
+                if (!pickupLimit.HasValue || pickedUp < pickupLimit.Value)
+                {
+
+                    character.LookInDirection(item.transform.position - transform.position);
+                    character.inventory.PickupItem(item, item.transform.position, true);
+
+                    if (targetObject == item.transform)
+                    {
+                        targetObject = null; //if we were targeting this item, stop targeting it
+                    }
+
+                    pickedUp++;
+                }
+            }
+            else //not in inventory, and not in pickup range
+            {
+                targetObject = item.transform;
+                return item;
+            }
+        }
+
+        return null;
     }
 
     private void Update()
     {
         UpdateChunks();
 
-        GetBestGuns(2);
+        PickupItemsInOrder(GetBestItems<Item>(2));
 
         if (targetObject)
         {
@@ -180,34 +126,34 @@ public class BotControllerV2 : MonoBehaviour
         chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position,visionBox);
     }
 
-    public Item PickupClosestItem<T>(Func<T, bool> condition = null) where T : Item
-    {
-        var closestItem = CollectionUtils.GetClosest(
-            transform.position,
-            character.inventory.withinRadius.OfType<T>().ToList(),
-            item => item.transform.position,
-            out _,
-            condition
-        );
+    //public Item PickupClosestItem<T>(Func<T, bool> condition = null) where T : Item
+    //{
+    //    var closestItem = CollectionUtils.GetClosest(
+    //        transform.position,
+    //        character.inventory.withinRadius.OfType<T>().ToList(),
+    //        item => item.transform.position,
+    //        out _,
+    //        condition
+    //    );
 
-        if (closestItem)
-        {
-            var dropPos = UnityEngine.Random.insideUnitCircle * character.inventory.selectionRad + (Vector2)closestItem.transform.position;
-            character.inventory.PickupItem(closestItem,dropPos,true);
-        }
+    //    if (closestItem)
+    //    {
+    //        var dropPos = UnityEngine.Random.insideUnitCircle * character.inventory.selectionRad + (Vector2)closestItem.transform.position;
+    //        character.inventory.PickupItem(closestItem,dropPos,true);
+    //    }
 
-        return closestItem;
-    }
+    //    return closestItem;
+    //}
 
-    public T FindClosestCharacter<T>(Func<T,bool> condition = null) where T : Character
-    {
-        return ChunkManager.Manager.FindClosestCharacterWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
-    }
+    //public T FindClosestCharacter<T>(Func<T,bool> condition = null) where T : Character
+    //{
+    //    return ChunkManager.Manager.FindClosestCharacterWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
+    //}
 
-    public T FindClosestItem<T>(Func<T, bool> condition = null) where T : Item
-    {
-        return ChunkManager.Manager.FindClosestItemWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
-    }
+    //public T FindClosestItem<T>(Func<T, bool> condition = null) where T : Item
+    //{
+    //    return ChunkManager.Manager.FindClosestItemWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
+    //}
 
     public List<T> GetItems<T> (Func<T, bool> condition = null) where T : Item
     {

@@ -26,6 +26,15 @@ public class ClanManager : ManagerBase<ClanManager>
         //no idea how clean this will work lol
     }
 
+    public Clan AssignToClanByIndex (Character character, int index)
+    {
+        var clan = clans[index];
+        character.AssignClan(clan);
+        clan.AddCharacter(character);
+
+        return clan;
+    }
+
     private void Awake()
     {
         CollectionUtils.AssignIntPropToIndex(clans, (clan, id) => clan.id = id);

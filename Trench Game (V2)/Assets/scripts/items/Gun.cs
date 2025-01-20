@@ -353,7 +353,7 @@ public class Gun : Weapon
 
         var bullet = ProjectileManager.Manager.NewBullet(BarrelPos,
             (direction.normalized * bulletSpeed) + velocity,
-            range,
+            range - Vector2.Distance(transform.position,wielder.transform.position),
             DamagePerBullet,
             wielder,
             //true);

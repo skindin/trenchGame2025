@@ -85,7 +85,8 @@ public class CharacterGUI : MonoBehaviour
 
     public void DrawAssignedCharacterUI (float scaleFactor)
     {
-        if (!character) return;
+        if (!character) 
+            return;
 
         GUIStyle style = new();
 
@@ -139,9 +140,6 @@ public class CharacterGUI : MonoBehaviour
 
         if (charManager.serverRecord.Value > 0)
             text = $"-server record-\n{charManager.serverRecord.Key} ({GameUI.GetTimeText(charManager.serverRecord.Value)})\n" + text;
-
-        //if (charManager.personalRecord > 0) //this won't work idk why and ddon't give a fuck
-        //    text = $"personal record: ({GameUI.GetTimeText(charManager.personalRecord)})\n" + text;
 
         var visibleCharacterCount = Mathf.Min(charManager.active.Count, maxVisibleCharacters);
 

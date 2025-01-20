@@ -260,7 +260,7 @@ public class CharacterManager : MonoBehaviour
         newCharacter.Type = type;
 
         newCharacter.id = id;
-        newCharacter.AssignClan(ClanManager.Manager.clans[clanId]);
+        ClanManager.Manager.AssignToClanByIndex(newCharacter, clanId);
 
         active.Add(newCharacter);
 

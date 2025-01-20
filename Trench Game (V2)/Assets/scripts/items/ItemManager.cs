@@ -33,8 +33,6 @@ public class ItemManager : MonoBehaviour
 
     public Dictionary<int, Item> active = new();
 
-    public ItemRanking ranking;
-
     int nextItemId = 0;
     int NewItemId
     {
