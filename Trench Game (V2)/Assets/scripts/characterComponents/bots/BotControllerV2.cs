@@ -151,12 +151,12 @@ public class BotControllerV2 : MonoBehaviour
     {
         UpdateChunks();
 
-        var visibleCharacters = GetVisibleCharacters<Character>(character => character.clan != this.character.clan);
+        var visibleEnemies = GetVisibleCharacters<Character>(character => character.clan != this.character.clan);
 
-        UpdateProfiles(visibleCharacters);
+        UpdateProfiles(visibleEnemies);
 
         var strongestCharacter = CollectionUtils.GetHighest(
-            visibleCharacters,
+            visibleEnemies,
             character => ScoringManager.Manager.GetCharacterScore(character) +
             ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position),
             out _);
@@ -192,22 +192,26 @@ public class BotControllerV2 : MonoBehaviour
 
                 foreach (var profile in profileList) //move to the most powerful in memory
                 {
-                    if (TestVisionBox(profile.lastKnownPos))
-                    {
-                        continue;
-                    }
+                    //if (TestVisionBox(profile.lastKnownPos) && profile.lastSeenTime != Time.time)
+                    //{
+                    //    continue; //if bot sees the last known pos, but hasn't seen it for a while
+                    //}
 
-                    targetPos = profile.lastKnownPos;
-                    MoveToTargetPos(0);
+                    targetPos = profile.lastKnownPos; //otherwise, move the last place we saw them at
+
+                    MoveToTargetPos(0); //idk if this worked yet but it's too late gn
+
                     break;
                 }
             }
 
-            if (character.inventory.ActiveWeapon is Gun gun)
             {
-                if (!strongestCharacter || gun.rounds <= 0) //if there is no threat, or we are out of ammo
+                if (character.inventory.ActiveWeapon is Gun gun)
                 {
-                    gun.StartReload(); //reload
+                    if (!strongestCharacter || gun.rounds <= 0) //if there is no threat, or we are out of ammo
+                    {
+                        gun.StartReload(); //reload
+                    }
                 }
             }
         }
