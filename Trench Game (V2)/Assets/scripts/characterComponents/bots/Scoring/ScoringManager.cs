@@ -22,9 +22,9 @@ public class ScoringManager : ManagerBase<ScoringManager>
         return 1 / distance * itemDistanceWeight;
     }
 
-    public float GetCharacterDistanceScore (Vector2 pos, Character character)
+    public float GetCharacterDistanceScore (Vector2 posA, Vector2 posB)
     {
-        var distance = Vector2.Distance (pos, character.transform.position);
+        var distance = Vector2.Distance (posA, posB);
 
         return 1 / distance * characterDistanceWeight;
     }

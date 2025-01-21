@@ -2195,7 +2195,7 @@ MonoBehaviour:
   spawnCharacter:
     prefab: {fileID: 0}
     active: []
-    spawnCap: 3
+    spawnCap: 1
   spawnBots: 1
 --- !u!1 &575497487
 GameObject:
@@ -5780,7 +5780,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   drawSceneItemScores: 1
   scoreLabelOffset: {x: 0, y: 0.5}
-  itemDistanceWeight: 1
+  itemDistanceWeight: 0.1
   baseGun: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
   gunRoundsWeight: 1
   gunFireRateWeight: 1

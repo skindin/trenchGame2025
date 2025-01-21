@@ -8,7 +8,8 @@ public class BotControllerV2 : MonoBehaviour
     public Character character;
     public Vector2 visionBox;
     public bool debugLines = false;
-    public Transform targetObject;
+    //public Character targetCharacter;
+    //public Transform targetObject;
     public Vector2? targetPos;
     public float offenseMemory = 5;
     //public float targetFollowDistance;
@@ -21,18 +22,23 @@ public class BotControllerV2 : MonoBehaviour
         return transform.position; 
     }
 
-    public void FollowTargetObject (float distance, bool maintainDist = false)
+    public bool TestVisionBox (Vector2 pos)
     {
-        var delta = transform.position - targetObject.position;
+        return GeoUtils.TestBoxPosSize(transform.position, visionBox, pos);
+    }
+
+    public void MoveToTargetPos (float distance, bool maintainDist = false)
+    {
+        var delta = (Vector2)transform.position - targetPos.Value;
 
         if (!maintainDist && delta.magnitude <= distance)
         {
             return;
         }
 
-        targetPos = delta.normalized * distance + targetObject.position;
+        var nextPos = delta.normalized * distance + targetPos.Value;
 
-        character.MoveToPos(targetPos.Value);
+        character.MoveToPos(nextPos);
         character.LookInDirection(-delta);
     }
 
@@ -71,7 +77,7 @@ public class BotControllerV2 : MonoBehaviour
         return visible;
     }
 
-    public T PickupItemsInOrder<T> (IEnumerable<T> items, int? pickupLimit = null, bool sortByDistance = false) where T : Item
+    public T PickupItemsInOrder<T> (IEnumerable<T> items, int? pickupLimit = null, bool sortByDistance = false, bool selectBest = true) where T : Item
     {
         int pickedUp = 0;
 
@@ -79,6 +85,8 @@ public class BotControllerV2 : MonoBehaviour
         {
             CollectionUtils.SortLowestToHighest(items.ToList(), item => Vector2.Distance(item.transform.position, transform.position));
         }
+
+        CollectionUtils.GetLowest<Item>(character.inventory.itemSlots, ScoringManager.Manager.GetItemScore, out var lowestValueSlot);
 
         foreach (var item in items) //gotta implement pickup limit, and implement sorting by distance
         {
@@ -92,19 +100,21 @@ public class BotControllerV2 : MonoBehaviour
                 {
 
                     character.LookInDirection(item.transform.position - transform.position);
+
+                    if (!character.inventory.itemSlots.Contains(null))
+                    {
+                        character.inventory.CurrentSlot = lowestValueSlot;
+                    }
+
                     character.inventory.PickupItem(item, item.transform.position, true);
 
-                    if (targetObject == item.transform)
-                    {
-                        targetObject = null; //if we were targeting this item, stop targeting it
-                    }
 
                     pickedUp++;
                 }
             }
             else //not in inventory, and not in pickup range
             {
-                targetObject = item.transform;
+                targetPos = item.transform.position;
                 return item;
             }
         }
@@ -117,7 +127,8 @@ public class BotControllerV2 : MonoBehaviour
         var visibleCharacters = GetVisibleCharacters(condition);
 
         Func<T, float> getValue = considerDistance ?
-            character => ScoringManager.Manager.GetCharacterScore(character) + ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character) :
+            character => ScoringManager.Manager.GetCharacterScore(character) +
+            ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position) :
             ScoringManager.Manager.GetCharacterScore;
 
         CollectionUtils.SortHighestToLowest(visibleCharacters, getValue);
@@ -125,26 +136,80 @@ public class BotControllerV2 : MonoBehaviour
         return visibleCharacters;
     }
 
+    public void UpdateProfiles<T> (IEnumerable<T> list) where T : Character
+    {
+        foreach (T character in list)
+        {
+            var profile = GetProfile(character);
+            profile.lastKnownPos = character.transform.position;
+            profile.lastSeenTime = Time.time;
+            profile.lastKnownPower = ScoringManager.Manager.GetCharacterScore(character);
+        }
+    }
+
     private void Update()
     {
         UpdateChunks();
 
+        var visibleCharacters = GetVisibleCharacters<Character>(character => character.clan != this.character.clan);
+
+        UpdateProfiles(visibleCharacters);
+
         var strongestCharacter = CollectionUtils.GetHighest(
-            GetVisibleCharacters<Character>(character => character.clan != this.character.clan),
+            visibleCharacters,
             character => ScoringManager.Manager.GetCharacterScore(character) +
-            ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character),
+            ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position),
             out _);
 
         if (strongestCharacter && character.inventory.ActiveWeapon)
         {
+            //select best weapon
+
+            CollectionUtils.GetHighest(character.inventory.itemSlots, ScoringManager.Manager.GetItemScore, out var slot);
+
+            character.inventory.CurrentSlot = slot;
+
             Attack(strongestCharacter);
         }
         else
         {
+            targetPos = null;
+
             PickupItemsInOrder(GetBestItems<Weapon>(null, 2));
 
-            if (targetObject)
-                FollowTargetObject(0);
+            if (targetPos.HasValue)
+                MoveToTargetPos(0);
+        }
+
+        if (character.inventory.ActiveWeapon)
+        {
+            if (!strongestCharacter)
+                //if we don't see any characters
+            {
+                var profileList = CollectionUtils.DictionaryToList(profiles);
+
+                CollectionUtils.SortHighestToLowest(profileList, profile => profile.lastKnownPower);
+
+                foreach (var profile in profileList) //move to the most powerful in memory
+                {
+                    if (TestVisionBox(profile.lastKnownPos))
+                    {
+                        continue;
+                    }
+
+                    targetPos = profile.lastKnownPos;
+                    MoveToTargetPos(0);
+                    break;
+                }
+            }
+
+            if (character.inventory.ActiveWeapon is Gun gun)
+            {
+                if (!strongestCharacter || gun.rounds <= 0) //if there is no threat, or we are out of ammo
+                {
+                    gun.StartReload(); //reload
+                }
+            }
         }
     }
 
@@ -159,9 +224,10 @@ public class BotControllerV2 : MonoBehaviour
                 gun.DirectionalAction(victim.transform.position - transform.position);
             }
 
-            targetObject = gun.transform;
+            targetPos = victim.transform.position;
+            //targetCharacter = victim;
 
-            FollowTargetObject(gun.range, true);
+            MoveToTargetPos(gun.range, true);
         }
     }
 
@@ -233,6 +299,7 @@ public class BotControllerV2 : MonoBehaviour
         {
             var newProfile = new BotCharacterProfile();
             profiles.Add(character.id,newProfile);
+            newProfile.character = character; //mehmehmeh ill make a constructor later
             return newProfile;
         }
     }
@@ -247,6 +314,8 @@ public class BotControllerV2 : MonoBehaviour
         if (debugLines)
         {
             GeoUtils.DrawBoxPosSize(transform.position, visionBox, UnityEngine.Color.magenta);
+            if (targetPos.HasValue)
+                GeoUtils.DrawCircle(targetPos.Value, 1, Color.red);
         }
     }
 }

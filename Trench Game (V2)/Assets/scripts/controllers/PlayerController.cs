@@ -143,7 +143,7 @@ public class PlayerController : MonoBehaviour
 
         else 
         { //new scope for sake of gun name
-            if (character.inventory.ActiveWeapon is Gun gun)
+            if (autoReloadGuns && character.inventory.ActiveWeapon is Gun gun)
             {
                 gun.StartReload();
             }

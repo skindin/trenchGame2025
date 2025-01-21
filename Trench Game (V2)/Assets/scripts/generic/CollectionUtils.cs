@@ -221,15 +221,16 @@ public static class CollectionUtils
         return GetLowest(list, item => Vector2.Distance(pos, getPos(item)), out lowestIndex, condition, defaultItem, maxDist, onClosest, onNotClosest);
     }
 
-    public static T GetLowest<T>(List<T> list, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
+    public static T GetLowest<T>(IEnumerable<T> list, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
         lowestIndex = -1;
         float lowestValue = maxValue;
         T lowestItem = defaultItem;
 
-        for (int i = 0; i < list.Count; i++)
+        var i = 0;
+
+        foreach (var item in list)
         {
-            var item = list[i];
 
             if (condition != null && !condition(item))
                 continue;
@@ -242,13 +243,14 @@ public static class CollectionUtils
                 lowestIndex = i;
                 lowestItem = item;
             }
+
+            i++;
         }
 
         if (onNotSelected != null)
         {
-            for (int i = 0; i < list.Count; i++)
+            foreach (var item in list)
             {
-                var item = list[i];
 
                 if (item is not null)
                     onNotSelected(item);
@@ -263,16 +265,16 @@ public static class CollectionUtils
         return lowestItem;
     }
 
-    public static T GetHighest<T>(List<T> list, Func<T, float> getValue, out int highestIndex, Func<T, bool> condition = null,
+    public static T GetHighest<T>(IEnumerable<T> list, Func<T, float> getValue, out int highestIndex, Func<T, bool> condition = null,
         T defaultItem = default, float minValue = 0, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
         highestIndex = -1;
         float highestValue = minValue;
         T highestItem = defaultItem;
 
-        for (int i = 0; i < list.Count; i++)
+        var i = 0;
+        foreach (var item in list)
         {
-            var item = list[i];
 
             if (condition != null && !condition(item))
                 continue;
@@ -285,13 +287,14 @@ public static class CollectionUtils
                 highestIndex = i;
                 highestItem = item;
             }
+
+            i++;
         }
 
         if (onNotSelected != null)
         {
-            for (int i = 0; i < list.Count; i++)
+            foreach (var item in list)
             {
-                var item = list[i];
 
                 if (item is not null)
                     onNotSelected(item);
@@ -488,6 +491,18 @@ public static class CollectionUtils
         }
 
         return output;
+    }
+
+    public static List<TObject> DictionaryToList<TObject,TKey> (Dictionary<TKey,TObject> dict)
+    {
+        var list = new List<TObject>();
+
+        foreach (var pair in dict)
+        {
+            list.Add(pair.Value);
+        }
+
+        return list;
     }
 
 }

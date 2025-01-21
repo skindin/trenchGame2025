@@ -54,12 +54,12 @@ public class Character : MonoBehaviour
     public bool constantlyUpdateChunk = false, moving = false;
 
     public CharacterType controlType = CharacterType.none;
-    CharacterType type;
+    //CharacterType type;
     public CharacterType Type
     {
         get
         {
-            return type;
+            return controlType;
         }
 
         set
@@ -70,7 +70,7 @@ public class Character : MonoBehaviour
             if (botController)
                 botController.enabled = value == CharacterType.localBot;
 
-            type = value;
+            controlType = value;
         }
     }
 
@@ -183,7 +183,7 @@ public class Character : MonoBehaviour
         if (constantlyUpdateChunk)
         {
             UpdateChunk();
-            if (type != CharacterType.remote)
+            if (controlType != CharacterType.remote)
                 inventory.DetectItems();
         }
 
