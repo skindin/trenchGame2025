@@ -295,17 +295,17 @@ public class CharacterManager : MonoBehaviour
 
     public Character NewLocalPlayerNewId (Vector2 pos)
     {
-        return NewLocalPlayer(pos, NewCharId, ClanManager.Manager.GetRandomClanIndexByPopulation()); //breh
+        return NewLocalPlayer(pos, NewCharId, ClanManager.Manager.GetNextClanIndex()); //breh
     }
 
     public Character NewLocalBotNewId(Vector2 pos)
     {
-        return NewLocalBot(pos, NewCharId, ClanManager.Manager.GetRandomClanIndexByPopulation());
+        return NewLocalBot(pos, NewCharId, ClanManager.Manager.GetNextClanIndex());
     }
 
     public Character NewRemoteCharacterNewId(Vector2 pos)
     {
-        return NewRemoteCharacter(pos, NewCharId, ClanManager.Manager.GetRandomClanIndexByPopulation());
+        return NewRemoteCharacter(pos, NewCharId, ClanManager.Manager.GetNextClanIndex());
     }
 
     public void RemoveCharacter(Character character)

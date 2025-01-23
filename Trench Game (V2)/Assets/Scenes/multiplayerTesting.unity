@@ -2195,7 +2195,7 @@ MonoBehaviour:
   spawnCharacter:
     prefab: {fileID: 0}
     active: []
-    spawnCap: 1
+    spawnCap: 3
   spawnBots: 1
 --- !u!1 &575497487
 GameObject:
@@ -3417,7 +3417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 50
+  worldSize: 30
   minChunkSize: 10
   chunkSize: 0
   chunkArraySize: 0

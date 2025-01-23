@@ -5,25 +5,23 @@ using UnityEngine;
 public class ClanManager : ManagerBase<ClanManager>
 {
     public List<Clan> clans;
+    List<int> indexList = new List<int>();
+    int nextClanIndex = 0;
 
-    public Clan GetRandomClan ()
-    {
-        return clans[Random.Range(0, clans.Count)];
-    }
-
-    public Clan GetRandomClanByPopulation ()
-    {
-        return clans[GetRandomClanIndexByPopulation()];
-
-    }
-
-    public int GetRandomClanIndexByPopulation ()
+    public int GetRandomIndexByPopulation ()
     {
         var ratio = Random.value;
 
         return CollectionUtils.GetRandomIndexFromListValues(ratio, clans,
             clan => clan.characters.Count > 0 ? 1 / clan.characters.Count : 10 * clans.Count);
         //no idea how clean this will work lol
+    }
+
+    public int GetNextClanIndex()
+    {
+        var nextIndex = indexList[nextClanIndex];
+        nextClanIndex = (int)Mathf.Repeat(nextClanIndex+1,clans.Count);
+        return nextIndex;
     }
 
     public Clan AssignToClanByIndex (Character character, int index)
@@ -37,6 +35,9 @@ public class ClanManager : ManagerBase<ClanManager>
 
     private void Awake()
     {
+        indexList = CollectionUtils.GetRandomizedIntList(clans.Count, (min, max) => Random.Range(min, max));
+
         CollectionUtils.AssignIntPropToIndex(clans, (clan, id) => clan.id = id);
+        //nextClanIndex = Random.Range(0,clans.Count);
     }
 }

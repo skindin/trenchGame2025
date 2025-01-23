@@ -505,4 +505,36 @@ public static class CollectionUtils
         return list;
     }
 
+    public static void RandomizeOrder<T> (List<T> list, Func<int,int,int> getIndex)
+    {
+        var indexList = GetRandomizedIntList(list.Count, getIndex);
+
+        var referenceClone = new List<T>(list);
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i] = referenceClone[indexList[i]];
+        }
+    }
+
+    public static List<int> GetRandomizedIntList (int count, Func<int,int,int> getIndex)
+    {
+        var output = new List<int>();
+
+        for (int i = 0; i < count; i++)
+        {
+            var index = getIndex(0, output.Count + 1);
+
+            if (index > output.Count)
+            {
+                output.Add(i);
+            }
+            else 
+            {
+                output.Insert(index,i);
+            }
+        }
+
+        return output;
+    }
 }

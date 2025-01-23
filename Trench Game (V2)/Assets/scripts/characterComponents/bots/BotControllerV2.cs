@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -13,9 +14,17 @@ public class BotControllerV2 : MonoBehaviour
     public Vector2? targetPos;
     public float offenseMemory = 5;
     //public float targetFollowDistance;
+    public float refreshRate = 5;
+    public bool attacking = false;
     public Dictionary<int, BotCharacterProfile> profiles = new();
 
     public Chunk[,] chunks;
+
+    private void OnEnable()
+    {
+        UpdateChunks();
+        StartRefreshRoutine();
+    }
 
     public Vector2 FindBulletPathToPos (Vector2 pos)
     {
@@ -37,6 +46,8 @@ public class BotControllerV2 : MonoBehaviour
         }
 
         var nextPos = delta.normalized * distance + targetPos.Value;
+
+        nextPos = GeoUtils.ClampToBoxPosSize(nextPos,targetPos.Value, visionBox);
 
         character.MoveToPos(nextPos);
         character.LookInDirection(-delta);
@@ -108,6 +119,8 @@ public class BotControllerV2 : MonoBehaviour
 
                     character.inventory.PickupItem(item, item.transform.position, true);
 
+                    if (debugLines)
+                        GeoUtils.MarkPoint(item.transform.position,1,Color.red);
 
                     pickedUp++;
                 }
@@ -151,84 +164,115 @@ public class BotControllerV2 : MonoBehaviour
     {
         UpdateChunks();
 
-        var visibleEnemies = GetVisibleCharacters<Character>(character => character.clan != this.character.clan);
-
-        UpdateProfiles(visibleEnemies);
-
-        var strongestCharacter = CollectionUtils.GetHighest(
-            visibleEnemies,
-            character => ScoringManager.Manager.GetCharacterScore(character) +
-            ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position),
-            out _);
-
-        if (strongestCharacter && character.inventory.ActiveWeapon)
+        if (targetPos.HasValue)
         {
-            //select best weapon
-
-            CollectionUtils.GetHighest(character.inventory.itemSlots, ScoringManager.Manager.GetItemScore, out var slot);
-
-            character.inventory.CurrentSlot = slot;
-
-            Attack(strongestCharacter);
-        }
-        else
-        {
-            targetPos = null;
-
-            PickupItemsInOrder(GetBestItems<Weapon>(null, 2));
-
-            if (targetPos.HasValue)
-                MoveToTargetPos(0);
-        }
-
-        if (character.inventory.ActiveWeapon)
-        {
-            if (!strongestCharacter)
-                //if we don't see any characters
+            if (attacking)
             {
-                var profileList = CollectionUtils.DictionaryToList(profiles);
-
-                CollectionUtils.SortHighestToLowest(profileList, profile => profile.lastKnownPower);
-
-                foreach (var profile in profileList) //move to the most powerful in memory
-                {
-                    //if (TestVisionBox(profile.lastKnownPos) && profile.lastSeenTime != Time.time)
-                    //{
-                    //    continue; //if bot sees the last known pos, but hasn't seen it for a while
-                    //}
-
-                    targetPos = profile.lastKnownPos; //otherwise, move the last place we saw them at
-
-                    MoveToTargetPos(0); //idk if this worked yet but it's too late gn
-
-                    break;
-                }
+                Attack(targetPos.Value);
             }
-
+            else
             {
-                if (character.inventory.ActiveWeapon is Gun gun)
-                {
-                    if (!strongestCharacter || gun.rounds <= 0) //if there is no threat, or we are out of ammo
-                    {
-                        gun.StartReload(); //reload
-                    }
-                }
+                MoveToTargetPos(0, false);
             }
         }
     }
 
-    public void Attack (Character victim)
+    public void StartRefreshRoutine ()
+    {
+        StartCoroutine(Refresh());
+
+
+        IEnumerator Refresh ()
+        {
+            while (true)
+            {
+                targetPos = null;
+
+                //Debug.Log("ran coroutine");
+
+                var visibleEnemies = GetVisibleCharacters<Character>(character => character.clan != this.character.clan);
+
+                UpdateProfiles(visibleEnemies);
+
+                var strongestCharacter = CollectionUtils.GetHighest(
+                    visibleEnemies,
+                    character => ScoringManager.Manager.GetCharacterScore(character) +
+                    ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position),
+                    out _);
+
+                if (strongestCharacter && character.inventory.ActiveWeapon)
+                {
+                    //select best weapon
+
+                    CollectionUtils.GetHighest(character.inventory.itemSlots, ScoringManager.Manager.GetItemScore, out var slot);
+
+                    character.inventory.CurrentSlot = slot;
+
+                    //Attack(strongestCharacter.transform.position);
+
+                    targetPos = strongestCharacter.transform.position;
+
+                    attacking = true;
+                }
+                else
+                {
+                    attacking = false;
+
+                    PickupItemsInOrder(GetBestItems<Weapon>(null, 2));
+                }
+
+                if (character.inventory.ActiveWeapon)
+                {
+                    if (!strongestCharacter)
+                    //if we don't see any characters
+                    {
+                        var profileList = CollectionUtils.DictionaryToList(profiles);
+
+                        CollectionUtils.SortHighestToLowest(profileList, profile => profile.lastKnownPower);
+
+                        foreach (var profile in profileList) //move to the most powerful in memory
+                        {
+                            //if (TestVisionBox(profile.lastKnownPos) && profile.lastSeenTime != Time.time)
+                            //{
+                            //    continue; //if bot sees the last known pos, but hasn't seen it for a while
+                            //}
+
+                            targetPos = profile.lastKnownPos; //otherwise, move the last place we saw them at
+
+                            break;
+                        }
+                    }
+
+                    {
+                        if (character.inventory.ActiveWeapon is Gun gun)
+                        {
+                            if (!strongestCharacter || gun.rounds <= 0) //if there is no threat, or we are out of ammo
+                            {
+                                gun.StartReload(); //reload
+                            }
+                        }
+                    }
+                }
+
+                yield return new WaitForSeconds(1 / refreshRate);
+            }
+        }
+    }
+
+    public void Attack (Vector2 victimPos)
     {
         var weapon = character.inventory.ActiveWeapon;
 
         if (weapon is Gun gun)
         {
-            if (Vector2.Distance(victim.transform.position, transform.position) <= gun.range)
+            var delta = victimPos - (Vector2)transform.position;
+
+            if (delta.magnitude <= gun.range)
             {            
-                gun.DirectionalAction(victim.transform.position - transform.position);
+                gun.DirectionalAction(delta);
             }
 
-            targetPos = victim.transform.position;
+            targetPos = victimPos;
             //targetCharacter = victim;
 
             MoveToTargetPos(gun.range, true);
