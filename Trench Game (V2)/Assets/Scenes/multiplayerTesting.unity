@@ -1324,7 +1324,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &369969520
 Transform:
   m_ObjectHideFlags: 0
@@ -2635,7 +2635,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &703258291
 Transform:
   m_ObjectHideFlags: 0
@@ -3788,7 +3788,7 @@ MonoBehaviour:
     - prefab: {fileID: 4392698207926738930, guid: 71bcc0151ae82f146ad7263640af1562, type: 3}
       active: []
       spawnCap: 1
-      chance: 0
+      chance: 2
     - prefab: {fileID: 2227357734380116094, guid: 065a893304beb224a871e6cdd7b6f8a9, type: 3}
       active: []
       spawnCap: 1
@@ -3796,11 +3796,11 @@ MonoBehaviour:
     - prefab: {fileID: 3783757306286458565, guid: 0f3688a5143ae13409cb92a8a5a93e3f, type: 3}
       active: []
       spawnCap: 1
-      chance: 0
+      chance: 2
     - prefab: {fileID: 7689898669054720115, guid: 0a2e55db8ba94324994df2cf35e9df82, type: 3}
       active: []
       spawnCap: 1
-      chance: 2
+      chance: 0
     chance: 0
   itemsPerDrop: 4
   itemDropRadius: 5
@@ -3817,7 +3817,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     active: []
     spawnCap: 1
-  spawnBots: 1
+  spawnBots: 0
 --- !u!4 &1029702624 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1162532254875336613, guid: 84ea76b1a5e213b4094de5103529b1ed, type: 3}
@@ -7560,7 +7560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1f84533755dbf4cb6e9469e6a62b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPixelSize: 0.1
+  maxPixelSize: 1
   trenchColor:
     serializedVersion: 2
     rgba: 2332033024

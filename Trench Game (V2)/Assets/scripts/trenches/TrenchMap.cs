@@ -13,7 +13,7 @@ public class TrenchMap
 {
     //public Sprite sprite;
     //public SpriteRenderer spriteRenderer;
-    public MapBlock[,] blocks;
+    public readonly MapBlock[,] blocks;
     public int resolution = 8;
     public float scale = 1;
     //public Transform pointA, pointB;
@@ -138,8 +138,6 @@ public class TrenchMap
             }
             else
             {
-                blocks = new MapBlock[resolution, resolution];
-
                 for (int y = 0; y < resolution; y++)
                 {
                     for (int x = 0; x < resolution; x++)
@@ -315,8 +313,8 @@ public class TrenchMap
 
         allTrench = totalTrenchCells == resolution * resolution * 16;
 
-        if (allTrench)
-            blocks = null;
+        //if (allTrench)
+        //    blocks = null; yeah noo lol
 
         //Debug.Log($"{totalEditedBlocks} have been edited");
 
@@ -357,12 +355,12 @@ public class TrenchMap
 
         var blockCircleRadius = (manager.cellWidth * 2 * Vector2.one).magnitude + cellRadius;
 
-        Func<Vector2Int, bool> blockCondition = (blockAdress) =>
+        Func<Vector2Int, bool> blockCondition =  (blockAdress) =>
         {
-            var block = blocks[blockAdress.x, blockAdress.y];
+            var block = blocks[blockAdress.x, blockAdress.y];// breh i gotta redo this cause it gave me a bunch of null reference errors
 
             if (
-                (value && block == null) || //if the block is empty and we 
+                (value && block == null) || //if the block is empty and we are looking for trenches
                 (!value && block != null && block.TestFull())
             )
             {

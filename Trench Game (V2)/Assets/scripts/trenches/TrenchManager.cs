@@ -441,7 +441,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
             var collisionDot = Vector2.Dot(Vector2.Perpendicular(direction), collisionPointDelta);
 
             direction = Vector2.Perpendicular(collisionPointDelta).normalized;
-            if (-collisionDot < 0)
+            if (collisionDot > 0)
             {
                 direction = -direction;
             }
