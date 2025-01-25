@@ -15,8 +15,8 @@ public class BotControllerV2 : MonoBehaviour
     public float offenseMemory = 5;
     //public float targetFollowDistance;
     public float refreshRate = 5;
-    public bool attacking = false;
     public Dictionary<int, BotCharacterProfile> profiles = new();
+    public BotCharacterProfile targetProfile;
 
     public Chunk[,] chunks;
 
@@ -36,18 +36,18 @@ public class BotControllerV2 : MonoBehaviour
         return GeoUtils.TestBoxPosSize(transform.position, visionBox, pos);
     }
 
-    public void MoveToTargetPos (float distance, bool maintainDist = false)
+    public void MoveToPos (Vector2 pos, float distance, bool maintainDist = false)
     {
-        var delta = (Vector2)transform.position - targetPos.Value;
+        var delta = (Vector2)transform.position - pos;
 
         if (!maintainDist && delta.magnitude <= distance)
         {
             return;
         }
 
-        var nextPos = delta.normalized * distance + targetPos.Value;
+        var nextPos = delta.normalized * distance + pos;
 
-        nextPos = GeoUtils.ClampToBoxPosSize(nextPos,targetPos.Value, visionBox);
+        nextPos = GeoUtils.ClampToBoxPosSize(nextPos,pos, visionBox);
 
         character.MoveToPos(nextPos);
         character.LookInDirection(-delta);
@@ -109,7 +109,6 @@ public class BotControllerV2 : MonoBehaviour
             {
                 if (!pickupLimit.HasValue || pickedUp < pickupLimit.Value)
                 {
-
                     character.LookInDirection(item.transform.position - transform.position);
 
                     if (!character.inventory.itemSlots.Contains(null))
@@ -154,6 +153,8 @@ public class BotControllerV2 : MonoBehaviour
         foreach (T character in list)
         {
             var profile = GetProfile(character);
+            profile.SetCurrentVelocity(character.transform.position, 1/refreshRate);
+
             profile.lastKnownPos = character.transform.position;
             profile.lastSeenTime = Time.time;
             profile.lastKnownPower = ScoringManager.Manager.GetCharacterScore(character);
@@ -164,15 +165,41 @@ public class BotControllerV2 : MonoBehaviour
     {
         UpdateChunks();
 
-        if (targetPos.HasValue)
+        if (targetProfile != null)
         {
-            if (attacking)
+            var guessPos = targetProfile.GuessCurrentPos(Time.time);
+
+            if (guessPos.HasValue)
             {
-                Attack(targetPos.Value);
+                
+                if (debugLines)
+                {
+                    GeoUtils.DrawCircle(guessPos.Value, 1, Color.red);
+                }
+
+                if (!ChunkManager.Manager.IsPointInWorld(guessPos.Value))
+                {
+                    guessPos = ChunkManager.Manager.ClampToWorld(guessPos.Value);
+                    targetProfile.lastKnownVelocity = null;
+                }
+
+                if (TestVisionBox(guessPos.Value) && !TestVisionBox(targetProfile.character.transform.position))
+                {
+                    targetProfile.lastKnownVelocity = null;
+
+                    guessPos = targetProfile.lastKnownPos.Value;
+                }
+
+                Attack(guessPos.Value);
             }
-            else
+        }
+        else if (targetPos.HasValue)
+        {
+            MoveToPos(targetPos.Value, 0, false);
+
+            if (debugLines)
             {
-                MoveToTargetPos(0, false);
+                GeoUtils.DrawCircle(targetPos.Value, 1, Color.green);
             }
         }
     }
@@ -212,13 +239,13 @@ public class BotControllerV2 : MonoBehaviour
 
                     targetPos = strongestCharacter.transform.position;
 
-                    attacking = true;
+                    targetProfile = profiles[strongestCharacter.id];
                 }
                 else
                 {
-                    attacking = false;
+                    targetProfile = null;
 
-                    PickupItemsInOrder(GetBestItems<Weapon>(null, 2));
+                    PickupItemsInOrder(GetBestItems<Weapon>(null, 2),1);
                 }
 
                 if (character.inventory.ActiveWeapon)
@@ -237,7 +264,7 @@ public class BotControllerV2 : MonoBehaviour
                             //    continue; //if bot sees the last known pos, but hasn't seen it for a while
                             //}
 
-                            targetPos = profile.lastKnownPos; //otherwise, move the last place we saw them at
+                            targetProfile = profile; //otherwise, move the last place we saw them at
 
                             break;
                         }
@@ -271,11 +298,9 @@ public class BotControllerV2 : MonoBehaviour
             {            
                 gun.DirectionalAction(delta);
             }
-
-            targetPos = victimPos;
             //targetCharacter = victim;
 
-            MoveToTargetPos(gun.range, true);
+            MoveToPos(victimPos,gun.range, true);
         }
     }
 
@@ -362,8 +387,6 @@ public class BotControllerV2 : MonoBehaviour
         if (debugLines)
         {
             GeoUtils.DrawBoxPosSize(transform.position, visionBox, UnityEngine.Color.magenta);
-            if (targetPos.HasValue)
-                GeoUtils.DrawCircle(targetPos.Value, 1, Color.red);
         }
     }
 }
