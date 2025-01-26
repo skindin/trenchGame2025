@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using TrenchBot;
 
 public class BotControllerV2 : MonoBehaviour
 {
@@ -15,8 +16,8 @@ public class BotControllerV2 : MonoBehaviour
     public float offenseMemory = 5;
     //public float targetFollowDistance;
     public float refreshRate = 5;
-    public Dictionary<int, BotCharacterProfile> profiles = new();
-    public BotCharacterProfile targetProfile;
+    public Dictionary<int, CharacterProfile> profiles = new();
+    public CharacterProfile targetProfile;
 
     public Chunk[,] chunks;
 
@@ -183,12 +184,12 @@ public class BotControllerV2 : MonoBehaviour
                     targetProfile.lastKnownVelocity = null;
                 }
 
-                if (TestVisionBox(guessPos.Value) && !TestVisionBox(targetProfile.character.transform.position))
-                {
-                    targetProfile.lastKnownVelocity = null;
+                //if (TestVisionBox(guessPos.Value) && !TestVisionBox(targetProfile.character.transform.position))
+                //{
+                //    targetProfile.lastKnownVelocity = null;
 
-                    guessPos = targetProfile.lastKnownPos.Value;
-                }
+                //    guessPos = targetProfile.lastKnownPos.Value;
+                //}
 
                 Attack(guessPos.Value);
             }
@@ -362,7 +363,7 @@ public class BotControllerV2 : MonoBehaviour
         profile.totalDamageDealt += hp;
     }
 
-    public BotCharacterProfile GetProfile (Character character)
+    public CharacterProfile GetProfile (Character character)
     {
         if (profiles.TryGetValue(character.id, out var profile))
         {
@@ -370,9 +371,9 @@ public class BotControllerV2 : MonoBehaviour
         }
         else
         {
-            var newProfile = new BotCharacterProfile();
+            var newProfile = new CharacterProfile();
             profiles.Add(character.id,newProfile);
-            newProfile.character = character; //mehmehmeh ill make a constructor later
+            //newProfile.character = character; //mehmehmeh ill make a constructor later
             return newProfile;
         }
     }

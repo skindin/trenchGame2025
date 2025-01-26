@@ -9,7 +9,7 @@ public class ScoringEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        manager = (ScoringManager)target;
+        //manager = (ScoringManager)target;
 
         base.OnInspectorGUI();
 
