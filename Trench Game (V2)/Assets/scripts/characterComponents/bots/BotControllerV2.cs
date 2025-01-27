@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
-using TrenchBot;
+using BotBrains;
 
 public class BotControllerV2 : MonoBehaviour
 {

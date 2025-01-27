@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TrenchBot
+namespace BotBrains
 {
     public class CharacterProfile
     {
         public int id;
         public Vector2? lastKnownPos, lastKnownVelocity;
         public float lastSeenTime, lastKnownPower, lastDamagedTime, totalDamageDealt;
+        public bool isVisible;
+        public int?[] items;
         //public Character character;
 
         public Vector2? SetCurrentVelocity(Vector2 currentPos, float deltaTime)

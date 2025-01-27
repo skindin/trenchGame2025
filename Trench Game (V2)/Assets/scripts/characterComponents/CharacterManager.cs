@@ -14,6 +14,7 @@ public class CharacterManager : MonoBehaviour
     public bool spawnSquads = true, challengeComplete = false;
     public ObjectPool<Character> pool;
     public List<Character> active = new();
+    public Dictionary<int, Character> activeDictionary = new();
     public Character prefab;
     public Transform container;
     public float scoreStopWatch = 0, personalRecord = 0, respawnWait = 1, challengeDuration = 24;
@@ -263,6 +264,7 @@ public class CharacterManager : MonoBehaviour
         ClanManager.Manager.AssignToClanByIndex(newCharacter, clanId);
 
         active.Add(newCharacter);
+        activeDictionary.Add(id, newCharacter);
 
         if (type == Character.CharacterType.localPlayer)
         {
@@ -311,6 +313,7 @@ public class CharacterManager : MonoBehaviour
     public void RemoveCharacter(Character character)
     {
         active.Remove(character);
+        activeDictionary.Remove(character.id);
 
         UpdateScoreBoard();
 

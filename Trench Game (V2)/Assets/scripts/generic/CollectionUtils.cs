@@ -337,23 +337,17 @@ public static class CollectionUtils
         return jaggedArray.SelectMany(innerArray => innerArray).ToArray();
     }
 
-    public static List<ValueType> GetValuesList<ItemType, ValueType>(List<ItemType> list, List<ValueType> valueList, Func<ItemType, ValueType> getValue, Func<ItemType, bool> condition = null, bool clearValues = false)
+    public static IEnumerable<ValueType> GetPropertyCollection<ItemType, ValueType>(IEnumerable<ItemType> list, Func<ItemType, ValueType> getProperty, Func<ItemType, bool> condition = null)
     {
-        if (clearValues)
-            valueList.Clear();
         //var result = new List<ValueType>();
 
-        for (int i = 0; i < valueList.Count; i++)
+        foreach (var item in list)
         {
-            var item = list[i];
-
             if (condition != null && !condition(item))
                 continue;
 
-            valueList.Add(getValue(item));
+            yield return getProperty(item);
         }
-
-        return valueList;
     }
 
 
@@ -517,7 +511,7 @@ public static class CollectionUtils
         }
     }
 
-    public static List<int> GetRandomizedIntList (int count, Func<int,int,int> getIndex)
+    public static List<int> GetRandomizedIntList(int count, Func<int, int, int> getIndex)
     {
         var output = new List<int>();
 
@@ -529,9 +523,9 @@ public static class CollectionUtils
             {
                 output.Add(i);
             }
-            else 
+            else
             {
-                output.Insert(index,i);
+                output.Insert(index, i);
             }
         }
 
