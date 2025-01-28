@@ -8,9 +8,9 @@ namespace BotBrains
     {
         public int id;
         public Vector2? pos, velocity;
-        public float hp, lastSeenTime, power, lastDamagedTime, totalDamageDealt;
+        public float? hp, lastSeenTime, power, lastDamagedTime, totalDamageDealt;
         public bool isVisible;
-        public HashSet<ItemProfile> items; //int represents prefab id
+        public HashSet<ItemProfile> items = new(); //int represents prefab id
         public ItemProfile activeItem;
         //public Character character;
 
@@ -50,5 +50,7 @@ namespace BotBrains
                 return null;
             }
         }
+
+        public string Print => $"characterId: {id}{(activeItem != null ? $", activeItem: {activeItem.Print}":"")}";
     }
 }

@@ -265,9 +265,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2831460076466995517}
   - component: {fileID: 7115039898630128601}
+  - component: {fileID: 7477883026853956482}
   - component: {fileID: 5029955527161250187}
-  - component: {fileID: 5719557823034732747}
-  - component: {fileID: 9178249837958229984}
   - component: {fileID: 5314683665201247688}
   m_Layer: 0
   m_Name: goblinCharacter
@@ -314,7 +313,7 @@ MonoBehaviour:
     color: {r: 0, g: 0, b: 0, a: 0}
     id: 0
   userController: {fileID: 5029955527161250187}
-  botController: {fileID: 5719557823034732747}
+  botController: {fileID: 7477883026853956482}
   baseMoveSpeed: 8
   moveSpeed: 0
   deathDropRadius: 1
@@ -376,6 +375,22 @@ MonoBehaviour:
   constantlyUpdateChunk: 1
   moving: 0
   controlType: 0
+--- !u!114 &7477883026853956482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4411661645840510790}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d530ec42729180469dbf5e40ff03661, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 7115039898630128601}
+  visionBox: {x: 16, y: 16}
+  debugLines: 1
+  reactionRate: 5
 --- !u!114 &5029955527161250187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -395,51 +410,6 @@ MonoBehaviour:
   overrideToTouchControls: 0
   autoReloadGuns: 1
   scrollSensitivity: 1
---- !u!114 &5719557823034732747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4411661645840510790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21d5e6b494c270c408aee56f6e0c45ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 7115039898630128601}
-  visionBox: {x: 16, y: 16}
-  debugLines: 1
-  targetObject: {fileID: 0}
-  targetPos: {x: 0, y: 0}
---- !u!114 &9178249837958229984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4411661645840510790}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c6f2d3d8c3996c44927a8320254aabc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 7115039898630128601}
-  visionBox: {x: 16, y: 16}
-  wandering: 0
-  dodging: 0
-  debugLines: 0
-  dangerRadius: 10
-  dodgeRadius: 5
-  pointerSpeed: 10
-  minPointerMag: 1
-  maxPointerMag: 1
-  maxPointerOffset: 0.5
-  maxTargetOffset: 0.5
-  maxWanderOffset: 5
-  targetItem: {fileID: 0}
-  targetCollider: {fileID: 0}
-  closestEnemy: {fileID: 0}
 --- !u!114 &5314683665201247688
 MonoBehaviour:
   m_ObjectHideFlags: 0

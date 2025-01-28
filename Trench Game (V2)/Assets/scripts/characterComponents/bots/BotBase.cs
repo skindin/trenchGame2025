@@ -12,14 +12,14 @@ namespace BotBrains
     {
         public Character character;
         public Vector2 visionBox;
-        public bool debugLines = false;
+        public bool debugLines = false, logProfiles = false;
         //public Character targetCharacter;
         //public Transform targetObject;
         //public Vector2? targetPos;
         //public float offenseMemory = 5;
         //public float targetFollowDistance;
         public float reactionRate = 5;
-        public int actionMax = 1;
+        //public int actionMax = 1;
         public readonly Dictionary<int, Dictionary<int, CharacterProfile>> clanProfiles = new(); //first layer clan index, second layer character index
         public readonly Dictionary<int,HashSet<ItemProfile>> itemProfiles = new(); //first layer prefab index, second layer item id
         //readonly CollectionUtils.TwoColumnTable<int, int> itemIdsLocalReal = new();
@@ -195,12 +195,13 @@ namespace BotBrains
                 profile.pos = character.transform.position;
                 profile.lastSeenTime = Time.time;
                 profile.isVisible = true;
-                profile.power = ScoringManager.Manager.GetCharacterScore(character);
+                profile.power = ProfileManager.Manager.GetCharacterScore(profile);
                 profile.hp = character.hp;
 
                 if (character.inventory.ActiveItem)
                 {
-                    UpdateItemProfile(character.inventory.ActiveItem); //hehe this should be way more efficient
+                    var itemProfile = UpdateItemProfile(character.inventory.ActiveItem); //hehe this should be way more efficient
+                    profile.AddKnownItem(itemProfile);
                 }
             }
         }
@@ -209,8 +210,7 @@ namespace BotBrains
         { //having generic item type isn't necessary right now, but might as well
             if (!itemProfiles.TryGetValue(item.prefabId, out var prefabSet))
             {
-                itemProfiles.Add(item.prefabId, new());
-                prefabSet = new();
+                itemProfiles.Add(item.prefabId, prefabSet = new());
             }
 
             if (itemTable.TryGet2From1(item.id, out var foundProfile))
@@ -227,7 +227,7 @@ namespace BotBrains
             }
         }
 
-        public void UpdateItemProfile<T> (T item) where T : Item
+        public ItemProfile UpdateItemProfile<T> (T item) where T : Item
         {
             var profile = GetItemProfile<ItemProfile,Item>(item);
 
@@ -260,6 +260,8 @@ namespace BotBrains
                 //    profile.ResetPrivateProperties();
                 //}
             }
+
+            return profile;
         }
 
         void UpdateItemProfiles<T>(IEnumerable<T> visibleItems) where T : Item
@@ -306,13 +308,27 @@ namespace BotBrains
                 {
                     foreach (var itemProfile in prefabSetPair.Value)
                     {
-                        if (itemProfile.pos.HasValue)
+                        Vector2? pos = itemProfile.pos.HasValue ?
+                            itemProfile.pos.Value : 
+                            (
+                                itemProfile.wielder != null ? 
+                                (
+                                    itemProfile.wielder.pos.HasValue ?
+                                    itemProfile.wielder.pos.Value : 
+                                    null
+                                    ) : 
+                                null
+                            );
+
+                        if (pos.HasValue)
                         {
+                            float radius = itemProfile.pos.HasValue ? 1 : .5f;
+
                             var color = Color.green;
 
                             color.a = itemProfile.isVisible ? 1 : .5f;
 
-                            GeoUtils.DrawCircle(itemProfile.pos.Value, 1, color);
+                            GeoUtils.DrawCircle(pos.Value, radius, color);
                         }
                     }
                 }
@@ -340,36 +356,42 @@ namespace BotBrains
                         {
                             var shouldSeeOnGround = itemProfile.pos.HasValue && TestVisionBox(itemProfile.pos.Value);
 
-                            bool shoudSeeOnCharacter = shouldSeeOnGround ? false :
-                                itemProfile.wielder != null &&
-                                itemProfile.wielder.pos.HasValue &&
-                                TestVisionBox(itemProfile.wielder.pos.Value);
+                            //bool shouldSeeOnCharacter = shouldSeeOnGround ? false :
+                            //    itemProfile.wielder != null &&
+                            //    itemProfile.wielder.pos.HasValue &&
+                            //    TestVisionBox(itemProfile.wielder.pos.Value); 
+                            //so at this point, it will just remember every item this character picked up
 
-                            bool shouldSeeButDont = false;
+                            bool shouldSee = shouldSeeOnGround;// || shouldSeeOnCharacter;
+
+                            bool dontSee = true;
 
                             if (shouldSeeOnGround)
                             {
                                 itemTable.TryGet1From2(itemProfile, out var id);
 
-                                shouldSeeButDont = 
+                                dontSee = 
                                     !ItemManager.Manager.active.TryGetValue(id, out var item) ||
                                     !TestVisionBox(item.transform.position);
                             }
-                            else if (shoudSeeOnCharacter)
-                            {
-                                shouldSeeButDont =
-                                    !CharacterManager.Manager.activeDictionary.TryGetValue(itemProfile.wielder.id, out var character) ||
-                                    !TestVisionBox(character.transform.position);
-                            }
+                            //else if (shouldSeeOnCharacter)
+                            //{
+                            //    dontSee =
+                            //        !CharacterManager.Manager.activeDictionary.TryGetValue(itemProfile.wielder.id, out var character) ||
+                            //        !TestVisionBox(character.transform.position);
+                            //}
 
-                            if (shouldSeeButDont) //if we should see it, but we don't, forget about it
+                            if (dontSee)
                             {
-                                garbage.Add(itemProfile);
-                            }
-                            else
-                            {
-                                itemProfile.isVisible = false; 
-                                //otherwise, just override visible tag to false (it will be corrected momentarily)
+                                if (shouldSee)
+                                {
+                                    garbage.Add(itemProfile);
+                                }
+                                else
+                                {
+                                    itemProfile.isVisible = false;
+                                    itemTable.RemoveFromColumn2(itemProfile);
+                                }
                             }
                         }
 
@@ -392,11 +414,44 @@ namespace BotBrains
                     UpdateCharacterProfiles(GetVisibleCharacters<Character>());
                     UpdateItemProfiles(GetVisibleItems<Item>());
 
+                    if (logProfiles)
+                        LogProfiles();
+
                     Reaction();
 
                     yield return new WaitForSeconds(1 / reactionRate);
                 }
             }
+        }
+
+        public string LogProfiles ()
+        {
+            string log = $"Bot {character.id} Profile Log: Characters: (";
+
+            foreach (var clanPair in clanProfiles)
+            {
+                foreach (var charPair in clanPair.Value)
+                {
+                    log += $"({charPair.Value.Print}), ";
+                }
+            }
+
+            log += ") Items: ";
+
+            foreach (var pair in itemProfiles)
+            {
+                foreach (var itemProfile in pair.Value)
+                {
+                    if (itemProfile.wielder == null)
+                        log += $"({itemProfile.Print}), ";
+                }
+            }
+
+            log += ")";
+
+            Debug.Log(log);
+
+            return log;
         }
 
         public abstract void Reaction();

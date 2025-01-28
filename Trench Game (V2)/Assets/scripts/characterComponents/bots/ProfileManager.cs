@@ -44,7 +44,7 @@ namespace BotBrains
                 (prefab.range / baseGun.range * gunRangeWeight);
         }
 
-        public float GetConsumableScore(ItemProfile consumable)
+        public float GetConsumableScore(ConsumableProfile consumable)
         {
             var prefab = ItemManager.Manager.itemPools[consumable.prefabId].prefab as Consumable;
 
@@ -58,22 +58,27 @@ namespace BotBrains
             {
                 return GetGunScore(gun);
             }
-            else
+            else if (item is ConsumableProfile consumable)
             {
-                return GetConsumableScore(item);
+                return GetConsumableScore(consumable);
             }
+            else return 0; //temporary
         }
 
         public float GetCharacterScore<T>(T character) where T : CharacterProfile
         {
             var prefab = CharacterManager.Manager.prefab;
 
-            var score = (character.hp / prefab.maxHp * characterHPWeight) +
-                (character.velocity.Value.magnitude / baseCharacter.moveSpeed * characterMoveSpeedWeight);
+            var score = (character.hp.HasValue ?
+                character.hp.Value /prefab.maxHp * characterHPWeight:
+                characterHPWeight) +
+                (character.velocity.HasValue ?
+                character.velocity.Value.magnitude / baseCharacter.moveSpeed * characterMoveSpeedWeight :
+                characterMoveSpeedWeight);
 
             foreach (var item in character.items)
             {
-                score += GetItemScore(new ItemProfile { prefabId = item });//ik super lazy
+                score += GetItemScore(item);
             }
 
             return score;

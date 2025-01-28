@@ -17,6 +17,8 @@ namespace BotBrains //only need to make one of these if something about the item
         public virtual void ResetPrivateProperties ()
         {
         }
+
+        public virtual string Print => $"prefabId: {prefabId}";
     }
 
     public class WeaponProfile : ItemProfile
@@ -34,6 +36,8 @@ namespace BotBrains //only need to make one of these if something about the item
 
             rounds = null;
         }
+
+        public override string Print => base.Print + (rounds.HasValue ? $", rounds: {rounds}" : "");
     }
 
     public class StackProfile : ItemProfile
@@ -46,10 +50,17 @@ namespace BotBrains //only need to make one of these if something about the item
 
             amount = null;
         }
+
+        public override string Print => base.Print + (amount.HasValue ? $", amount: {amount}" : "");
     }
 
     public class AmmoProfile : StackProfile
     {
         //public override bool IsDestructable => true;
+    }
+
+    public class ConsumableProfile : ItemProfile
+    {
+    
     }
 }

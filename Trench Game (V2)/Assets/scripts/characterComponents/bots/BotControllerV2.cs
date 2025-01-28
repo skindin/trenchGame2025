@@ -207,84 +207,84 @@ public class BotControllerV2 : MonoBehaviour
 
     public void StartRefreshRoutine ()
     {
-        StartCoroutine(Refresh());
+        //StartCoroutine(Refresh());
 
 
-        IEnumerator Refresh ()
-        {
-            while (true)
-            {
-                targetPos = null;
+        //IEnumerator Refresh ()
+        //{
+        //    while (true)
+        //    {
+        //        targetPos = null;
 
-                //Debug.Log("ran coroutine");
+        //        //Debug.Log("ran coroutine");
 
-                var visibleEnemies = GetVisibleCharacters<Character>(character => character.clan != this.character.clan);
+        //        var visibleEnemies = GetVisibleCharacters<Character>(character => character.clan != this.character.clan);
 
-                UpdateProfiles(visibleEnemies);
+        //        UpdateProfiles(visibleEnemies);
 
-                var strongestCharacter = CollectionUtils.GetHighest(
-                    visibleEnemies,
-                    character => ScoringManager.Manager.GetCharacterScore(character) +
-                    ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position),
-                    out _);
+        //        var strongestCharacter = CollectionUtils.GetHighest(
+        //            visibleEnemies,
+        //            character => ScoringManager.Manager.GetCharacterScore(character) +
+        //            ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position),
+        //            out _);
 
-                if (strongestCharacter && character.inventory.ActiveWeapon)
-                {
-                    //select best weapon
+        //        if (strongestCharacter && character.inventory.ActiveWeapon)
+        //        {
+        //            //select best weapon
 
-                    CollectionUtils.GetHighest(character.inventory.itemSlots, ScoringManager.Manager.GetItemScore, out var slot);
+        //            CollectionUtils.GetHighest(character.inventory.itemSlots, ScoringManager.Manager.GetItemScore, out var slot);
 
-                    character.inventory.CurrentSlot = slot;
+        //            character.inventory.CurrentSlot = slot;
 
-                    //Attack(strongestCharacter.transform.position);
+        //            //Attack(strongestCharacter.transform.position);
 
-                    targetPos = strongestCharacter.transform.position;
+        //            targetPos = strongestCharacter.transform.position;
 
-                    targetProfile = profiles[strongestCharacter.id];
-                }
-                else
-                {
-                    targetProfile = null;
+        //            targetProfile = profiles[strongestCharacter.id];
+        //        }
+        //        else
+        //        {
+        //            targetProfile = null;
 
-                    PickupItemsInOrder(GetBestItems<Weapon>(null, 2),1);
-                }
+        //            PickupItemsInOrder(GetBestItems<Weapon>(null, 2),1);
+        //        }
 
-                if (character.inventory.ActiveWeapon)
-                {
-                    if (!strongestCharacter)
-                    //if we don't see any characters
-                    {
-                        var profileList = CollectionUtils.DictionaryToList(profiles);
+        //        if (character.inventory.ActiveWeapon)
+        //        {
+        //            if (!strongestCharacter)
+        //            //if we don't see any characters
+        //            {
+        //                var profileList = CollectionUtils.DictionaryToList(profiles);
 
-                        CollectionUtils.SortHighestToLowest(profileList, profile => profile.power);
+        //                CollectionUtils.SortHighestToLowest(profileList, profile => profile.power.Value);
 
-                        foreach (var profile in profileList) //move to the most powerful in memory
-                        {
-                            //if (TestVisionBox(profile.lastKnownPos) && profile.lastSeenTime != Time.time)
-                            //{
-                            //    continue; //if bot sees the last known pos, but hasn't seen it for a while
-                            //}
+        //                foreach (var profile in profileList) //move to the most powerful in memory
+        //                {
+        //                    //if (TestVisionBox(profile.lastKnownPos) && profile.lastSeenTime != Time.time)
+        //                    //{
+        //                    //    continue; //if bot sees the last known pos, but hasn't seen it for a while
+        //                    //}
 
-                            targetProfile = profile; //otherwise, move the last place we saw them at
+        //                    targetProfile = profile; //otherwise, move the last place we saw them at
 
-                            break;
-                        }
-                    }
+        //                    break;
+        //                }
+        //            }
 
-                    {
-                        if (character.inventory.ActiveWeapon is Gun gun)
-                        {
-                            if (!strongestCharacter || gun.rounds <= 0) //if there is no threat, or we are out of ammo
-                            {
-                                gun.StartReload(); //reload
-                            }
-                        }
-                    }
-                }
+        //            {
+        //                if (character.inventory.ActiveWeapon is Gun gun)
+        //                {
+        //                    if (!strongestCharacter || gun.rounds <= 0) //if there is no threat, or we are out of ammo
+        //                    {
+        //                        gun.StartReload(); //reload
+        //                    }
+        //                }
+        //            }
+        //        }
 
-                yield return new WaitForSeconds(1 / refreshRate);
-            }
-        }
+        //        yield return new WaitForSeconds(1 / refreshRate);
+        //    }
+        //}
     }
 
     public void Attack (Vector2 victimPos)

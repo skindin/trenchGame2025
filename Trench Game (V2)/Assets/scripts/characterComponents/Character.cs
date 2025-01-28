@@ -13,7 +13,7 @@ public class Character : MonoBehaviour
     [HideInInspector]
     public Clan clan;
     public PlayerController userController;
-    public BotControllerV2 botController;
+    public TrenchBot botController;
     //public SpriteRenderer sprite;
     //public Color dangerColor = Color.white;
     public float baseMoveSpeed = 5, moveSpeed = 0, deathDropRadius = 1, hp = 10, maxHp = 10, jumpDuration = .2f, jumpCooldown = .1f;
@@ -124,7 +124,7 @@ public class Character : MonoBehaviour
     {
         SetHP(MathF.Max(this.hp - hp,0));
 
-        botController.OnDamaged(hp, aggressor, life);
+        //botController.OnDamaged(hp, aggressor, life);
 
         if (this.hp == 0)
         {
@@ -342,7 +342,7 @@ public class Character : MonoBehaviour
 
         onReset.Invoke();
 
-        botController.ResetBot();
+        //botController.ResetBot();
 
         Type = CharacterType.none;
     }

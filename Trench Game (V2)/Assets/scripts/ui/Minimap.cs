@@ -69,7 +69,7 @@ public class Minimap : MonoBehaviour
 
             icon.transform.position = posRatio * scaleFactor + mapMin;
 
-            icon.color = (character.Type == Character.CharacterType.localPlayer) ? playerColor : defaultColor;
+            icon.color = (character.Type == Character.CharacterType.localPlayer) ? playerColor : character.clan.color;
 
             //if (logPosRatios && character.Type == Character.CharacterType.localPlayer)
             //{
