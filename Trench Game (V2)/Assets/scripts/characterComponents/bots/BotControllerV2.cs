@@ -156,9 +156,9 @@ public class BotControllerV2 : MonoBehaviour
             var profile = GetProfile(character);
             profile.SetCurrentVelocity(character.transform.position, 1/refreshRate);
 
-            profile.lastKnownPos = character.transform.position;
+            profile.pos = character.transform.position;
             profile.lastSeenTime = Time.time;
-            profile.lastKnownPower = ScoringManager.Manager.GetCharacterScore(character);
+            profile.power = ScoringManager.Manager.GetCharacterScore(character);
         }
     }
 
@@ -181,7 +181,7 @@ public class BotControllerV2 : MonoBehaviour
                 if (!ChunkManager.Manager.IsPointInWorld(guessPos.Value))
                 {
                     guessPos = ChunkManager.Manager.ClampToWorld(guessPos.Value);
-                    targetProfile.lastKnownVelocity = null;
+                    targetProfile.velocity = null;
                 }
 
                 //if (TestVisionBox(guessPos.Value) && !TestVisionBox(targetProfile.character.transform.position))
@@ -256,7 +256,7 @@ public class BotControllerV2 : MonoBehaviour
                     {
                         var profileList = CollectionUtils.DictionaryToList(profiles);
 
-                        CollectionUtils.SortHighestToLowest(profileList, profile => profile.lastKnownPower);
+                        CollectionUtils.SortHighestToLowest(profileList, profile => profile.power);
 
                         foreach (var profile in profileList) //move to the most powerful in memory
                         {

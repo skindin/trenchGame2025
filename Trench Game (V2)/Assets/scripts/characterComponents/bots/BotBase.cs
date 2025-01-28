@@ -20,9 +20,13 @@ namespace BotBrains
         //public float targetFollowDistance;
         public float reactionRate = 5;
         public int actionMax = 1;
-        public readonly Dictionary<int, Dictionary<int, CharacterProfile>> clanProfiles;
-        public readonly Dictionary<int, ItemProfile> itemProfiles;
+        public readonly Dictionary<int, Dictionary<int, CharacterProfile>> clanProfiles = new(); //first layer clan index, second layer character index
+        public readonly Dictionary<int,HashSet<ItemProfile>> itemProfiles = new(); //first layer prefab index, second layer item id
+        //readonly CollectionUtils.TwoColumnTable<int, int> itemIdsLocalReal = new();
+        readonly CollectionUtils.TwoColumnTable<int, ItemProfile> itemTable = new();
         public Vector2? attackTarget, moveTarget;
+
+        //int nextLocalItemId = 0;
 
         public Chunk[,] chunks;
 
@@ -64,40 +68,40 @@ namespace BotBrains
         //    character.LookInDirection(-delta);
         //}
 
-        public List<T> GetBestItems<T>
-            (Func<T, bool> condition, int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true)
-            where T : Item
-        {
-            var visible = GetVisibleItems<T>(condition);
+        //public List<T> GetBestItems<T>
+        //    (Func<T, bool> condition, int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true)
+        //    where T : Item
+        //{
+        //    var visible = GetVisibleItems<T>(condition);
 
-            if (includeInventory)
-            {
-                foreach (var item in character.inventory.itemSlots)
-                {
-                    if (item)
-                    {
-                        visible.Insert(0, (T)item);
-                    }
-                }
-            }
+        //    if (includeInventory)
+        //    {
+        //        foreach (var item in character.inventory.itemSlots)
+        //        {
+        //            if (item)
+        //            {
+        //                visible.Insert(0, (T)item);
+        //            }
+        //        }
+        //    }
 
-            CollectionUtils.SortHighestToLowest(visible,
-                considerDistance ?
-                item => ScoringManager.Manager.GetItemScore(item) + ScoringManager.Manager.GetItemDistanceScore(transform.position, item) :
-                ScoringManager.Manager.GetItemScore
-                );
+        //    CollectionUtils.SortHighestToLowest(visible,
+        //        considerDistance ?
+        //        item => ScoringManager.Manager.GetItemScore(item) + ScoringManager.Manager.GetItemDistanceScore(transform.position, item) :
+        //        ScoringManager.Manager.GetItemScore
+        //        );
 
-            //this should probably have a way of privatizing properties of items outside pickup range
+        //    //this should probably have a way of privatizing properties of items outside pickup range
 
-            if (onePerPrefab)
-            {
-                visible = CollectionUtils.ListFirstOfEveryValue(visible, item => item.prefabId, limit);
-            }
-            else if (limit.HasValue)
-                visible.Take(limit.Value); //haven't ever tested this take function
+        //    if (onePerPrefab)
+        //    {
+        //        visible = CollectionUtils.ListFirstOfEveryValue(visible, item => item.prefabId, limit);
+        //    }
+        //    else if (limit.HasValue)
+        //        visible.Take(limit.Value); //haven't ever tested this take function
 
-            return visible;
-        }
+        //    return visible;
+        //}
 
         //T PickupItemsInOrder<T>(IEnumerable<T> items, int? pickupLimit = null, bool sortByDistance = false, bool selectBest = true) where T : Item
         //{
@@ -188,31 +192,38 @@ namespace BotBrains
                 var profile = GetCharacterProfile(character);
                 profile.SetCurrentVelocity(character.transform.position, 1 / reactionRate);
 
-                profile.lastKnownPos = character.transform.position;
+                profile.pos = character.transform.position;
                 profile.lastSeenTime = Time.time;
                 profile.isVisible = true;
-                profile.lastKnownPower = ScoringManager.Manager.GetCharacterScore(character);
+                profile.power = ScoringManager.Manager.GetCharacterScore(character);
+                profile.hp = character.hp;
+
+                if (character.inventory.ActiveItem)
+                {
+                    UpdateItemProfile(character.inventory.ActiveItem); //hehe this should be way more efficient
+                }
             }
         }
 
         TProfile GetItemProfile<TProfile,TItem> (TItem item) where TProfile : ItemProfile, new() where TItem : Item
         { //having generic item type isn't necessary right now, but might as well
-            if (itemProfiles.TryGetValue(item.id, out var baseProfile))
+            if (!itemProfiles.TryGetValue(item.prefabId, out var prefabSet))
             {
-                if (baseProfile is not TProfile profile)
-                {
-                    Debug.LogError("wrong profile type");
-                    return null;
-                }
+                itemProfiles.Add(item.prefabId, new());
+                prefabSet = new();
+            }
 
-                return profile;
+            if (itemTable.TryGet2From1(item.id, out var foundProfile))
+            {
+                return foundProfile as TProfile;
             }
             else
             {
-                var newProfile = new TProfile();
-                newProfile.prefabId = item.prefabId;
-                itemProfiles.Add(item.id, newProfile);
-                return newProfile;
+                var profile = new TProfile();
+                profile.prefabId = item.prefabId;
+                prefabSet.Add(profile);
+                itemTable.Add(item.id, profile);
+                return profile;
             }
         }
 
@@ -222,33 +233,32 @@ namespace BotBrains
 
             profile.isVisible = true;
             profile.lastTimeSeen = Time.time;
-            profile.lastKnownPower = ScoringManager.Manager.GetItemScore(item);
 
             if (item.wielder)
             {
-                profile.lastKnownWielder = item.wielder.id;
-                profile.lastKnownPos = null;
+                profile.wielder = GetCharacterProfile(item.wielder);
+                profile.pos = null;
             }
             else
             {
-                profile.lastKnownPos = item.transform.position;
-                profile.lastKnownWielder = null;
+                profile.pos = item.transform.position;
+                profile.wielder = null;
 
                 if (Vector2.Distance(transform.position, item.transform.position) <= character.inventory.activePickupRad)
                 {
                     if (profile is GunProfile gunProfile && item is Gun gun)
                     {
-                        gunProfile.lastKnownRounds = gun.rounds;
+                        gunProfile.rounds = gun.rounds;
                     }
                     else if (profile is AmmoProfile ammoProfile && item is Ammo ammo)
                     {
                         ammoProfile.amount = ammo.amount;
                     }
                 }
-                else
-                {
-                    profile.ResetPrivateProperties();
-                }
+                //else //we should follow the pattern of only correcting when we know for sure
+                //{
+                //    profile.ResetPrivateProperties();
+                //}
             }
         }
 
@@ -272,6 +282,41 @@ namespace BotBrains
             {
                 //move to targetPos
             }
+
+            if (debugLines)
+            {
+                foreach (var clanPair in clanProfiles)
+                {
+                    foreach (var charPair in clanPair.Value)
+                    {
+                        var charProfile = charPair.Value;
+
+                        if (charProfile.pos.HasValue)
+                        {
+                            var color = ClanManager.Manager.clans[clanPair.Key].color;
+
+                            color.a = charProfile.isVisible ? 1 : .5f;
+
+                            GeoUtils.DrawCircle(charProfile.pos.Value, 1, color);
+                        }
+                    }
+                }
+
+                foreach (var prefabSetPair in itemProfiles)
+                {
+                    foreach (var itemProfile in prefabSetPair.Value)
+                    {
+                        if (itemProfile.pos.HasValue)
+                        {
+                            var color = Color.green;
+
+                            color.a = itemProfile.isVisible ? 1 : .5f;
+
+                            GeoUtils.DrawCircle(itemProfile.pos.Value, 1, color);
+                        }
+                    }
+                }
+            }
         }
 
         void StartReactionRoutine()
@@ -284,9 +329,55 @@ namespace BotBrains
                 {
                     UpdateChunks();
 
-                    foreach (var itemPair in itemProfiles)
+                    foreach (var pair in itemProfiles)
                     {
-                        itemPair.Value.isVisible = false;
+                        var prefabId = pair.Key;
+                        var itemSet = pair.Value;
+
+                        HashSet<ItemProfile> garbage = new();
+
+                        foreach (var itemProfile in itemSet)
+                        {
+                            var shouldSeeOnGround = itemProfile.pos.HasValue && TestVisionBox(itemProfile.pos.Value);
+
+                            bool shoudSeeOnCharacter = shouldSeeOnGround ? false :
+                                itemProfile.wielder != null &&
+                                itemProfile.wielder.pos.HasValue &&
+                                TestVisionBox(itemProfile.wielder.pos.Value);
+
+                            bool shouldSeeButDont = false;
+
+                            if (shouldSeeOnGround)
+                            {
+                                itemTable.TryGet1From2(itemProfile, out var id);
+
+                                shouldSeeButDont = 
+                                    !ItemManager.Manager.active.TryGetValue(id, out var item) ||
+                                    !TestVisionBox(item.transform.position);
+                            }
+                            else if (shoudSeeOnCharacter)
+                            {
+                                shouldSeeButDont =
+                                    !CharacterManager.Manager.activeDictionary.TryGetValue(itemProfile.wielder.id, out var character) ||
+                                    !TestVisionBox(character.transform.position);
+                            }
+
+                            if (shouldSeeButDont) //if we should see it, but we don't, forget about it
+                            {
+                                garbage.Add(itemProfile);
+                            }
+                            else
+                            {
+                                itemProfile.isVisible = false; 
+                                //otherwise, just override visible tag to false (it will be corrected momentarily)
+                            }
+                        }
+
+                        foreach (var itemProfile in garbage)
+                        {
+                            itemSet.Remove(itemProfile);
+                            itemTable.RemoveFromColumn2(itemProfile);
+                        }
                     }
 
                     foreach (var clanPair in clanProfiles)
@@ -297,13 +388,9 @@ namespace BotBrains
                         }
                     }
 
-                    var visibleCharacters = GetVisibleCharacters<Character>();
-                    UpdateCharacterProfiles(visibleCharacters);
+                    //var visibleCharacters = GetVisibleCharacters<Character>();
+                    UpdateCharacterProfiles(GetVisibleCharacters<Character>());
                     UpdateItemProfiles(GetVisibleItems<Item>());
-
-                    var heldItems = CollectionUtils.GetPropertyCollection(visibleCharacters, character => character.inventory.ActiveItem);
-
-                    UpdateItemProfiles(heldItems);
 
                     Reaction();
 

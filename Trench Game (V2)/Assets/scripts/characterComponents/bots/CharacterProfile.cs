@@ -7,17 +7,24 @@ namespace BotBrains
     public class CharacterProfile
     {
         public int id;
-        public Vector2? lastKnownPos, lastKnownVelocity;
-        public float lastSeenTime, lastKnownPower, lastDamagedTime, totalDamageDealt;
+        public Vector2? pos, velocity;
+        public float hp, lastSeenTime, power, lastDamagedTime, totalDamageDealt;
         public bool isVisible;
-        public int?[] items;
+        public HashSet<ItemProfile> items; //int represents prefab id
+        public ItemProfile activeItem;
         //public Character character;
+
+        public void AddKnownItem (ItemProfile itemProfile)
+        {
+            activeItem = itemProfile;
+            items.Add(itemProfile);
+        }
 
         public Vector2? SetCurrentVelocity(Vector2 currentPos, float deltaTime)
         {
-            if (lastKnownPos.HasValue)
+            if (pos.HasValue)
             {
-                return lastKnownVelocity = (currentPos - lastKnownPos.Value) / deltaTime;
+                return velocity = (currentPos - pos.Value) / deltaTime;
             }
             else
             {
@@ -27,15 +34,15 @@ namespace BotBrains
 
         public Vector2? GuessCurrentPos(float time)
         {
-            if (lastKnownPos.HasValue)
+            if (pos.HasValue)
             {
-                if (lastKnownVelocity.HasValue)
+                if (velocity.HasValue)
                 {
-                    return lastKnownPos.Value + lastKnownVelocity.Value * (time - lastSeenTime);
+                    return pos.Value + velocity.Value * (time - lastSeenTime);
                 }
                 else
                 {
-                    return lastKnownPos.Value;
+                    return pos.Value;
                 }
             }
             else

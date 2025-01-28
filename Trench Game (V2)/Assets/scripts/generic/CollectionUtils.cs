@@ -10,7 +10,6 @@ using System.Linq;
 
 public static class CollectionUtils
 {
-
     public static float GetListValueTotal<T>(T[] list, Func<T, float> getValue)
     {
         float total = 0f;
@@ -530,5 +529,116 @@ public static class CollectionUtils
         }
 
         return output;
+    }
+
+    public class TwoColumnTable<Type1, Type2> : IEnumerable<ColumnRow<Type1,Type2>>
+    {
+        readonly Dictionary<Type1, Type2> column1 = new();
+        readonly Dictionary<Type2, Type1> column2 = new();
+
+        public void Add(Type1 value1, Type2 value2)
+        {
+            if (column1.ContainsKey(value1))
+            {
+                throw new Exception($"Table column 1 already contained value {value1}");
+            }
+            else if (column2.ContainsKey(value2))
+            {
+                throw new Exception($"Table column 2 already contained value {value2}");
+            }
+
+            column1.Add(value1, value2);
+            column2.Add(value2, value1);
+        }
+
+        public bool TryAdd(Type1 value1, Type2 value2)
+        {
+            if (!column1.ContainsKey(value1) && !column2.ContainsKey(value2))
+            {
+                column1.Add(value1, value2);
+                column2.Add(value2, value1);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TryGet2From1 (Type1 value1, out Type2 value2)
+        {
+            if (column1.TryGetValue(value1, out value2))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool TryGet1From2(Type2 value2, out Type1 value1)
+        {
+            if (column2.TryGetValue(value2, out value1))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool RemoveFromColumn1 (Type1 value1)
+        {
+            if (column1.TryGetValue(value1, out var value2))
+            {
+                column1.Remove(value1);
+                column2.Remove(value2);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool RemoveFromColumn2(Type2 value2)
+        {
+            if (column2.TryGetValue(value2, out var value1))
+            {
+                column2.Remove(value2);
+                column1.Remove(value1);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public IEnumerator<ColumnRow<Type1,Type2>> GetEnumerator()
+        {
+            foreach (var pair in column1)
+            {
+                yield return new ColumnRow<Type1,Type2>(pair.Key, pair.Value);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    } 
+    
+    public struct ColumnRow<Type1, Type2>
+    {
+        public Type1 value1;
+        public Type2 value2;
+
+        public ColumnRow(Type1 value1, Type2 value2)
+        {
+            this.value1 = value1;
+            this.value2 = value2;
+        }
     }
 }

@@ -7,16 +7,15 @@ namespace BotBrains //only need to make one of these if something about the item
 {
     public class ItemProfile
     {
-        public int prefabId;
-        public int? lastKnownWielder;
+        public int prefabId;//, localId;
+        public CharacterProfile wielder;
         public float lastTimeSeen;
-        public float? lastKnownPower;
-        public Vector2? lastKnownPos;
+        public Vector2? pos;
         public bool isVisible;
+        //public virtual bool IsDestructable => false;
 
         public virtual void ResetPrivateProperties ()
         {
-            lastKnownPower = null;
         }
     }
 
@@ -27,13 +26,13 @@ namespace BotBrains //only need to make one of these if something about the item
 
     public class GunProfile : WeaponProfile
     {
-        public int? lastKnownRounds;
+        public int? rounds;
 
         public override void ResetPrivateProperties()
         {
             base.ResetPrivateProperties();
 
-            lastKnownRounds = null;
+            rounds = null;
         }
     }
 
@@ -51,6 +50,6 @@ namespace BotBrains //only need to make one of these if something about the item
 
     public class AmmoProfile : StackProfile
     {
-    
+        //public override bool IsDestructable => true;
     }
 }
