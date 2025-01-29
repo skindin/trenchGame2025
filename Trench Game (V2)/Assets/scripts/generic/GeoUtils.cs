@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 //using System.Drawing;
+
+//using System.Drawing;
 using Unity.VisualScripting;
 
 
@@ -9,6 +11,7 @@ using Unity.VisualScripting;
 //using Unity.VisualScripting;
 //using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
+using UnityEngine.UIElements;
 //using UnityEngine.Rendering.PostProcessing;
 
 public static class GeoUtils
@@ -908,18 +911,35 @@ public static class GeoUtils
     //    return null;
     //}
 
-    public static void DrawCircle(Vector3 center, float radius, Color color, int res = 4)
+    public static void DrawCircle(Vector2 center, float radius, Color color, int res = 4)
     {
-        Vector3 lastPoint = Vector2.up * radius;
+        Vector2 lastPoint = Vector2.up * radius;
 
         int verts = res * 4;
         var angle = 360f / verts;
 
         for (int i = 1; i < verts + 1; i++)
         {
-            var point = Quaternion.AngleAxis(angle, Vector3.forward) * lastPoint;
+            Vector2 point = Quaternion.AngleAxis(angle, Vector3.forward) * lastPoint;
 
             Debug.DrawLine(point + center, lastPoint + center, color);
+
+            lastPoint = point;
+        }
+    }
+
+    public static void DrawRingOfCircles (Vector2 ringCenter, float ringRadius, float circleRadius, int circleCount, Color color, int circleRes = 4)
+    {
+        Vector2 lastPoint = Vector2.up * ringRadius;
+        var angle = 360f / circleCount;
+
+        for (int i = 1; i < circleCount + 1; i++)
+        {
+            Vector2 point = Quaternion.AngleAxis(angle, Vector3.forward) * lastPoint;
+
+            DrawCircle(point + ringCenter, circleRadius, color, circleRes);
+
+            //Debug.DrawLine(point + center, lastPoint + center, color);
 
             lastPoint = point;
         }

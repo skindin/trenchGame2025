@@ -602,6 +602,22 @@ public static class CollectionUtils
             }
         }
 
+        public void OverrideColumn2 (Type1 value1, Type2 value2)
+        {
+            var prevValue2 = column1[value1];
+            column1[value1] = value2;
+            column2.Remove(prevValue2);
+            column2.Add(value2, value1);
+        }
+
+        public void OverrideColumn1 (Type1 value1, Type2 value2)
+        {
+            var prevValue1 = column2[value2];
+            column2[value2] = value1;
+            column1.Remove(prevValue1);
+            column1.Add(value1, value2);
+        }
+
         public bool RemoveFromColumn2(Type2 value2)
         {
             if (column2.TryGetValue(value2, out var value1))

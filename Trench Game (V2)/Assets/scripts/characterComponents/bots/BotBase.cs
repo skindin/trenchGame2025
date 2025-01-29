@@ -213,16 +213,22 @@ namespace BotBrains
                 itemProfiles.Add(item.prefabId, prefabSet = new());
             }
 
+            //bool justDropped = false;
+
+            //(justDropped = item.wielder == null && (foundProfile.wielder != null))
+
             if (itemTable.TryGet2From1(item.id, out var foundProfile))
             {
                 return foundProfile as TProfile;
             }
+            //else if (item.wielder && clanProfiles[item.wielder.clan.id][item.wielder.id])
             else
             {
                 var profile = new TProfile();
                 profile.prefabId = item.prefabId;
                 prefabSet.Add(profile);
-                itemTable.Add(item.id, profile);
+                //if (!justDropped)
+                    itemTable.Add(item.id, profile);
                 return profile;
             }
         }
@@ -300,6 +306,11 @@ namespace BotBrains
                             color.a = charProfile.isVisible ? 1 : .5f;
 
                             GeoUtils.DrawCircle(charProfile.pos.Value, 1, color);
+
+                            if (charProfile.items.Count > 0)
+                            {
+                                GeoUtils.DrawRingOfCircles(charProfile.pos.Value, 1, .5f, charProfile.items.Count, Color.green);
+                            }
                         }
                     }
                 }
@@ -308,21 +319,14 @@ namespace BotBrains
                 {
                     foreach (var itemProfile in prefabSetPair.Value)
                     {
-                        Vector2? pos = itemProfile.pos.HasValue ?
-                            itemProfile.pos.Value : 
-                            (
-                                itemProfile.wielder != null ? 
-                                (
-                                    itemProfile.wielder.pos.HasValue ?
-                                    itemProfile.wielder.pos.Value : 
-                                    null
-                                    ) : 
-                                null
-                            );
+                        if (itemProfile.wielder != null)
+                            return;
+
+                        Vector2? pos = itemProfile.pos;
 
                         if (pos.HasValue)
                         {
-                            float radius = itemProfile.pos.HasValue ? 1 : .5f;
+                            float radius = .5f;
 
                             var color = Color.green;
 
@@ -354,7 +358,10 @@ namespace BotBrains
 
                         foreach (var itemProfile in itemSet)
                         {
-                            var shouldSeeOnGround = itemProfile.pos.HasValue && TestVisionBox(itemProfile.pos.Value);
+                            if (!itemProfile.isVisible)
+                                continue;
+
+                            //var shouldSeeOnGround = itemProfile.pos.HasValue && TestVisionBox(itemProfile.pos.Value);
 
                             //bool shouldSeeOnCharacter = shouldSeeOnGround ? false :
                             //    itemProfile.wielder != null &&
@@ -362,17 +369,33 @@ namespace BotBrains
                             //    TestVisionBox(itemProfile.wielder.pos.Value); 
                             //so at this point, it will just remember every item this character picked up
 
-                            bool shouldSee = shouldSeeOnGround;// || shouldSeeOnCharacter;
+                            bool shouldSee = false;// || shouldSeeOnCharacter;
 
                             bool dontSee = true;
 
-                            if (shouldSeeOnGround)
+                            itemTable.TryGet1From2(itemProfile, out var id);
+                            ItemManager.Manager.active.TryGetValue(id, out var item);
+
+                            if (itemProfile.pos.HasValue && TestVisionBox(itemProfile.pos.Value))
                             {
-                                itemTable.TryGet1From2(itemProfile, out var id);
+                                shouldSee = true;                                 
 
                                 dontSee = 
-                                    !ItemManager.Manager.active.TryGetValue(id, out var item) ||
+                                    !item ||
                                     !TestVisionBox(item.transform.position);
+                            }
+                            else if (itemProfile.wielder != null &&
+                                itemProfile.wielder.pos.HasValue &&
+                                TestVisionBox(itemProfile.wielder.pos.Value) &&
+                                CharacterManager.Manager.activeDictionary.TryGetValue(itemProfile.wielder.id, out var character) &&
+                                TestVisionBox(character.transform.position)) //should see wielder
+                            {
+                                shouldSee = true;
+
+                                dontSee =
+                                    //! ||
+                                    character.inventory.ActiveItem != item;
+                                    //!TestVisionBox(character.transform.position);
                             }
                             //else if (shouldSeeOnCharacter)
                             //{
@@ -390,7 +413,9 @@ namespace BotBrains
                                 else
                                 {
                                     itemProfile.isVisible = false;
-                                    itemTable.RemoveFromColumn2(itemProfile);
+
+                                    if (itemProfile.wielder != null)
+                                        itemTable.RemoveFromColumn2(itemProfile);
                                 }
                             }
                         }

@@ -7667,7 +7667,7 @@ MonoBehaviour:
     minPooled: 0
     maxPooled: 10
   logOutOfBounds: 0
-  drawChunks: 1
+  drawChunks: 0
   drawObjectChunkLinks: 0
   drawLineTest: 0
 --- !u!1 &2140088292
