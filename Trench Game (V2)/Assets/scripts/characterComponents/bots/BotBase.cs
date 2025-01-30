@@ -309,7 +309,7 @@ namespace BotBrains
 
                             if (charProfile.items.Count > 0)
                             {
-                                GeoUtils.DrawRingOfCircles(charProfile.pos.Value, 1, .5f, charProfile.items.Count, Color.green);
+                                GeoUtils.DrawRingOfCircles(charProfile.pos.Value, 1, .5f, charProfile.items.Count, color);
                             }
                         }
                     }
@@ -320,7 +320,7 @@ namespace BotBrains
                     foreach (var itemProfile in prefabSetPair.Value)
                     {
                         if (itemProfile.wielder != null)
-                            return;
+                            continue;
 
                         Vector2? pos = itemProfile.pos;
 
@@ -390,7 +390,7 @@ namespace BotBrains
                                 CharacterManager.Manager.activeDictionary.TryGetValue(itemProfile.wielder.id, out var character) &&
                                 TestVisionBox(character.transform.position)) //should see wielder
                             {
-                                shouldSee = true;
+                                //shouldSee = true;
 
                                 dontSee =
                                     //! ||
