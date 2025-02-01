@@ -7,8 +7,8 @@ using Chunks;
 
 namespace BotBrains
 {
-    public class BotListenerChunk
+    public class BotObserverChunk
     {
-        public HashSet<BotBase> occupants = new(), listeners = new();
+        public HashSet<ObserverBot> observers = new();
     }
 }

@@ -11,6 +11,7 @@ namespace BotBrains
     [RequireComponent(typeof(Character))]
     public abstract class BotBase : MonoBehaviour
     {
+        //public static BotListenerChunkArray listenerArray;
         public Character character;
         public Vector2 visionBox;
         public bool debugLines = false, logProfiles = false;
@@ -36,10 +37,13 @@ namespace BotBrains
         //character = GetComponent<Character>();
         //}
 
-        private void Awake()
-        {
-            
-        }
+        //private void Awake()
+        //{
+        //    if (listenerArray == null)
+        //    {
+        //        listenerArray = new ();
+        //    }
+        //}
 
         private void OnEnable()
         {
@@ -345,15 +349,15 @@ namespace BotBrains
             }
         }
 
-        //public void PickedUpItem (Item item)
-        //{
-        //    globalBotChunkArray.PickedUpItem(this, item);
-        //}
+        public void PickedUpItem(Item item)
+        {
+            globalBotChunkArray.PickedUpItem(this, item);
+        }
 
-        //public void DroppedItem (Item item)
-        //{
-        //    globalBotChunkArray.DroppedItem(this, item);
-        //}
+        public void DroppedItem(Item item)
+        {
+            globalBotChunkArray.DroppedItem(this, item);
+        }
 
         void StartReactionRoutine()
         {

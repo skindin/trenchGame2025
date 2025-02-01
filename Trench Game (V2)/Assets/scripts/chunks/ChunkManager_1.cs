@@ -23,10 +23,10 @@ namespace Chunks
             chunkSize = Manager.worldSize / chunkArraySize;
         }
 
-        private void Awake()
-        {
-            Initialize();
-        }
+        //private void Awake()
+        //{
+        //    Initialize();
+        //}
 
         public static T[,] GetChunkPairArray<T>()
         {
