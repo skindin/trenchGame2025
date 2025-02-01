@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using Chunks;
 
 
 namespace BotBrains
@@ -32,8 +33,13 @@ namespace BotBrains
 
         //private void Awake()
         //{
-            //character = GetComponent<Character>();
+        //character = GetComponent<Character>();
         //}
+
+        private void Awake()
+        {
+            
+        }
 
         private void OnEnable()
         {
@@ -338,6 +344,16 @@ namespace BotBrains
                 }
             }
         }
+
+        //public void PickedUpItem (Item item)
+        //{
+        //    globalBotChunkArray.PickedUpItem(this, item);
+        //}
+
+        //public void DroppedItem (Item item)
+        //{
+        //    globalBotChunkArray.DroppedItem(this, item);
+        //}
 
         void StartReactionRoutine()
         {

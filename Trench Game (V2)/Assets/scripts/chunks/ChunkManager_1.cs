@@ -42,6 +42,12 @@ namespace Chunks
             var adress = Vector2Int.FloorToInt(delta / chunkSize.Value);
             return adress;
         }
+
+        public static Vector2 ClampPosToWorld (Vector2 pos)
+        {
+            return GeoUtils.ClampToBoxPosSize(pos, Vector2.zero, Vector2.one * staticWorldSize);
+        }
+
         public static Vector2 AddressToPos(Vector2Int address)
         {
             var min = -Vector2.one / 2 * staticWorldSize;
