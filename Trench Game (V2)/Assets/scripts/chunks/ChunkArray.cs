@@ -51,12 +51,12 @@ namespace Chunks
             var address = ChunkManager.PosToAdress (pos);
 
             address = Vector2Int.Max(Vector2Int.zero, address);
-            address = Vector2Int.Min(Vector2Int.one * (ChunkManager.chunkArraySize.Value-1), address);
+            address = Vector2Int.Min(Vector2Int.one * (ChunkManager.ChunkArraySize.Value-1), address);
 
             return this[address];
         }
 
-        public IEnumerable<ChunkAddressPair<T>> FromBoxMinMax(Vector2 min, Vector2 max, Func<T, bool> condition)
+        public IEnumerable<ChunkAddressPair<T>> FromBoxMinMax(Vector2 min, Vector2 max, Func<T, bool> condition = null)
         {
             foreach (var address in ChunkManager.AddressesFromBoxMinMax(min,max))
             {
@@ -70,7 +70,7 @@ namespace Chunks
             }
         }
 
-        public IEnumerable<ChunkAddressPair<T>> FromBoxPosSize (Vector2 pos, Vector2 size, Func<T, bool> condition)
+        public IEnumerable<ChunkAddressPair<T>> FromBoxPosSize (Vector2 pos, Vector2 size, Func<T, bool> condition = null)
         {
             foreach (var address in ChunkManager.AddressesFromBoxPosSize(pos, size))
             {
@@ -84,7 +84,7 @@ namespace Chunks
             }
         }
 
-        public IEnumerable<ChunkAddressPair<T>> FromLine(Vector2 pointA, Vector2 pointB, Func<T, bool> condition)
+        public IEnumerable<ChunkAddressPair<T>> FromLine(Vector2 pointA, Vector2 pointB, Func<T, bool> condition = null)
         {
             foreach (var address in ChunkManager.AddressesFromLine (pointA, pointB))
             {

@@ -1,9 +1,6 @@
-﻿using System;
+﻿using Chunks;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chunks;
 using UnityEngine;
 
 namespace BotBrains
@@ -24,16 +21,61 @@ namespace BotBrains
             set => base[address] = value;
         }
 
-        public BotObserverChunkArray() : base()
+        readonly Dictionary<ObserverBot,HashSet<Vector2Int>> observerDict = new();
+
+        public void RemoveObserver (ObserverBot observer)
         {
+            if (observerDict.TryGetValue(observer, out var set))
+            {
+                foreach (var address in set)
+                {
+                    this[address].observers.Remove(observer);
+                }
+
+                observerDict.Remove(observer);
+            }
         }
 
-        //public void ObserveChunksBoxMinMax (ObserverBot bot)
-        //{
-        //    foreach (var)
-        //}
+        public void AddObserverToChunk (ObserverBot bot, Vector2Int address)
+        {
+            this[address].observers.Add(bot);
 
-        public void ItemAction (Character subject, Item item, Action<ObserverBot, Character, Item> action)
+            if (!observerDict.TryGetValue(bot, out var set))
+            {
+                set = new();
+                observerDict.Add(bot, set);
+            }
+
+            set.Add(address);
+        }
+
+        public void SetObserverChunksBoxMinMax(ObserverBot bot, Vector2 min, Vector2 max)
+        {
+            RemoveObserver(bot);
+
+            foreach (var pair in FromBoxMinMax(min, max))
+            {
+                if (pair.obj == null)
+                    continue;
+
+                AddObserverToChunk(bot, pair.address);
+            }
+        }
+
+        public void SetObserverChunksBoxPosSize(ObserverBot bot, Vector2 pos, Vector2 size)
+        {
+            RemoveObserver(bot);
+
+            foreach (var pair in FromBoxPosSize(pos, size))
+            {
+                if (pair.obj == null)
+                {
+                    AddObserverToChunk(bot, pair.address);
+                }
+            }
+        }
+
+        public void CharacterItemAction (Character subject, Item item, Action<ObserverBot, Character, Item> action)
         {
             var subjectAddress = Chunks.ChunkManager.PosToAdress(subject.transform.position);
             var itemAddress = Chunks.ChunkManager.PosToAdress(item.transform.position);
@@ -73,15 +115,41 @@ namespace BotBrains
                 }
             }
         }
+        //might be a little unnecessary to notify observers about an item disappearing
 
         public void PickedUpItem (Character subject, Item item)
         {
-            ItemAction(subject, item, (observer, subject, item) => observer.ObserveItemPickup(subject, item));
+            CharacterItemAction(subject, item, (observer, subject, item) => observer.ObserveItemPickup(subject, item));
         }
 
         public void DroppedItem (Character subject, Item item)
         {
-            ItemAction(subject, item, (observer, subject, item) => observer.ObserveItemDrop(subject, item));
+            CharacterItemAction(subject, item, (observer, subject, item) => observer.ObserveItemDrop(subject, item));
+        }
+
+        public void SpawnedItem (Item item)
+        {
+            foreach (var observer in FromPos(item.transform.position).observers)
+            {
+                observer.ObserveItemSpawn(item);
+            }
+        }
+
+        public void CharacterMoved (Character subject, Vector2 prevPos)
+        {
+            HashSet<ObserverBot> alreadyTold = new();
+
+            foreach (var chunk in FromLine(prevPos,subject.transform.position, chunk => chunk != null))
+            {
+                foreach (var observer in chunk.obj.observers)
+                {
+                    if (observer.character == subject || alreadyTold.Contains(observer))
+                        continue;
+
+                    observer.ObserveCharacterMove(subject);
+                    alreadyTold.Add(observer);
+                }
+            }
         }
     }
 }

@@ -11,16 +11,16 @@ namespace Chunks
     {
         public float worldSize, minChunkSize;
 
-        static float staticWorldSize;
+        public static float WorldSize { get; private set; }
 
-        static float? chunkSize;
-        public static int? chunkArraySize { get; private set; }
+        public static float? chunkSize { get; private set; }
+        public static int? ChunkArraySize { get; private set; }
 
         public static void Initialize ()
         {
-            staticWorldSize = Manager.worldSize;
-            chunkArraySize = Mathf.FloorToInt(staticWorldSize / Manager.minChunkSize);
-            chunkSize = Manager.worldSize / chunkArraySize;
+            WorldSize = Manager.worldSize;
+            ChunkArraySize = Mathf.FloorToInt(WorldSize / Manager.minChunkSize);
+            chunkSize = Manager.worldSize / ChunkArraySize;
         }
 
         //private void Awake()
@@ -30,14 +30,14 @@ namespace Chunks
 
         public static T[,] GetChunkPairArray<T>()
         {
-            var array = new T[chunkArraySize.Value, chunkArraySize.Value];
+            var array = new T[ChunkArraySize.Value, ChunkArraySize.Value];
 
             return array;
         }
 
         public static Vector2Int PosToAdress(Vector2 pos)
         {
-            var min = -Vector2.one / 2 * staticWorldSize;
+            var min = -Vector2.one / 2 * WorldSize;
             var delta = pos - min;
             var adress = Vector2Int.FloorToInt(delta / chunkSize.Value);
             return adress;
@@ -45,26 +45,26 @@ namespace Chunks
 
         public static Vector2 ClampPosToWorld (Vector2 pos)
         {
-            return GeoUtils.ClampToBoxPosSize(pos, Vector2.zero, Vector2.one * staticWorldSize);
+            return GeoUtils.ClampToBoxPosSize(pos, Vector2.zero, Vector2.one * WorldSize);
         }
 
         public static Vector2 AddressToPos(Vector2Int address)
         {
-            var min = -Vector2.one / 2 * staticWorldSize;
+            var min = -Vector2.one / 2 * WorldSize;
             var pos = ((Vector2)address * chunkSize.Value) + min;
             return pos;
         }
 
         public static void GetWorldBox (out Vector2 min, out Vector2 max)
         {
-            max = Vector2.one * staticWorldSize / 2;
+            max = Vector2.one * WorldSize / 2;
             min = -max;
         }
 
         public static bool IsPointInWorld(Vector2 point, bool debugLines = false)
         {
             //GetWorldBox(out var min, out var max);
-            return GeoUtils.TestBoxPosSize(Vector2.zero, Vector2.one * staticWorldSize, point, debugLines);
+            return GeoUtils.TestBoxPosSize(Vector2.zero, Vector2.one * WorldSize, point, debugLines);
         }
 
         public static IEnumerable<Vector2Int> AddressesFromBoxMinMax(Vector2 min, Vector2 max)
@@ -119,9 +119,9 @@ namespace Chunks
 
         public static IEnumerable<Vector2Int> AllAddresses ()
         {
-            for (var x = 0; x < chunkArraySize; x++)
+            for (var x = 0; x < ChunkArraySize; x++)
             {
-                for (var y = 0; y < chunkArraySize; y++)
+                for (var y = 0; y < ChunkArraySize; y++)
                 {
                     yield return new Vector2Int(x, y);
                 }

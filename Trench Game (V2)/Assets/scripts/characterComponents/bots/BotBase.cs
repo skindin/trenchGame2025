@@ -349,15 +349,15 @@ namespace BotBrains
             }
         }
 
-        public void PickedUpItem(Item item)
-        {
-            globalBotChunkArray.PickedUpItem(this, item);
-        }
+        //public void PickedUpItem(Item item)
+        //{
+        //    globalBotChunkArray.PickedUpItem(this, item);
+        //}
 
-        public void DroppedItem(Item item)
-        {
-            globalBotChunkArray.DroppedItem(this, item);
-        }
+        //public void DroppedItem(Item item)
+        //{
+        //    globalBotChunkArray.DroppedItem(this, item);
+        //}
 
         void StartReactionRoutine()
         {
