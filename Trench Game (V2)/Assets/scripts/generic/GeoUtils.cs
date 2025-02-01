@@ -1224,6 +1224,19 @@ public static class GeoUtils
         yield break;
     }
 
+    public static void BoxMinMaxToPosSize (Vector2 min, Vector2 max, out Vector2 pos, out Vector2 size)
+    {
+        pos = (min + max) / 2;
+        size = max - min;
+    }
+
+    public static void BoxPosSizeToMinMax (Vector2 pos, Vector2 size, out Vector2 min, out Vector2 max)
+    {
+        var delta = size / 2;
+        min = pos - delta;
+        max = pos + delta;
+    }
+
     //public static IEnumerable<Vector2Int> CellsFromArc(Vector2 arcPivot, float radius, float centerAngle, float spreadAngle, float cellSize)
     //{
     //    Vector2 pointA = (Vector2)(Quaternion.AngleAxis(centerAngle - (spreadAngle * 2), Vector3.forward) * Vector2.up) * radius + arcPivot;

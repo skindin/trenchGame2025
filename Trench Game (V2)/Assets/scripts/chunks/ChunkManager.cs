@@ -141,10 +141,10 @@ public class ChunkManager : MonoBehaviour
 
     public Vector2 GetRandomPos (float margin = 0)
     {
-        var edge = worldSize - margin;
+        var edge = (worldSize / 2) - margin;
 
-        var x = UnityEngine.Random.Range(-edge, edge) / 2;
-        var y = UnityEngine.Random.Range(-edge, edge) / 2;
+        var x = UnityEngine.Random.Range(-edge, edge);
+        var y = UnityEngine.Random.Range(-edge, edge);
 
         return new(x, y);
     }
@@ -373,7 +373,7 @@ public class ChunkManager : MonoBehaviour
         max = AdressToPos(adress + Vector2Int.one);
     }
 
-    public void DrawAdressBox (Vector2Int adress, UnityEngine.Color color)
+    public void DrawAdressBox (Vector2Int adress, Color color)
     {
         var min = AdressToPos(adress);
         var max = AdressToPos(adress + Vector2Int.one);
