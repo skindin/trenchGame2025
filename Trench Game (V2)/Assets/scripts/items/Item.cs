@@ -12,34 +12,8 @@ public class Item : MonoBehaviour
     public Transform defaultContainer;
     public Character wielder;
     //public bool currentlyHeld = false;
-    public static List<Item> all = new();
+    //public static List<Item> all = new();
     public Vector3 groundRot, heldRot, heldPos;
-
-    Chunk chunk = null;
-    public Chunk Chunk
-    {
-        get
-        {
-            return chunk;
-        }
-
-        set
-        {
-            if (chunk == value)
-            {
-                //Debug.Log($"Item {this} {gameObject.GetInstanceID()} chunk was already {(chunk == null ? "null" : $"chunk {chunk.adress}")}");
-                return;
-            }
-
-            chunk?.RemoveItem(this);
-
-            chunk = value; //you wouldn't BELIEVE how important the order of these three lines is
-
-            chunk?.AddItem(this);
-
-            //Debug.Log($"Item {this}{gameObject.GetInstanceID()} chunk was set to {(value == null ? "null" : $"Chunk {chunk.adress}")}");
-        }
-    }
 
     public virtual string Verb { get; } = "use";
 
@@ -56,8 +30,8 @@ public class Item : MonoBehaviour
 
     public virtual void ItemAwake ()
     {
-        if (!all.Contains(this))
-            all.Add(this);
+        //if (!all.Contains(this))
+        //    all.Add(this);
     }
 
     private void Start()
@@ -73,18 +47,17 @@ public class Item : MonoBehaviour
 
     }
 
-    private void OnDestroy()
-    {
-        all.Remove(this);
+    //private void OnDestroy()
+    //{
+    //    all.Remove(this);
 
-        if (chunk != null)
-            chunk.RemoveItem(this);
-    }
+    //    //ItemManager.Manager.chunkArray.up
+    //}
 
     private void Update()
     {
         ItemUpdate();
-        if (!wielder && chunk == null)
+        if (!wielder)
         {
             UpdateChunk();
         }
@@ -107,7 +80,7 @@ public class Item : MonoBehaviour
 
     public void UpdateChunk()
     {
-        Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
+        ItemManager.Manager.chunkArray.UpdateObjectChunk(this);
     }
 
     public virtual void Pickup (Character character, out bool wasPickedUp, out bool wasDestroyed, bool sync)
@@ -124,7 +97,7 @@ public class Item : MonoBehaviour
         if (sync) 
             NetworkManager.Manager.PickupItem(wielder, this);
 
-        Chunk = null;
+        //Chunk = null;
         wasDestroyed = false;
         wasPickedUp = true;
 

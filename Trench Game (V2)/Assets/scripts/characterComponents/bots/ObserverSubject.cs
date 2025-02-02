@@ -25,7 +25,7 @@ namespace BotBrains
 
         public void UpdateChunk ()
         {
-            BotManager.Manager.subjectChunkArray.UpdateSubjectsChunk(this);
+            BotManager.Manager.subjectChunkArray.UpdateObjectChunk(this);
         }
 
         public void OnDroppedItem (Item item)

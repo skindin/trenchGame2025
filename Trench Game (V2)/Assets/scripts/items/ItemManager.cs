@@ -4,7 +4,8 @@ using UnityEngine;
 //using JetBrains.Annotations;
 using System;
 using UnityEngine.Events;
-using System.Runtime.InteropServices.WindowsRuntime;
+//using System.Runtime.InteropServices.WindowsRuntime;
+using Chunks;
 //using static UnityEditor.Progress;
 
 public class ItemManager : MonoBehaviour
@@ -25,6 +26,7 @@ public class ItemManager : MonoBehaviour
 
     //public bool spawnDrops = true;
     public List<ItemPool> itemPools = new();
+    public MonoBehaviorChunkArray<Item> chunkArray = new();
     public Transform container;
 
     public UnityEvent<Item> onNewItem, onRemoveItem;
@@ -161,7 +163,7 @@ public class ItemManager : MonoBehaviour
         return NewItem(prefab, NewItemId);
     }
 
-    public Item newItemNewId (int prefabId)
+    public Item NewItemNewId (int prefabId)
     {
         return NewItem(prefabId, NewItemId);
     }
@@ -215,6 +217,8 @@ public class ItemManager : MonoBehaviour
             itemPool.MoveTo(item);
             active.Remove(item.id);
             onRemoveItem?.Invoke(item);
+
+            chunkArray.RemoveObject(item);
         }
         else
             throw new Exception($"Item manager does not have server pool setup for {prefab}");
@@ -337,7 +341,7 @@ public class ItemManager : MonoBehaviour
         {
             if (item == null) return;
 
-            item.Chunk = null;
+            //item.Chunk = null;
 
             //if (!active.Contains(item)) return;
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ClanManager : ManagerBase<ClanManager>
 {
-    public List<Clan> clans;
+    public List<Clan> clans = new();
     List<int> indexList = new ();
     int nextClanIndex = 0;
 

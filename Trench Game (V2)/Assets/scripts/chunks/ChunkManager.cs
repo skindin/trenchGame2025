@@ -31,7 +31,7 @@ public class ChunkManager : MonoBehaviour
     public float worldSize = 100, minChunkSize = 10, chunkSize = 10;
     public int chunkArraySize;
 
-    public Transform pointA, pointB;
+    //public Transform pointA, pointB;
 
     public Chunk[,] chunks;
     //public int maxChunksPooled = 10;
@@ -43,7 +43,7 @@ public class ChunkManager : MonoBehaviour
         destroyAction: null
         );//
 
-    public bool logOutOfBounds = false, drawChunks = false, drawObjectChunkLinks = false, drawLineTest = false;
+    public bool logOutOfBounds = false, drawChunks = false, drawObjectChunkLinks = false;
 
     private void Awake()
     {
@@ -58,14 +58,9 @@ public class ChunkManager : MonoBehaviour
 
         if (drawObjectChunkLinks)
             DrawObjectChunkLinks();
-
-        if (drawLineTest)
-        {
-            ChunksFromLine(pointA.position, pointB.position, false, true);
-        }
     }
 
-    List<Chunk> reusableChunkList = new();
+    //List<Chunk> reusableChunkList = new();
 
     public void DrawChunks ()
     {
@@ -99,10 +94,10 @@ public class ChunkManager : MonoBehaviour
 
             var center = AdressToPos(chunk.adress) + chunkSize / 2 * Vector2.one;
 
-            foreach (var item in chunk.items)
-            {
-                Debug.DrawLine(center, item.transform.position, Color.blue);
-            }
+            //foreach (var item in chunk.items)
+            //{
+            //    Debug.DrawLine(center, item.transform.position, Color.blue);
+            //}
 
             foreach (var character in chunk.characters)
             {
@@ -385,10 +380,10 @@ public class ChunkManager : MonoBehaviour
         return FindClosestObjectWithinBoxPosSize(pos, size, chunk => chunk.GetCharacters<T>(), condition, chunks, debugLines);
     }
 
-    public T FindClosestItemWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : Item
-    {
-        return FindClosestObjectWithinBoxPosSize(pos, size, chunk => chunk.GetItems<T>(), condition, chunks, debugLines);
-    }
+    //public T FindClosestItemWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : Item
+    //{
+    //    return FindClosestObjectWithinBoxPosSize(pos, size, chunk => chunk.GetItems<T>(), condition, chunks, debugLines);
+    //}
 
     public T FindClosestObjectWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<Chunk, T[]> getObjList, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : MonoBehaviour
     {
@@ -426,29 +421,29 @@ public class ChunkManager : MonoBehaviour
         //return closestBehavior;
     }
 
-    public List<T> GetItemsWithinChunkArray<T> (Chunk[,] chunks, Func<T, bool> condition = null) where T : Item
-    {
-        var output = new List<T>();
+    //public List<T> GetItemsWithinChunkArray<T> (Chunk[,] chunks, Func<T, bool> condition = null) where T : Item
+    //{
+    //    var output = new List<T>();
 
-        foreach ( var chunk in chunks )
-        {
-            if (chunk == null)
-                continue;
+    //    foreach ( var chunk in chunks )
+    //    {
+    //        if (chunk == null)
+    //            continue;
 
-            var itemsOfType = chunk.GetItems<T>();
+    //        var itemsOfType = chunk.GetItems<T>();
 
-            foreach ( var item in itemsOfType )
-            {
-                if (condition == null || condition(item))
-                {
-                    output.Add(item);
-                }
+    //        foreach ( var item in itemsOfType )
+    //        {
+    //            if (condition == null || condition(item))
+    //            {
+    //                output.Add(item);
+    //            }
 
-            }
-        }
+    //        }
+    //    }
 
-        return output;
-    }
+    //    return output;
+    //}
 
     public List<T> GetCharactersWithinChunkArray<T>(Chunk[,] chunks, Func<T, bool> condition = null) where T : Character
     {

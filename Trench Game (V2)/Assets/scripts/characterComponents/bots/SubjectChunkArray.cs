@@ -5,35 +5,9 @@ using UnityEngine;
 
 namespace BotBrains
 {
-    public class SubjectChunkArray : CollectionChunkArray<ObserverSubject,HashSet<ObserverSubject>>
+    public class SubjectChunkArray : MonoBehaviorChunkArray<ObserverSubject>
     {
-        public readonly Dictionary<ObserverSubject, Vector2Int> observerChunkDict = new();
 
-        public override HashSet<ObserverSubject> this[Vector2Int address]
-        {
-            get
-            {
-                if (base[address] == null)
-                {
-                    base[address] = new();
-                }
-
-                return base[address];
-            }
-            set => base[address] = value;
-        }
-
-        public void UpdateSubjectsChunk (ObserverSubject observer)
-        {
-            var newAddress = Chunks.ChunkManager.PosToAdress(observer.transform.position);
-
-            if (observerChunkDict.TryGetValue(observer, out var prevAddress) && newAddress != prevAddress) //if dictionary had address for observer,
-            {
-                observerChunkDict[observer] = newAddress;
-                this[prevAddress].Remove(observer);
-                this[newAddress].Add(observer);
-            }
-        }
 
         //readonly Dictionary<ObserverBot,HashSet<Vector2Int>> observerDict = new();
 

@@ -45,70 +45,70 @@ public class StackableItem : Item
         //}
     }
 
-    public bool CombineAll(out bool destroyedSelf)
-    {
-        var min = transform.position - Vector3.one * combineRadius;
-        var max = transform.position + Vector3.one * combineRadius;
+    //public bool CombineAll(out bool destroyedSelf)
+    //{
+    //    var min = transform.position - Vector3.one * combineRadius;
+    //    var max = transform.position + Vector3.one * combineRadius;
 
-        var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
+    //    var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
 
-        foreach (var chunk in chunks)
-        {
-            if (chunk == null) continue;
+    //    foreach (var chunk in chunks)
+    //    {
+    //        if (chunk == null) continue;
 
-            if (CombineWithItems(chunk.items, out destroyedSelf)) 
-                return true;
-        }
+    //        if (CombineWithItems(chunk.items, out destroyedSelf)) 
+    //            return true;
+    //    }
 
-        destroyedSelf = false;
-        return false;
-    }
+    //    destroyedSelf = false;
+    //    return false;
+    //}
 
-    public bool CombineWithItems(List<Item> items, out bool destroyedSelf, bool testDist = true)
-    {
-        destroyedSelf = false;
+    //public bool CombineWithItems(List<Item> items, out bool destroyedSelf, bool testDist = true)
+    //{
+    //    destroyedSelf = false;
 
-        foreach (var item in items)
-        {
-            if (item == this) continue;
+    //    foreach (var item in items)
+    //    {
+    //        if (item == this) continue;
 
-            if (item is not StackableItem stackItem) continue;
+    //        if (item is not StackableItem stackItem) continue;
 
-            if (prefabId != stackItem.prefabId) continue;
+    //        if (prefabId != stackItem.prefabId) continue;
 
-            if (testDist)
-            {
-                var dist = Vector2.Distance(item.transform.position, transform.position);
-                if (dist > combineRadius) 
-                    continue;
-            }
+    //        if (testDist)
+    //        {
+    //            var dist = Vector2.Distance(item.transform.position, transform.position);
+    //            if (dist > combineRadius) 
+    //                continue;
+    //        }
 
-            int addend;
-            if (limitAmount)
-            {
-                var spaceLeft = maxAmount - stackItem.amount;
-                addend = Mathf.Min(amount, spaceLeft);
-            }
-            else
-            {
-                addend = amount;
-            }
+    //        int addend;
+    //        if (limitAmount)
+    //        {
+    //            var spaceLeft = maxAmount - stackItem.amount;
+    //            addend = Mathf.Min(amount, spaceLeft);
+    //        }
+    //        else
+    //        {
+    //            addend = amount;
+    //        }
 
-            stackItem.amount += addend;
-            amount -= addend;
+    //        stackItem.amount += addend;
+    //        amount -= addend;
 
-            if (amount == 0)
-            {
-                //Debug.Log($"Destroying item: {this.name}");
-                DestroyItem();
-                destroyedSelf = true;
-            }
+    //        if (amount == 0)
+    //        {
+    //            //Debug.Log($"Destroying item: {this.name}");
+    //            DestroyItem();
+    //            destroyedSelf = true;
+    //        }
 
-            return true;
-        }
+    //        return true;
+    //    }
 
-        return false;
-    }
+    //    return false;
+    //}
 
     //void RemoveItemReferences()
     //{

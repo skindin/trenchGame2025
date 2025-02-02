@@ -12,7 +12,7 @@ public class Chunk
     public Vector2Int adress;
     public readonly List<Character> characters = new();
     public readonly List<TrenchCollider> colliders = new();
-    public readonly List<Item> items = new();
+    //public readonly List<Item> items = new();
     //public List<Inventory> listeningInventories = new();
 
     readonly List<Bullet> bullets = new();
@@ -65,30 +65,30 @@ public class Chunk
     }
 
 
-    public void AddItem(Item item)
-    {
-        items.Add(item);
-        //foreach (var inventory in listeningInventories)
-        //{
-        //    inventory.onItemAdded(item);
-        //}
+    //public void AddItem(Item item)
+    //{
+    //    items.Add(item);
+    //    //foreach (var inventory in listeningInventories)
+    //    //{
+    //    //    inventory.onItemAdded(item);
+    //    //}
 
-        //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was added to chunk {adress}");
-    }
+    //    //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was added to chunk {adress}");
+    //}
 
-    public void RemoveItem(Item item)
-    {
-        items.Remove(item);
+    //public void RemoveItem(Item item)
+    //{
+    //    items.Remove(item);
 
-        //foreach (var inventory in listeningInventories)
-        //{
-        //    inventory.onItemRemoved?.Invoke(item);
-        //}
+    //    //foreach (var inventory in listeningInventories)
+    //    //{
+    //    //    inventory.onItemRemoved?.Invoke(item);
+    //    //}
 
-        DestroyIfEmpty();
+    //    DestroyIfEmpty();
 
-        //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was removed from chunk {adress}");
-    }
+    //    //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was removed from chunk {adress}");
+    //}
     
     public void RemoveTrenchMap ()
     {
@@ -99,7 +99,9 @@ public class Chunk
 
     public void DestroyIfEmpty ()
     {
-        if (items.Count == 0 && characters.Count == 0 && colliders.Count == 0 && map == null && ChunkManager.Manager) //should test for colliders too, but don't need to atm
+        if (
+            //items.Count == 0 && 
+            characters.Count == 0 && colliders.Count == 0 && map == null && ChunkManager.Manager) //should test for colliders too, but don't need to atm
         {
             ChunkManager.Manager.RemoveChunk(this); //this line caused two null refference exceptions at one point...?
         }
@@ -113,16 +115,16 @@ public class Chunk
 
     public void Reset()
     {
-        items.Clear();
+        //items.Clear();
         characters.Clear();
         colliders.Clear();
         //listeningInventories.Clear();
     }
 
-    public T[] GetItems<T>() where T : Item
-    {
-        return items.OfType<T>().ToArray();
-    }
+    //public T[] GetItems<T>() where T : Item
+    //{
+    //    return items.OfType<T>().ToArray();
+    //}
 
     public T[] GetCharacters<T>() where T : Character
     {
