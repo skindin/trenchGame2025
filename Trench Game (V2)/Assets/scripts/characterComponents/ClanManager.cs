@@ -5,7 +5,7 @@ using UnityEngine;
 public class ClanManager : ManagerBase<ClanManager>
 {
     public List<Clan> clans;
-    List<int> indexList = new List<int>();
+    List<int> indexList = new ();
     int nextClanIndex = 0;
 
     public int GetRandomIndexByPopulation ()
@@ -19,6 +19,11 @@ public class ClanManager : ManagerBase<ClanManager>
 
     public int GetNextClanIndex()
     {
+        if (nextClanIndex == 0)
+        {
+            indexList = CollectionUtils.GetRandomizedIntList(clans.Count, (min, max) => Random.Range(min, max));
+        }
+
         var nextIndex = indexList[nextClanIndex];
         nextClanIndex = (int)Mathf.Repeat(nextClanIndex+1,clans.Count);
         return nextIndex;
@@ -35,8 +40,6 @@ public class ClanManager : ManagerBase<ClanManager>
 
     private void Awake()
     {
-        indexList = CollectionUtils.GetRandomizedIntList(clans.Count, (min, max) => Random.Range(min, max));
-
         CollectionUtils.AssignIntPropToIndex(clans, (clan, id) => clan.id = id);
         //nextClanIndex = Random.Range(0,clans.Count);
     }

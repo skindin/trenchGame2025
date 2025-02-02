@@ -7,12 +7,12 @@ namespace BotBrains
 {   
     public class BotManager : ManagerBase<BotManager>
     {
-        public BotObserverChunkArray observerChunkArray;
+        public SubjectChunkArray subjectChunkArray;
 
         private void Awake()
         {
             Chunks.ChunkManager.Initialize();
-            observerChunkArray = new ();
+            subjectChunkArray = new ();
         }        
     }
 }
