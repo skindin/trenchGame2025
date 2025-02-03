@@ -22,7 +22,7 @@ public class TrenchMap
     public Mesh imageMesh;
     public Material imageMaterial;//
     public Texture2D imageTexture;
-    Color32[] pixels;
+    readonly Color32[] pixels;
     public
         int totalTrenchCells = 0;
     public bool allFull = true, allTrench = false;

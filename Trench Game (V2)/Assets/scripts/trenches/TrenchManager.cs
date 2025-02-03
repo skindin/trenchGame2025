@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Chunks;
 
 public class TrenchManager : ManagerBase<TrenchManager>
 {
@@ -12,10 +13,10 @@ public class TrenchManager : ManagerBase<TrenchManager>
     public Material imageMaterial;//
     public FilterMode filter;
     public Transform pointA, pointB;
+    public readonly ChunkArray<TrenchMap> mapArray = new();
     public bool
         runTest = false,
         drawRayTests = false, drawFillLines = false, drawStatusTests = false, drawCollisionTests = false, drawAllBits = false, logWallSlides = false;//, doSpread = false;
-
     public float blockWidth, cellWidth, testRadius = 1, frictionAngleMod = 1, wallFriction = 0;
     public int maxSlides = 5;//, targetFPS = 120;
 
@@ -64,11 +65,13 @@ public class TrenchManager : ManagerBase<TrenchManager>
             DrawAllCells();
         }
 
-        foreach (var chunk in ChunkManager.Manager.chunks)
+        foreach (var pair in mapArray.All())
         {
-            if (chunk != null && chunk.map != null)
+            var map = pair.obj;
+
+            if (map != null)
             {
-                chunk.map.Draw();
+                map.Draw();
             }
         }
     }
@@ -84,22 +87,26 @@ public class TrenchManager : ManagerBase<TrenchManager>
         var capsuleMax = Vector2.Max(startPoint + startMax, endPoint + endMax);
         //capsuleMax = Vector2.Min(capsuleMax, mapMax);
 
-        var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(capsuleMin, capsuleMax, value);
+        var maps = mapArray.FromBoxMinMax(capsuleMin, capsuleMax);
+
+        //var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(capsuleMin, capsuleMax, value);
 
         areaChanged = 0;
 
-        foreach (var chunk in chunks)
+        foreach (var pair in maps)
         {
-            if (chunk == null)
+            var map = pair.obj;
+
+            if (map == null)
                 continue;
 
-            if (chunk.map == null)
+            if (map == null)
             {
                 if (value)
                 {
-                    var pos = ChunkManager.Manager.GetChunkPos(chunk) + ChunkManager.Manager.chunkSize * .5f * Vector2.one;
+                    var pos = Chunks.ChunkManager.AddressToPos(pair.address) + Chunks.ChunkManager.chunkSize.Value * .5f * Vector2.one;
 
-                    chunk.map = new(mapResolution,ChunkManager.Manager.chunkSize, trenchColor, groundColor,pos,imageMesh,imageMaterial,filter);
+                    map = new(mapResolution,ChunkManager.Manager.chunkSize, trenchColor, groundColor,pos,imageMesh,imageMaterial,filter);
                 }
                 else
                 {
@@ -107,16 +114,16 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
             }
 
-            chunk.map.SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, value, maxArea, out var areaChangedMap, drawFillLines);
+            map.SetTaperedCapsule(startPoint, startRadius, endPoint, endRadius, value, maxArea, out var areaChangedMap, drawFillLines);
 
             areaChanged += areaChangedMap;
             maxArea -= areaChangedMap;
 
             //Debug.Log($"chunk {chunk.adress} has {chunk.map.totalEditedBlocks} edited blocks");
 
-            if (chunk.map.allFull)
+            if (map.allFull)
             {
-                chunk.RemoveTrenchMap();
+                mapArray[pair.address] = null;
             }
         }
     }
@@ -143,9 +150,9 @@ public class TrenchManager : ManagerBase<TrenchManager>
         {
             var pos = (Vector2)cell * cellWidth;
 
-            var chunk = ChunkManager.Manager.ChunkFromPos(pos);
+            var map = mapArray.FromPos(pos);
 
-            if (chunk == null || chunk.map == null)
+            if (map == null)
             {
                 if (drawRayTests)
                     GeoUtils.DrawBoxPosSize(pos + cellCorner, cellWidth * Vector2.one,
@@ -164,7 +171,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
             }
 
-            if (chunk.map.allTrench)
+            if (map.allTrench)
             {
                 if (value)
                 {
@@ -177,14 +184,14 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
             }
 
-            var blockAdress = GetBlockAdressFloored(pos, chunk.map.pos);
+            var blockAdress = GetBlockAdressFloored(pos, map.pos);
 
             //if (debugLines)
             //    GeoUtils.DrawBoxPosSize(pos, bitWidth * Vector2.one, Color.green);
 
-            var block = chunk.map.GetBlock(blockAdress);
+            var block = map.GetBlock(blockAdress);
 
-            var blockPos = GetBlockPos(chunk.map.pos, blockAdress);
+            var blockPos = GetBlockPos(map.pos, blockAdress);
 
             if (block == null)
             {
@@ -269,11 +276,15 @@ public class TrenchManager : ManagerBase<TrenchManager>
         var min = circlePos - circleRadius * Vector2.one;
         var max = circlePos + circleRadius * Vector2.one;
 
-        var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(min,max, false);
+        //var chunks = ChunkManager.Manager.ChunksFromBoxMinMax(min,max, false);
 
-        foreach (var chunk in chunks)
+        var maps = mapArray.FromBoxMinMax(min, max);
+
+        foreach (var pair in maps)
         {
-            if (chunk == null || chunk.map == null)
+            var map = pair.obj;
+
+            if (map == null || map == null)
             {
                 if (value)
                 {
@@ -285,7 +296,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 }
             }
 
-            if (chunk.map.TestCircleTouchesValue(circlePos, circleRadius, value, drawStatusTests))
+            if (map.TestCircleTouchesValue(circlePos, circleRadius, value, drawStatusTests))
                 return true;
         }
 
@@ -324,24 +335,26 @@ public class TrenchManager : ManagerBase<TrenchManager>
             var boxMin = Vector2.Min(currentStart - Vector2.one * testRadius, currentEnd - Vector2.one * testRadius);
             var boxMax = Vector2.Max(currentStart + Vector2.one * testRadius, currentEnd + Vector2.one * testRadius);
 
-            var chunks = ChunkManager.Manager.AdressesFromBox(boxMin, boxMax);
+            var addresses = Chunks.ChunkManager.AddressesFromBoxMinMax(boxMin, boxMax);
 
             // Iterate through chunks to find potential collision points
-            foreach (var adress in chunks)
+            foreach (var address in addresses)
             {
-                var chunk = ChunkManager.Manager.ChunkFromAdress(adress);
+                //var chunk = ChunkManager.Manager.ChunkFromAdress(adress);
 
-                if (chunk == null || chunk.map == null)
+                var map = mapArray[address];
+
+                if (map == null) //this doesn't even work yet
                 {
-                    ChunkManager.Manager.GetChunkBox(adress, out var min, out var max);
-                    var boxClampedStart = GeoUtils.ClampToBoxMinMax(start, min, max);
-                    var segStartPoint = GeoUtils.ClosestPointToLineSegment(boxClampedStart, currentStart, currentEnd);
+                    //Chunks.ChunkManager.Manager.GetChunkBox(adress, out var min, out var max);
+                    //var boxClampedStart = GeoUtils.ClampToBoxMinMax(start, min, max);
+                    //var segStartPoint = GeoUtils.ClosestPointToLineSegment(boxClampedStart, currentStart, currentEnd);
                     continue; //temporary
                 }
 
                 // Get points in the chunk that obstruct the capsule-shaped area
 
-                var points = chunk.map.GetCellsTouchingTaperedCapsule(currentStart, testRadius, currentEnd, testRadius, value);
+                var points = map.GetCellsTouchingTaperedCapsule(currentStart, testRadius, currentEnd, testRadius, value);
 
                 // Process each obstruction point
                 foreach (var point in points)
@@ -583,12 +596,12 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     public bool TestPoint (Vector2 point)
     {
-        var chunk = ChunkManager.Manager.ChunkFromPos(point);
+        var map = mapArray.FromPos(point);
 
-        if (chunk == null || chunk.map == null)
+        if (map == null)
             return false;
 
-        return chunk.map.TestPoint(point);
+        return map.TestPoint(point);
     }
 
     public void DrawAllCells ()
@@ -603,16 +616,18 @@ public class TrenchManager : ManagerBase<TrenchManager>
 
     public IEnumerable<Vector2> GetCells (bool value)
     {
-        foreach (var chunk in ChunkManager.Manager.chunks)
+        foreach (var pair in mapArray.All())
         {
-            if (chunk == null || chunk.map == null)
+            var map = pair.obj;
+
+            if (map == null)
                 continue;
 
-            var cells = chunk.map.GetCells((adress) => chunk.map.blocks[adress.x, adress.y] == null ? !value : value);
+            var cells = map.GetCells((adress) => map.blocks[adress.x, adress.y] == null ? !value : value);
 
             foreach (var cell in cells)
             {
-                var cellPos = chunk.map.GetCellPos(cell);
+                var cellPos = map.GetCellPos(cell);
 
                 yield return cellPos;
             }

@@ -8,7 +8,7 @@ using UnityEngine.Events;
 //[System.Serializable]
 public class Chunk
 {
-    public TrenchMap map;
+    //public TrenchMap map;
     public Vector2Int adress;
     //public readonly List<Character> characters = new();
     public readonly List<TrenchCollider> colliders = new();
@@ -89,20 +89,22 @@ public class Chunk
 
     //    //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was removed from chunk {adress}");
     //}
-    
-    public void RemoveTrenchMap ()
-    {
-        map = null;
 
-        DestroyIfEmpty ();
-    }
+    //public void RemoveTrenchMap ()
+    //{
+    //    map = null;
+
+    //    DestroyIfEmpty ();
+    //}
 
     public void DestroyIfEmpty ()
     {
         if (
             //items.Count == 0 && 
             //characters.Count == 0 && 
-            colliders.Count == 0 && map == null && ChunkManager.Manager) //should test for colliders too, but don't need to atm
+            colliders.Count == 0 &&
+            //map == null && 
+            ChunkManager.Manager) //should test for colliders too, but don't need to atm
         {
             ChunkManager.Manager.RemoveChunk(this); //this line caused two null refference exceptions at one point...?
         }
