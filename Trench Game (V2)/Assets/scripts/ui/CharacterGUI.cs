@@ -209,11 +209,11 @@ public class CharacterGUI : MonoBehaviour
             if (!item || item == character.inventory.SelectedItem) 
                 continue;
 
-            if (item.Chunk == null)
-            {
-                //Debug.LogError($"{(transform.parent ? $"{transform.parent.gameObject} " : "unheld ")}{item.name} is not in a chunk");
-                continue;
-            }
+            //if (item.Chunk == null)
+            //{
+            //    //Debug.LogError($"{(transform.parent ? $"{transform.parent.gameObject} " : "unheld ")}{item.name} is not in a chunk");
+            //    continue;
+            //}
 
             if (!item.gameObject.activeSelf)
             {

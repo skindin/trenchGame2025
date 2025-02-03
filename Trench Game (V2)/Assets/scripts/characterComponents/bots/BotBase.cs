@@ -456,8 +456,8 @@ namespace BotBrains
                     }
 
                     //var visibleCharacters = GetVisibleCharacters<Character>();
-                    UpdateCharacterProfiles(GetVisibleCharacters<Character>());
-                    UpdateItemProfiles(GetVisibleItems<Item>());
+                    //UpdateCharacterProfiles(GetVisibleCharacters<Character>());
+                    //UpdateItemProfiles(GetVisibleItems<Item>());
 
                     if (logProfiles)
                         LogProfiles();
@@ -514,21 +514,21 @@ namespace BotBrains
             chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
         }
 
-        List<T> GetVisibleItems<T>(Func<T, bool> condition = null) where T : Item
-        {
-            return ChunkManager.Manager.GetItemsWithinChunkArray<T>(chunks,
-                item =>
-                (condition == null || condition(item)) && GeoUtils.TestBoxPosSize(transform.position, visionBox, item.transform.position));
-        }
+        //List<T> GetVisibleItems<T>(Func<T, bool> condition = null) where T : Item
+        //{
+        //    return ChunkManager.Manager.GetItemsWithinChunkArray<T>(chunks,
+        //        item =>
+        //        (condition == null || condition(item)) && GeoUtils.TestBoxPosSize(transform.position, visionBox, item.transform.position));
+        //}
 
-        List<T> GetVisibleCharacters<T>(Func<T, bool> condition = null) where T : Character
-        {
-            return ChunkManager.Manager.GetCharactersWithinChunkArray<T>(chunks,
-                character =>
-                character != this.character &&
-                (condition == null || condition(character)) &&
-                GeoUtils.TestBoxPosSize(transform.position, visionBox, character.transform.position));
-        }
+        //List<T> GetVisibleCharacters<T>(Func<T, bool> condition = null) where T : Character
+        //{
+        //    return ChunkManager.Manager.GetCharactersWithinChunkArray<T>(chunks,
+        //        character =>
+        //        character != this.character &&
+        //        (condition == null || condition(character)) &&
+        //        GeoUtils.TestBoxPosSize(transform.position, visionBox, character.transform.position));
+        //}
 
         //public void OnDamaged(float hp, Character aggressor, int life)
         //{

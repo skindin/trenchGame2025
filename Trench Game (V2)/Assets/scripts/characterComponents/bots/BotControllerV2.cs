@@ -54,40 +54,40 @@ public class BotControllerV2 : MonoBehaviour
         character.LookInDirection(-delta);
     }
 
-    public List<T> GetBestItems<T> 
-        (Func<T,bool> condition, int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true)
-        where T : Item
-    {
-        var visible = GetVisibleItems<T>(condition);
+    //public List<T> GetBestItems<T> 
+    //    (Func<T,bool> condition, int? limit = null, bool includeInventory = true, bool considerDistance = true, bool onePerPrefab = true)
+    //    where T : Item
+    //{
+    //    var visible = GetVisibleItems<T>(condition);
 
-        if (includeInventory)
-        {
-            foreach (var item in character.inventory.itemSlots)
-            {
-                if (item)
-                {
-                    visible.Insert(0, (T)item);
-                }
-            }
-        }
+    //    if (includeInventory)
+    //    {
+    //        foreach (var item in character.inventory.itemSlots)
+    //        {
+    //            if (item)
+    //            {
+    //                visible.Insert(0, (T)item);
+    //            }
+    //        }
+    //    }
 
-        CollectionUtils.SortHighestToLowest(visible,
-            considerDistance ?
-            item => ScoringManager.Manager.GetItemScore(item) + ScoringManager.Manager.GetItemDistanceScore(transform.position, item) :
-            ScoringManager.Manager.GetItemScore
-            );
+    //    CollectionUtils.SortHighestToLowest(visible,
+    //        considerDistance ?
+    //        item => ScoringManager.Manager.GetItemScore(item) + ScoringManager.Manager.GetItemDistanceScore(transform.position, item) :
+    //        ScoringManager.Manager.GetItemScore
+    //        );
 
-        //this should probably have a way of privatizing properties of items outside pickup range
+    //    //this should probably have a way of privatizing properties of items outside pickup range
 
-        if (onePerPrefab)
-        {
-            visible = CollectionUtils.ListFirstOfEveryValue(visible, item => item.prefabId, limit);
-        }
-        else if (limit.HasValue)
-            visible.Take(limit.Value); //haven't ever tested this take function
+    //    if (onePerPrefab)
+    //    {
+    //        visible = CollectionUtils.ListFirstOfEveryValue(visible, item => item.prefabId, limit);
+    //    }
+    //    else if (limit.HasValue)
+    //        visible.Take(limit.Value); //haven't ever tested this take function
 
-        return visible;
-    }
+    //    return visible;
+    //}
 
     public T PickupItemsInOrder<T> (IEnumerable<T> items, int? pickupLimit = null, bool sortByDistance = false, bool selectBest = true) where T : Item
     {
@@ -135,19 +135,19 @@ public class BotControllerV2 : MonoBehaviour
         return null;
     }
 
-    public List<T> GetStrongestCharacters<T> (Func<T,bool> condition, bool considerDistance = true) where T : Character
-    {
-        var visibleCharacters = GetVisibleCharacters(condition);
+    //public List<T> GetStrongestCharacters<T> (Func<T,bool> condition, bool considerDistance = true) where T : Character
+    //{
+    //    var visibleCharacters = GetVisibleCharacters(condition);
 
-        Func<T, float> getValue = considerDistance ?
-            character => ScoringManager.Manager.GetCharacterScore(character) +
-            ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position) :
-            ScoringManager.Manager.GetCharacterScore;
+    //    Func<T, float> getValue = considerDistance ?
+    //        character => ScoringManager.Manager.GetCharacterScore(character) +
+    //        ScoringManager.Manager.GetCharacterDistanceScore(transform.position, character.transform.position) :
+    //        ScoringManager.Manager.GetCharacterScore;
 
-        CollectionUtils.SortHighestToLowest(visibleCharacters, getValue);
+    //    CollectionUtils.SortHighestToLowest(visibleCharacters, getValue);
 
-        return visibleCharacters;
-    }
+    //    return visibleCharacters;
+    //}
 
     public void UpdateProfiles<T> (IEnumerable<T> list) where T : Character
     {
@@ -339,21 +339,21 @@ public class BotControllerV2 : MonoBehaviour
     //    return ChunkManager.Manager.FindClosestItemWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
     //}
 
-    public List<T> GetVisibleItems<T> (Func<T, bool> condition = null) where T : Item
-    {
-        return ChunkManager.Manager.GetItemsWithinChunkArray<T>(chunks, 
-            item => 
-            (condition == null || condition(item)) && GeoUtils.TestBoxPosSize(transform.position,visionBox,item.transform.position));
-    }
+    //public List<T> GetVisibleItems<T> (Func<T, bool> condition = null) where T : Item
+    //{
+    //    return ChunkManager.Manager.GetItemsWithinChunkArray<T>(chunks, 
+    //        item => 
+    //        (condition == null || condition(item)) && GeoUtils.TestBoxPosSize(transform.position,visionBox,item.transform.position));
+    //}
 
-    public List<T> GetVisibleCharacters<T>(Func<T, bool> condition = null) where T : Character
-    {
-        return ChunkManager.Manager.GetCharactersWithinChunkArray<T>(chunks, 
-            character =>
-            character != this.character && 
-            (condition == null || condition(character)) && 
-            GeoUtils.TestBoxPosSize(transform.position, visionBox, character.transform.position));
-    }
+    //public List<T> GetVisibleCharacters<T>(Func<T, bool> condition = null) where T : Character
+    //{
+    //    return ChunkManager.Manager.GetCharactersWithinChunkArray<T>(chunks, 
+    //        character =>
+    //        character != this.character && 
+    //        (condition == null || condition(character)) && 
+    //        GeoUtils.TestBoxPosSize(transform.position, visionBox, character.transform.position));
+    //}
 
     public void OnDamaged (float hp, Character aggressor, int life)
     {

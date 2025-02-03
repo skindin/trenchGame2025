@@ -78,7 +78,7 @@ public class BotController : MonoBehaviour
 
         chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
 
-        SoldierLogic();
+        //SoldierLogic();
 
         //if (exploredPoints.Count > 0 && Time.deltaTime - prevMemLossStamp >= wanderMemoryDur)
         //{
@@ -89,231 +89,231 @@ public class BotController : MonoBehaviour
         //}
     }
 
-    public void SoldierLogic ()
-    {
-        //closestEnemy = FindClosestCharacterWithinChunks<Character>(chunks);
-        closestEnemy = FindClosestCharacter<Character>(character => character != this.character && 
-        (character.inventory.ActiveWeapon || this.character.inventory.ActiveWeapon));
+    //public void SoldierLogic ()
+    //{
+    //    //closestEnemy = FindClosestCharacterWithinChunks<Character>(chunks);
+    //    closestEnemy = FindClosestCharacter<Character>(character => character != this.character && 
+    //    (character.inventory.ActiveWeapon || this.character.inventory.ActiveWeapon));
 
-        if (targetCollider && !targetCollider.gameObject.activeInHierarchy) 
-            targetCollider = null;
+    //    if (targetCollider && !targetCollider.gameObject.activeInHierarchy) 
+    //        targetCollider = null;
 
-        if (targetItem && (!targetItem.gameObject.activeInHierarchy || targetItem.wielder))
-            targetItem = null;
+    //    if (targetItem && (!targetItem.gameObject.activeInHierarchy || targetItem.wielder))
+    //        targetItem = null;
 
-        if (closestEnemy && !closestEnemy.gameObject.activeInHierarchy)
-        {
-            closestEnemy = null;
-        }
+    //    if (closestEnemy && !closestEnemy.gameObject.activeInHierarchy)
+    //    {
+    //        closestEnemy = null;
+    //    }
 
-        if (!character.inventory.ActiveWeapon) //pickup a gun if you don't have one
-        {
-            var item = PickupClosestItem<Weapon>();
-        }
+    //    if (!character.inventory.ActiveWeapon) //pickup a gun if you don't have one
+    //    {
+    //        var item = PickupClosestItem<Weapon>();
+    //    }
 
-        Gun gun = (character.inventory.ActiveWeapon is Gun a ? a : null);
+    //    Gun gun = (character.inventory.ActiveWeapon is Gun a ? a : null);
 
-        if (gun) //if you picked up a gun...
-        {
-            if (!targetCollider && closestEnemy && GeoUtils.TestBoxPosSize(transform.position, visionBox, closestEnemy.transform.position)) //and you have no target collider, but you do have a close enemy...
-            {
-                targetCollider = closestEnemy.trenchCollider; //target the closest enemy
-            }
+    //    if (gun) //if you picked up a gun...
+    //    {
+    //        if (!targetCollider && closestEnemy && GeoUtils.TestBoxPosSize(transform.position, visionBox, closestEnemy.transform.position)) //and you have no target collider, but you do have a close enemy...
+    //        {
+    //            targetCollider = closestEnemy.trenchCollider; //target the closest enemy
+    //        }
 
-            if (gun.rounds <= 0) //and your gun is out of amo...
-            {
-                if (!gun.reloading && character.reserve.GetAmoAmount(gun.amoType) > 0) //and you didn't arlready start reloading and you have amo in the reserve...
-                    gun.Action(); //start reloading the gun
-            }
-            else //and your gun has amo...
-            {
-                if (targetCollider && GeoUtils.TestBoxPosSize(transform.position, visionBox, targetCollider.transform.position)) //and collider target is within view...
-                {
-                    var direction = pointerPos;
+    //        if (gun.rounds <= 0) //and your gun is out of amo...
+    //        {
+    //            if (!gun.reloading && character.reserve.GetAmoAmount(gun.amoType) > 0) //and you didn't arlready start reloading and you have amo in the reserve...
+    //                gun.Action(); //start reloading the gun
+    //        }
+    //        else //and your gun has amo...
+    //        {
+    //            if (targetCollider && GeoUtils.TestBoxPosSize(transform.position, visionBox, targetCollider.transform.position)) //and collider target is within view...
+    //            {
+    //                var direction = pointerPos;
 
-                    var dist = Vector2.Distance(gun.BarrelPos, targetCollider.transform.position) + targetCollider.WorldSize/2;
+    //                var dist = Vector2.Distance(gun.BarrelPos, targetCollider.transform.position) + targetCollider.WorldSize/2;
 
-                    var range = gun.range;
+    //                var range = gun.range;
 
-                    if (debugLines)
-                        GeoUtils.DrawCircle(gun.BarrelPos, range, UnityEngine.Color.red, 8);
+    //                if (debugLines)
+    //                    GeoUtils.DrawCircle(gun.BarrelPos, range, UnityEngine.Color.red, 8);
 
-                    if (dist <= range) //if within range..
-                    {
-                        if (GeoUtils.DoesLineIntersectCircle(
-                            targetCollider.transform.position, 
-                            targetCollider.WorldSize / 2, 
-                            transform.position, 
-                            (Vector2)transform.position + range * direction.normalized,
-                            //debugLines
-                            false
-                            )) //and within trajectory
-                        {
-                            gun.DirectionalAction(direction); //shoot at the collider
-                        }
-
-
-                    }
-                    else
-                    {
-                        TargetPos = targetCollider.transform.position;
-                        dodging = false;
-                    }
-                }
-                else
-                {
-                    targetCollider = null;
-                }
-            }
-        }
-        else //if you still don't have a gun...
-        {
-            var closestGun = FindClosestItem<Gun>(); //find the closest gun you can see
-
-            if (closestGun) //if you find a gun...
-            {
-                targetItem = closestGun; //target the item
-                TargetPos = targetItem.transform.position;
-            }
-            else //if you couldn't find a gun...
-            {
-                if (debugLines)
-                    GeoUtils.DrawCircle(transform.position, dangerRadius, UnityEngine.Color.red, 8);
-
-                if (closestEnemy && Vector2.Distance(closestEnemy.transform.position,transform.position) <= dangerRadius) //and you are too close to an enemy...
-                {
-
-                    Evade();
-                    //Wander();
-                }
-            }
-        }
-
-        if (gun && gun.rounds > 0 && targetCollider)
-        {
-            //var colliderDelta = targetCollider.transform.position - transform.position;
-            TargetPointerPos = targetCollider.transform.position - transform.position; //aim towards collider
-
-            Dodge();
-        }
-        else
-        {
-            dodging = false;
-
-            if (closestEnemy)
-            {
-                Evade();
-            }
-
-            TargetPointerPos = TargetPos - (Vector2)transform.position;
-        }
-
-        if (!closestEnemy)
-        {
-            //var closestAmo = FindClosestItem<StackableItem>();
-            //bool pickupAmo = closestAmo;
-
-            var closestAmo = FindClosestItem<Ammo>();
-
-            bool pickupAmo = false;
-
-            if (!targetItem && closestAmo)
-            {
-                var pool = character.reserve.GetPool(closestAmo.type);
-                if (pool.rounds < pool.maxRounds) //if there's room...
-                    pickupAmo = true;
-            }
-
-            if (gun && character.reserve)
-            {
-                var deficit = gun.maxRounds - gun.rounds;
-
-                if (deficit > 0 && character.reserve.GetAmoAmount(gun.amoType) > 0)
-                {
-                    gun.Action();
-                }
-            }
-
-            if (pickupAmo)
-            {
-                TargetPos = closestAmo.transform.position;
-
-                Wander(false);
-            }
-            else
-            {
-                Wander();
-            }
-
-            //var colliderDelta = targetPointerPos - (Vector2)transform.position;
-            //TargetPointerPos = TargetPos - (Vector2)transform.position; //aim towards collider
-
-            //var closestItem = FindClosestItemWithinChunks<Item>(chunks);
-
-            //if (closestItem)
-            //    TargetPointerPos = closestItem.transform.position - transform.position;
+    //                if (dist <= range) //if within range..
+    //                {
+    //                    if (GeoUtils.DoesLineIntersectCircle(
+    //                        targetCollider.transform.position, 
+    //                        targetCollider.WorldSize / 2, 
+    //                        transform.position, 
+    //                        (Vector2)transform.position + range * direction.normalized,
+    //                        //debugLines
+    //                        false
+    //                        )) //and within trajectory
+    //                    {
+    //                        gun.DirectionalAction(direction); //shoot at the collider
+    //                    }
 
 
-            //else
-            //{
-            //    TargetPointerPos += UnityEngine.Random.insideUnitCircle * .01f;
-            //}
+    //                }
+    //                else
+    //                {
+    //                    TargetPos = targetCollider.transform.position;
+    //                    dodging = false;
+    //                }
+    //            }
+    //            else
+    //            {
+    //                targetCollider = null;
+    //            }
+    //        }
+    //    }
+    //    else //if you still don't have a gun...
+    //    {
+    //        var closestGun = FindClosestItem<Gun>(); //find the closest gun you can see
 
-            //targetPointerPos = TargetPos - (Vector2)transform.position;
-            //GeoFuncs.RandomPosInBoxPosSize(transform.position, visionBox);
-        }
-        else
-        {
-            Wander(false);
-        }
+    //        if (closestGun) //if you find a gun...
+    //        {
+    //            targetItem = closestGun; //target the item
+    //            TargetPos = targetItem.transform.position;
+    //        }
+    //        else //if you couldn't find a gun...
+    //        {
+    //            if (debugLines)
+    //                GeoUtils.DrawCircle(transform.position, dangerRadius, UnityEngine.Color.red, 8);
+
+    //            if (closestEnemy && Vector2.Distance(closestEnemy.transform.position,transform.position) <= dangerRadius) //and you are too close to an enemy...
+    //            {
+
+    //                Evade();
+    //                //Wander();
+    //            }
+    //        }
+    //    }
+
+    //    if (gun && gun.rounds > 0 && targetCollider)
+    //    {
+    //        //var colliderDelta = targetCollider.transform.position - transform.position;
+    //        TargetPointerPos = targetCollider.transform.position - transform.position; //aim towards collider
+
+    //        Dodge();
+    //    }
+    //    else
+    //    {
+    //        dodging = false;
+
+    //        if (closestEnemy)
+    //        {
+    //            Evade();
+    //        }
+
+    //        TargetPointerPos = TargetPos - (Vector2)transform.position;
+    //    }
+
+    //    if (!closestEnemy)
+    //    {
+    //        //var closestAmo = FindClosestItem<StackableItem>();
+    //        //bool pickupAmo = closestAmo;
+
+    //        //var closestAmo = FindClosestItem<Ammo>();
+
+    //        bool pickupAmo = false;
+
+    //        if (!targetItem && closestAmo)
+    //        {
+    //            var pool = character.reserve.GetPool(closestAmo.type);
+    //            if (pool.rounds < pool.maxRounds) //if there's room...
+    //                pickupAmo = true;
+    //        }
+
+    //        if (gun && character.reserve)
+    //        {
+    //            var deficit = gun.maxRounds - gun.rounds;
+
+    //            if (deficit > 0 && character.reserve.GetAmoAmount(gun.amoType) > 0)
+    //            {
+    //                gun.Action();
+    //            }
+    //        }
+
+    //        if (pickupAmo)
+    //        {
+    //            TargetPos = closestAmo.transform.position;
+
+    //            Wander(false);
+    //        }
+    //        else
+    //        {
+    //            Wander();
+    //        }
+
+    //        //var colliderDelta = targetPointerPos - (Vector2)transform.position;
+    //        //TargetPointerPos = TargetPos - (Vector2)transform.position; //aim towards collider
+
+    //        //var closestItem = FindClosestItemWithinChunks<Item>(chunks);
+
+    //        //if (closestItem)
+    //        //    TargetPointerPos = closestItem.transform.position - transform.position;
 
 
-        //else //theres gotta be a better way to do this
-        //{
-        //    wandering = false;
-        //}
+    //        //else
+    //        //{
+    //        //    TargetPointerPos += UnityEngine.Random.insideUnitCircle * .01f;
+    //        //}
 
-        if (debugLines)
-            GeoUtils.MarkPoint(TargetPos, .5f, UnityEngine.Color.magenta);
+    //        //targetPointerPos = TargetPos - (Vector2)transform.position;
+    //        //GeoFuncs.RandomPosInBoxPosSize(transform.position, visionBox);
+    //    }
+    //    else
+    //    {
+    //        Wander(false);
+    //    }
 
-        //var moveDirection = TargetPos - (Vector2)transform.position;
 
-        //var moveDirection = Vector2.MoveTowards(transform.position, TargetPos, 10) - (Vector2)transform.position;
+    //    //else //theres gotta be a better way to do this
+    //    //{
+    //    //    wandering = false;
+    //    //}
 
-        character.MoveToPos(TargetPos);
-        //path[^1] = transform.position;
+    //    if (debugLines)
+    //        GeoUtils.MarkPoint(TargetPos, .5f, UnityEngine.Color.magenta);
 
-        pointerPos = Vector2.MoveTowards(pointerPos,TargetPointerPos,Time.deltaTime * pointerSpeed);
+    //    //var moveDirection = TargetPos - (Vector2)transform.position;
 
-        if (debugLines)
-        {
-            GeoUtils.MarkPoint(targetPointerPos + (Vector2)transform.position, 1, UnityEngine.Color.red);
-            GeoUtils.MarkPoint(pointerPos + (Vector2)transform.position, 1, UnityEngine.Color.blue);
+    //    //var moveDirection = Vector2.MoveTowards(transform.position, TargetPos, 10) - (Vector2)transform.position;
 
-            //GeoUtils.DrawLine(path, UnityEngine.Color.black);
-        }
+    //    character.MoveToPos(TargetPos);
+    //    //path[^1] = transform.position;
 
-        for (int i = 0; i < unexploredPoints.Count; i++)
-        {
-            if (i == wanderIndex)
-                continue;
+    //    pointerPos = Vector2.MoveTowards(pointerPos,TargetPointerPos,Time.deltaTime * pointerSpeed);
 
-            var arrayIndex = unexploredPoints[i];
-            var point = wanderPoints[arrayIndex.x, arrayIndex.y];
+    //    if (debugLines)
+    //    {
+    //        GeoUtils.MarkPoint(targetPointerPos + (Vector2)transform.position, 1, UnityEngine.Color.red);
+    //        GeoUtils.MarkPoint(pointerPos + (Vector2)transform.position, 1, UnityEngine.Color.blue);
 
-            if (GeoUtils.TestBoxPosSize(transform.position, visionBox, point, debugLines))
-            {
-                unexploredPoints.RemoveAt(i);
-                exploredPoints.Add(arrayIndex);
-                if (wanderIndex > i)
-                    wanderIndex--;
-                i--;
-            }
-        }
+    //        //GeoUtils.DrawLine(path, UnityEngine.Color.black);
+    //    }
 
-        //if (gun)
-            character.LookInDirection(pointerPos);
-    }
+    //    for (int i = 0; i < unexploredPoints.Count; i++)
+    //    {
+    //        if (i == wanderIndex)
+    //            continue;
+
+    //        var arrayIndex = unexploredPoints[i];
+    //        var point = wanderPoints[arrayIndex.x, arrayIndex.y];
+
+    //        if (GeoUtils.TestBoxPosSize(transform.position, visionBox, point, debugLines))
+    //        {
+    //            unexploredPoints.RemoveAt(i);
+    //            exploredPoints.Add(arrayIndex);
+    //            if (wanderIndex > i)
+    //                wanderIndex--;
+    //            i--;
+    //        }
+    //    }
+
+    //    //if (gun)
+    //        character.LookInDirection(pointerPos);
+    //}
 
     Vector2[,] wanderPoints = new Vector2[0,0];
     readonly List<Vector2Int> unexploredPoints = new(), exploredPoints = new();
@@ -484,15 +484,15 @@ public class BotController : MonoBehaviour
         return closestItem;
     }
 
-    public T FindClosestCharacter<T>(Func<T,bool> condition = null) where T : Character
-    {
-        return ChunkManager.Manager.FindClosestCharacterWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
-    }
+    //public T FindClosestCharacter<T>(Func<T,bool> condition = null) where T : Character
+    //{
+    //    return ChunkManager.Manager.FindClosestCharacterWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
+    //}
 
-    public T FindClosestItem<T>(Func<T, bool> condition = null) where T : Item
-    {
-        return ChunkManager.Manager.FindClosestItemWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
-    }
+    //public T FindClosestItem<T>(Func<T, bool> condition = null) where T : Item
+    //{
+    //    return ChunkManager.Manager.FindClosestItemWithinBoxPosSize(transform.position, visionBox, condition, chunks, debugLines);
+    //}
 
     private void OnDrawGizmos()
     {

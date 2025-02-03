@@ -17,6 +17,7 @@ public class Inventory : MonoBehaviour
     Item selectedItem;
     public Action<Item> onItemAdded, onItemRemoved;
     public Transform itemContainer;
+    IEnumerable<Vector2Int> chunkAddresses;
 
     public Weapon ActiveWeapon
     {
@@ -94,7 +95,6 @@ public class Inventory : MonoBehaviour
 
         return null;
     }
-
 
     public bool SetSlotToItem(Func<Item, bool> condition)
     {
@@ -186,12 +186,12 @@ public class Inventory : MonoBehaviour
 
         UpdateChunks(false);
 
-        foreach (var chunk in chunks)
+        foreach (var item in ItemManager.Manager.chunkArray.ObjectsFromAddresses(chunkAddresses))
         {
-            if (chunk == null) continue;
-            for (int i = 0; i < chunk.items.Count; i++)
-            {
-                var item = chunk.items[i];
+            if (!item) continue;
+            //for (int i = 0; i < chunk.items.Count; i++)
+            //{
+            //    var item = chunk.items[i];
 
                 if (!item.gameObject.activeSelf)
                 {
@@ -203,8 +203,8 @@ public class Inventory : MonoBehaviour
 
                 DetectItem(item);
 
-                if (!chunk.items.Contains(item)) i--;
-            }
+                //if (!chunk.items.Contains(item)) i--;
+            //}
         }
     }
 
@@ -214,10 +214,11 @@ public class Inventory : MonoBehaviour
 
         var min = (Vector2)transform.position - Vector2.one * radius;
         var max = (Vector2)transform.position + Vector2.one * radius;
-        var newChunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
-        //if (updateListeners)
-        //    AddChunkListeners(chunks, newChunks);
-        chunks = newChunks;
+        chunkAddresses = Chunks.ChunkManager.AddressesFromBoxMinMax(min, max);
+        //var newChunks = ChunkManager.Manager.ChunksFromBoxMinMax(min, max);
+        ////if (updateListeners)
+        ////    AddChunkListeners(chunks, newChunks);
+        //chunks = newChunks;
     }
 
 
