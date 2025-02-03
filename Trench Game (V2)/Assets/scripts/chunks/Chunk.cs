@@ -10,7 +10,7 @@ public class Chunk
 {
     public TrenchMap map;
     public Vector2Int adress;
-    public readonly List<Character> characters = new();
+    //public readonly List<Character> characters = new();
     public readonly List<TrenchCollider> colliders = new();
     //public readonly List<Item> items = new();
     //public List<Inventory> listeningInventories = new();
@@ -40,18 +40,18 @@ public class Chunk
 
     public Chunk() { }
 
-    public void AddCharacter (Character character)
-    {
-        characters.Add(character);
-        //colliders.Add(character.collider);
-    }
+    //public void AddCharacter (Character character)
+    //{
+    //    characters.Add(character);
+    //    //colliders.Add(character.collider);
+    //}
 
-    public void RemoveCharacter (Character character)
-    {
-        characters.Remove(character);
-        //colliders.Remove(character.collider);
-        DestroyIfEmpty();
-    }
+    //public void RemoveCharacter (Character character)
+    //{
+    //    characters.Remove(character);
+    //    //colliders.Remove(character.collider);
+    //    DestroyIfEmpty();
+    //}
 
     public void AddCollider (TrenchCollider collider)
     {
@@ -101,7 +101,8 @@ public class Chunk
     {
         if (
             //items.Count == 0 && 
-            characters.Count == 0 && colliders.Count == 0 && map == null && ChunkManager.Manager) //should test for colliders too, but don't need to atm
+            //characters.Count == 0 && 
+            colliders.Count == 0 && map == null && ChunkManager.Manager) //should test for colliders too, but don't need to atm
         {
             ChunkManager.Manager.RemoveChunk(this); //this line caused two null refference exceptions at one point...?
         }
@@ -116,7 +117,7 @@ public class Chunk
     public void Reset()
     {
         //items.Clear();
-        characters.Clear();
+        //characters.Clear();
         colliders.Clear();
         //listeningInventories.Clear();
     }
@@ -126,10 +127,10 @@ public class Chunk
     //    return items.OfType<T>().ToArray();
     //}
 
-    public T[] GetCharacters<T>() where T : Character
-    {
-        return characters.OfType<T>().ToArray();
-    }
+    //public T[] GetCharacters<T>() where T : Character
+    //{
+    //    return characters.OfType<T>().ToArray();
+    //}
 
     //public T[] GetObjects<T> (T[] array, IEnumerable<T> collection, bool clearArray = false) where T : MonoBehaviour
     //{

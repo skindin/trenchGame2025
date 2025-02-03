@@ -271,33 +271,33 @@ public class Character : MonoBehaviour
     //    }
     //}
 
-    public Chunk Chunk
-    {
-        get
-        {
-            return chunk;
-        }
+    //public Chunk Chunk
+    //{
+    //    get
+    //    {
+    //        return chunk;
+    //    }
 
-        set
-        {
-            if (chunk == value) return;
+    //    set
+    //    {
+    //        if (chunk == value) return;
 
-            if (chunk != null)
-            {
-                chunk.RemoveCharacter(this);
-            }
+    //        if (chunk != null)
+    //        {
+    //            chunk.RemoveCharacter(this);
+    //        }
 
-            if (value != null)
-            {
-                value.AddCharacter(this);
-            }
-            chunk = value;
-        }
-    }
+    //        if (value != null)
+    //        {
+    //            value.AddCharacter(this);
+    //        }
+    //        chunk = value;
+    //    }
+    //}
 
     public void UpdateChunk ()
     {
-        Chunk = ChunkManager.Manager.ChunkFromPosClamped(transform);
+        CharacterManager.Manager.chunkArray.UpdateObjectChunk(this);
     }
 
     public void KillThis ()

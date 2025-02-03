@@ -26,7 +26,7 @@ public class ItemManager : MonoBehaviour
 
     //public bool spawnDrops = true;
     public List<ItemPool> itemPools = new();
-    public MonoBehaviorChunkArray<Item> chunkArray = new();
+    public readonly MonoBehaviorChunkArray<Item> chunkArray = new();
     public Transform container;
 
     public UnityEvent<Item> onNewItem, onRemoveItem;
@@ -337,11 +337,13 @@ public class ItemManager : MonoBehaviour
 
         //public int index;
 
-        public void MoveTo(Item item)
+        public void MoveTo(Item item) //idk why this function exists lol
         {
             if (item == null) return;
 
             //item.Chunk = null;
+
+            //Manager.chunkArray.RemoveObject(item);
 
             //if (!active.Contains(item)) return;
 
@@ -378,6 +380,7 @@ public class ItemManager : MonoBehaviour
                     item.ResetItem();
                     //Debug.Log($"Item {item} {item.gameObject.GetInstanceID()} was reset");
                     //item.Chunk = null;
+                    Manager.chunkArray.RemoveObject(item);
                 },
                 destroyAction: item => Destroy(item.gameObject)
             );

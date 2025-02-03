@@ -3,6 +3,7 @@ using System.Collections.Generic;
 //using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using Chunks;
 //using System;
 
 public class CharacterManager : MonoBehaviour
@@ -19,6 +20,7 @@ public class CharacterManager : MonoBehaviour
     public Transform container;
     public float scoreStopWatch = 0, personalRecord = 0, respawnWait = 1, challengeDuration = 24;
     public KeyValuePair<string, float> serverRecord = new();
+    public readonly MonoBehaviorChunkArray<Character> chunkArray = new();
     //public int botsPerSquad = 5, spawnCap = 10;
     //float squadSpawnTimer = 0;
     Coroutine stopWatchRoutine;//, scoreboardRoutine;
@@ -318,7 +320,7 @@ public class CharacterManager : MonoBehaviour
         UpdateScoreBoard();
 
         pool.AddToPool(character);
-        character.Chunk = null;
+        //character.Chunk = null;
 
         //squadSpawnRoutine = StartCoroutine(BotSpawn());
 
@@ -369,7 +371,9 @@ public class CharacterManager : MonoBehaviour
 
             NetworkManager.Manager.SetKills(character, 0);
 
-            character.Chunk = null;
+            //character.Chunk = null;
+
+            chunkArray.RemoveObject(character);
 
             NetworkManager.Manager.ToggleLimbo(character, true);
 
@@ -391,8 +395,9 @@ public class CharacterManager : MonoBehaviour
             //Debug.Log($"updated hp, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
             character.Type = type;
 
-            character.UpdateChunk();
+            //character.UpdateChunk();
 
+            chunkArray.UpdateObjectChunk(character);
 
             //UpdateScoreBoard();
         }

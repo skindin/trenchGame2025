@@ -16,9 +16,10 @@ namespace BotBrains
         public Vector2 visionBox;
         public SubjectChunkArray chunkArray = new();
         public bool debugLines = false;
-        public readonly BotBehavior behavior;
+        public readonly BotBehavior behavior = new();
         public float reactionRate = 5f;
         IEnumerable<Vector2Int> visibleChunkAddresses;
+        readonly Dictionary<int, ItemProfile> itemProfilePairs = new();
 
         private void Start()
         {
@@ -72,19 +73,56 @@ namespace BotBrains
         {
             UpdateVisibleChunks();
 
-            foreach (var subject in chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
-            {
-                if (subject == thisSubject || !TestVisionBox(subject.transform.position))
-                    //if this is itself, or we can't see it, move on
-                    continue;
+            //foreach (var subject in GetVisibleSubjects())
+            //{
+                //atleast this was designed in case I need it...
+            //}
 
-                //observer logic here
+            foreach (var item in GetVisibleItems<Item>())
+            {
+
+            }
+
+            foreach (var character in GetVisibleCharacters<Character>())
+            {
+
             }
         }
 
         public bool TestVisionBox(Vector2 pos)
         {
             return GeoUtils.TestBoxPosSize(transform.position, visionBox, pos, debugLines);
+        }
+
+        public IEnumerable<T> GetVisibleItems<T> () where T : Item
+        {
+            foreach (var item in ItemManager.Manager.chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
+            {
+                if (item is T generic && TestVisionBox(item.transform.position))
+                    yield return generic;
+            }
+        }
+
+        public IEnumerable<T> GetVisibleCharacters<T>() where T : Character
+        {
+            foreach (var character in CharacterManager.Manager.chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
+            {
+                if (character is T generic && TestVisionBox(character.transform.position))
+                    yield return generic;
+            }
+        }
+
+        public IEnumerable<ObserverSubject> GetVisibleSubjects ()
+        {
+            foreach (var subject in chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
+            {
+                if (subject == thisSubject || !TestVisionBox(subject.transform.position))
+                    //if this is itself, or we can't see it, move on
+                    continue;
+
+                yield return subject;
+                //observer logic here
+            }
         }
 
         //public void Moved(Vector2 pos)

@@ -43,7 +43,7 @@ public class ChunkManager : MonoBehaviour
         destroyAction: null
         );//
 
-    public bool logOutOfBounds = false, drawChunks = false, drawObjectChunkLinks = false;
+    public bool logOutOfBounds = false, drawChunks = false;//, drawObjectChunkLinks = false;
 
     private void Awake()
     {
@@ -56,8 +56,8 @@ public class ChunkManager : MonoBehaviour
         if (drawChunks)
             DrawChunks();
 
-        if (drawObjectChunkLinks)
-            DrawObjectChunkLinks();
+        //if (drawObjectChunkLinks)
+        //    DrawObjectChunkLinks();
     }
 
     //List<Chunk> reusableChunkList = new();
@@ -85,26 +85,26 @@ public class ChunkManager : MonoBehaviour
         //}
     }
 
-    public void DrawObjectChunkLinks ()
-    {
-        foreach (var chunk in chunks)
-        {
-            if (chunk == null)
-                continue;
+    //public void DrawObjectChunkLinks ()
+    //{
+    //    foreach (var chunk in chunks)
+    //    {
+    //        if (chunk == null)
+    //            continue;
 
-            var center = AdressToPos(chunk.adress) + chunkSize / 2 * Vector2.one;
+    //        var center = AdressToPos(chunk.adress) + chunkSize / 2 * Vector2.one;
 
-            //foreach (var item in chunk.items)
-            //{
-            //    Debug.DrawLine(center, item.transform.position, Color.blue);
-            //}
+    //        //foreach (var item in chunk.items)
+    //        //{
+    //        //    Debug.DrawLine(center, item.transform.position, Color.blue);
+    //        //}
 
-            foreach (var character in chunk.characters)
-            {
-                Debug.DrawLine(center, character.transform.position, Color.blue);
-            }
-        }
-    }
+    //        //foreach (var character in chunk.characters)
+    //        //{
+    //        //    Debug.DrawLine(center, character.transform.position, Color.blue);
+    //        //}
+    //    }
+    //}
 
     public void InstantiateChunks ()
     {
@@ -375,10 +375,10 @@ public class ChunkManager : MonoBehaviour
         GeoUtils.DrawBoxMinMax(min, max, color);
     }
 
-    public T FindClosestCharacterWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : Character
-    {
-        return FindClosestObjectWithinBoxPosSize(pos, size, chunk => chunk.GetCharacters<T>(), condition, chunks, debugLines);
-    }
+    //public T FindClosestCharacterWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : Character
+    //{
+    //    return FindClosestObjectWithinBoxPosSize(pos, size, chunk => chunk.GetCharacters<T>(), condition, chunks, debugLines);
+    //}
 
     //public T FindClosestItemWithinBoxPosSize<T>(Vector2 pos, Vector2 size, Func<T, bool> condition = null, Chunk[,] chunks = default, bool debugLines = false) where T : Item
     //{
@@ -445,29 +445,29 @@ public class ChunkManager : MonoBehaviour
     //    return output;
     //}
 
-    public List<T> GetCharactersWithinChunkArray<T>(Chunk[,] chunks, Func<T, bool> condition = null) where T : Character
-    {
-        var output = new List<T>();
+    //public List<T> GetCharactersWithinChunkArray<T>(Chunk[,] chunks, Func<T, bool> condition = null) where T : Character
+    //{
+    //    var output = new List<T>();
 
-        foreach (var chunk in chunks)
-        {
-            if (chunk == null)
-                continue;
+    //    foreach (var chunk in chunks)
+    //    {
+    //        if (chunk == null)
+    //            continue;
 
-            var itemsOfType = chunk.GetCharacters<T>();
+    //        var itemsOfType = chunk.GetCharacters<T>();
 
-            foreach (var character in itemsOfType)
-            {
-                if (condition == null || condition(character))
-                {
-                    output.Add(character);
-                }
+    //        foreach (var character in itemsOfType)
+    //        {
+    //            if (condition == null || condition(character))
+    //            {
+    //                output.Add(character);
+    //            }
 
-            }
-        }
+    //        }
+    //    }
 
-        return output;
-    }
+    //    return output;
+    //}
 
     public Vector2 GetPosRatio(Vector2 pos)
     {
