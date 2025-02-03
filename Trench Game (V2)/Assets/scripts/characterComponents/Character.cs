@@ -13,7 +13,7 @@ public class Character : MonoBehaviour
     [HideInInspector]
     public Clan clan;
     public PlayerController userController;
-    public TrenchBot botController;
+    public BotBrains.ObserverBot botController;
     //public SpriteRenderer sprite;
     //public Color dangerColor = Color.white;
     public float baseMoveSpeed = 5, moveSpeed = 0, deathDropRadius = 1, hp = 10, maxHp = 10, jumpDuration = .2f, jumpCooldown = .1f;
@@ -47,7 +47,7 @@ public class Character : MonoBehaviour
     //    }
     //}
 
-    public Chunk chunk;
+    //public Chunk chunk;
     public TrenchCollider trenchCollider;
     public AmmoReserve reserve;
     public Inventory inventory;

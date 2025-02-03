@@ -10,8 +10,8 @@ public class Background : MonoBehaviour
 
     private void Start()
     {
-        var totalPixels = ChunkManager.Manager.chunkArraySize * checkersPerChunk;
-        var ppu = checkersPerChunk / ChunkManager.Manager.chunkSize;
+        var totalPixels = Chunks.ChunkManager.ChunkArraySize.Value * checkersPerChunk;
+        var ppu = checkersPerChunk / Chunks.ChunkManager.ChunkSize.Value;
         var texture = GenerateCheckerTexture(totalPixels, totalPixels, 1, color1, color2);
         var pivot = Vector2.one * .5f;
         background.sprite = Sprite.Create(texture,new Rect(0,0,totalPixels, totalPixels),pivot,ppu);

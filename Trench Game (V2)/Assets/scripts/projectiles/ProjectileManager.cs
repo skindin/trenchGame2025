@@ -3,6 +3,7 @@ using System.Collections.Generic;
 //using System.Drawing;
 //using System.Net;
 using UnityEngine;
+using Chunks;
 
 public class ProjectileManager : MonoBehaviour
 {
@@ -89,7 +90,7 @@ public class ProjectileManager : MonoBehaviour
         UpdateBullets(Time.deltaTime * updateScale);
     }
 
-    List<Chunk> chunkList = new();
+    //List<Chunk> chunkList = new();
 
     public void UpdateBullet(Bullet bullet, float seconds, out bool wasDestroyed)
     {
@@ -132,7 +133,7 @@ public class ProjectileManager : MonoBehaviour
 
         if (!bullet.hit)
         {
-            var chunks = ChunkManager.Manager.ChunksFromLine(bullet.pos, nextPos, false, debugLines);
+            var colliders = TrenchCollider.chunkArray.ObjectsFromAddresses(Chunks.ChunkManager.AddressesFromLine(bullet.pos, nextPos,debugLines));
 
             //float wallDist = shortestDistance;
 
@@ -147,20 +148,20 @@ public class ProjectileManager : MonoBehaviour
 
             var wallDist = (trenchExit - bullet.pos).magnitude;
 
-            HashSet<TrenchCollider> processedColliders = new();
+            //HashSet<TrenchCollider> processedColliders = new();
 
-            foreach (var chunk in chunks)
-            {
-                foreach (var collider in chunk.colliders)
+            //foreach (var chunk in chunks)
+            //{
+                foreach (var collider in colliders)
                 {
-                    if (processedColliders.Contains(collider)) continue;
+                    //if (processedColliders.Contains(collider)) continue;
                     if (!collider.gameObject.activeInHierarchy) continue;
                     if (bullet.source && bullet.source.trenchCollider == collider) continue;
                     if (!bullet.withinTrench && collider.trenchStatus) continue;
 
                     var point = collider.TestRay(bullet.pos, nextPos,debugLines);
 
-                    processedColliders.Add(collider);
+                    //processedColliders.Add(collider);
 
                     if (point.x == Mathf.Infinity) continue;
 
@@ -174,7 +175,7 @@ public class ProjectileManager : MonoBehaviour
                         closestPoint = point;
                     }
                 }
-            }
+            //}
 
             bool exceededRange = ((closestPoint) - bullet.startPos).magnitude > bullet.range;
 
@@ -208,7 +209,7 @@ public class ProjectileManager : MonoBehaviour
             }
         }
 
-        if (!bullet.hit && !ChunkManager.Manager.IsPointInWorld(nextPos))
+        if (!bullet.hit && !ChunkManager.IsPointInWorld(nextPos))
             bullet.hit = true;
 
         //if (bullet.withinTrench && leavingTrench)

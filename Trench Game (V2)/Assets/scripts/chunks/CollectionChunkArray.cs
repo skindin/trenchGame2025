@@ -10,7 +10,7 @@ namespace Chunks
     public class CollectionChunkArray<TObject,TCollection> : ChunkArray<TCollection> where TCollection : IEnumerable<TObject>
     {
 
-        public IEnumerable<TObject> ObjectsFromAddresses(IEnumerable<Vector2Int> addresses)
+        public virtual IEnumerable<TObject> ObjectsFromAddresses(IEnumerable<Vector2Int> addresses)
         {
             foreach (var address in addresses)
             {

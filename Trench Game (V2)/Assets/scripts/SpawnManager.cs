@@ -1,10 +1,11 @@
-using Google.Protobuf;
-using System;
+//using Google.Protobuf;
+//using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditorInternal.Profiling.Memory.Experimental;
+//using System.Linq;
+//using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
+using Chunks;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -143,13 +144,13 @@ public class SpawnManager : MonoBehaviour
 
         IEnumerator DropRoutine()
         {
-            nextItemDropPos = ChunkManager.Manager.GetRandomPos(itemDropRadius);
+            nextItemDropPos = ChunkManager.GetRandomPos(itemDropRadius);
 
             while (true)
             {
                 SpawnItemDrop(nextItemDropPos); //lol idk probably should randomize this
 
-                nextItemDropPos = ChunkManager.Manager.GetRandomPos(itemDropRadius);
+                nextItemDropPos = ChunkManager.GetRandomPos(itemDropRadius);
                 var offset = UnityEngine.Random.insideUnitCircle * (startDropAreaRadius - itemDropRadius);
                 dropAreaCenter = nextItemDropPos + offset;
                 var initialDist = offset.magnitude;
@@ -455,7 +456,7 @@ public class SpawnManager : MonoBehaviour
 
         for (int i = 0; i < botAmount; i++)
         {
-            var botPos = ChunkManager.Manager.GetRandomPos();
+            var botPos = ChunkManager.GetRandomPos();
 
             var newBot = CharacterManager.Manager.NewLocalBotNewId(botPos);
 

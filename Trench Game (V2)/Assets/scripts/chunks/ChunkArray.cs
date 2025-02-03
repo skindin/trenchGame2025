@@ -29,6 +29,7 @@ namespace Chunks
 
         public virtual void Setup ()
         {
+            ChunkManager.Initialize();
             objects = ChunkManager.GetChunkPairArray<T>();
         }
 

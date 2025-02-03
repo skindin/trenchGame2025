@@ -9,6 +9,7 @@ using UnityEngine;
 //using UnityEngine.Android;
 using WebSocketSharp;
 using WebSocketSharp.Server;
+using Chunks;
 
 
 public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna work lol
@@ -141,7 +142,7 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
             {
                 newPlayerData.List.Add(client.newPlayer);
 
-                var pos = ChunkManager.Manager.GetRandomPos();
+                var pos = ChunkManager.GetRandomPos();
                 //var id = SpawnManager.Manager.NewCharId;
 
                 var newCharacter = CharacterManager.Manager.NewRemoteCharacterNewId(pos);
@@ -715,7 +716,7 @@ public class GameServer : MonoBehaviour//: WSServerBase //none of this is gonna 
     {
         if (NetworkManager.IsServer && !CharacterManager.Manager.localPlayerCharacter)
         {
-            var pos = ChunkManager.Manager.GetRandomPos();
+            var pos = ChunkManager.GetRandomPos();
             //var id = SpawnManager.Manager.NewCharId;
 
             CharacterManager.Manager.NewLocalPlayerNewId(pos);

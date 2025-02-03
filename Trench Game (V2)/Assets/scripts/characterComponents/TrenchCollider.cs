@@ -10,7 +10,7 @@ public class TrenchCollider : MonoBehaviour
     //public static List<Collider> all = new();
     public Action<Bullet> onHit;
     public UnityEvent<bool> onChangeTrenchStatus;
-    public Chunk[,] chunks;
+    public static readonly Chunks.AreaChunkArray<TrenchCollider> chunkArray = new();
 
     public float localSize = 1, wallBuffer = .1f;
 
@@ -35,25 +35,7 @@ public class TrenchCollider : MonoBehaviour
 
     public void UpdateChunk()
     {
-
-        if (chunks != null)
-            foreach (var chunk in chunks)
-            {
-                if (chunk == null)
-                    continue;
-
-                chunk.RemoveCollider(this);
-            }
-
-        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, WorldSize * Vector2.one,true);
-
-        foreach (var chunk in chunks)
-        {
-            if (chunk == null)
-                continue;
-
-            chunk.AddCollider(this);
-        }
+        chunkArray.UpdateAreaByCircle(this, transform.position, WorldSize / 2);
     }
 
     public bool TestWithinTrench()
@@ -105,12 +87,14 @@ public class TrenchCollider : MonoBehaviour
 
     public void ResetCollider()
     {
-        foreach (var chunk in chunks)
-        {
-            if (chunk!= null)
-                chunk.colliders.Remove(this);
-        }
-        chunks = new Chunk[0,0];
+        //foreach (var chunk in chunks)
+        //{
+        //    if (chunk!= null)
+        //        chunk.colliders.Remove(this);
+        //}
+        //chunks = new Chunk[0,0];
+        chunkArray.RemoveObject(this);
+
         exitedTrenchThisFrame = false;
         //hp = maxHp;
 

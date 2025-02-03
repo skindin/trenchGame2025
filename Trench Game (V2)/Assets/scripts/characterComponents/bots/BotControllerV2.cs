@@ -19,11 +19,11 @@ public class BotControllerV2 : MonoBehaviour
     public Dictionary<int, CharacterProfile> profiles = new();
     public CharacterProfile targetProfile;
 
-    public Chunk[,] chunks;
+    //public Chunk[,] chunks;
 
     private void OnEnable()
     {
-        UpdateChunks();
+        //UpdateChunks();
         StartRefreshRoutine();
     }
 
@@ -164,7 +164,7 @@ public class BotControllerV2 : MonoBehaviour
 
     private void Update()
     {
-        UpdateChunks();
+        //UpdateChunks();
 
         if (targetProfile != null)
         {
@@ -178,11 +178,11 @@ public class BotControllerV2 : MonoBehaviour
                     GeoUtils.DrawCircle(guessPos.Value, 1, Color.red);
                 }
 
-                if (!ChunkManager.Manager.IsPointInWorld(guessPos.Value))
-                {
-                    guessPos = ChunkManager.Manager.ClampToWorld(guessPos.Value);
-                    targetProfile.velocity = null;
-                }
+                //if (!ChunkManager.Manager.IsPointInWorld(guessPos.Value))
+                //{
+                //    guessPos = ChunkManager.Manager.ClampToWorld(guessPos.Value);
+                //    targetProfile.velocity = null;
+                //}
 
                 //if (TestVisionBox(guessPos.Value) && !TestVisionBox(targetProfile.character.transform.position))
                 //{
@@ -305,10 +305,10 @@ public class BotControllerV2 : MonoBehaviour
         }
     }
 
-    public void UpdateChunks ()
-    {
-        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position,visionBox);
-    }
+    //public void UpdateChunks ()
+    //{
+    //    chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position,visionBox);
+    //}
 
     //public Item PickupClosestItem<T>(Func<T, bool> condition = null) where T : Item
     //{

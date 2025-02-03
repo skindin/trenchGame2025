@@ -18,7 +18,7 @@ public class BotController : MonoBehaviour
         maxWanderOffset = 5;
         //wanderDistMemory = 5;
     Vector2 targetPos, targetPosOffset, pointerPos, targetPointerPos; //pointer pos and target pointer pos are in LOCAL space
-    Chunk[,] chunks = default;
+    //Chunk[,] chunks = default;
 
     //CURRENTLY NOT RESSETING ANY OF THIS WHEN BOTS DIE
 
@@ -48,20 +48,20 @@ public class BotController : MonoBehaviour
 
         set
         {
-            value = ChunkManager.Manager.ClampToWorld(value);
+            //value = ChunkManager.Manager.ClampToWorld(value);
             targetPosOffset = (Vector2)UnityEngine.Random.insideUnitSphere * maxTargetOffset;
             targetPos = value;
             //path.Add(transform.position);
         }
     }
 
-    public Vector2 OffsetTargetPos
-    {
-        get
-        {
-            return ChunkManager.Manager.ClampToWorld(TargetPos + targetPosOffset);
-        }
-    }
+    //public Vector2 OffsetTargetPos
+    //{
+    //    get
+    //    {
+    //        return ChunkManager.Manager.ClampToWorld(TargetPos + targetPosOffset);
+    //    }
+    //}
 
     public Item targetItem;
     public TrenchCollider targetCollider;
@@ -76,7 +76,7 @@ public class BotController : MonoBehaviour
         //var delta = targetPos - (Vector2)transform.position;
         //character.Move(delta);
 
-        chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
+        //chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
 
         //SoldierLogic();
 
@@ -331,7 +331,7 @@ public class BotController : MonoBehaviour
         {
             if (unexploredPoints.Count < 1)
             {
-                wanderPoints = ChunkManager.Manager.DistributePoints(visionBox,character.trenchCollider.WorldSize/2);
+                //wanderPoints = ChunkManager.Manager.DistributePoints(visionBox,character.trenchCollider.WorldSize/2);
 
                 //unexploredPoints.Clear(); //not sure why this would be here, considering it is already empty
                 exploredPoints.Clear();

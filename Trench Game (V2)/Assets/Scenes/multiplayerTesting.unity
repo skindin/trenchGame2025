@@ -1325,7 +1325,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &369969520
 Transform:
   m_ObjectHideFlags: 0
@@ -2636,7 +2636,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &703258291
 Transform:
   m_ObjectHideFlags: 0
@@ -3397,7 +3397,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 893604346}
-  - component: {fileID: 893604345}
+  - component: {fileID: 893604348}
   - component: {fileID: 893604347}
   m_Layer: 0
   m_Name: worldManager
@@ -3406,31 +3406,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &893604345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 893604344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  worldSize: 20
-  minChunkSize: 10
-  chunkSize: 0
-  chunkArraySize: 0
-  pointA: {fileID: 1884687862}
-  pointB: {fileID: 1477006794}
-  chunkPool:
-    minPooled: 0
-    maxPooled: 10
-  logOutOfBounds: 0
-  drawChunks: 1
-  drawObjectChunkLinks: 0
-  drawLineTest: 0
 --- !u!4 &893604346
 Transform:
   m_ObjectHideFlags: 0
@@ -3485,6 +3460,20 @@ MonoBehaviour:
   frictionAngleMod: 1
   wallFriction: 0
   maxSlides: 10
+--- !u!114 &893604348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 893604344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50032f80bf40aee46bcaa73c70d66b29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldSize: 30
+  minChunkSize: 10
 --- !u!1 &896552506
 GameObject:
   m_ObjectHideFlags: 0
@@ -7654,22 +7643,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2136015900}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fc63bca44482cd44be1f8a8bd9faf48, type: 3}
+  m_Script: {fileID: 11500000, guid: 50032f80bf40aee46bcaa73c70d66b29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 20
+  worldSize: 10
   minChunkSize: 10
-  chunkSize: 0
-  chunkArraySize: 0
-  pointA: {fileID: 653677409}
-  pointB: {fileID: 1401785019}
-  chunkPool:
-    minPooled: 0
-    maxPooled: 10
-  logOutOfBounds: 0
-  drawChunks: 0
-  drawObjectChunkLinks: 0
-  drawLineTest: 0
 --- !u!1 &2140088292
 GameObject:
   m_ObjectHideFlags: 0

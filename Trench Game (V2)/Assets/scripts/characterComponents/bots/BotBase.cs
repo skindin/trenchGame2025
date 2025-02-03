@@ -30,7 +30,7 @@ namespace BotBrains
 
         //int nextLocalItemId = 0;
 
-        public Chunk[,] chunks;
+        //public Chunk[,] chunks;
 
         //private void Awake()
         //{
@@ -367,7 +367,7 @@ namespace BotBrains
             {
                 while (true)
                 {
-                    UpdateChunks();
+                    //UpdateChunks();
 
                     foreach (var pair in itemProfiles)
                     {
@@ -509,10 +509,10 @@ namespace BotBrains
         //    }
         //}
 
-        void UpdateChunks()
-        {
-            chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
-        }
+        //void UpdateChunks()
+        //{
+        //    chunks = ChunkManager.Manager.ChunksFromBoxPosSize(transform.position, visionBox);
+        //}
 
         //List<T> GetVisibleItems<T>(Func<T, bool> condition = null) where T : Item
         //{

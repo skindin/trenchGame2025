@@ -13,14 +13,14 @@ namespace Chunks
 
         public static float WorldSize { get; private set; }
 
-        public static float? chunkSize { get; private set; }
+        public static float? ChunkSize { get; private set; }
         public static int? ChunkArraySize { get; private set; }
 
         public static void Initialize ()
         {
             WorldSize = Manager.worldSize;
             ChunkArraySize = Mathf.FloorToInt(WorldSize / Manager.minChunkSize);
-            chunkSize = Manager.worldSize / ChunkArraySize;
+            ChunkSize = Manager.worldSize / ChunkArraySize.Value;
         }
 
         //private void Awake()
@@ -39,7 +39,7 @@ namespace Chunks
         {
             var min = -Vector2.one / 2 * WorldSize;
             var delta = pos - min;
-            var adress = Vector2Int.FloorToInt(delta / chunkSize.Value);
+            var adress = Vector2Int.FloorToInt(delta / ChunkSize.Value);
             return adress;
         }
 
@@ -51,14 +51,34 @@ namespace Chunks
         public static Vector2 AddressToPos(Vector2Int address)
         {
             var min = -Vector2.one / 2 * WorldSize;
-            var pos = ((Vector2)address * chunkSize.Value) + min;
+            var pos = ((Vector2)address * ChunkSize.Value) + min;
             return pos;
         }
 
-        public static void GetWorldBox (out Vector2 min, out Vector2 max)
+        public static void GetWorldBox (out Vector2 min, out Vector2 max, float margin = 0)
         {
-            max = Vector2.one * WorldSize / 2;
+            max = Vector2.one * (WorldSize / 2 + margin);
             min = -max;
+        }
+
+        public static bool TestWorldBox (Vector2 pos)
+        {
+            GetWorldBox(out var min, out var max);
+            return GeoUtils.TestBoxMinMax(min, max, pos);
+        }
+
+        public static Vector2 GetRandomPos (float margin = 0)
+        {
+            return -(Vector2.one * WorldSize / 2) + 
+                new Vector2(
+                    UnityEngine.Random.Range(margin, WorldSize - margin),
+                    UnityEngine.Random.Range(margin, WorldSize - margin)
+                );
+        }
+
+        public static Vector2 GetPosRatio (Vector2 worldPos)
+        {
+            return worldPos / WorldSize + Vector2.one * .5f;
         }
 
         public static bool IsPointInWorld(Vector2 point, bool debugLines = false)
@@ -96,7 +116,7 @@ namespace Chunks
             return AddressesFromBoxMinMax(min, max);
         }
 
-        public static IEnumerable<Vector2Int> AddressesFromLine(Vector2 pointA, Vector2 pointB, bool newIfNone = false, bool debugLines = false)
+        public static IEnumerable<Vector2Int> AddressesFromLine(Vector2 pointA, Vector2 pointB, bool debugLines = false)
         {
 
             GetWorldBox(out var worldMin, out _);
@@ -106,10 +126,10 @@ namespace Chunks
                 Debug.DrawLine(pointA, pointB, Color.green);
             }
 
-            pointA = pointA - worldMin + (chunkSize.Value * .5f * Vector2.one);
-            pointB = pointB - worldMin + (chunkSize.Value * .5f * Vector2.one);
+            pointA = pointA - worldMin + (ChunkSize.Value * .5f * Vector2.one);
+            pointB = pointB - worldMin + (ChunkSize.Value * .5f * Vector2.one);
 
-            foreach (var cell in GeoUtils.CellsFromLine(pointA,pointB,chunkSize.Value))
+            foreach (var cell in GeoUtils.CellsFromLine(pointA,pointB,ChunkSize.Value))
             {
                 //cell -= Vector2Int.one * chunkSize;
 
@@ -131,7 +151,7 @@ namespace Chunks
 
     public struct ChunkAddressPair<T>
     {
-        public Vector2Int address { get; private set; }
+        public readonly Vector2Int address;
         public T obj;
 
         public ChunkAddressPair(Vector2Int address, T obj)

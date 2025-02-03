@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Chunks;
 
 public class Minimap : MonoBehaviour
 {
@@ -63,7 +64,7 @@ public class Minimap : MonoBehaviour
         {
             var icon = charIcons[i];
             var character = CharacterManager.Manager.active[i];
-            var posRatio = ChunkManager.Manager.GetPosRatio(character.transform.position);
+            var posRatio = ChunkManager.GetPosRatio(character.transform.position);
 
             icon.gameObject.SetActive(character.gameObject.activeInHierarchy);
 
@@ -83,7 +84,7 @@ public class Minimap : MonoBehaviour
         var mapMin = (Vector2)mapImage.position + mapImage.rect.min;
         var scaleFactor = new Vector2(mapImage.rect.width, mapImage.rect.height);
 
-        var centerPosRatio = ChunkManager.Manager.GetPosRatio(SpawnManager.Manager.dropAreaCenter);
+        var centerPosRatio = ChunkManager.GetPosRatio(SpawnManager.Manager.dropAreaCenter);
         itemDropIcon.transform.position = centerPosRatio * scaleFactor + mapMin;
 
         var sizeDelta = itemDropIcon.rectTransform.sizeDelta;

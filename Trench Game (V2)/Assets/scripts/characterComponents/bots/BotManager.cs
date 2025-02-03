@@ -11,7 +11,6 @@ namespace BotBrains
 
         private void Awake()
         {
-            Chunks.ChunkManager.Initialize();
             subjectChunkArray = new ();
         }        
     }

@@ -13,7 +13,7 @@ public class Inventory : MonoBehaviour
     public Item[] itemSlots;
     public bool inventoryFull = false;
     public List<Item> withinRadius = new();
-    public Chunk[,] chunks = new Chunk[0,0];
+    //public Chunk[,] chunks = new Chunk[0,0];
     Item selectedItem;
     public Action<Item> onItemAdded, onItemRemoved;
     public Transform itemContainer;
@@ -126,16 +126,16 @@ public class Inventory : MonoBehaviour
 
     private void Update()
     {
-        if (debugLines)
-        {
-            foreach (var chunk in chunks)
-            {
-                if (chunk == null)
-                    continue;
+        //if (debugLines)
+        //{
+        //    foreach (var chunk in chunks)
+        //    {
+        //        if (chunk == null)
+        //            continue;
 
-                ChunkManager.Manager.DrawChunk(chunk, Color.magenta);
-            }
-        }
+        //        ChunkManager.Manager.DrawChunk(chunk, Color.magenta);
+        //    }
+        //}
     }
 
     public Item SelectedItem //this is for the sake of highlighting ground items, not the item the character is holding. tbh, this should probably be in a different script
@@ -166,9 +166,9 @@ public class Inventory : MonoBehaviour
     public void ResetInventory (bool dropAllItems = false, float dropRadius = 0)
     {
         SelectedItem = null;
-        var emptyChunkArray = new Chunk[0,0];
+        //var emptyChunkArray = new Chunk[0,0];
         //AddChunkListeners(chunks, emptyChunkArray);
-        chunks = emptyChunkArray;
+        //chunks = emptyChunkArray;
 
         if (dropAllItems)
         {
