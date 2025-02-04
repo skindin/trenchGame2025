@@ -11,16 +11,52 @@ namespace Chunks
     {
         public float worldSize, minChunkSize;
 
-        public static float WorldSize { get; private set; }
+        public static float WorldSize
+        {
+            get
+            {
+                if (!cachedWorldSize.HasValue)
+                {
+                    Initialize();
+                }
 
-        public static float? ChunkSize { get; private set; }
-        public static int? ChunkArraySize { get; private set; }
+                return cachedWorldSize.Value;
+            }
+        }
+        static float? cachedWorldSize;
+
+        public static float ChunkSize {
+            get
+            {
+                if (!cachedChunkSize.HasValue)
+                {
+                    Initialize();
+                }
+
+                return cachedChunkSize.Value;
+            }        
+        }
+        static float? cachedChunkSize;
+
+        public static int ChunkArraySize
+        {
+            get
+            {
+                if (!cachedChunkArraySize.HasValue)
+                {
+                    Initialize();
+                }
+
+                return cachedChunkArraySize.Value;
+            }
+        }
+        static int? cachedChunkArraySize;
 
         public static void Initialize ()
         {
-            WorldSize = Manager.worldSize;
-            ChunkArraySize = Mathf.FloorToInt(WorldSize / Manager.minChunkSize);
-            ChunkSize = Manager.worldSize / ChunkArraySize.Value;
+            cachedWorldSize = Manager.worldSize;
+            cachedChunkArraySize = Mathf.FloorToInt(WorldSize / Manager.minChunkSize);
+            cachedChunkSize = Manager.worldSize / ChunkArraySize;
         }
 
         //private void Awake()
@@ -30,7 +66,7 @@ namespace Chunks
 
         public static T[,] GetChunkPairArray<T>()
         {
-            var array = new T[ChunkArraySize.Value, ChunkArraySize.Value];
+            var array = new T[ChunkArraySize, ChunkArraySize];
 
             return array;
         }
@@ -39,7 +75,9 @@ namespace Chunks
         {
             var min = -Vector2.one / 2 * WorldSize;
             var delta = pos - min;
-            var adress = Vector2Int.FloorToInt(delta / ChunkSize.Value);
+            var adress = Vector2Int.FloorToInt(delta / ChunkSize);
+            adress = Vector2Int.Min(Vector2Int.one * (ChunkArraySize-1), adress);
+            adress = Vector2Int.Max(Vector2Int.zero, adress);
             return adress;
         }
 
@@ -51,7 +89,7 @@ namespace Chunks
         public static Vector2 AddressToPos(Vector2Int address)
         {
             var min = -Vector2.one / 2 * WorldSize;
-            var pos = ((Vector2)address * ChunkSize.Value) + min;
+            var pos = ((Vector2)address * ChunkSize) + min;
             return pos;
         }
 
@@ -126,10 +164,10 @@ namespace Chunks
                 Debug.DrawLine(pointA, pointB, Color.green);
             }
 
-            pointA = pointA - worldMin + (ChunkSize.Value * .5f * Vector2.one);
-            pointB = pointB - worldMin + (ChunkSize.Value * .5f * Vector2.one);
+            pointA = pointA - worldMin + (ChunkSize * .5f * Vector2.one);
+            pointB = pointB - worldMin + (ChunkSize * .5f * Vector2.one);
 
-            foreach (var cell in GeoUtils.CellsFromLine(pointA,pointB,ChunkSize.Value))
+            foreach (var cell in GeoUtils.CellsFromLine(pointA,pointB,ChunkSize))
             {
                 //cell -= Vector2Int.one * chunkSize;
 

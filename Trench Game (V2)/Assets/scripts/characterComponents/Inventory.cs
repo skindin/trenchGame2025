@@ -193,13 +193,13 @@ public class Inventory : MonoBehaviour
             //{
             //    var item = chunk.items[i];
 
-                if (!item.gameObject.activeSelf)
-                {
-                    Debug.DrawLine(item.transform.position, transform.position, Color.red);
-                    GeoUtils.MarkPoint(item.transform.position, 1, Color.red);
-                    GeoUtils.MarkPoint(transform.position, 1, Color.red);
-                    //Debug.LogError($"Item {item} isn't active but is refferenced by chunk {chunk.adress}");
-                }
+                //if (!item.gameObject.activeSelf)
+                //{
+                //    Debug.DrawLine(item.transform.position, transform.position, Color.red);
+                //    GeoUtils.MarkPoint(item.transform.position, 1, Color.red);
+                //    GeoUtils.MarkPoint(transform.position, 1, Color.red);
+                //    //Debug.LogError($"Item {item} isn't active but is refferenced by chunk {chunk.adress}");
+                //}
 
                 DetectItem(item);
 

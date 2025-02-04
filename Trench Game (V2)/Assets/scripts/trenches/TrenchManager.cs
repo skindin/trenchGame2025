@@ -24,7 +24,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
     {
         //mapResolution = ChunkManager.Manager.chunkSize //determine resolution with maxPixelSize
 
-        var chunkSize = ChunkManager.ChunkSize.Value;
+        var chunkSize = ChunkManager.ChunkSize;
 
         mapResolution = Mathf.CeilToInt(chunkSize / maxPixelSize/4);
 
@@ -99,16 +99,16 @@ public class TrenchManager : ManagerBase<TrenchManager>
         {
             var map = pair.obj;
 
-            if (map == null)
-                continue;
+            //if (map == null)
+            //    continue;
 
             if (map == null)
             {
                 if (value)
                 {
-                    var pos = Chunks.ChunkManager.AddressToPos(pair.address) + Chunks.ChunkManager.ChunkSize.Value * .5f * Vector2.one;
+                    var pos = ChunkManager.AddressToPos(pair.address) + Chunks.ChunkManager.ChunkSize * .5f * Vector2.one;
 
-                    map = new(mapResolution,ChunkManager.ChunkSize.Value, trenchColor, groundColor,pos,imageMesh,imageMaterial,filter);
+                    map = new(mapResolution,ChunkManager.ChunkSize, trenchColor, groundColor,pos,imageMesh,imageMaterial,filter);
                 }
                 else
                 {

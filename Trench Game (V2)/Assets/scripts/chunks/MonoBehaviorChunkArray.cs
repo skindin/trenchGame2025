@@ -47,6 +47,8 @@ namespace Chunks
 
             bool hadValue = objChunkDict.TryGetValue(obj, out var prevAddress);
 
+            obj.transform.position = ChunkManager.ClampPosToWorld(obj.transform.position);
+
             if (hadValue && newAddress != prevAddress) //if had a previous address, and new address is different
             {
                 RemoveObject(obj, newAddress);

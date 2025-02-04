@@ -13,13 +13,36 @@ namespace Chunks
         {
             get
             {
-                return objects[address.x,address.y];
+                if (objects == null)
+                    Setup();
+
+                if (TestValidAddress(address))
+                {
+
+                    return objects[address.x, address.y];
+                }
+
+                return default;
             }
 
             set
             {
-                objects[address.x,address.y] = value;
+
+                if (TestValidAddress(address))
+                {
+
+                    objects[address.x, address.y] = value;
+                }
+                //objects[address.x,address.y] = value;
+                else
+                    throw new Exception("address is out of world bounds");
             }
+        }
+
+        public bool TestValidAddress (Vector2Int address)
+        {
+            return address.x < objects.GetLength(0) && address.x >= 0 &&
+                    address.y < objects.GetLength(1) && address.y >= 0;
         }
 
         public ChunkArray ()
@@ -51,8 +74,8 @@ namespace Chunks
         {
             var address = ChunkManager.PosToAdress (pos);
 
-            address = Vector2Int.Max(Vector2Int.zero, address);
-            address = Vector2Int.Min(Vector2Int.one * (ChunkManager.ChunkArraySize.Value-1), address);
+            //address = Vector2Int.Max(Vector2Int.zero, address);
+            //address = Vector2Int.Min(Vector2Int.one * (ChunkManager.ChunkArraySize-1), address);
 
             return this[address];
         }

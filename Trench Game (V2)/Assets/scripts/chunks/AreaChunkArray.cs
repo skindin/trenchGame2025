@@ -11,6 +11,20 @@ namespace Chunks
     {
         readonly Dictionary<T, HashSet<Vector2Int>> objAddressesDict = new();
 
+        public override HashSet<T> this[Vector2Int address]
+        {
+            get
+            {
+                if (base[address] == null && TestValidAddress(address))
+                {
+                    base[address] = new();
+                }
+
+                return base[address];
+            }
+            set => base[address] = value;
+        }
+
         public void RemoveObject (T obj)
         {
             if (objAddressesDict.TryGetValue(obj, out var addressSet))
@@ -33,10 +47,10 @@ namespace Chunks
                 objAddressesDict.Add(obj, addressSet = new());
             }
 
-            foreach (var pair in FromBoxMinMax(min, max))
+            foreach (var address in ChunkManager.AddressesFromBoxMinMax(min,max))
             {
-                this[pair.address].Add(obj);
-                addressSet.Add(pair.address);
+                this[address].Add(obj);
+                addressSet.Add(address);
             }
         }
 

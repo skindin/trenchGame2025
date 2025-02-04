@@ -177,7 +177,7 @@ public class Character : MonoBehaviour
     //}
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
 
         if (constantlyUpdateChunk)
@@ -243,7 +243,7 @@ public class Character : MonoBehaviour
 
         transform.position = pos;
 
-        if (!constantlyUpdateChunk)
+        if (true || !constantlyUpdateChunk)
         {
             UpdateChunk();
             inventory.DetectItems();
