@@ -657,4 +657,47 @@ public static class CollectionUtils
             this.value2 = value2;
         }
     }
+
+    public class RandomIntSeries
+    {
+        readonly int min, max;
+        readonly Func<int, int, int> randomAccessor;
+        readonly List<int> ints = new();
+
+        public RandomIntSeries(int min, int max, Func<int, int, int> randomAccessor)
+        {
+            this.min = min;
+            this.max = max;
+            this.randomAccessor = randomAccessor;
+        }
+
+        public void Reset()
+        {
+            ints.Clear(); //
+        }
+
+        void AddIntsBetweenMinMax()
+        {
+            for (int i = min; i < max; i++)
+            {
+                ints.Add(i);
+            }
+        }
+
+        public int Get()
+        {
+            if (ints.Count == 0)
+            {
+                AddIntsBetweenMinMax();
+            }
+
+            var intIndex = randomAccessor(0,ints.Count);
+
+            var value = ints[intIndex];
+
+            ints.RemoveAt(intIndex);
+
+            return value;
+        }
+    }
 }

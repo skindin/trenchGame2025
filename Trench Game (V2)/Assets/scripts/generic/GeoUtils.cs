@@ -133,6 +133,11 @@ public static class GeoUtils
 
     public static Vector2 GetCircleLineIntersection(Vector2 circleCenter, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
     {
+        if (Vector2.Distance(circleCenter,lineStart) <= circleRadius)
+        {
+            return lineStart;
+        }
+
         var defaultOutput = Vector2.positiveInfinity;
 
         if ((lineStart - circleCenter).magnitude <= circleRadius) return defaultOutput;
