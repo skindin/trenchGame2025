@@ -19,7 +19,7 @@ namespace BotBrains
         public readonly BotBehavior behavior = new();
         public float reactionRate = 5f;
         IEnumerable<Vector2Int> visibleChunkAddresses;
-        readonly Dictionary<int, ItemProfile> itemProfilePairs = new();
+        readonly CollectionUtils.TwoColumnTable<int, ItemProfile> itemProfilePairs = new();
 
         private void Start()
         {
@@ -75,17 +75,91 @@ namespace BotBrains
 
             //foreach (var subject in GetVisibleSubjects())
             //{
-                //atleast this was designed in case I need it...
+            //atleast this was designed in case I need it...
             //}
+
+            foreach (var pair in itemProfilePairs)
+            {
+                if (!ItemManager.Manager.active.TryGetValue(pair.value1,out var item) ||
+                    TestVisionBox(item.transform.position))
+                {
+                    var profile = pair.value2;
+
+                    profile.isVisible = false;
+                    profile.pos = null;
+                }
+            }
 
             foreach (var item in GetVisibleItems<Item>())
             {
-
+                if (item is Gun gun)
+                {
+                    UpdateProfile<GunProfile>(gun);
+                }
+                else if (item is Consumable consumable)
+                {
+                    UpdateProfile<ConsumableProfile>(consumable);
+                }
+                else if (item is Ammo ammo)
+                {
+                    UpdateProfile<AmmoProfile>(ammo);
+                }
+                else if (item is Spade spade)
+                {
+                    UpdateProfile<AmmoProfile>(spade);
+                }
             }
 
             foreach (var character in GetVisibleCharacters<Character>())
             {
+                //blehhh
+            }
+        }
 
+        public T UpdateProfile<T>(Item item) where T : ItemProfile, new()
+        {
+            var profile = GetProfile<T>(item);
+            profile.UpdateWithItem(item); //gotta connect character profile here later
+            return profile;
+        }
+
+        public T GetProfile<T> (Item item) where T : ItemProfile , new()
+        {
+            if (!itemProfilePairs.TryGet2From1(item.id,out var profile))
+            {
+                profile = new T { prefabId = item.prefabId };
+                AddItemProfileToBehavior(profile);
+                itemProfilePairs.Add(item.id,profile);
+            }
+            //Hashtable table = new Hashtable();
+
+            if (profile is T t)
+            {
+                return t;
+            }
+
+            return null;
+        }
+
+        public void AddItemProfileToBehavior<T> (T profile) where T : ItemProfile
+        {
+            if (!behavior.itemsByPrefab.TryGetValue(profile.prefabId, out var set))
+            {
+                set = new();
+            }
+
+            set.Add(profile);
+        }
+
+        public void RemoveItemProfileFromBehavior (ItemProfile profile)
+        {
+            if (behavior.itemsByPrefab.TryGetValue(profile.prefabId, out var set))
+            {
+                set.Remove(profile);
+                if (set.Count == 0)
+                {
+                    behavior.itemsByPrefab.Remove(profile.prefabId);
+                }
             }
         }
 
@@ -98,8 +172,8 @@ namespace BotBrains
         {
             foreach (var item in ItemManager.Manager.chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
             {
-                if (item is T generic && TestVisionBox(item.transform.position))
-                    yield return generic;
+                if (item is T t && TestVisionBox(item.transform.position))
+                    yield return t;
             }
         }
 
@@ -107,8 +181,8 @@ namespace BotBrains
         {
             foreach (var character in CharacterManager.Manager.chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
             {
-                if (character is T generic && TestVisionBox(character.transform.position))
-                    yield return generic;
+                if (character is T t && TestVisionBox(character.transform.position))
+                    yield return t;
             }
         }
 

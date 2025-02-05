@@ -31,7 +31,7 @@ public class SpawnManager : MonoBehaviour
     public List<SpawnItemGroup> itemGroups = new();
     public int itemsPerDrop = 5;
     public float itemDropRadius = 5, itemDropInterval = 20, itemDropTimer = 0, startDropAreaRadius = 50, dropAreaOffsetSpeed = 10, dropAreaJitter = 10;
-    public bool spawnItemDrops = true, debugLines = false;
+    public bool spawnItemDrops = true, logItemDrops = false, debugLines = false;
     Coroutine itemDropRoutine;
 
     //int nextItemId = 0;
@@ -250,7 +250,7 @@ public class SpawnManager : MonoBehaviour
             log += "), ";
         }
 
-        if (amountSpawned > 0)
+        if (logItemDrops && amountSpawned > 0)
             Debug.Log($"Spawned {log}");
     }
 
