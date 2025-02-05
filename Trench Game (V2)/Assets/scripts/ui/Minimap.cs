@@ -7,7 +7,8 @@ using Chunks;
 
 public class Minimap : MonoBehaviour
 {
-    public Image charIconPrfb, itemDropIcon;
+    public DynamicMulticolorImages charIconPrfb; 
+    public Image itemDropIcon;
     public TextMeshProUGUI dropTimeText;
     public string timeTextSuffix = "s until drop";
     public List<DynamicMulticolorImages> charIcons = new();
@@ -72,6 +73,11 @@ public class Minimap : MonoBehaviour
 
             icon.SetColor(0,character.clan.color);
             icon.SetColor(1, character.Type == Character.CharacterType.localPlayer ? playerHighlight : otherCharacterHighlight);
+
+            if (character.Type == Character.CharacterType.localPlayer)
+            {
+                icon.transform.SetAsLastSibling();
+            }
 
             //if (logPosRatios && character.Type == Character.CharacterType.localPlayer)
             //{

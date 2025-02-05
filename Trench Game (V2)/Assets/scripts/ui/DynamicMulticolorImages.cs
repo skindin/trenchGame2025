@@ -8,10 +8,10 @@ using UnityEngine.UI;
 
 public class DynamicMulticolorImages : MonoBehaviour
 {
-    readonly public List<Image> image = new();
+    public List<Image> images = new();
 
     public void SetColor (int index, Color color)
     {
-        image[index].color = color;
+        images[index].color = color;
     }
 }
