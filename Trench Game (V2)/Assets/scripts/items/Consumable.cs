@@ -113,7 +113,7 @@ public class Consumable : Item
 
         text += base.InfoString(separator);
         text += separator + $"{hp:F1} hp";
-        text += separator + $"{healingTime:F1} s";
+        //text += separator + $"{healingTime:F1} s";
 
         return text;
     }

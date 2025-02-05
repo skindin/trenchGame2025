@@ -398,7 +398,7 @@ public class Gun : Weapon
     {
         var itemInfo = $"{(reloading ? "(reloading...)" + separator : "")}" + base.InfoString();
 
-        var roundRatio = $"{rounds}/{maxRounds}";
+        var roundRatio = $"{rounds}/{maxRounds} rounds";
         var range = $"{this.range:F1} m range";
         var bulletSpeed = $"{this.bulletSpeed:F1} m/s";
         var fireRate = $"{firingRate:F1} rounds/s";
@@ -406,7 +406,16 @@ public class Gun : Weapon
         var reload = $"{ reloadTime:F1} s reload";
         var amoType = this.amoType.name;
 
-        var array = new string[] {itemInfo, roundRatio, fireRate, damageRate, range, bulletSpeed, reload, amoType};
+        var array = new string[] 
+        {itemInfo,
+            roundRatio, 
+            //fireRate, 
+            //damageRate, 
+            //range, 
+            //bulletSpeed, 
+            //reload, 
+            //amoType
+        };
 
         //var result = itemInfo.Concat(gunInfo).ToArray();
 

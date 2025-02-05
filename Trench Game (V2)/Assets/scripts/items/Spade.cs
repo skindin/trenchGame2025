@@ -181,9 +181,9 @@ public class Spade : Item, ISecondaryAction, IDirectionalAction
         if (wielder)
             itemInfo += separator + (digMode ? "dig" : "fill");
 
-        itemInfo += $"{separator}{integrity:F1} m^2";
-        itemInfo += $"{separator}{maxDigRadius:F1} m";
-        itemInfo += $"{separator}speed x{movementModifier:F1}";
+        itemInfo += $"{separator}{integrity/maxIntegrity*100:F0}% integrity";
+        //itemInfo += $"{separator}{maxDigRadius:F1} m";
+        //itemInfo += $"{separator}speed x{movementModifier:F1}";
 
         return itemInfo;
     }

@@ -1,0 +1,800 @@
+fileFormatVersion: 2
+guid: e01fd7cc0b9357d41b3915abaa103053
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 9
+  spritePivot: {x: 0, y: 0}
+  spritePixelsToUnits: 600
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: 0
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Gun collection FREE version_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3243
+        width: 1338
+        height: 450
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca67185fa4840fa4798d65624252889f
+      internalID: -1953681551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_1
+      rect:
+        serializedVersion: 2
+        x: 1854
+        y: 3343
+        width: 1808
+        height: 373
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08991c6c20fa920418b6f1c7c1301eee
+      internalID: -422304573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 2681
+        width: 1325
+        height: 440
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65f9d20452d47ec48b168f4232b8fbda
+      internalID: 871607288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_3
+      rect:
+        serializedVersion: 2
+        x: 1859
+        y: 2904
+        width: 1798
+        height: 363
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 043939f195c623f42b4f4690f84fea86
+      internalID: 215710724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1853
+        width: 589
+        height: 411
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f5f638ecf684cd4b826c85128987028
+      internalID: -1705850061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_5
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 1863
+        width: 572
+        height: 391
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8ed2f89390310345bf65bb520e58dcf
+      internalID: -1256830980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_6
+      rect:
+        serializedVersion: 2
+        x: 1739
+        y: 1856
+        width: 381
+        height: 395
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 514381a8dad945e489933b676c71b100
+      internalID: -1269558462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_7
+      rect:
+        serializedVersion: 2
+        x: 2213
+        y: 1863
+        width: 359
+        height: 371
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b0a7fe465095cd46992fae6381bcc1c
+      internalID: -996471867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_8
+      rect:
+        serializedVersion: 2
+        x: 2993
+        y: 1786
+        width: 222
+        height: 804
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fab438671bcce57468601a9cd06e2d69
+      internalID: 1486929713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_9
+      rect:
+        serializedVersion: 2
+        x: 3336
+        y: 1786
+        width: 326
+        height: 791
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 331cf2b34c3ea75478ea983a478e2718
+      internalID: 257916036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_10
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 765
+        width: 1942
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c70a101a651b2fa459e7e88abd712801
+      internalID: -1972165568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_11
+      rect:
+        serializedVersion: 2
+        x: 2369
+        y: 745
+        width: 1111
+        height: 580
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c2e7da22b6f30246964a2d079540256
+      internalID: 1793203939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_12
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 139
+        width: 1954
+        height: 437
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d70b7c349b95ec4994e9889f4320b99
+      internalID: 541943610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Gun collection FREE version_13
+      rect:
+        serializedVersion: 2
+        x: 2438
+        y: 0
+        width: 1188
+        height: 563
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54cd51348fffecf4aa7f06129ad24935
+      internalID: 37051242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline:
+    - - {x: 1705.788, y: -1291.8906}
+      - {x: 1616.8693, y: -1291.8906}
+      - {x: 1580.5759, y: -1302.7773}
+      - {x: 1567.8732, y: -1308.2207}
+      - {x: 1351.9277, y: -1291.8906}
+      - {x: 760.34595, y: -1291.8906}
+      - {x: 604.2845, y: -1386.2422}
+      - {x: 604.2845, y: -1585.832}
+      - {x: 607.9138, y: -1593.0898}
+      - {x: 624.2458, y: -1585.832}
+      - {x: 649.6512, y: -1520.5117}
+      - {x: 747.64325, y: -1716.4727}
+      - {x: 858.338, y: -1767.2773}
+      - {x: 871.04065, y: -1760.0195}
+      - {x: 880.114, y: -1750.9473}
+      - {x: 1050.6929, y: -1649.3379}
+      - {x: 1246.677, y: -1858}
+      - {x: 1302.9316, y: -1858}
+      - {x: 1324.7076, y: -1818.082}
+      - {x: 1324.7076, y: -1812.6387}
+      - {x: 1705.788, y: -1462.4492}
+    - - {x: -1682.1973, y: -1279.1895}
+      - {x: -1831, y: -1328.1797}
+      - {x: -1831, y: -1613.0488}
+      - {x: -1818.2974, y: -1647.5234}
+      - {x: -1792.8921, y: -1658.4102}
+      - {x: -1638.6453, y: -1721.916}
+      - {x: -368.37762, y: -1721.916}
+      - {x: 127.026764, y: -1627.5645}
+      - {x: 127.026764, y: -1373.541}
+      - {x: -696.8325, y: -1279.1895}
+    - - {x: 941.81274, y: -1587.6465}
+      - {x: 941.81274, y: -1584.0176}
+      - {x: 949.0714, y: -1571.3164}
+      - {x: 959.9594, y: -1560.4297}
+      - {x: 965.4034, y: -1556.8008}
+      - {x: 972.6621, y: -1554.9863}
+      - {x: 972.6621, y: -1564.0586}
+      - {x: 974.47675, y: -1565.873}
+      - {x: 976.29144, y: -1576.7598}
+      - {x: 979.9208, y: -1585.832}
+      - {x: 992.6234, y: -1596.7188}
+      - {x: 936.3687, y: -1596.7188}
+      - {x: 938.1834, y: -1596.7188}
+    - - {x: 1010.77014, y: -1591.2754}
+      - {x: 1007.14075, y: -1584.0176}
+      - {x: 1007.14075, y: -1560.4297}
+      - {x: 1008.95544, y: -1558.6152}
+      - {x: 1008.95544, y: -1554.9863}
+      - {x: 1041.6195, y: -1554.9863}
+      - {x: 1041.6195, y: -1565.873}
+      - {x: 1043.4341, y: -1569.502}
+      - {x: 1041.6195, y: -1571.3164}
+      - {x: 1041.6195, y: -1578.5742}
+      - {x: 1037.9901, y: -1584.0176}
+      - {x: 1030.7314, y: -1591.2754}
+      - {x: 1025.2875, y: -1594.9043}
+      - {x: 1010.77014, y: -1594.9043}
+    - - {x: -1155.9436, y: -1565.873}
+      - {x: -1157.7582, y: -1551.3574}
+      - {x: -1135.9822, y: -1551.3574}
+      - {x: -1128.7235, y: -1556.8008}
+      - {x: -1125.0942, y: -1558.6152}
+      - {x: -1125.0942, y: -1569.502}
+      - {x: -1154.1289, y: -1569.502}
+    - - {x: -1007.14075, y: -1375.3555}
+      - {x: -998.06744, y: -1373.541}
+      - {x: -1039.8048, y: -1371.7266}
+      - {x: -1039.8048, y: -1373.541}
+    - - {x: 535.3271, y: -529.8203}
+      - {x: 535.3271, y: -948.959}
+      - {x: 733.1259, y: -1115.8887}
+      - {x: 1361.0011, y: -1115.8887}
+      - {x: 1651.3479, y: -725.78125}
+      - {x: 1651.3479, y: -529.8203}
+    - - {x: -774.8633, y: -765.6992}
+      - {x: -934.5541, y: -767.5137}
+      - {x: -934.5541, y: -763.88477}
+      - {x: -938.1834, y: -760.25586}
+      - {x: -903.7047, y: -765.6992}
+      - {x: -822.0446, y: -765.6992}
+      - {x: -818.4153, y: -762.0703}
+      - {x: -803.89795, y: -669.5332}
+      - {x: -836.56195, y: -665.9043}
+      - {x: -1455.3638, y: -665.9043}
+      - {x: -1464.4371, y: -769.3281}
+      - {x: -1825.556, y: -785.6582}
+      - {x: -1825.556, y: -852.79297}
+      - {x: -1812.8534, y: -1019.72266}
+      - {x: -1796.5214, y: -1041.4961}
+      - {x: -1589.6492, y: -1095.9297}
+      - {x: -533.5124, y: -1095.9297}
+      - {x: 121.58276, y: -974.3613}
+      - {x: 121.58276, y: -756.62695}
+      - {x: -787.5659, y: -731.2246}
+    - - {x: -1188.6075, y: -945.3301}
+      - {x: -1192.2369, y: -936.2578}
+      - {x: -1190.4222, y: -948.959}
+      - {x: -1179.5343, y: -958.03125}
+    - - {x: -1159.5729, y: -947.14453}
+      - {x: -1161.3876, y: -941.7012}
+      - {x: -1163.2023, y: -939.8867}
+      - {x: -1161.3876, y: -925.3711}
+      - {x: -1134.1675, y: -925.3711}
+      - {x: -1125.0942, y: -932.6289}
+      - {x: -1119.6501, y: -934.44336}
+      - {x: -1119.6501, y: -956.2168}
+      - {x: -1157.7582, y: -956.2168}
+    - - {x: 891.002, y: -825.5762}
+      - {x: 891.002, y: -821.94727}
+      - {x: 896.44604, y: -814.68945}
+      - {x: 898.2607, y: -814.68945}
+      - {x: 905.51935, y: -809.2461}
+      - {x: 905.51935, y: -816.5039}
+      - {x: 907.33405, y: -818.31836}
+      - {x: 909.1487, y: -827.3906}
+      - {x: 910.9634, y: -832.834}
+      - {x: 916.40735, y: -836.4629}
+      - {x: 885.55804, y: -834.64844}
+    - - {x: 954.5154, y: -831.01953}
+      - {x: 952.70074, y: -829.2051}
+      - {x: 952.70074, y: -807.43164}
+      - {x: 974.47675, y: -807.43164}
+      - {x: 974.47675, y: -818.31836}
+      - {x: 972.6621, y: -820.1328}
+      - {x: 970.8474, y: -827.3906}
+      - {x: 965.4034, y: -831.01953}
+      - {x: 954.5154, y: -834.64844}
+    - - {x: 1386.4064, y: 208.66211}
+      - {x: 1371.889, y: 221.36328}
+      - {x: 1331.9663, y: 729.41016}
+      - {x: 1322.8931, y: 734.8535}
+      - {x: 1302.9316, y: 734.8535}
+      - {x: 1250.3063, y: 682.2344}
+      - {x: 1214.013, y: 589.69727}
+      - {x: 1159.5729, y: 362.89062}
+      - {x: 1159.5729, y: 34.47461}
+      - {x: 1183.1636, y: -63.50586}
+      - {x: 1203.1249, y: -74.39258}
+      - {x: 1328.337, y: -74.39258}
+      - {x: 1348.2983, y: -47.17578}
+      - {x: 1341.0397, y: -32.660156}
+      - {x: 1386.4064, y: 154.22852}
+    - - {x: 1662.236, y: 722.15234}
+      - {x: 1580.5759, y: 722.15234}
+      - {x: 1502.5452, y: 484.45898}
+      - {x: 1502.5452, y: -39.91797}
+      - {x: 1520.6919, y: -74.39258}
+      - {x: 1667.6799, y: -74.39258}
+      - {x: 1678.568, y: -39.91797}
+      - {x: 1716.676, y: 70.76367}
+      - {x: 1716.676, y: 402.8086}
+    - - {x: -1783.8187, y: 408.25195}
+      - {x: -1823.7415, y: 386.47852}
+      - {x: -1831, y: 259.4668}
+      - {x: -1831, y: -7.2578125}
+      - {x: -1656.792, y: -7.2578125}
+      - {x: -1239.4183, y: 270.35352}
+      - {x: -1239.4183, y: 408.25195}
+    - - {x: 217.76016, y: 395.55078}
+      - {x: -21.776016, y: 395.55078}
+      - {x: -94.36274, y: 241.32227}
+      - {x: -94.36274, y: 97.98047}
+      - {x: -72.58672, y: 34.47461}
+      - {x: 0, y: -5.4433594}
+      - {x: 199.6135, y: -5.4433594}
+      - {x: 232.27751, y: 0}
+      - {x: 292.16156, y: 136.08398}
+      - {x: 292.16156, y: 332.04492}
+      - {x: 281.27356, y: 381.03516}
+    - - {x: -796.6393, y: 399.1797}
+      - {x: -1099.6888, y: 382.8496}
+      - {x: -1121.4648, y: 297.5703}
+      - {x: -1121.4648, y: 1.8144531}
+      - {x: -941.81274, y: 1.8144531}
+      - {x: -544.4004, y: 123.38281}
+      - {x: -544.4004, y: 397.36523}
+      - {x: -546.2151, y: 399.1797}
+    - - {x: 744.0139, y: 174.1875}
+      - {x: 744.0139, y: 210.47656}
+      - {x: 724.05255, y: 306.64258}
+      - {x: 664.1685, y: 377.40625}
+      - {x: 651.4658, y: 379.2207}
+      - {x: 468.18436, y: 379.2207}
+      - {x: 379.26562, y: 214.10547}
+      - {x: 379.26562, y: 48.990234}
+      - {x: 426.447, y: 1.8144531}
+      - {x: 656.90985, y: 1.8144531}
+      - {x: 744.0139, y: 63.50586}
+      - {x: 744.0139, y: 156.04297}
+      - {x: 736.75525, y: 161.48633}
+      - {x: 691.38855, y: 226.80664}
+      - {x: 734.94055, y: 172.37305}
+    - - {x: -896.44604, y: 195.96094}
+      - {x: -907.33405, y: 208.66211}
+      - {x: -907.33405, y: 223.17773}
+      - {x: -889.1874, y: 241.32227}
+      - {x: -880.114, y: 228.6211}
+      - {x: -878.2993, y: 221.36328}
+      - {x: -871.04065, y: 208.66211}
+      - {x: -856.5233, y: 195.96094}
+      - {x: -854.7087, y: 195.96094}
+      - {x: -847.45, y: 190.51758}
+      - {x: -842.006, y: 188.70312}
+      - {x: -834.7473, y: 188.70312}
+      - {x: -829.3033, y: 194.14648}
+      - {x: -829.3033, y: 197.77539}
+      - {x: -845.6353, y: 221.36328}
+      - {x: -845.6353, y: 224.99219}
+      - {x: -849.26465, y: 232.25}
+      - {x: -849.26465, y: 254.02344}
+      - {x: -825.67395, y: 254.02344}
+      - {x: -823.8593, y: 255.83789}
+      - {x: -793.00995, y: 255.83789}
+      - {x: -793.00995, y: 212.29102}
+      - {x: -800.2686, y: 199.58984}
+      - {x: -812.9713, y: 192.33203}
+      - {x: -887.3727, y: 192.33203}
+      - {x: -889.1874, y: 194.14648}
+    - - {x: -1598.7225, y: 205.0332}
+      - {x: -1600.5372, y: 206.84766}
+      - {x: -1602.3519, y: 214.10547}
+      - {x: -1604.1666, y: 215.91992}
+      - {x: -1604.1666, y: 219.54883}
+      - {x: -1596.908, y: 228.6211}
+      - {x: -1587.8346, y: 208.66211}
+      - {x: -1582.3905, y: 203.21875}
+      - {x: -1580.5759, y: 203.21875}
+      - {x: -1595.0933, y: 203.21875}
+      - {x: -1596.908, y: 205.0332}
+    - - {x: -1533.3945, y: 210.47656}
+      - {x: -1533.3945, y: 212.29102}
+      - {x: -1537.0238, y: 217.73438}
+      - {x: -1542.4679, y: 226.80664}
+      - {x: -1544.2825, y: 237.69336}
+      - {x: -1546.0972, y: 244.95117}
+      - {x: -1518.8772, y: 244.95117}
+      - {x: -1517.0625, y: 246.76562}
+      - {x: -1507.9891, y: 246.76562}
+      - {x: -1507.9891, y: 212.29102}
+      - {x: -1511.6185, y: 206.84766}
+      - {x: -1515.2478, y: 203.21875}
+      - {x: -1526.1359, y: 203.21875}
+    - - {x: 206.87216, y: 264.91016}
+      - {x: 206.87216, y: 268.53906}
+      - {x: 226.83351, y: 243.13672}
+      - {x: 228.64818, y: 244.95117}
+    - - {x: 615.1725, y: 277.61133}
+      - {x: 615.1725, y: 308.45703}
+      - {x: 620.61646, y: 306.64258}
+      - {x: 624.2458, y: 303.01367}
+      - {x: 626.0605, y: 303.01367}
+      - {x: 631.5045, y: 297.5703}
+      - {x: 633.31915, y: 290.3125}
+      - {x: 635.13385, y: 288.49805}
+      - {x: 635.13385, y: 272.16797}
+      - {x: 633.31915, y: 268.53906}
+      - {x: 633.31915, y: 270.35352}
+    - - {x: -1517.0625, y: 820.1328}
+      - {x: -711.34985, y: 820.1328}
+      - {x: -495.4044, y: 1034.2383}
+      - {x: -495.4044, y: 1266.4883}
+      - {x: -1727.564, y: 1266.4883}
+      - {x: -1825.556, y: 1232.0137}
+      - {x: -1825.556, y: 988.87695}
+    - - {x: 1527.9506, y: 1333.623}
+      - {x: 1484.3984, y: 1342.6953}
+      - {x: 1399.1091, y: 1342.6953}
+      - {x: 1395.4797, y: 1339.0664}
+      - {x: 1379.1477, y: 1342.6953}
+      - {x: 1716.676, y: 1342.6953}
+      - {x: 1713.0466, y: 1331.8086}
+      - {x: 1801.9653, y: 1320.9219}
+      - {x: 1829.1854, y: 1342.6953}
+      - {x: 1829.1854, y: 1382.6133}
+      - {x: 1809.2241, y: 1411.6445}
+      - {x: 865.5967, y: 1411.6445}
+      - {x: 684.1299, y: 1408.0156}
+      - {x: 32.664024, y: 1329.9941}
+      - {x: 25.405354, y: 1291.8906}
+      - {x: 25.405354, y: 1043.3105}
+      - {x: 166.94946, y: 1043.3105}
+      - {x: 518.99506, y: 1139.4766}
+      - {x: 749.4579, y: 1221.127}
+      - {x: 1560.6145, y: 1270.1172}
+      - {x: 1531.5798, y: 1329.9941}
+    - - {x: -1282.9703, y: 1099.5586}
+      - {x: -1282.9703, y: 1103.1875}
+      - {x: -1281.1556, y: 1094.1152}
+      - {x: -1273.897, y: 1088.6719}
+      - {x: -1288.4143, y: 1088.6719}
+    - - {x: -1259.3796, y: 1108.6309}
+      - {x: -1223.0863, y: 1108.6309}
+      - {x: -1223.0863, y: 1094.1152}
+      - {x: -1228.5303, y: 1090.4863}
+      - {x: -1253.9357, y: 1090.4863}
+    - - {x: -758.53125, y: 1181.209}
+      - {x: -727.6819, y: 1181.209}
+      - {x: -724.05255, y: 1177.5801}
+      - {x: -758.53125, y: 1179.3945}
+    - - {x: 678.68585, y: 1253.7871}
+      - {x: 680.50055, y: 1251.9727}
+      - {x: 685.9445, y: 1257.416}
+      - {x: 685.9445, y: 1261.0449}
+      - {x: 682.3152, y: 1275.5605}
+      - {x: 716.7939, y: 1275.5605}
+      - {x: 700.46185, y: 1255.6016}
+      - {x: 684.1299, y: 1253.7871}
+      - {x: 682.3152, y: 1255.6016}
+    - - {x: 943.6274, y: 1340.8809}
+      - {x: 1074.2834, y: 1342.6953}
+      - {x: 1067.0248, y: 1335.4375}
+      - {x: 943.6274, y: 1335.4375}
+    - - {x: -961.77405, y: 1838.041}
+      - {x: -1831, y: 1807.1953}
+      - {x: -1831, y: 1462.4492}
+      - {x: -1578.7612, y: 1382.6133}
+      - {x: -691.38855, y: 1382.6133}
+      - {x: -489.9604, y: 1547.7285}
+      - {x: -489.9604, y: 1747.3184}
+      - {x: -582.5084, y: 1838.041}
+    - - {x: 330.2696, y: 1858}
+      - {x: 30.849358, y: 1839.8555}
+      - {x: 19.96135, y: 1714.6582}
+      - {x: 19.96135, y: 1482.4082}
+      - {x: 471.8137, y: 1482.4082}
+      - {x: 1831, y: 1631.1934}
+      - {x: 1831, y: 1858}
+    - - {x: -1253.9357, y: 1671.1113}
+      - {x: -1228.5303, y: 1671.1113}
+      - {x: -1165, y: 1651}
+      - {x: -1248.4916, y: 1663.8535}
+      - {x: -1250.3063, y: 1662.0391}
+      - {x: -1250.3063, y: 1663.8535}
+    - - {x: 687.7592, y: 1714.6582}
+      - {x: 709.5352, y: 1716.4727}
+      - {x: 704.0912, y: 1709.2148}
+      - {x: 698.6472, y: 1705.5859}
+      - {x: 693.2032, y: 1705.5859}
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 1537655665
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Gun collection FREE version_0: -1953681551
+      Gun collection FREE version_1: -422304573
+      Gun collection FREE version_10: -1972165568
+      Gun collection FREE version_11: 1793203939
+      Gun collection FREE version_12: 541943610
+      Gun collection FREE version_13: 37051242
+      Gun collection FREE version_2: 871607288
+      Gun collection FREE version_3: 215710724
+      Gun collection FREE version_4: -1705850061
+      Gun collection FREE version_5: -1256830980
+      Gun collection FREE version_6: -1269558462
+      Gun collection FREE version_7: -996471867
+      Gun collection FREE version_8: 1486929713
+      Gun collection FREE version_9: 257916036
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

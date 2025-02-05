@@ -98,14 +98,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3150d614ee41b3a4cadb7b8ba83616b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundCenterPoint: {x: 0, y: 0}
+  groundCenterPoint: {x: -1.26, y: 1.21}
   drawPoint: 0
   includeSelf: 1
   sprite: {fileID: 5204487829829496799}
   localOrder: 0
   parent: {fileID: 0}
   children: []
-  container: {fileID: 0}
 --- !u!1 &2421231489847228794
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,4 +272,3 @@ MonoBehaviour:
   localOrder: 1
   parent: {fileID: 0}
   children: []
-  container: {fileID: 0}

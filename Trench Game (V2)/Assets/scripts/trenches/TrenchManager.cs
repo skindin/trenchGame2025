@@ -108,7 +108,7 @@ public class TrenchManager : ManagerBase<TrenchManager>
                 {
                     var pos = ChunkManager.AddressToPos(pair.address) + Chunks.ChunkManager.ChunkSize * .5f * Vector2.one;
 
-                    map = new(mapResolution,ChunkManager.ChunkSize, trenchColor, groundColor,pos,imageMesh,imageMaterial,filter);
+                    mapArray[pair.address] = map = new(mapResolution,ChunkManager.ChunkSize, trenchColor, groundColor,pos,imageMesh,imageMaterial,filter);
                 }
                 else
                 {
