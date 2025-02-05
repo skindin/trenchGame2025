@@ -10,15 +10,15 @@ public class Minimap : MonoBehaviour
     public Image charIconPrfb, itemDropIcon;
     public TextMeshProUGUI dropTimeText;
     public string timeTextSuffix = "s until drop";
-    public List<Image> charIcons = new();
-    public Color defaultColor = Color.white, playerColor = Color.white;
+    public List<DynamicMulticolorImages> charIcons = new();
+    public Color defaultColor = Color.white, playerHighlight = Color.white, otherCharacterHighlight = Color.black;
     public RectTransform mapImage;
-    public ObjectPool<Image> characterIconPool;
+    public ObjectPool<DynamicMulticolorImages> characterIconPool;
     public bool showItemDrops = true, debugLines = false;//, logPosRatios = false;
 
     private void Awake()
     {
-        characterIconPool = new ObjectPool<Image>(characterIconPool.minPooled, characterIconPool.maxPooled, () => Instantiate(charIconPrfb.gameObject, transform).GetComponent<Image>());
+        characterIconPool = new ObjectPool<DynamicMulticolorImages>(characterIconPool.minPooled, characterIconPool.maxPooled, () => Instantiate(charIconPrfb.gameObject, transform).GetComponent<DynamicMulticolorImages>());
     }
 
     private void Update()
@@ -70,7 +70,8 @@ public class Minimap : MonoBehaviour
 
             icon.transform.position = posRatio * scaleFactor + mapMin;
 
-            icon.color = (character.Type == Character.CharacterType.localPlayer) ? playerColor : character.clan.color;
+            icon.SetColor(0,character.clan.color);
+            icon.SetColor(1, character.Type == Character.CharacterType.localPlayer ? playerHighlight : otherCharacterHighlight);
 
             //if (logPosRatios && character.Type == Character.CharacterType.localPlayer)
             //{
