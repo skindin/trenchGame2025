@@ -142,7 +142,7 @@ public class TrenchMap
                 {
                     for (int x = 0; x < resolution; x++)
                     {
-                        blocks[x, y] = MapBlock.GetFull(true);
+                        blocks[x, y] = new MapBlock(true);
                     }
                 }
             }
@@ -198,7 +198,7 @@ public class TrenchMap
                 if (block == null)
                 {
                     if (value)
-                        block = new MapBlock();
+                        block = blocks[blockX,blockY] = new MapBlock(false);
                     else
                         continue;
                 }
@@ -645,17 +645,19 @@ public class TrenchMap
     {
         var block = blocks[cell.blockAdress.x, cell.blockAdress.y];
 
-        if (block == null)
-        {
-            if (value)
-            {
-                block = blocks[cell.blockAdress.x,cell.blockAdress.y] = new();
-            }
-            else
-            {
-                return;
-            }
-        }
+        //if (block == null)
+        //{
+        //    if (value)
+        //    {
+        //        block = blocks[cell.blockAdress.x,cell.blockAdress.y] = new();
+        //    }
+        //    else
+        //    {
+        //        return;
+        //    }
+        //}
+
+        //if this returns an error it's because i did something wrong somewhere else
 
         totalTrenchCells += value ? 1 : -1;
 
@@ -672,6 +674,18 @@ public class TrenchMap
 
         SetCellValue(cell, value);
     }
+
+    //i realized i need to design protobufs first, for the sake of lossless compression (block bytes, then repetition amount)
+    //public IEnumerable<byte> CompressedByteArray()
+    //{
+    //    MapBlock prevBlock = null;
+
+    //    foreach (var block in blocks)
+    //    {
+    //        if (prevBlock == null || prevBlock.Byte1) //case for adding new block
+    //    }
+    //    yield break;
+    //}
 
     public class LocalCell
     {

@@ -132,9 +132,16 @@ public class MapBlock
         }
     }
 
-    public static MapBlock GetFull(bool value)
+    public MapBlock (byte byte1, byte byte2)
     {
-        return value ? new MapBlock() {Byte1 = 0xFF, Byte2 = 0xFF} : new MapBlock { Byte1 = 0x00, Byte2 = 0x00};
+        Byte1 = byte1;
+        Byte2 = byte2;
+    }
+
+    public MapBlock (bool value)
+    {
+        Byte1 = Byte2 = (byte)(value ? 0xFF : 0x00);
+        //value ? new MapBlock(0xFF, 0xFF) : new MapBlock(0x00, 0x00);
     }
 
 
