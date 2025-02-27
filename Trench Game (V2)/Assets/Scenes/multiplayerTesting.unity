@@ -2355,6 +2355,7 @@ MonoBehaviour:
   dropAreaOffsetSpeed: 5
   dropAreaJitter: 100
   spawnItemDrops: 1
+  logItemDrops: 0
   debugLines: 0
   dropAreaCenter: {x: 0, y: 0}
   dropAreaRadius: 0
@@ -3964,6 +3965,7 @@ MonoBehaviour:
   dropAreaOffsetSpeed: 5
   dropAreaJitter: 100
   spawnItemDrops: 1
+  logItemDrops: 0
   debugLines: 0
   dropAreaCenter: {x: 0, y: 0}
   dropAreaRadius: 0

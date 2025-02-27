@@ -30,39 +30,61 @@ namespace BotBrains
 
         private void OnEnable()
         {
-            StartReactionRoutine();
-            StartObservationRoutine();
+            StartObservationRoutine(); 
+            //i can't remember what i was thinking when i made these two separate functions but ill leave it until it becomes a problem
+            //StartObservationRoutine();
         }
 
-        void StartReactionRoutine ()
+        void StartObservationRoutine ()
         {
-            StartCoroutine(ReactionRoutine());
+            StartCoroutine(ObservationRoutine());
 
-            IEnumerator ReactionRoutine ()
+            IEnumerator ObservationRoutine ()
             {
                 while (true)
                 {
                     yield return new WaitForSeconds(1 / reactionRate);
 
-                    behavior.Action();
-                }
-            }
-        }
-
-        void StartObservationRoutine ()
-        {
-            StartCoroutine (ObservationRoutine());
-
-            IEnumerator ObservationRoutine () //hopefully this won't miss anything
-            {
-                while (true)
-                {
-                    yield return null;
-
                     Observe();
+
+                    behavior.Think();
+
+                    //there could be another delay here for reaction time
+
+                    Act();
                 }
             }
         }
+
+        void Act ()
+        {
+            if (behavior.moveTarget.HasValue)
+            {
+                character.MoveToPos(behavior.moveTarget.Value);
+            }
+
+            if (behavior.attackTarget.HasValue && character.inventory.ActiveWeapon)
+            {
+                character.inventory.ActiveWeapon.DirectionalAction(behavior.attackTarget.Value - (Vector2)transform.position);
+            }
+
+
+        }
+
+        //void StartObservationRoutine ()
+        //{
+        //    StartCoroutine (ObservationRoutine());
+
+        //    IEnumerator ObservationRoutine () //hopefully this won't miss anything
+        //    {
+        //        while (true)
+        //        {
+        //            yield return null;
+
+        //            Observe();
+        //        }
+        //    }
+        //}
 
         void UpdateVisibleChunks ()
         {
@@ -94,36 +116,65 @@ namespace BotBrains
             {
                 if (item is Gun gun)
                 {
-                    UpdateProfile<GunProfile>(gun);
+                    UpdateItemProfile<GunProfile>(gun);
                 }
                 else if (item is Consumable consumable)
                 {
-                    UpdateProfile<ConsumableProfile>(consumable);
+                    UpdateItemProfile<ConsumableProfile>(consumable);
                 }
                 else if (item is Ammo ammo)
                 {
-                    UpdateProfile<AmmoProfile>(ammo);
+                    UpdateItemProfile<AmmoProfile>(ammo);
                 }
                 else if (item is Spade spade)
                 {
-                    UpdateProfile<AmmoProfile>(spade);
+                    UpdateItemProfile<AmmoProfile>(spade);
                 }
             }
+
+            behavior.selfProfile.UpdateWithCharacter(character);
 
             foreach (var character in GetVisibleCharacters<Character>())
             {
                 //blehhh
+
+                UpdateCharacterProfile(character);
             }
         }
 
-        public T UpdateProfile<T>(Item item) where T : ItemProfile, new()
+        public CharacterProfile UpdateCharacterProfile(Character character)
         {
-            var profile = GetProfile<T>(item);
+            var profile = GetCharacterProfile(character);
+            profile.UpdateWithCharacter(character);
+            return profile;
+        }
+
+        public CharacterProfile GetCharacterProfile (Character character)
+        {
+            if (!behavior.charactersByClanId.TryGetValue(character.clan.id, out var clanSet))
+            {
+                clanSet = new();
+
+                behavior.charactersByClanId.Add(character.clan.id, clanSet);
+            }
+
+            if (!clanSet.TryGetValue(character.id, out var profile))
+            {
+                profile = new CharacterProfile { id = character.id };
+                profile.UpdateWithCharacter(character);
+            }
+
+            return profile;
+        }
+
+        public T UpdateItemProfile<T>(Item item) where T : ItemProfile, new()
+        {
+            var profile = GetItemProfile<T>(item);
             profile.UpdateWithItem(item); //gotta connect character profile here later
             return profile;
         }
 
-        public T GetProfile<T> (Item item) where T : ItemProfile , new()
+        public T GetItemProfile<T> (Item item) where T : ItemProfile , new()
         {
             if (!itemProfilePairs.TryGet2From1(item.id,out var profile))
             {
@@ -141,9 +192,10 @@ namespace BotBrains
             return null;
         }
 
-        public void AddItemProfileToBehavior<T> (T profile) where T : ItemProfile
+        public void AddItemProfileToBehavior<T> (T profile) where T : ItemProfile 
+            //not sure why this is outside the get function
         {
-            if (!behavior.itemsByPrefab.TryGetValue(profile.prefabId, out var set))
+            if (!behavior.itemsByPrefabId.TryGetValue(profile.prefabId, out var set))
             {
                 set = new();
             }
@@ -153,12 +205,12 @@ namespace BotBrains
 
         public void RemoveItemProfileFromBehavior (ItemProfile profile)
         {
-            if (behavior.itemsByPrefab.TryGetValue(profile.prefabId, out var set))
+            if (behavior.itemsByPrefabId.TryGetValue(profile.prefabId, out var set))
             {
                 set.Remove(profile);
                 if (set.Count == 0)
                 {
-                    behavior.itemsByPrefab.Remove(profile.prefabId);
+                    behavior.itemsByPrefabId.Remove(profile.prefabId);
                 }
             }
         }
@@ -177,11 +229,16 @@ namespace BotBrains
             }
         }
 
+        /// <summary>
+        /// returns all characters within vision box, discludes self
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public IEnumerable<T> GetVisibleCharacters<T>() where T : Character
         {
             foreach (var character in CharacterManager.Manager.chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
             {
-                if (character is T t && TestVisionBox(character.transform.position))
+                if (character is T t && TestVisionBox(character.transform.position) && t != character)
                     yield return t;
             }
         }

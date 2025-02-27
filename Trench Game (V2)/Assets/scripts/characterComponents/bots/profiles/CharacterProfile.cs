@@ -51,6 +51,18 @@ namespace BotBrains
             }
         }
 
+        public void UpdateWithCharacter (Character character)
+        {
+            pos = character.transform.position;
+            hp = character.hp;
+            lastSeenTime = Time.time;
+            isVisible = true;
+
+            //gotta update items too
+
+            power = ProfileManager.Manager.GetCharacterScore(this);
+        }
+
         public string Print => $"characterId: {id}{(activeItem != null ? $", activeItem: {activeItem.Print}":"")}";
     }
 }

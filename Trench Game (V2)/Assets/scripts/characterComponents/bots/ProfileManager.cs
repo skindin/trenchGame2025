@@ -11,28 +11,21 @@ namespace BotBrains
     {
         public bool drawSceneItemScores = false;
         public Vector2 scoreLabelOffset;
-        public float itemDistanceWeight = 1;
+        //public float itemDistanceWeight = 1;
         public Gun baseGun;
         public float gunRoundsWeight, gunFireRateWeight, gunDamageRateWeight, gunRangeWeight;
         public Consumable baseConsumable;
         public float consumableHPWeight, consumableDurationWeight;
-        public float characterDistanceWeight = 1;
+        //public float characterDistanceWeight = 1;
         public Character baseCharacter;
         public float characterHPWeight, characterMoveSpeedWeight;
 
-        public float GetItemDistanceScore(Vector2 posA, Vector2 posB)
-        {
-            var distance = Vector2.Distance(posA, posB);
+        //public float GetCharacterDistanceScore(Vector2 posA, Vector2 posB)
+        //{
+        //    var distance = Vector2.Distance(posA, posB);
 
-            return 1 / distance * itemDistanceWeight;
-        }
-
-        public float GetCharacterDistanceScore(Vector2 posA, Vector2 posB)
-        {
-            var distance = Vector2.Distance(posA, posB);
-
-            return 1 / distance * characterDistanceWeight;
-        }
+        //    return 1 / distance * characterDistanceWeight;
+        //}
 
         public float GetGunScore(GunProfile gun, int availableAmmo = 0)
         {
