@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotBrains
 {
-    public class SubjectChunkArray : MonoBehaviorChunkArray<ObserverSubject>
+    public class SubjectChunkArray : MonoBehaviorChunkArray<ObserverSubject> //REVIEWERS: ignore this script
     {
 
 

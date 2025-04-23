@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// literally just a texture scaled to chunk size so i know when my character is moving
+/// </summary>
 public class Background : MonoBehaviour
 {
     public SpriteRenderer background;

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BotBrains
 {
-    class ProfileManager : ManagerBase<ProfileManager>
+    class ProfileManager : ManagerBase<ProfileManager> //REVIEWERS: unfinished and unfunctional, ignore this script
     {
         public bool drawSceneItemScores = false;
         public Vector2 scoreLabelOffset;

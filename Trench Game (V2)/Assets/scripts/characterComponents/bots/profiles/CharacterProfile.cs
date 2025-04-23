@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BotBrains
 {
-    public class CharacterProfile
+    public class CharacterProfile //REVIEWERS: ignore this script
     {
         public int id;
         public Vector2? pos, velocity;

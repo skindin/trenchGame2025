@@ -7,14 +7,14 @@ using System.Collections;
 using UnityEngine;
 //using Chunks;
 
-namespace BotBrains
+namespace BotBrains //REVIEWERS: ignore this script
 {
     public class ObserverBot : MonoBehaviour
     {
         public Character character;
         public ObserverSubject thisSubject;
         public Vector2 visionBox;
-        public SubjectChunkArray chunkArray = new();
+        //public SubjectChunkArray chunkArray = new();
         public bool debugLines = false;
         public readonly BotBehavior behavior = new();
         public float reactionRate = 5f;
@@ -23,7 +23,7 @@ namespace BotBrains
 
         private void Start()
         {
-            chunkArray = BotManager.Manager.subjectChunkArray;
+            //chunkArray = BotManager.Manager.subjectChunkArray;
         }
 
         //now we just gotta set up chunk observation
@@ -31,7 +31,6 @@ namespace BotBrains
         private void OnEnable()
         {
             StartObservationRoutine(); 
-            //i can't remember what i was thinking when i made these two separate functions but ill leave it until it becomes a problem
             //StartObservationRoutine();
         }
 
@@ -63,12 +62,25 @@ namespace BotBrains
                 character.MoveToPos(behavior.moveTarget.Value);
             }
 
+            if (behavior.targetItem != null && TryGetItemFromProfile(behavior.targetItem, out var targetItem))
+            {
+                if (targetItem.wielder == null) //if noones holding it...
+                {
+                    if (Vector2.Distance(transform.position, targetItem.transform.position) <= character.inventory.activePickupRad)
+                    {
+                        character.inventory.PickupItem(targetItem, targetItem.transform.position);
+                    }
+                }
+                else if (targetItem.wielder == character)
+                {
+                    character.inventory.SetSlotToItem(item => item == targetItem);
+                }
+            }
+
             if (behavior.attackTarget.HasValue && character.inventory.ActiveWeapon)
             {
                 character.inventory.ActiveWeapon.DirectionalAction(behavior.attackTarget.Value - (Vector2)transform.position);
             }
-
-
         }
 
         //void StartObservationRoutine ()
@@ -114,22 +126,7 @@ namespace BotBrains
 
             foreach (var item in GetVisibleItems<Item>())
             {
-                if (item is Gun gun)
-                {
-                    UpdateItemProfile<GunProfile>(gun);
-                }
-                else if (item is Consumable consumable)
-                {
-                    UpdateItemProfile<ConsumableProfile>(consumable);
-                }
-                else if (item is Ammo ammo)
-                {
-                    UpdateItemProfile<AmmoProfile>(ammo);
-                }
-                else if (item is Spade spade)
-                {
-                    UpdateItemProfile<AmmoProfile>(spade);
-                }
+                UpdateItemProfile(item);
             }
 
             behavior.selfProfile.UpdateWithCharacter(character);
@@ -146,6 +143,23 @@ namespace BotBrains
         {
             var profile = GetCharacterProfile(character);
             profile.UpdateWithCharacter(character);
+
+            if (character.inventory.ActiveItem)
+            {
+                var activeItemProfile = GetItemProfile<ItemProfile>(character.inventory.ActiveItem);
+                if (!profile.items.Contains(activeItemProfile)) //if we didn't already know this character was holding this...
+                {
+                    profile.items.Add(activeItemProfile);
+                    profile.activeItem = activeItemProfile;
+                }
+
+                activeItemProfile.UpdateWithItem(character.inventory.ActiveWeapon,profile);
+            }
+            else
+            {
+                profile.activeItem = null;
+            }
+
             return profile;
         }
 
@@ -167,10 +181,30 @@ namespace BotBrains
             return profile;
         }
 
+        public void UpdateItemProfile (Item item)
+        {
+            if (item is Gun gun)
+            {
+                UpdateItemProfile<GunProfile>(gun);
+            }
+            else if (item is Consumable consumable)
+            {
+                UpdateItemProfile<ConsumableProfile>(consumable);
+            }
+            else if (item is Ammo ammo)
+            {
+                UpdateItemProfile<AmmoProfile>(ammo);
+            }
+            else if (item is Spade spade)
+            {
+                UpdateItemProfile<AmmoProfile>(spade);
+            }
+        }
+
         public T UpdateItemProfile<T>(Item item) where T : ItemProfile, new()
         {
             var profile = GetItemProfile<T>(item);
-            profile.UpdateWithItem(item); //gotta connect character profile here later
+            profile.UpdateWithItem(item, item.wielder ? GetCharacterProfile(item.wielder) : null); 
             return profile;
         }
 
@@ -190,6 +224,21 @@ namespace BotBrains
             }
 
             return null;
+        }
+
+        public bool TryGetItemFromProfile (ItemProfile profile, out Item item)
+        {
+            if (itemProfilePairs.TryGet1From2(profile, out var id))
+            {
+                if (ItemManager.Manager.active.TryGetValue(id, out item))
+                {
+                    return true;
+                }
+            }
+
+            item = null;
+
+            return false;
         }
 
         public void AddItemProfileToBehavior<T> (T profile) where T : ItemProfile 
@@ -243,18 +292,18 @@ namespace BotBrains
             }
         }
 
-        public IEnumerable<ObserverSubject> GetVisibleSubjects ()
-        {
-            foreach (var subject in chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
-            {
-                if (subject == thisSubject || !TestVisionBox(subject.transform.position))
-                    //if this is itself, or we can't see it, move on
-                    continue;
+        //public IEnumerable<ObserverSubject> GetVisibleSubjects ()
+        //{
+        //    foreach (var subject in chunkArray.ObjectsFromAddresses(visibleChunkAddresses))
+        //    {
+        //        if (subject == thisSubject || !TestVisionBox(subject.transform.position))
+        //            //if this is itself, or we can't see it, move on
+        //            continue;
 
-                yield return subject;
-                //observer logic here
-            }
-        }
+        //        yield return subject;
+        //        //observer logic here
+        //    }
+        //}
 
         //public void Moved(Vector2 pos)
         //{

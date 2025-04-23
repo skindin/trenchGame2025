@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using BotBrains;
 
-namespace BotBrains //only need to make one of these if something about the item can permenantly change
+namespace BotBrains //only need to make another one of these if something about the item can permenantly change
 {
-    public class ItemProfile
+    public class ItemProfile //REVIEWERS: ignore this script
     {
         public int prefabId;//, localId;
         public CharacterProfile wielder;
@@ -21,8 +21,17 @@ namespace BotBrains //only need to make one of these if something about the item
         public virtual void UpdateWithItem<T> (T item, CharacterProfile character = null) where T : Item
         {
             lastTimeSeen = Time.time;
-            pos = item.transform.position;
-            isVisible = true;
+            //pos = item.transform.position;
+            if (item.wielder)
+            {
+                wielder = character;
+                pos = null;
+            }
+            else
+            {
+                wielder = null;
+                pos = item.transform.position;
+            }
 
             if (character != null)
                 wielder = character;

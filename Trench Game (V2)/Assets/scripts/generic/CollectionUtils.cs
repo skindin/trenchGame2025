@@ -8,10 +8,18 @@ using System.Linq;
 //using UnityEditor;
 //using JetBrains.Annotations;
 
-public static class CollectionUtils
+public static class CollectionUtils //this is just a script for all sorts of convenient collection functions
 {
+    /// <summary>
+    /// returns the total value of the values of all objects in the list
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="getValue"></param>
+    /// <returns></returns>
     public static float GetListValueTotal<T>(T[] list, Func<T, float> getValue)
     {
+        //tbh, i wrote this before i learned about ienumerables, which is why this returns an array
         float total = 0f;
 
         foreach (var item in list)
@@ -22,6 +30,14 @@ public static class CollectionUtils
         return total;
     }
 
+    /// <summary>
+    /// returns the one items value divided by the total values
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="item"></param>
+    /// <param name="list"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static float ItemRatioFromListItemValues<T>(T item, List<T> list, Func<T, float> predicate)
     {
         var itemValue = predicate(item);
@@ -30,6 +46,17 @@ public static class CollectionUtils
 
         return itemValue / total;
     }
+
+    /// <summary>
+    /// returns a set of random items within the list, each occurance determined by a designated chance property of every item.
+    /// only return applicable removes any pairs that were selected 0 times
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="count"></param>
+    /// <param name="chancePredicate"></param>
+    /// <param name="onlyReturnApplicable"></param>
+    /// <returns></returns>
 
     public static (T, int)[] GetOccurancePairs<T>(List<T> list, int count, Func<T, float> chancePredicate, bool onlyReturnApplicable = true)
     {
@@ -59,7 +86,9 @@ public static class CollectionUtils
         return GetItems(allPairs, x => x.Item2 > 0);
     }
 
+
     public static (T, int)[] GetOccurancePairs<T>(List<T> list, int count, Func<T, float> getChance, Func<T, int> getMaxOccurance, bool onlyReturnApplicable = true, bool enforceCount = false)
+        //tbh i guess i never ended up implementing the enforce count variable, which is probably why the item drop generation was bugged
     {
         T[] results = new T[count];
 
@@ -120,6 +149,14 @@ public static class CollectionUtils
     //    return default;
     //} //total didn't comply to condition, which broke this, and I don't feel like working on that rn
 
+
+    /// <summary>
+    /// returns items that pass predicate. this is super overcomplicated becase i designed it for arrays and have yet to improve it lol
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static T[] GetItems<T>(IEnumerable<T> list, Func<T, bool> predicate)
     {
         var applicableCount = 0;
@@ -148,6 +185,13 @@ public static class CollectionUtils
         return output;
     }
 
+    /// <summary>
+    /// returns total amount of items that passed predicate func
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static int GetTotal<T>(T[] list, Func<T, bool> predicate)
     {
         int total = 0;
@@ -169,6 +213,14 @@ public static class CollectionUtils
     //    return ItemRatioFromListItemValues(item, list, predicate);
     //}
 
+    /// <summary>
+    /// returns random index of list, each index's chance being determined by the predicate value of each item
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="ratio"></param>
+    /// <param name="list"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static int GetRandomIndexFromListValues<T>(float ratio, List<T> list, Func<T, float> predicate)
     {
         ratio = MathF.Min(ratio, 1);
@@ -192,6 +244,14 @@ public static class CollectionUtils
         return list.Count - 1;
     }
 
+    /// <summary>
+    /// returns random item, each items chance being found by the predicate
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="ratio"></param>
+    /// <param name="list"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static T GetRandomItemFromListValues<T>(float ratio, List<T> list, Func<T, float> predicate)
     {
         var index = GetRandomIndexFromListValues(ratio, list, predicate);
@@ -206,7 +266,20 @@ public static class CollectionUtils
     //    return Vector2.Distance(pos, getPos(item));
     //}
 
-    public static T GetClosest<T>(Vector2 pos, List<T> list, Func<T, Vector2> getPos, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxDist = Mathf.Infinity, bool debugLines = false)
+    /// <summary>
+    /// returns the element closest to the pos. closestIndex returns the index of the closest element. optional condition func. default item in case no items are closer than max dist
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="pos"></param>
+    /// <param name="list"></param>
+    /// <param name="getPos"></param>
+    /// <param name="closestIndex"></param>
+    /// <param name="condition"></param>
+    /// <param name="defaultItem"></param>
+    /// <param name="maxDist"></param>
+    /// <param name="debugLines"></param>
+    /// <returns></returns>
+    public static T GetClosest<T>(Vector2 pos, List<T> list, Func<T, Vector2> getPos, out int closestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxDist = Mathf.Infinity, bool debugLines = false)
     {
         static void MarkPos<Item>(Item item, Func<Item, Vector2> getPos, Color color)
         {
@@ -217,9 +290,23 @@ public static class CollectionUtils
         Action<T> onClosest = debugLines ? item => MarkPos(item, getPos, Color.green) : null;
         Action<T> onNotClosest = debugLines ? item => MarkPos(item, getPos, Color.red) : null;
 
-        return GetLowest(list, item => Vector2.Distance(pos, getPos(item)), out lowestIndex, condition, defaultItem, maxDist, onClosest, onNotClosest);
+        return GetLowest(list, item => Vector2.Distance(pos, getPos(item)), out closestIndex, condition, defaultItem, maxDist, onClosest, onNotClosest);
     }
 
+
+    /// <summary>
+    /// returns item with lowest value. lowestIndex returns index of lowest item. optional condition func. default item in case no values are less than maxValue. actions for when a previous item was lower or not
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="getValue"></param>
+    /// <param name="lowestIndex"></param>
+    /// <param name="condition"></param>
+    /// <param name="defaultItem"></param>
+    /// <param name="maxValue"></param>
+    /// <param name="onSelected"></param>
+    /// <param name="onNotSelected"></param>
+    /// <returns></returns>
     public static T GetLowest<T>(IEnumerable<T> list, Func<T, float> getValue, out int lowestIndex, Func<T, bool> condition = null, T defaultItem = default, float maxValue = Mathf.Infinity, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
         lowestIndex = -1;
@@ -264,50 +351,39 @@ public static class CollectionUtils
         return lowestItem;
     }
 
+
+    /// <summary>
+    /// just a reverse version of getLowest. i haven't actually used this one but i assume it works
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="getValue"></param>
+    /// <param name="highestIndex"></param>
+    /// <param name="condition"></param>
+    /// <param name="defaultItem"></param>
+    /// <param name="minValue"></param>
+    /// <param name="onSelected"></param>
+    /// <param name="onNotSelected"></param>
+    /// <returns></returns>
     public static T GetHighest<T>(IEnumerable<T> list, Func<T, float> getValue, out int highestIndex, Func<T, bool> condition = null,
         T defaultItem = default, float minValue = 0, Action<T> onSelected = null, Action<T> onNotSelected = null)
     {
-        highestIndex = -1;
-        float highestValue = minValue;
-        T highestItem = defaultItem;
+        var output = GetLowest(list, item => -getValue(item), out var lowestIndex, condition, defaultItem, -minValue, onSelected, onNotSelected);
 
-        var i = 0;
-        foreach (var item in list)
-        {
+        highestIndex = -lowestIndex;
 
-            if (condition != null && !condition(item))
-                continue;
-
-            var value = getValue(item);
-
-            if (value > highestValue)
-            {
-                highestValue = value;
-                highestIndex = i;
-                highestItem = item;
-            }
-
-            i++;
-        }
-
-        if (onNotSelected != null)
-        {
-            foreach (var item in list)
-            {
-
-                if (item is not null)
-                    onNotSelected(item);
-            }
-        }
-
-        if (onSelected != null && highestItem is not null)
-        {
-            onSelected(highestItem);
-        }
-
-        return highestItem;
+        return output;
     }
 
+    /// <summary>
+    /// funny attempt to use a bell graph. doesn't really work the way i want
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="avg"></param>
+    /// <param name="conc"></param>
+    /// <returns></returns>
     public static float MinMaxAvgConc(float x, float min, float max, float avg, float conc)
     {
         max = Mathf.Max(max, min);
@@ -320,7 +396,6 @@ public static class CollectionUtils
 
         return warpedValue;
     }
-
 
     public static T[] FlattenArray<T>(T[,] multidimArray)
     {
@@ -336,6 +411,15 @@ public static class CollectionUtils
         return jaggedArray.SelectMany(innerArray => innerArray).ToArray();
     }
 
+    /// <summary>
+    /// creates ienumerable of list item values. optional condition value
+    /// </summary>
+    /// <typeparam name="ItemType"></typeparam>
+    /// <typeparam name="ValueType"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="getProperty"></param>
+    /// <param name="condition"></param>
+    /// <returns></returns>
     public static IEnumerable<ValueType> GetPropertyCollection<ItemType, ValueType>(IEnumerable<ItemType> list, Func<ItemType, ValueType> getProperty, Func<ItemType, bool> condition = null)
     {
         //var result = new List<ValueType>();
@@ -349,7 +433,13 @@ public static class CollectionUtils
         }
     }
 
-
+    /// <summary>
+    /// sorts a list by element values from highest to lowest
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="getValue"></param>
+    /// <returns></returns>
     public static List<T> SortHighestToLowest<T>(List<T> list, Func<T, float> getValue)
     {
         for (int i = 1; i < list.Count; i++)
@@ -369,6 +459,13 @@ public static class CollectionUtils
         return list;
     }
 
+    /// <summary>
+    /// sorts list by element values from lowest to highest
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="getValue"></param>
+    /// <returns></returns>
     public static List<T> SortLowestToHighest<T>(List<T> list, Func<T, float> getValue)
     {
         for (int i = 1; i < list.Count; i++)
@@ -388,6 +485,13 @@ public static class CollectionUtils
         return list;
     }
 
+    /// <summary>
+    /// assigns int property of items to their index within the list
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="setIndex"></param>
+    /// <returns></returns>
     public static List<T> AssignIntPropToIndex<T>(List<T> list, Action<T, int> setIndex) where T : class
     {
         for (int i = 0; i < list.Count; i++)
@@ -398,6 +502,14 @@ public static class CollectionUtils
         return list;
     }
 
+    /// <summary>
+    /// sorts a list in the order that their property values appear in the index collection. example: {apple(1), peach(3), mango(0)} and {0,1,3} would return {mango, apple, peach}
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="itemList"></param>
+    /// <param name="indexColl"></param>
+    /// <param name="getProperty"></param>
+    /// <returns></returns>
     public static List<T> AssignIndexesByIntCollection<T>(List<T> itemList, IEnumerable<int> indexColl, Func<T, int> getProperty)
     {
         var itemListClone = new List<T>(itemList);
@@ -426,6 +538,14 @@ public static class CollectionUtils
         return itemList;
     }
 
+    /// <summary>
+    /// creates a dictionary of all list elements and associated values
+    /// </summary>
+    /// <typeparam name="TObject"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="collection"></param>
+    /// <param name="getKey"></param>
+    /// <returns></returns>
     public static Dictionary<TKey, List<TObject>> SortToListDict<TObject, TKey>(IEnumerable<TObject> collection, Func<TObject, TKey> getKey)
     {
         Dictionary<TKey, List<TObject>> dictionary = new();
@@ -448,9 +568,8 @@ public static class CollectionUtils
         return dictionary;
     }
 
-
     /// <summary>
-    /// returns first of every value. example: 1,5,3,8,4,4,2,2,5,6,8 would be 1,5,3,8,4,2,6
+    /// returns first of every new value. example: 1,5,3,8,4,4,2,2,5,6,8 would be 1,5,3,8,4,2,6
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     /// <typeparam name="TObject"></typeparam>
@@ -486,7 +605,14 @@ public static class CollectionUtils
         return output;
     }
 
-    public static List<TObject> DictionaryToList<TObject,TKey> (Dictionary<TKey,TObject> dict)
+    /// <summary>
+    /// creates a list of all a dictionary's values
+    /// </summary>
+    /// <typeparam name="TObject"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="dict"></param>
+    /// <returns></returns>
+    public static List<TObject> DictionaryValuesToList<TObject,TKey> (Dictionary<TKey,TObject> dict)
     {
         var list = new List<TObject>();
 
@@ -498,6 +624,13 @@ public static class CollectionUtils
         return list;
     }
 
+
+    /// <summary>
+    /// randomly orders the elements of a list
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="getIndex"></param>
     public static void RandomizeOrder<T> (List<T> list, Func<int,int,int> getIndex)
     {
         var indexList = GetRandomizedIntList(list.Count, getIndex);
@@ -510,6 +643,12 @@ public static class CollectionUtils
         }
     }
 
+    /// <summary>
+    /// gets list ints from 0 to count-1 in random order
+    /// </summary>
+    /// <param name="count"></param>
+    /// <param name="getIndex"></param>
+    /// <returns></returns>
     public static List<int> GetRandomizedIntList(int count, Func<int, int, int> getIndex)
     {
         var output = new List<int>();
@@ -531,6 +670,11 @@ public static class CollectionUtils
         return output;
     }
 
+    /// <summary>
+    /// basically a dictionary but works both ways
+    /// </summary>
+    /// <typeparam name="Type1"></typeparam>
+    /// <typeparam name="Type2"></typeparam>
     public class TwoColumnTable<Type1, Type2> : IEnumerable<ColumnRow<Type1,Type2>>
     {
         readonly Dictionary<Type1, Type2> column1 = new();
@@ -646,6 +790,11 @@ public static class CollectionUtils
         }
     } 
     
+    /// <summary>
+    /// like keyValuePairs but for twoColumnTable
+    /// </summary>
+    /// <typeparam name="Type1"></typeparam>
+    /// <typeparam name="Type2"></typeparam>
     public struct ColumnRow<Type1, Type2>
     {
         public Type1 value1;
@@ -658,6 +807,10 @@ public static class CollectionUtils
         }
     }
 
+    /// <summary>
+    /// object that returns random ints between min and max value. will not repeat a value before all values have been recycled.
+    /// example: if 1, 2, 4, and 5 have been returned, it will not repeat these numbers until a 3 is returned
+    /// </summary>
     public class RandomIntSeries
     {
         readonly int min, max;

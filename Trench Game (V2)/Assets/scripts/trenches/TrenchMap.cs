@@ -9,23 +9,26 @@ using System.Net;
 //using UnityEngine.Profiling;
 //using UnityEngine.Rendering;
 
-public class TrenchMap
+public class TrenchMap 
+    //there is one of these for every chunk, basically just a blank canvas for when
+    //a character wants to dig trenches in the associated chunk
 {
     //public Sprite sprite;
     //public SpriteRenderer spriteRenderer;
     public readonly MapBlock[,] blocks;
-    public int resolution = 8;
-    public float scale = 1;
+    public int resolution = 8;//height and width of map block array
+    public float scale = 1; //real world scale of chunk and map texture
     //public Transform pointA, pointB;
-    public Vector2 pos;
-    public Color32 trenchColor = new(255,255,255,255), groundColor = new(255, 255, 255, 255);
-    public Mesh imageMesh;
-    public Material imageMaterial;//
-    public Texture2D imageTexture;
-    readonly Color32[] pixels;
+    public Vector2 pos; //real world position
+    public Color32 trenchColor = new(255,255,255,255), groundColor = new(255, 255, 255, 255); //colors for dug and undug parts of texture
+    public Mesh imageMesh; //unity mesh ref for gpu instancing
+    public Material imageMaterial;//unity material ref for image mesh
+    public Texture2D imageTexture;//unity texture for image material
+    readonly Color32[] pixels;//color array to apply to image texture
     public
-        int totalTrenchCells = 0;
-    public bool allFull = true, allTrench = false;
+        int totalTrenchCells = 0;//how many cells are completely trench
+    public bool allFull = true, //true if no cells have been turned to trench
+        allTrench = false; //true if all cells have been turned to trench
 
     public TrenchMap (int resolution, float scale, Color32 trenchColor, Color32 groundColor, Vector2 pos, Mesh imageMesh, Material imageMaterial, FilterMode filter)
     {
@@ -106,6 +109,23 @@ public class TrenchMap
     //    Debug.DrawLine(pointA.position, pointB.position, Color.green);
     //}
 
+    //tapered capsule: the space within and between two circles of varying sizes.
+    //i acknowledge that the math used to determine if the point is within a
+    //tapered capsule
+
+    /// <summary>
+    /// sets all the cells within a tapered capsule (see above definition) to a true or false value.
+    /// max area and area changed varables for spade durability-breaking function
+    /// </summary>
+    /// <param name="startPoint"></param>
+    /// <param name="startRadius"></param>
+    /// <param name="endPoint"></param>
+    /// <param name="endRadius"></param>
+    /// <param name="value"></param>
+    /// <param name="maxArea"></param>
+    /// <param name="areaChanged"></param>
+    /// <param name="debugLines"></param>
+    /// <param name="logCounters"></param>
     public void SetTaperedCapsule(Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value, float maxArea, out float areaChanged,
         bool debugLines = false, bool logCounters = false)
     {
@@ -326,6 +346,15 @@ public class TrenchMap
 
     //public IEnumerable<Vector2> GetBitsFromBox(Vector2 min, Vector2 max, )
 
+    /// <summary>
+    /// returns ienumerable of all cells touching tapered capsule with specified value
+    /// </summary>
+    /// <param name="startPoint"></param>
+    /// <param name="startRadius"></param>
+    /// <param name="endPoint"></param>
+    /// <param name="endRadius"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public IEnumerable<Vector2> GetCellsTouchingTaperedCapsule (Vector2 startPoint, float startRadius, Vector2 endPoint, float endRadius, bool value)
     {
         var manager = TrenchManager.Manager;
@@ -416,6 +445,9 @@ public class TrenchMap
     //    }
     //}
 
+    /// <summary>
+    /// applies pixel array to texture
+    /// </summary>
     public void ApplyPixels ()
     {
         imageTexture.SetPixels32(pixels);
@@ -423,6 +455,14 @@ public class TrenchMap
         imageTexture.Apply();
     }
 
+    /// <summary>
+    /// tests if a circle at pos with radius touches a map cell with a given value
+    /// </summary>
+    /// <param name="circlePos"></param>
+    /// <param name="circleRadius"></param>
+    /// <param name="value"></param>
+    /// <param name="debugLines"></param>
+    /// <returns></returns>
     public bool TestCircleTouchesValue(Vector2 circlePos, float circleRadius, bool value, bool debugLines = false)
     {
         if (allTrench)
@@ -501,6 +541,11 @@ public class TrenchMap
         return false;
     }
 
+    /// <summary>
+    /// returns the value of the map cell closest to point
+    /// </summary>
+    /// <param name="point"></param>
+    /// <returns></returns>
     public bool TestPoint (Vector2 point)
     {
         var blockAdress = TrenchManager.Manager.GetBlockAdressFloored(point, pos);
@@ -517,11 +562,20 @@ public class TrenchMap
         return blocks[blockAdress.x, blockAdress.y][bitAdress];
     }
 
+    /// <summary>
+    /// returns block at address
+    /// </summary>
+    /// <param name="adress"></param>
+    /// <returns></returns>
     public MapBlock GetBlock (Vector2Int adress)
     {
         return blocks[adress.x, adress.y];
     }
 
+
+    /// <summary>
+    /// draws mesh with material on gpu
+    /// </summary>
     public void Draw ()
     {
         var transform = Matrix4x4.TRS(pos, Quaternion.identity, Vector2.one * scale);
@@ -537,6 +591,11 @@ public class TrenchMap
     //    }
     //}
 
+    /// <summary>
+    /// converts cell address to pixel array address
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <returns></returns>
     public int LocalCellToPixelIndex (LocalCell cell)
     {
         var blockAdress = cell.blockAdress;
@@ -545,6 +604,13 @@ public class TrenchMap
         return cellAdress.y * resolution * 4 + cellAdress.x + blockAdress.y * 16 * resolution + blockAdress.x * 4;
     }
 
+    /// <summary>
+    /// returns cells touching box (min and max), optional condition func
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="blockCondition"></param>
+    /// <returns></returns>
     public IEnumerable<LocalCell> GetCellsFromBox (Vector2 min, Vector2 max, Func<Vector2Int, bool> blockCondition)
     {
         var startBlock = TrenchManager.Manager.GetBlockAdressFloored(min, pos); //Vector2Int.FloorToInt(((capsuleMin - pos) / blockWidth) + (resolution * halfVector2One));
@@ -555,14 +621,21 @@ public class TrenchMap
         return GetCellsFromBoundBlocks(startBlock,endBlock,blockCondition);
     }
 
-    public IEnumerable<LocalCell> GetCellsFromBoundBlocks (Vector2Int startBlock, Vector2Int endBlock, 
+    /// <summary>
+    /// returns cells touching box (minBlock and maxBlock), optional condition func
+    /// </summary>
+    /// <param name="minBlock"></param>
+    /// <param name="maxBlock"></param>
+    /// <param name="blockCondition"></param>
+    /// <returns></returns>
+    public IEnumerable<LocalCell> GetCellsFromBoundBlocks (Vector2Int minBlock, Vector2Int maxBlock, 
         Func<Vector2Int, bool> blockCondition)
     {
         //this could cause null reference exceptions for block array, but i'll wait until it does
 
-        for (var blockY = startBlock.y; blockY < endBlock.y; blockY++)
+        for (var blockY = minBlock.y; blockY < maxBlock.y; blockY++)
         {
-            for (var blockX = startBlock.x; blockX < endBlock.x; blockX++)
+            for (var blockX = minBlock.x; blockX < maxBlock.x; blockX++)
             {
                 Vector2Int blockAdress = new(blockX, blockY);
 
@@ -584,6 +657,11 @@ public class TrenchMap
         }
     }
 
+    /// <summary>
+    /// returns all cells within map, optional condition func
+    /// </summary>
+    /// <param name="blockCondition"></param>
+    /// <returns></returns>
     public IEnumerable<LocalCell> GetCells (Func<Vector2Int, bool> blockCondition)
     {
         var maxBlock = resolution;
@@ -612,6 +690,11 @@ public class TrenchMap
         }
     }
 
+    /// <summary>
+    /// returns cell address from world pos
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
     public LocalCell GetLocalCell(Vector2 pos)
     {
         var blockAdress = TrenchManager.Manager.GetBlockAdressFloored(pos, this.pos);
@@ -621,12 +704,22 @@ public class TrenchMap
         return new(blockAdress, cellAdress);
     }
 
+    /// <summary>
+    /// returns world pos of cell address
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <returns></returns>
     public Vector2 GetCellPos(LocalCell cell)
     {
         var blockPos = TrenchManager.Manager.GetBlockPos(pos, cell.blockAdress);
         return TrenchManager.Manager.GetCellPos(blockPos, cell.cellAdress);
     }
 
+    /// <summary>
+    /// returns value of cell at address
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <returns></returns>
     public bool GetCellValue (LocalCell cell)
     {
         var block = blocks[cell.blockAdress.x,cell.blockAdress.y];
@@ -634,6 +727,11 @@ public class TrenchMap
         return block != null ? block[cell.cellAdress] : false;
     }
 
+    /// <summary>
+    /// returns value of cell closest to pos
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
     public bool GetCellValue (Vector2 pos)
     {
         var cell = GetLocalCell(pos);
@@ -641,6 +739,11 @@ public class TrenchMap
         return GetCellValue(cell);
     }
 
+    /// <summary>
+    /// sets value of cell at address
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <param name="value"></param>
     public void SetCellValue (LocalCell cell, bool value)
     {
         var block = blocks[cell.blockAdress.x, cell.blockAdress.y];
@@ -668,6 +771,11 @@ public class TrenchMap
         block[cell.cellAdress] = value;
     }
 
+    /// <summary>
+    /// sets value of cell closest to pos
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="value"></param>
     public void SetCellValue(Vector2 pos, bool value)
     {
         var cell = GetLocalCell(pos);
@@ -687,7 +795,7 @@ public class TrenchMap
     //    yield break;
     //}
 
-    public class LocalCell
+    public class LocalCell //group of map block address and cell address (didn't know what else to call this object)
     {
         public Vector2Int blockAdress, cellAdress;
 

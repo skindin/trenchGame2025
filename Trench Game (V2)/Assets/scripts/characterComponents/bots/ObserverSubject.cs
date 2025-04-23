@@ -8,7 +8,7 @@ using System.Collections;
 
 namespace BotBrains
 {
-    public class ObserverSubject : MonoBehaviour
+    public class ObserverSubject : MonoBehaviour //REVIEWERS: ignore this script
     {
         public List<Item> dropped = new(), pickedUp = new();
 
