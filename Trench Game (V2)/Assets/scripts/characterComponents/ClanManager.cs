@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClanManager : ManagerBase<ClanManager>
+/// <summary>
+/// manages character clans
+/// </summary>
+public class ClanManager : ManagerBase<ClanManager> //tbh this is a bit overcomplicated because of how the character manager works
 {
     public List<Clan> clans = new();
     CollectionUtils.RandomIntSeries clanIndexSeries;

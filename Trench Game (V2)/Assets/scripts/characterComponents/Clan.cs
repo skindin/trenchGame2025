@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class Clan
+
+[System.Serializable] 
+public class Clan //y'know just a simple clan object
 {
     public string Name;
     public Color color;

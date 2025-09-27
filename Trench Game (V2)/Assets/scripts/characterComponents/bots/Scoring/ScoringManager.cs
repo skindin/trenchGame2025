@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScoringManager : ManagerBase<ScoringManager>
+public class ScoringManager : ManagerBase<ScoringManager> //REVIEWERS: ignore this script
 {
     public bool drawSceneItemScores = false;
     public Vector2 scoreLabelOffset;

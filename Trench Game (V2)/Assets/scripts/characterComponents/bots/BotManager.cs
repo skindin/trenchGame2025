@@ -5,7 +5,7 @@ using Chunks;
 
 namespace BotBrains
 {   
-    public class BotManager : ManagerBase<BotManager>
+    public class BotManager : ManagerBase<BotManager>//REVIEWERS: ignore this script
     {
         public SubjectChunkArray subjectChunkArray;
 

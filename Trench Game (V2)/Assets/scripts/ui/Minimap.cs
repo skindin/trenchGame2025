@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using Chunks;
 
-public class Minimap : MonoBehaviour
+public class Minimap : MonoBehaviour //this probably isn't the best code but i just needed it to work
 {
     public DynamicMulticolorImages charIconPrfb; 
     public Image itemDropIcon;

@@ -7,31 +7,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using Chunks;
 
-public class SpawnManager : MonoBehaviour
+
+/// <summary>
+/// temporary manager for character and item spawning. ideally nothing would depend on this now, though some temporary ui elements do.
+/// </summary>
+public class SpawnManager : ManagerBase<SpawnManager>
 {
-    static SpawnManager cachedManager;
-    public static SpawnManager Manager
-    {
-        get
-        {
-            if (cachedManager == null)
-            {
-                cachedManager = FindObjectOfType<SpawnManager>();
-                //if (manager == null)
-                //{
-                //    GameObject go = new GameObject("Bullet");
-                //    manager = go.AddComponent<BulletManager>();
-                //    DontDestroyOnLoad(go);
-                //}
-            }
-            return cachedManager;
-        }
-    }
 
     public List<SpawnItemGroup> itemGroups = new();
     public int itemsPerDrop = 5;
-    public float itemDropRadius = 5, itemDropInterval = 20, itemDropTimer = 0, startDropAreaRadius = 50, dropAreaOffsetSpeed = 10, dropAreaJitter = 10;
-    public bool spawnItemDrops = true, logItemDrops = false, debugLines = false;
+    public float itemDropRadius = 5, //the radius of the circle the items are spawned within
+        itemDropInterval = 20, //how often items are spawned (seconds)
+        itemDropTimer = 0, //current time. items are dropped when this meets itemDropInterval, then items are dropped, then reset
+        startDropAreaRadius = 50, //start radius of initial drop area. used to visualize where the drop might spawn, and slowly closes in on the actual next drop position
+        dropAreaOffsetSpeed = 10, //the speed that the circle randomly moves around the next drop position
+        dropAreaJitter = 10; //how much
+    public bool spawnItemDrops = true, //spawn items at all
+        logItemDrops = false,
+        debugLines = false;
     Coroutine itemDropRoutine;
 
     //int nextItemId = 0;
@@ -61,7 +54,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    public int GetItemTotal
+    public int GetItemTotal //oh my gosh this is so inefficient why am i converting to arrays crying emoji
     {
         get
         {
@@ -82,6 +75,12 @@ public class SpawnManager : MonoBehaviour
             FillCharacterCapWithBots();
     }
 
+    /// <summary>
+    /// generic object to remember all spawned objects. 
+    /// it doesn't take much investigation to see that this object is not used very consistently, 
+    /// but it's just to get things to spawn so idc for now
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class SpawnObject<T>
     {
         //public string name;
@@ -119,7 +118,7 @@ public class SpawnManager : MonoBehaviour
         //ClientsSpawn for spawning the object for all clients that do not yet know about it
         //ClientSpawnDenied for when the server needs to undo unpermitted spawning
 
-        public void Remove(T obj)
+        public void Remove(T obj) //yeah this doesn't make any sense lol
         {
             RemoveLogic(obj);
             //active.Remove(obj);
@@ -211,7 +210,7 @@ public class SpawnManager : MonoBehaviour
                 spawnItem => spawnItem.CapDiff
                 );
 
-            foreach (var itemPair in itemPairs)
+            foreach (var itemPair in itemPairs) //more inefficient arrays crying emoji
             {
                 allItemPairs.Add(itemPair);
             }
@@ -219,6 +218,7 @@ public class SpawnManager : MonoBehaviour
 
         return allItemPairs;
     }
+
     public void SpawnItemDrop(Vector2 dropPos)
     {
         if (itemsPerDrop <= 0)
@@ -238,7 +238,7 @@ public class SpawnManager : MonoBehaviour
 
             for (var i = 0; i < pair.Item2; i++)
             {
-                var itemPos = UnityEngine.Random.insideUnitCircle * itemDropRadius + dropPos;
+                var itemPos = Random.insideUnitCircle * itemDropRadius + dropPos;
                 //itemPos = Vector2.zero;
                 var newItem = pair.Item1.Get(itemPos);
                 //var spawnDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
@@ -254,6 +254,10 @@ public class SpawnManager : MonoBehaviour
             Debug.Log($"Spawned {log}");
     }
 
+    /// <summary>
+    /// records new item (for spawn cap purposes)
+    /// </summary>
+    /// <param name="newItem"></param>
     public void AddItem(Item newItem)
     {
         foreach (var spawnGroup in itemGroups)
@@ -270,6 +274,10 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// removes record of current item
+    /// </summary>
+    /// <param name="item"></param>
     public void RemoveItem (Item item)
     {
         foreach (var spawnGroup in itemGroups)
@@ -388,6 +396,9 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// groups to divide items into different rarity groups
+    /// </summary>
     [System.Serializable]
     public class SpawnItemGroup
     {
@@ -439,17 +450,28 @@ public class SpawnManager : MonoBehaviour
     //    return spawnCharacter.SpawnWithType(pos, Character.CharacterType.remote, id);
     //}
 
+    /// <summary>
+    /// records new character
+    /// </summary>
+    /// <param name="character"></param>
     public void AddCharacter (Character character)
     {
         spawnCharacter.active.Add(character);
         //spawnCharacter.currentAmount
-    }
+    } 
 
+    /// <summary>
+    /// removes record of current character
+    /// </summary>
+    /// <param name="character"></param>
     public void RemoveCharacter (Character character)
     {
         spawnCharacter.active.Remove(character);
     }
 
+    /// <summary>
+    /// spawns bots until cap is reached
+    /// </summary>
     public void FillCharacterCapWithBots()
     {
         var botAmount = spawnCharacter.CapDiff;

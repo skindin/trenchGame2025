@@ -5,21 +5,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Inventory : MonoBehaviour
+public class Inventory : MonoBehaviour //separate bevavior for inventory shrugging emoji
 {
     public Character character;
-    public float passivePickupRad = 1, activePickupRad = 2, selectionRad = .5f; //passive should be smaller than active
-    int currentSlot = 0;
-    public Item[] itemSlots;
-    public bool inventoryFull = false;
-    public List<Item> withinRadius = new();
+    public float passivePickupRad = 1, //how close the character must be to automatically pickup items (that can be auto-picked up)
+        activePickupRad = 2, //how close they must be to manually pickup items (should be more than or equal to passive radius)
+        selectionRad = .5f; //passive should be smaller than active
+    int currentSlot = 0;//index of current active clot
+    public Item[] itemSlots; //it is an array for static size and empty slots (im probably overexplaining lol)
+    public bool inventoryFull = false; //can't remember what this is for
+    public List<Item> withinRadius = new(); //items within active pickup radius (this is only a property for ui purposes)
     //public Chunk[,] chunks = new Chunk[0,0];
-    Item selectedItem;
-    public Action<Item> onItemAdded, onItemRemoved;
-    public Transform itemContainer;
-    IEnumerable<Vector2Int> chunkAddresses;
+    Item selectedItem; //item ON THE GROUND that the character is inspecting (ik, kind of messy, but really just for temporary ui... i think...)
+    public Action<Item> onItemAdded, onItemRemoved; //these are both mainly intended for bot listening so ignore them
+    public Transform itemContainer; //which game object transform we want to contain the items we pick up (mostly to easily change item pivots)
+    IEnumerable<Vector2Int> chunkAddresses; //a relic from a past system...? i don't think this even needs to be a property
 
-    public Weapon ActiveWeapon
+    public Weapon ActiveWeapon //basically just quick test to see if the character is even holding a weapon type item
     {
         get
         {
@@ -180,7 +182,7 @@ public class Inventory : MonoBehaviour
         ActiveItem = null;
     }
 
-    public void DetectItems()
+    public void DetectItems() //gets list of all items within active pickup radius
     {
         withinRadius.Clear();
 
@@ -223,7 +225,7 @@ public class Inventory : MonoBehaviour
 
 
     /// <summary>
-    /// Only to be used when an item is to be destroyed while a character is holding it
+    /// Only to be used when an item is to be destroyed while a character is holding it (mostly for consumables)
     /// </summary>
     /// <param name="item"></param>
     public void RemoveItem (Item item)
@@ -276,6 +278,12 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// removes item from ground, determines inventory placement, and drops previous item at dropPos
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="dropPos"></param>
+    /// <param name="sync"></param>
     public void PickupItem(Item item, Vector2 dropPos, bool sync = false)
     {
         if (item.wielder)
@@ -300,9 +308,9 @@ public class Inventory : MonoBehaviour
                     if (ActiveItem)
                     {
                         var emptySlot = GetEmptySlot();
-                        if (emptySlot != null) //if there is an empty slot
+                        if (emptySlot.HasValue) //if there is an empty slot
                         {
-                            itemSlots[(int)emptySlot] = item;
+                            itemSlots[emptySlot.Value] = item;
                             item.ToggleActive(false);
                             //CurrentSlot = emptySlot;
                         }
@@ -348,6 +356,12 @@ public class Inventory : MonoBehaviour
         DropItem(item, transform.position);
     }
 
+    /// <summary>
+    /// detaches item transform, removes from inventory array, and places item at position
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="pos"></param>
+    /// <param name="sync"></param>
     public void DropItem(Item item, Vector2 pos, bool sync = false)
     {
         var delta = pos - (Vector2)transform.position;
@@ -367,6 +381,11 @@ public class Inventory : MonoBehaviour
         RemoveItem(item);
     }
 
+    /// <summary>
+    /// drops all items at random positions within drop radius from this transform position
+    /// </summary>
+    /// <param name="dropRadius"></param>
+    /// <param name="sync"></param>
     public void DropAllItems(float dropRadius, bool sync = false)
     {
         for (int i = 0; i < itemSlots.Length; i++)
@@ -386,18 +405,18 @@ public class Inventory : MonoBehaviour
         DropItem(ActiveItem);
     }
 
-    public void DropPrevItem()
-    {
-        if (itemSlots.Length > 0)
-        {
-            var item = itemSlots[^1];
-            DropItem(item);
-        }
-    }
+    //public void DropPrevItem()
+    //{
+    //    if (itemSlots.Length > 0)
+    //    {
+    //        var item = itemSlots[^1];
+    //        DropItem(item);
+    //    }
+    //}
 
 
     /// <summary>
-    /// WARNING: ALWAYS SYNCS
+    /// drops current active item at position. WARNING: ALWAYS SYNCS
     /// </summary>
     /// <param name="pos"></param>
     public void DropActiveItem(Vector2 pos)
@@ -409,7 +428,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public Item SelectClosest (Vector2 pos)
+    public Item SelectClosest (Vector2 pos) //again, for temporary ui purposes
     {
         SelectedItem = CollectionUtils.GetClosest(pos, withinRadius, item => item.transform.position, out _, null, null, selectionRad, debugLines);
         return SelectedItem;
@@ -448,7 +467,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void OnRemoved ()
+    public void OnRemoved () //idk what this for
     {
         //foreach (var chunk in chunks)
         //{
@@ -460,7 +479,7 @@ public class Inventory : MonoBehaviour
         SelectedItem = null;
     }
 
-    public string GetSlotsString ()
+    public string GetSlotsString () //just returns string for-you guessed it-temporary ui purposes
     {
         string slots = "";
 
@@ -476,7 +495,7 @@ public class Inventory : MonoBehaviour
         return slots;
     }
 
-    public void Aim (Vector2 direction)
+    public void Aim (Vector2 direction) //for aiming items like guns and... idk what else...
     {
         if (ActiveItem is IDirectionalAction directional)
         {

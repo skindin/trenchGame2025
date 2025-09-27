@@ -14,6 +14,10 @@ using UnityEngine;
 using UnityEngine.UIElements;
 //using UnityEngine.Rendering.PostProcessing;
 
+
+/// <summary>
+/// collection of geometry functions
+/// </summary>
 public static class GeoUtils
 {
     public static Vector2 ClosestPointToLineSegment(Vector2 objectPos, Vector2 lineStart, Vector2 lineEnd)
@@ -53,7 +57,7 @@ public static class GeoUtils
     }
 
     /// <summary>
-    /// Used for line between two points
+    /// tests if a circle at pos and with radius intersects line from a to b
     /// </summary>
     /// <param name="circleCenter"></param>
     /// <param name="circleRadius"></param>
@@ -80,57 +84,14 @@ public static class GeoUtils
     }
 
     /// <summary>
-    /// Returns the last point of a circle the line would touch. apparently this function doesn't even work
+    /// Returns the first point of a circle the line would touch. apparently this function doesn't even work
     /// </summary>
     /// <param name="circleCenter"></param>
     /// <param name="circleRadius"></param>
     /// <param name="lineStart"></param>
     /// <param name="lineEnd"></param>
     /// <returns></returns>
-
-    //public static Vector2 GetCircleLineIntersection(Vector2 circleCenter, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
-    //{
-    //    if (Vector2.Distance(circleCenter, lineStart) <= circleRadius && Vector2.Distance(circleCenter, lineEnd) <= circleRadius) return lineStart;
-
-    //    // Vector from start to end of the line segment
-    //    Vector2 lineVec = lineEnd - lineStart;
-
-    //    // Vector from circle center to line start
-    //    Vector2 circleToStart = lineStart - circleCenter;
-
-    //    // Calculate the coefficients of the quadratic equation
-    //    float a = lineVec.sqrMagnitude;
-    //    float b = 2f * Vector2.Dot(lineVec, circleToStart);
-    //    float c = circleToStart.sqrMagnitude - circleRadius * circleRadius;
-
-    //    // Calculate the discriminant of the quadratic equation
-    //    float discriminant = b * b - 4 * a * c;
-
-    //    // If the discriminant is negative, there are no intersections
-    //    if (discriminant < 0)
-    //    {
-    //        // Return Vector2.positiveInfinity to indicate no intersection
-    //        return Vector2.positiveInfinity;
-    //    }
-
-    //    // Calculate the two possible intersection points
-    //    float t1 = (-b + Mathf.Sqrt(discriminant)) / (2 * a);
-    //    float t2 = (-b - Mathf.Sqrt(discriminant)) / (2 * a);
-
-    //    // Check if the intersection points are within the line segment bounds
-    //    if (t1 >= 0 && t1 <= 1)
-    //    {
-    //        return lineStart + t1 * lineVec;
-    //    }
-    //    else if (t2 >= 0 && t2 <= 1)
-    //    {
-    //        return lineStart + t2 * lineVec;
-    //    }
-
-    //    // If neither intersection point is within the line segment bounds, return Vector2.positiveInfinity
-    //    return Vector2.positiveInfinity;
-    //}
-
+    
     public static Vector2 GetCircleLineIntersection(Vector2 circleCenter, float circleRadius, Vector2 lineStart, Vector2 lineEnd)
     {
         if (Vector2.Distance(circleCenter,lineStart) <= circleRadius)
@@ -182,6 +143,15 @@ public static class GeoUtils
         }
     }
 
+    /// <summary>
+    /// returns true if lines intersect
+    /// </summary>
+    /// <param name="pointA"></param>
+    /// <param name="pointB"></param>
+    /// <param name="pointC"></param>
+    /// <param name="pointD"></param>
+    /// <param name="debugLines"></param>
+    /// <returns></returns>
     public static bool DoLinesIntersect(Vector2 pointA, Vector2 pointB, Vector2 pointC, Vector2 pointD, bool debugLines = false)
     {
         // Direction vectors
@@ -240,6 +210,17 @@ public static class GeoUtils
         return DoesLineIntersectBoxMinMax(pointA, pointB, min, max, debugLines);
     }
 
+    /// <summary>
+    /// returns true if line from pointA to pointB intersects with an x
+    /// </summary>
+    /// <param name="pointA"></param>
+    /// <param name="pointB"></param>
+    /// <param name="bottomLeft"></param>
+    /// <param name="topLeft"></param>
+    /// <param name="topRight"></param>
+    /// <param name="bottomRight"></param>
+    /// <param name="debugLines"></param>
+    /// <returns></returns>
     public static bool DoesLineIntersectX (Vector2 pointA, Vector2 pointB, Vector2 bottomLeft, Vector2 topLeft, Vector2 topRight, Vector2 bottomRight,
         bool debugLines = false)
     {
@@ -406,6 +387,17 @@ public static class GeoUtils
         }
     }
 
+    /// <summary>
+    /// returns intercepts of a line and a rectangle drawn around the 'thick' line
+    /// </summary>
+    /// <param name="pointA"></param>
+    /// <param name="pointB"></param>
+    /// <param name="thickPointA"></param>
+    /// <param name="thickPointB"></param>
+    /// <param name="width"></param>
+    /// <param name="closest"></param>
+    /// <param name="furthest"></param>
+    /// <param name="debugLines"></param>
     public static void GetThickLineInterceps(Vector2 pointA, Vector2 pointB, Vector2 thickPointA, Vector2 thickPointB, float width,
         out Vector2 closest, out Vector2 furthest, bool debugLines = false)
     {
@@ -420,6 +412,16 @@ public static class GeoUtils
         GetQuadIntercepts(pointA, pointB, vertex1, vertex2, vertex3, vertex4, out closest, out furthest, debugLines);
     }
 
+    /// <summary>
+    /// returns true if line intercepts a rectangle drawn around the thick line
+    /// </summary>
+    /// <param name="pointA"></param>
+    /// <param name="pointB"></param>
+    /// <param name="thickPointA"></param>
+    /// <param name="thickPointB"></param>
+    /// <param name="width"></param>
+    /// <param name="debugLines"></param>
+    /// <returns></returns>
     public static bool DoesLineInterceptThickLine(Vector2 pointA, Vector2 pointB, Vector2 thickPointA, Vector2 thickPointB, float width, bool debugLines = false)
     {
         var delta = thickPointB - thickPointA;
@@ -433,6 +435,14 @@ public static class GeoUtils
         return DoesLineIntersectQuad(pointA, pointB, vertex1, vertex2, vertex3, vertex4, debugLines);
     }
 
+    /// <summary>
+    /// returns the closest and furthest of two points to the subject point
+    /// </summary>
+    /// <param name="subjPoint"></param>
+    /// <param name="pointA"></param>
+    /// <param name="pointB"></param>
+    /// <param name="closest"></param>
+    /// <param name="furthest"></param>
     public static void GetClosestAndFurthest (Vector2 subjPoint, Vector2 pointA, Vector2 pointB, out Vector2 closest, out Vector2 furthest)
     {
         var distA = (pointA - subjPoint).magnitude;
@@ -450,6 +460,15 @@ public static class GeoUtils
         }
     }
 
+    /// <summary>
+    /// returns intersection position of two lines
+    /// </summary>
+    /// <param name="line1Start"></param>
+    /// <param name="line1End"></param>
+    /// <param name="line2Start"></param>
+    /// <param name="line2End"></param>
+    /// <param name="debugLines"></param>
+    /// <returns></returns>
     public static Vector2 FindIntersection(Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End, bool debugLines = false)
     {
         if (debugLines) Debug.DrawLine(line2Start, line2End, Color.cyan);
@@ -485,6 +504,15 @@ public static class GeoUtils
         return Vector2.positiveInfinity;
     }
 
+
+    /// <summary>
+    /// returns true if a point is within a box with min and max corners
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="point"></param>
+    /// <param name="debugLines"></param>
+    /// <returns></returns>
     public static bool TestBoxMinMax(Vector2 min, Vector2 max, Vector2 point, bool debugLines = false)
     {
         if (debugLines)
@@ -516,8 +544,16 @@ public static class GeoUtils
     }
 
 
-
-
+    /// <summary>
+    /// returns true if the point is within a tapered capsule. (the space within and between two varying positions and varying sizes, ik this doesn't exactly do that right)
+    /// </summary>
+    /// <param name="testPoint"></param>
+    /// <param name="pointA"></param>
+    /// <param name="radiusA"></param>
+    /// <param name="pointB"></param>
+    /// <param name="radiusB"></param>
+    /// <param name="debugLines"></param>
+    /// <returns></returns>
     public static bool TestPointWithinTaperedCapsule (Vector2 testPoint, Vector2 pointA, float radiusA, Vector2 pointB, float radiusB
     //,out Vector2 closestPoint, out float thickness
     , bool debugLines = false
@@ -689,6 +725,15 @@ public static class GeoUtils
         return Mathf.Max(0, collisionPointDot - a);
     }
 
+    /// <summary>
+    /// returns tru of any point on either line is within distance of the closest point on the other line
+    /// </summary>
+    /// <param name="line1Start"></param>
+    /// <param name="line1End"></param>
+    /// <param name="line2Start"></param>
+    /// <param name="line2End"></param>
+    /// <param name="distance"></param>
+    /// <returns></returns>
     public static bool TestSegmentsWithinDistance (Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End, float distance)
     {
         if (Vector2.Distance(ClosestPointToLineSegment(line2Start, line1Start, line1End), line2Start) >= distance)
@@ -708,128 +753,128 @@ public static class GeoUtils
     //find point on line closest to box center, then roll it back towards the start until just barely touching the box
     //}
 
-    public static Vector2? CircBoxCollButDoesntWork(Vector2 start, Vector2 end, float radius, Vector2 boxMin, Vector2 boxMax,
-        bool debugLines = false)
-    {
-        var boxClampedStart = ClampToBoxMinMax(start, boxMin, boxMax);
+    //public static Vector2? CircBoxCollButDoesntWork(Vector2 start, Vector2 end, float radius, Vector2 boxMin, Vector2 boxMax,
+    //    bool debugLines = false)
+    //{
+    //    var boxClampedStart = ClampToBoxMinMax(start, boxMin, boxMax);
 
-        if (debugLines)
-        {
-            DrawCircle(start, radius, Color.green);
-            DrawBoxMinMax(boxMin, boxMax, Color.blue);
-        }
+    //    if (debugLines)
+    //    {
+    //        DrawCircle(start, radius, Color.green);
+    //        DrawBoxMinMax(boxMin, boxMax, Color.blue);
+    //    }
 
 
-        Vector2 delta = end - start; //im tired too late ahh
+    //    Vector2 delta = end - start; //im tired too late ahh
 
-        if (Vector2.Distance(boxClampedStart,start) <= radius)
-        {
-            if (debugLines)
-            {
-                DrawCircle(end, radius, Color.red);
-                MarkPoint(boxClampedStart, .5f, Color.green);
-            }
+    //    if (Vector2.Distance(boxClampedStart,start) <= radius)
+    //    {
+    //        if (debugLines)
+    //        {
+    //            DrawCircle(end, radius, Color.red);
+    //            MarkPoint(boxClampedStart, .5f, Color.green);
+    //        }
 
-            return boxClampedStart;
-        }
+    //        return boxClampedStart;
+    //    }
 
-        var boxCenter = (boxMin + boxMax) / 2;
+    //    var boxCenter = (boxMin + boxMax) / 2;
 
-        var closestPoint = ClosestPointToLineSegment(boxCenter, start, end);
+    //    var closestPoint = ClosestPointToLineSegment(boxCenter, start, end);
 
-        var clampedClosest = ClampToBoxMinMax(closestPoint, boxMin, boxMax);
+    //    var clampedClosest = ClampToBoxMinMax(closestPoint, boxMin, boxMax);
 
-        DrawCircle(closestPoint, radius, Color.blue);
-        MarkPoint(clampedClosest, .5f, Color.blue);
+    //    DrawCircle(closestPoint, radius, Color.blue);
+    //    MarkPoint(clampedClosest, .5f, Color.blue);
 
-        if (Vector2.Distance(closestPoint, clampedClosest) > radius)
-        {
-            if (debugLines)
-            {
-                DrawCircle(end, radius, Color.green); 
-                Debug.DrawRay(start, delta, Color.green);
+    //    if (Vector2.Distance(closestPoint, clampedClosest) > radius)
+    //    {
+    //        if (debugLines)
+    //        {
+    //            DrawCircle(end, radius, Color.green); 
+    //            Debug.DrawRay(start, delta, Color.green);
 
-                var circleEdgeOffset = Vector2.Perpendicular(delta).normalized * radius;
-                Debug.DrawRay(start + circleEdgeOffset, delta, Color.green);
-                Debug.DrawRay(start - circleEdgeOffset, delta, Color.green);
-            }
+    //            var circleEdgeOffset = Vector2.Perpendicular(delta).normalized * radius;
+    //            Debug.DrawRay(start + circleEdgeOffset, delta, Color.green);
+    //            Debug.DrawRay(start - circleEdgeOffset, delta, Color.green);
+    //        }
 
-            return null;
-        }
+    //        return null;
+    //    }
 
-        if (debugLines)
-        {
-            DrawCircle(end, radius, Color.red);
-        }
+    //    if (debugLines)
+    //    {
+    //        DrawCircle(end, radius, Color.red);
+    //    }
 
-        var m = delta.y / delta.x;
+    //    var m = delta.y / delta.x;
 
-        var movingRight = delta.x > 0;
-        var movingUp = delta.y > 0;
+    //    var movingRight = delta.x > 0;
+    //    var movingUp = delta.y > 0;
 
-        var horizontalB = start.y - (m * start.x + (movingRight ? radius : -radius));
+    //    var horizontalB = start.y - (m * start.x + (movingRight ? radius : -radius));
 
-        var horizontalX = movingRight ? boxMin.x : boxMax.x;
+    //    var horizontalX = movingRight ? boxMin.x : boxMax.x;
 
-        var horizontalY = (m * horizontalX) + horizontalB;
+    //    var horizontalY = (m * horizontalX) + horizontalB;
 
-        var horizontalMissed = movingRight ?
-            movingUp && horizontalY > boxMax.y :
-            !movingUp && horizontalY < boxMin.y;
+    //    var horizontalMissed = movingRight ?
+    //        movingUp && horizontalY > boxMax.y :
+    //        !movingUp && horizontalY < boxMin.y;
 
-        if (horizontalMissed)
-        {
-            if (debugLines)
-                MarkPoint(boxClampedStart, .5f, Color.green);
+    //    if (horizontalMissed)
+    //    {
+    //        if (debugLines)
+    //            MarkPoint(boxClampedStart, .5f, Color.green);
 
-            return boxClampedStart;
-        }
+    //        return boxClampedStart;
+    //    }
 
-        var hitY = movingRight ?
-            movingUp && horizontalY <= boxMax.y :
-            !movingUp && horizontalY >= boxMin.y;
+    //    var hitY = movingRight ?
+    //        movingUp && horizontalY <= boxMax.y :
+    //        !movingUp && horizontalY >= boxMin.y;
 
-        if (hitY)
-        {
-            var point = new Vector2(horizontalX, horizontalY);
+    //    if (hitY)
+    //    {
+    //        var point = new Vector2(horizontalX, horizontalY);
 
-            if (debugLines)
-                MarkPoint(point, .5f, Color.green);
+    //        if (debugLines)
+    //            MarkPoint(point, .5f, Color.green);
 
-            return point;
-        }
+    //        return point;
+    //    }
 
-        var verticalB = start.y + (movingUp ? radius : -radius) - (m * start.x);
+    //    var verticalB = start.y + (movingUp ? radius : -radius) - (m * start.x);
 
-        var verticalY = movingUp ? boxMin.y : boxMax.y;
+    //    var verticalY = movingUp ? boxMin.y : boxMax.y;
 
-        var verticalX = (verticalY - verticalB) / m;
+    //    var verticalX = (verticalY - verticalB) / m;
 
-        var verticalMissed = movingUp ?
-            movingRight && verticalX > boxMax.x :
-            !movingRight && verticalX < boxMin.x;
+    //    var verticalMissed = movingUp ?
+    //        movingRight && verticalX > boxMax.x :
+    //        !movingRight && verticalX < boxMin.x;
 
-        if (verticalMissed)
-        {
-            if (debugLines)
-                MarkPoint(boxClampedStart, .5f, Color.green);
+    //    if (verticalMissed)
+    //    {
+    //        if (debugLines)
+    //            MarkPoint(boxClampedStart, .5f, Color.green);
 
-            return boxClampedStart;
-        }
+    //        return boxClampedStart;
+    //    }
 
-        var hitX = movingUp ?
-            movingRight && verticalX <= boxMax.x :
-            !movingRight && verticalX >= boxMin.x;
+    //    var hitX = movingUp ?
+    //        movingRight && verticalX <= boxMax.x :
+    //        !movingRight && verticalX >= boxMin.x;
 
-        if (hitX)
-        {
-            return new Vector2(verticalX, verticalY);
-        }
+    //    if (hitX)
+    //    {
+    //        return new Vector2(verticalX, verticalY);
+    //    }
 
-        return boxClampedStart;
+    //    return boxClampedStart;
 
-        //if ((m * boxCenter.x) + horizontalB) //breh this is so complicated
-    }
+    //    //if ((m * boxCenter.x) + horizontalB) //breh this is so complicated
+    //}
 
     //not even optimised
     //public static Vector2? FindPointBoxCollisionPoint (Vector2 point, Vector2 delta, Vector2 boxMin, Vector2 boxMax, out Vector2Int edgeHit)
@@ -916,88 +961,18 @@ public static class GeoUtils
     //    return null;
     //}
 
-    public static void DrawCircle(Vector2 center, float radius, Color color, int res = 4)
-    {
-        Vector2 lastPoint = Vector2.up * radius;
-
-        int verts = res * 4;
-        var angle = 360f / verts;
-
-        for (int i = 1; i < verts + 1; i++)
-        {
-            Vector2 point = Quaternion.AngleAxis(angle, Vector3.forward) * lastPoint;
-
-            Debug.DrawLine(point + center, lastPoint + center, color);
-
-            lastPoint = point;
-        }
-    }
-
-    public static void DrawRingOfCircles (Vector2 ringCenter, float ringRadius, float circleRadius, int circleCount, Color color, int circleRes = 4)
-    {
-        Vector2 lastPoint = Vector2.up * ringRadius;
-        var angle = 360f / circleCount;
-
-        for (int i = 1; i < circleCount + 1; i++)
-        {
-            Vector2 point = Quaternion.AngleAxis(angle, Vector3.forward) * lastPoint;
-
-            DrawCircle(point + ringCenter, circleRadius, color, circleRes);
-
-            //Debug.DrawLine(point + center, lastPoint + center, color);
-
-            lastPoint = point;
-        }
-    }
-
-    public static void MarkPoint(Vector2 point, float size, Color color)
-    {
-        var min = -Vector2.one * size;
-        var max = -min;
-
-        Debug.DrawLine(min + point, max + point, color);
-
-        min = Vector2.Perpendicular(min);
-        max = Vector2.Perpendicular(max);
-
-        Debug.DrawLine(min + point, max + point, color);
-    }
-
-    public static void DrawBoxMinMax(Vector2 min, Vector2 max, Color color)
-    {
-        GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
-        Debug.DrawLine(min, topLeft, color);
-        Debug.DrawLine(topLeft, max, color);
-        Debug.DrawLine(max, bottomRight, color);
-        Debug.DrawLine(bottomRight, min, color);
-    }
-
-    public static void DrawBoxPosSize(Vector2 pos, Vector2 size, Color color)
-    {
-        Vector2 min = new Vector2(-size.x, -size.y) / 2 + pos;
-        Vector2 max = new Vector2(size.x, size.y) / 2 + pos;
-        DrawBoxMinMax(min, max, color);
-    }
-
     public static void GetTopLeftAndBottomRight(Vector2 min, Vector2 max, out Vector2 topLeft, out Vector2 bottomRight)
     {
         topLeft = new(min.x, max.y);
         bottomRight = new(max.x, min.y);
     }
 
-    public static Vector2 RandomPosInBoxMinMax (Vector2 min , Vector2 max)
+    public static Vector2 RandomPosInBoxMinMax(Vector2 min, Vector2 max)
     {
-        return new Vector2(UnityEngine.Random.Range(min.x,max.x),UnityEngine.Random.Range(min.y,max.y));
+        return new Vector2(UnityEngine.Random.Range(min.x, max.x), UnityEngine.Random.Range(min.y, max.y));
     }
 
-
-    /// <summary>
-    /// orders points from min in clockwise order
-    /// </summary>
-    /// <param name="pos"></param>
-    /// <param name="size"></param>
-    /// <returns></returns>
-    public static Vector2[] GetBoxCornersPosSize (Vector2 pos, Vector2 size)
+    public static Vector2[] GetBoxCornersPosSize(Vector2 pos, Vector2 size)
     {
         var halfSize = size / 2;
 
@@ -1009,7 +984,7 @@ public static class GeoUtils
         };
     }
 
-    public static Vector2[] GetBoxCornersMinMax (Vector2 min, Vector2 max)
+    public static Vector2[] GetBoxCornersMinMax(Vector2 min, Vector2 max)
     {
         var pos = (max + min) / 2;
         var size = max - min;
@@ -1017,12 +992,12 @@ public static class GeoUtils
         return GetBoxCornersPosSize(pos, size);
     }
 
-    public static Vector2 RandomPosInBoxPosSize (Vector2 pos, Vector2 size)
+    public static Vector2 RandomPosInBoxPosSize(Vector2 pos, Vector2 size)
     {
         return RandomPosInBoxMinMax(pos - size / 2, pos + size / 2);
     }
 
-    public static Vector2 RandomInsideRing (Vector2 center, float minRad, float maxRad)
+    public static Vector2 RandomInsideRing(Vector2 center, float minRad, float maxRad)
     {
         var dist = UnityEngine.Random.Range(minRad, maxRad);
         return (Vector2)(Quaternion.AngleAxis(UnityEngine.Random.Range(0, 360), Vector3.forward) * Vector3.up * dist + (Vector3)center);
@@ -1034,17 +1009,17 @@ public static class GeoUtils
         Vector2Int intSize = Vector2Int.CeilToInt(size / distributeSize);
         Vector2 outerMin = pos - size / 2 + (size - new Vector2(intSize.x, intSize.y) * distributeSize) / 2;
 
-        var array = new Vector2[intSize.x+1, intSize.y+1];
+        var array = new Vector2[intSize.x + 1, intSize.y + 1];
 
         var boxMin = pos - size / 2;
         var boxMax = pos + size / 2;
 
-        for (var y = 0; y < intSize.y+1; y++)
+        for (var y = 0; y < intSize.y + 1; y++)
         {
-            for (int x = 0; x < intSize.x+1; x++)
+            for (int x = 0; x < intSize.x + 1; x++)
             {
                 Vector2 point = outerMin + new Vector2(x, y) * distributeSize;
-                                
+
                 if (x == 0 || y == 0)
                     point = Vector2.Max(point, boxMin);
 
@@ -1058,25 +1033,7 @@ public static class GeoUtils
         return array;
     }
 
-
-    public static void DrawLine (List<Vector2> points, Color color)
-    {
-        Vector2 lastPoint = Vector2.zero;
-
-        for (var i = 0; i < points.Count; i++)
-        {
-            var point = points[i];
-
-            if (i > 0)
-            {
-                Debug.DrawLine(lastPoint, point, color);
-            }
-
-            lastPoint = point;
-        }
-    }
-
-    public static float GetLineLength (List<Vector2> points, bool debugLines = false)
+    public static float GetLineLength(List<Vector2> points, bool debugLines = false)
     {
         float total = 0;
 
@@ -1105,15 +1062,23 @@ public static class GeoUtils
         return Vector2.Max(min, Vector2.Min(max, point));
     }
 
-    public static Vector2 ClampToBoxPosSize (Vector2 point, Vector2 pos, Vector2 size)
+    public static Vector2 ClampToBoxPosSize(Vector2 point, Vector2 pos, Vector2 size)
     {
         var delta = size / 2;
         var min = pos - delta;
         var max = pos + delta;
 
-        return ClampToBoxMinMax (point, min, max);
+        return ClampToBoxMinMax(point, min, max);
     }
 
+
+    /// <summary>
+    /// calculates what the addresses of grid cells a line segment would touch. used for grid like collisions
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="cellSize"></param>
+    /// <returns></returns>
     public static IEnumerable<Vector2Int> CellsFromLine(Vector2 start, Vector2 end, float cellSize)
     {
         start /= cellSize;
@@ -1141,7 +1106,7 @@ public static class GeoUtils
 
         Vector2Int endCell = RoundToInt(end);
 
-        static Vector2Int RoundToInt (Vector2 pos)
+        static Vector2Int RoundToInt(Vector2 pos)
         {
             var floored = Vector2Int.FloorToInt(pos);
             var remainder = pos - floored;
@@ -1229,23 +1194,113 @@ public static class GeoUtils
         yield break;
     }
 
-    public static void BoxMinMaxToPosSize (Vector2 min, Vector2 max, out Vector2 pos, out Vector2 size)
+    public static void BoxMinMaxToPosSize(Vector2 min, Vector2 max, out Vector2 pos, out Vector2 size)
     {
         pos = (min + max) / 2;
         size = max - min;
     }
 
-    public static void BoxPosSizeToMinMax (Vector2 pos, Vector2 size, out Vector2 min, out Vector2 max)
+    public static void BoxPosSizeToMinMax(Vector2 pos, Vector2 size, out Vector2 min, out Vector2 max)
     {
         var delta = size / 2;
         min = pos - delta;
         max = pos + delta;
     }
 
-    public static void CircleToBoxPosSize (Vector2 center, float radius, out Vector2 pos, out Vector2 size)
+    public static void CircleToBoxPosSize(Vector2 center, float radius, out Vector2 pos, out Vector2 size)
     {
         pos = center;
         size = radius * 2 * Vector2.one;
+    }
+
+    public static void DrawCircle(Vector2 center, float radius, Color color, int res = 4)
+    {
+        Vector2 lastPoint = Vector2.up * radius;
+
+        int verts = res * 4;
+        var angle = 360f / verts;
+
+        for (int i = 1; i < verts + 1; i++)
+        {
+            Vector2 point = Quaternion.AngleAxis(angle, Vector3.forward) * lastPoint;
+
+            Debug.DrawLine(point + center, lastPoint + center, color);
+
+            lastPoint = point;
+        }
+    }
+
+    public static void DrawRingOfCircles (Vector2 ringCenter, float ringRadius, float circleRadius, int circleCount, Color color, int circleRes = 4)
+    {
+        Vector2 lastPoint = Vector2.up * ringRadius;
+        var angle = 360f / circleCount;
+
+        for (int i = 1; i < circleCount + 1; i++)
+        {
+            Vector2 point = Quaternion.AngleAxis(angle, Vector3.forward) * lastPoint;
+
+            DrawCircle(point + ringCenter, circleRadius, color, circleRes);
+
+            //Debug.DrawLine(point + center, lastPoint + center, color);
+
+            lastPoint = point;
+        }
+    }
+
+    public static void MarkPoint(Vector2 point, float size, Color color)
+    {
+        var min = -Vector2.one * size;
+        var max = -min;
+
+        Debug.DrawLine(min + point, max + point, color);
+
+        min = Vector2.Perpendicular(min);
+        max = Vector2.Perpendicular(max);
+
+        Debug.DrawLine(min + point, max + point, color);
+    }
+
+    public static void DrawBoxMinMax(Vector2 min, Vector2 max, Color color)
+    {
+        GetTopLeftAndBottomRight(min, max, out var topLeft, out var bottomRight);
+        Debug.DrawLine(min, topLeft, color);
+        Debug.DrawLine(topLeft, max, color);
+        Debug.DrawLine(max, bottomRight, color);
+        Debug.DrawLine(bottomRight, min, color);
+    }
+
+    public static void DrawBoxPosSize(Vector2 pos, Vector2 size, Color color)
+    {
+        Vector2 min = new Vector2(-size.x, -size.y) / 2 + pos;
+        Vector2 max = new Vector2(size.x, size.y) / 2 + pos;
+        DrawBoxMinMax(min, max, color);
+    }
+
+
+    /// <summary>
+    /// orders points from min in clockwise order
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="size"></param>
+    /// <returns></returns>
+
+
+
+    public static void DrawLine (List<Vector2> points, Color color)
+    {
+        Vector2 lastPoint = Vector2.zero;
+
+        for (var i = 0; i < points.Count; i++)
+        {
+            var point = points[i];
+
+            if (i > 0)
+            {
+                Debug.DrawLine(lastPoint, point, color);
+            }
+
+            lastPoint = point;
+        }
     }
 
     //public static IEnumerable<Vector2Int> CellsFromArc(Vector2 arcPivot, float radius, float centerAngle, float spreadAngle, float cellSize)

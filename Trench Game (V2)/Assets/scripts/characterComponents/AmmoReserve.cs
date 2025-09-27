@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class AmmoReserve : MonoBehaviour
+public class AmmoReserve : MonoBehaviour //inventory for ammo, since ammo stacks and it's only properties are its type and amount
 {
     public Character character;
 
-    public List<AmoPool> ammoPools = new();
+    public List<AmoPool> ammoPools = new(); //this should probably be a dictionary but whatever
 
     public int AddAmo(AmmoType type, int amount)
     {
@@ -114,7 +114,7 @@ public class AmmoReserve : MonoBehaviour
 }
 
 [System.Serializable]
-public class AmoPool
+public class AmoPool //object for individual ammo types
 {
     public AmmoType type;
     public int rounds = 0, maxRounds = 100;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 [CustomEditor(typeof(ScoringManager))]
 
-public class ScoringEditor : Editor
+public class ScoringEditor : Editor //REVIEWERS: ignore this script
 {
     ScoringManager manager;
 

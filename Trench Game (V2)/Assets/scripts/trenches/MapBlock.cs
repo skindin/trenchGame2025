@@ -1,6 +1,10 @@
 using System;
 using UnityEngine;
 
+
+/// <summary>
+/// smallest unit for map system. basically just a 4x4 array of booleans, except booleans use 8 bits each, but this uses a single bit per 'boolean' to save memory
+/// </summary>
 public class MapBlock
 {
     public byte Byte1 { private set; get; }

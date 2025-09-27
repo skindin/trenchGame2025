@@ -8,24 +8,36 @@ using UnityEngine.Events;
 public class Character : MonoBehaviour
 {
     //public static List<Character> all = new();//, chunkless = new();
-    public int id, rank, life = 0;
+    public int id, //for network purposes
+        rank, //current place on kill streak scoreboard
+        life = 0; //to prevent their killstreak from increasing if a bullet fired BEFORE their death killed a character AFTER their death
     public string characterName;
     [HideInInspector]
     public Clan clan;
-    public PlayerController userController;
-    public BotBrains.ObserverBot botController;
+    public PlayerController userController;//user controler behavior. allows input to control this character.
+                                           //max of one is enabled per device, unless I add splitscreen later on
+    public BotBrains.ObserverBot botController; //allows a bot script to control this character
     //public SpriteRenderer sprite;
     //public Color dangerColor = Color.white;
-    public float baseMoveSpeed = 5, moveSpeed = 0, deathDropRadius = 1, hp = 10, maxHp = 10, jumpDuration = .2f, jumpCooldown = .1f;
+    public float baseMoveSpeed = 5, //move speed before modified by other features
+        moveSpeed = 0, //current move speed, after being modified by other features
+        deathDropRadius = 1, //how far items in inventory will be dropped when this character dies
+        hp = 10, //hit points (health)
+        maxHp = 10, //beginning and maximum hit points
+        jumpDuration = .2f, //jumping doesn't really move the character right now, it just disables their trench collisions so they can leave a trench when they want
+        jumpCooldown = .1f;
 
-    int killCount;
+    int killCount; //ie kill streak: how many characters this one has killed since their last death
+
+    //for animation and sprite color purposes.
 
     public UnityEvent<Vector2> onMove, onLook;
     public UnityEvent onReset;
     public UnityEvent<Color> onAssignedClan;
+
     //public UnityEvent<float, Character, int> onDamaged;
 
-    public int KillCount
+    public int KillCount //not sure why this is here...?
     {
         get { return killCount; }
 
@@ -48,7 +60,7 @@ public class Character : MonoBehaviour
     //}
 
     //public Chunk chunk;
-    public TrenchCollider trenchCollider;
+    public TrenchCollider trenchCollider;// specialized collider to detect bullets and conceal from bullets when within a trench, also to keep within a trench if they walk outside without jumping
     public AmmoReserve reserve;
     public Inventory inventory;
     public bool constantlyUpdateChunk = false, moving = false;
@@ -132,7 +144,7 @@ public class Character : MonoBehaviour
             {
                 aggressor.killCount++;
 
-                if (NetworkManager.IsServer)
+                if (NetworkManager.IsServer) //REVIEWERS: ignore network code
                 {
                     NetworkManager.Manager.SetKills(aggressor, aggressor.killCount);
                 }
@@ -183,7 +195,7 @@ public class Character : MonoBehaviour
         if (constantlyUpdateChunk)
         {
             UpdateChunk();
-            if (controlType != CharacterType.remote)
+            if (controlType != CharacterType.remote) //as long as this character isn't being controlled by a remote computer (server side bot, or remote player), run item detection
                 inventory.DetectItems();
         }
 
@@ -200,7 +212,7 @@ public class Character : MonoBehaviour
     //{
     //    lastPos = transform.position;
     //}
-    public void Jump ()
+    public void Jump ()//currently just allows their collider to exit the trench
     {
         trenchCollider.ExitTrench(jumpDuration);
     }
@@ -212,7 +224,7 @@ public class Character : MonoBehaviour
         inventory.Aim(direction);
     }
 
-    public void MoveInDirection(Vector2 direction)
+    public void MoveInDirection(Vector2 direction) //for direction based movement
     {
         Vector3 dir = moveSpeed * Time.deltaTime * direction;
 
@@ -223,7 +235,7 @@ public class Character : MonoBehaviour
         onMove.Invoke(direction);
     }
 
-    public void MoveToPos (Vector2 pos) //doesn't utilize trenchCollider yet
+    public void MoveToPos (Vector2 pos) //for position based movement (for bots). doesn't utilize trenchCollider yet
     {
         SetPos(Vector2.MoveTowards(transform.position, pos, moveSpeed * Time.deltaTime));
 
@@ -237,7 +249,7 @@ public class Character : MonoBehaviour
     //bool posWasSetThisFrame = false;
     //Coroutine waitForPosRoutine;
 
-    public void SetPos (Vector2 pos, bool sync = true) //this would be the rpc
+    public void SetPos (Vector2 pos, bool sync = true) //to minimize code repetition, also to prevent animations from playing when their position is just set
     {
         //if ((Vector2)transform.position == pos) return;
 
@@ -311,7 +323,7 @@ public class Character : MonoBehaviour
         CharacterManager.Manager.KillCharacter(this);
     }
 
-    public void RemoveSelf ()
+    public void RemoveSelf ()//tbh i can't remember why i wrote this
     {
         CharacterManager.Manager.RemoveCharacter(this);
         if (inventory)

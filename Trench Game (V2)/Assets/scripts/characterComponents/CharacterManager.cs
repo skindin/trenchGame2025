@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using Chunks;
 //using System;
 
-public class CharacterManager : MonoBehaviour
+public class CharacterManager : ManagerBase<CharacterManager>
 {
     //#if !DEDICATED_SERVER
     //    public string symbolTest = "suck a co**";
@@ -38,25 +38,6 @@ public class CharacterManager : MonoBehaviour
     //    }
     //}
 
-    static CharacterManager manager;
-    public static CharacterManager Manager
-    {
-        get
-        {
-            if (manager == null)
-            {
-                manager = FindObjectOfType<CharacterManager>();
-                //if (manager == null)
-                //{
-                //    GameObject go = new GameObject("Bullet");
-                //    manager = go.AddComponent<BulletManager>();
-                //    DontDestroyOnLoad(go);
-                //}
-            }
-            return manager;
-        }
-    }
-
     int nextCharId = 0;
     public int NewCharId
     {
@@ -70,7 +51,7 @@ public class CharacterManager : MonoBehaviour
 
     private void Awake()
     {
-        manager = this;
+        //manager = this;
 
         SetupPool();
 
@@ -111,7 +92,7 @@ public class CharacterManager : MonoBehaviour
             Debug.Log($"challenge ended, {serverRecord.Key} is the winner");
             challengeComplete = true;
         }
-    }
+    }//would freeze the server record after a given amount of time
 
     public void StartStopWatch (float startTime = 0)
     {
@@ -147,11 +128,15 @@ public class CharacterManager : MonoBehaviour
                 }
             }
         }
-    }
+    } //starts the stopwatch, timing how long the character with the longest kill streak has had the longest kill streak
     //private void Start()
     //{
     //}
 
+    /// <summary>
+    /// sets the name of the local player
+    /// </summary>
+    /// <param name="name"></param>
     public void SetPlayerName (string name)
     {
         playerName = name;
@@ -163,7 +148,7 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
-    public void RemoveAllCharacters ()
+    public void RemoveAllCharacters () //for scene reset purposes
     {
         while (active.Count > 0)
         {
@@ -171,7 +156,7 @@ public class CharacterManager : MonoBehaviour
         }
 
         serverRecord = new();
-    }
+    } 
 
     void SetupPool ()
     {
@@ -297,7 +282,9 @@ public class CharacterManager : MonoBehaviour
         return NewCharacter(pos, Character.CharacterType.remote, id, clanId);
     }
 
-    public Character NewLocalPlayerNewId (Vector2 pos)
+    //new functions ending in 'NewId' should only be run on server because they are initializing a character that no other client has any knowledge of
+
+    public Character NewLocalPlayerNewId (Vector2 pos) 
     {
         return NewLocalPlayer(pos, NewCharId, ClanManager.Manager.GetNextClanIndex()); //breh
     }
@@ -312,7 +299,8 @@ public class CharacterManager : MonoBehaviour
         return NewRemoteCharacter(pos, NewCharId, ClanManager.Manager.GetNextClanIndex());
     }
 
-    public void RemoveCharacter(Character character)
+
+    public void RemoveCharacter(Character character) //removes any record of the character, and adds it to the object pool
     {
         active.Remove(character);
         activeDictionary.Remove(character.id);
@@ -337,18 +325,18 @@ public class CharacterManager : MonoBehaviour
 
     public void KillCharacter(Character character)
     {
-        if (true || character.controlType != Character.CharacterType.localBot || SpawnManager.Manager.spawnCharacter.CapDiff >= 0)
-            //if this character is not a bot, or the spawn cap is unmet...
-        {
+        //if (true || character.controlType != Character.CharacterType.localBot || SpawnManager.Manager.spawnCharacter.CapDiff >= 0)
+        //    //if this character is not a bot, or the spawn cap is unmet...
+        //{
             StartRespawn(character);
-        }
-        else
-        {
-            SpawnManager.Manager.RemoveCharacter(character); //kind of cringe that this is removing the character from spawn manager, which then removes it from this...
-            UpdateScoreBoard();
-        }
+        //}
+        //else
+        //{
+        //    SpawnManager.Manager.RemoveCharacter(character); //kind of cringe that this is removing the character from spawn manager, which then removes it from this...
+        //    UpdateScoreBoard();
+        //}
 
-        character.life++;
+        character.life++; //increase which life this is so that bullets fired before they died that end up killing another player DO NOT increase their kill streak after they die
         //UpdateScoreBoard();
     }
 
@@ -366,7 +354,8 @@ public class CharacterManager : MonoBehaviour
 
             character.ResetSelf();
 
-            active.Remove(character); //just to reorder them to give newer players a chance when they tie
+            active.Remove(character); //just to reorder them to give newer players a chance when they tie,
+                                      //because otherwize the first character created would always win a tie, that's just how the sort function works
             active.Add(character);
 
             NetworkManager.Manager.SetKills(character, 0);
@@ -385,7 +374,7 @@ public class CharacterManager : MonoBehaviour
 
             //active.Add(character);
 
-            NetworkManager.Manager.ToggleLimbo(character, false);
+            NetworkManager.Manager.ToggleLimbo(character, false); //REVIEWERS: ignore network code for now. im in the process of redesigning it
 
             character.gameObject.SetActive(true);
             character.SetPos(ChunkManager.GetRandomPos()); //these are still sloppy af but work for now
@@ -393,7 +382,7 @@ public class CharacterManager : MonoBehaviour
 
             character.SetHP(character.maxHp); //i think this is a fine place to put it shrugging emoji
             //Debug.Log($"updated hp, {NetworkManager.Manager.server.updateCharData.List.Count} character updates");
-            character.Type = type;
+            character.Type = type; //reinstates previous type because it was reset
 
             //character.UpdateChunk();
 

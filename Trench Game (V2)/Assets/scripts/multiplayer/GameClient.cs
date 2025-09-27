@@ -7,7 +7,7 @@ using WebSocketSharp;
 using UnityEngine.Events;
 using Google.Protobuf.Collections;
 
-public class GameClient : MonoBehaviour
+public class GameClient : MonoBehaviour //CODE REVIEWERS: ignore network code, it's being redesigned
 {
     private WebSocket ws;
     public string serverAdress = "localhost";
